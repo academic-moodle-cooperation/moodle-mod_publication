@@ -32,6 +32,7 @@ $string['modulenameplural'] = 'Studierendenordner';
 $string['pluginadministration'] = 'Studierendenordner Administration';
 $string['publication:addinstance'] = 'Studierendenordner hinzufügen';
 $string['publication:view'] = 'Studierendenordner anzeigen';
+$string['publication:upload'] = 'Dateien in den Studierendenordner hochladen';
 
 $string['requiremodintro'] = 'Beschreibung notwendig';
 $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';
@@ -83,3 +84,14 @@ Sie können festlegen von welchen Studiernden das Einverständnis eingeholt wird
 sind die Dateien auch wirklich sichtbar.';
 $string['choose'] = 'bitte auswählen ...';
 $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie importieren möchten.';
+
+// view.php
+$string['allowsubmissionsfromdate_upload'] = 'Uploadmöglickeit von';
+$string['allowsubmissionsfromdate_import'] = 'Einverständniserklärung von';
+$string['cutoffdate_upload'] = 'Uploadmöglichkeit bis';
+$string['cutoffdate_upload'] = 'Einverständniserklärung bis';
+$string['duedate_upload'] = 'Uploadmöglickeit bis';
+$string['duedate_import'] = 'Einverständniserklärung bis';
+$string['assignment_notfound'] = 'Die Aufgabe von der Import wird konnte nicht mehr gefunden werden.';
+$string['myfiles'] = 'Meine Dateien';
+$string['edit_uploads'] = 'Dateien bearbeiten';

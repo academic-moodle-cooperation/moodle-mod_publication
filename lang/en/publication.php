@@ -32,6 +32,7 @@ $string['modulenameplural'] = 'Student folders';
 $string['pluginadministration'] = 'Student folder administration';
 $string['publication:addinstance'] = 'Add a new student folder';
 $string['publication:view'] = 'View student folder';
+$string['publication:upload'] = 'Upload files to a student folder';
 
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
@@ -78,3 +79,14 @@ $string['assignment'] = 'Assignment';
 $string['obtainstudentapproval_help'] = 'You can decide whether students can publish their assignment submissions on their own or not. The list of students asked for their approval can be chosen. The submissions are only visible after students have given their approval';
 $string['choose'] = 'please choose ...';
 $string['importfrom_err'] = 'You have to choose an assignment you want to import from.';
+
+// view.php
+$string['allowsubmissionsfromdate_upload'] = 'Upload possibility from';
+$string['allowsubmissionsfromdate_import'] = 'Approval from';
+$string['cutoffdate_upload'] = 'Cut-off date';
+$string['cutoffdate_import'] = 'Cut-off date';
+$string['duedate_upload'] = 'Upload possibility to';
+$string['duedate_import'] = 'Approval to';
+$string['assignment_notfound'] = 'The assignment used to import from, couldnt be found.';
+$string['myfiles'] = 'My files';
+$string['edit_uploads'] = 'Edit files';
