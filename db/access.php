@@ -36,7 +36,6 @@ $capabilities = array(
 
         'mod/publication:addinstance' => array(
                 'riskbitmask' => RISK_XSS,
-        
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
                 'archetypes' => array(
@@ -44,5 +43,14 @@ $capabilities = array(
                         'manager' => CAP_ALLOW
                 ),
                 'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        ),
+        
+        'mod/publication:upload' => array(
+        
+        		'captype' => 'read',
+        		'contextlevel' => CONTEXT_MODULE,
+        		'archetypes' => array(
+        				'student' => CAP_ALLOW
+        		)
         )
 );

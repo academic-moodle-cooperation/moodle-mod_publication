@@ -69,8 +69,9 @@ class publication{
 			}
 			echo html_writer::div($message,'',array('id'=>'intro'));
 		}
-		
-		
+	}
+	
+	public function display_availability(){
 		// display availability dates
 		$textsuffix = ($this->instance->mode == PUBLICATION_MODE_IMPORT) ? "_import" : "_upload";
 		
@@ -117,22 +118,35 @@ class publication{
 		
 		if($this->instance->mode == PUBLICATION_MODE_UPLOAD){
 			if(has_capability('mod/publication:upload', $this->context)){
-				
-				//TODO check if submission time is open
-				if(true /* is open*/){
+				if($this->is_open()){
 					$url = new moodle_url('/mod/publication/upload.php',
 							array('id'=>$this->instance->id,'cmid'=>$this->coursemodule->id));
 					$label = get_string('edit_uploads','publication');
 					$editbutton = $OUTPUT->single_button($url, $label);
 						
-					echo $OUTPUT->box($editbutton,"box generalbox boxaligncenter");
+					return $editbutton;
 				}else{
-					
+					return get_string('edit_timeover','publication');
 				}
+			}else{
+				return get_string('edit_notcapable', 'publication');
 			}
 		}		
 	}
 	
+	public function is_open(){
+		$now = time();
+
+		if(
+			($this->get_instance()->allowsubmissionsfromdate == 0 || $this->get_instance()->allowsubmissionsfromdate < $now) &&
+			($this->get_instance()->duedate == 0 || $this->get_instance()->duedate > $now)
+		){
+			return true;
+		}
+		
+		return false;
+	}
+
 	public function get_instance(){
 		return $this->instance;
 	}

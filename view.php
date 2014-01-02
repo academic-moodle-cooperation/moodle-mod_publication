@@ -23,6 +23,7 @@
 
 require_once('../../config.php');
 require_once($CFG->dirroot . '/mod/publication/locallib.php');
+require_once($CFG->dirroot . '/mod/publication/renderable.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID
 
@@ -53,16 +54,17 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($publication->get_instance()->name),1);
 
 echo $publication->display_intro();
+echo $publication->display_availability();
 echo $publication->display_importlink();
 
-
-$submissionid = $USER->id; //TODO use submission id
+$submissionid = $USER->id;
 
 $files = new publication_files($context,$submissionid, 'attachment');
 
-echo $OUTPUT->heading(get_string('myfiles','publication'), 3);
-echo $PAGE->get_renderer('mod_publication')->render($files);
+$myfiles = $OUTPUT->heading(get_string('myfiles','publication'), 3);
+$myfiles .= $PAGE->get_renderer('mod_publication')->render($files);
+$myfiles .= $publication->display_uploadlink();
 
-echo $publication->display_uploadlink();
+echo $OUTPUT->box($myfiles,"box generalbox boxaligncenter");
 
 echo $OUTPUT->footer();

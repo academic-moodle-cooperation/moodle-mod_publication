@@ -88,5 +88,13 @@ $string['cutoffdate_import'] = 'Cut-off date';
 $string['duedate_upload'] = 'Upload possibility to';
 $string['duedate_import'] = 'Approval to';
 $string['assignment_notfound'] = 'The assignment used to import from, couldnt be found.';
-$string['myfiles'] = 'My files';
+$string['myfiles'] = 'Own files';
 $string['edit_uploads'] = 'Edit files';
+$string['edit_timeover'] = 'Files can only be edited during the changeperiod.';
+$string['edit_notcapable'] = 'No files available';
+
+// upload.php
+$string['guideline'] = 'Guideline';
+$string['published_emediately'] = 'visible for everybody: yes emediately, without approval by a teacher';
+$string['published_aftercheck'] = 'visible for everybody: no, only after approval by a teacher';
+$string['save_changes'] = 'Save changes';

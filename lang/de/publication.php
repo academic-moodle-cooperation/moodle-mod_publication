@@ -95,3 +95,11 @@ $string['duedate_import'] = 'Einverständniserklärung bis';
 $string['assignment_notfound'] = 'Die Aufgabe von der Import wird konnte nicht mehr gefunden werden.';
 $string['myfiles'] = 'Meine Dateien';
 $string['edit_uploads'] = 'Dateien bearbeiten';
+$string['edit_timeover'] = 'Dateien können nur während des Änderungszeitraumes geändert werden.';
+$string['edit_notcapable'] = 'Keine Dateien vorhanden';
+
+// upload.php
+$string['guideline'] = 'Hinweistext';
+$string['published_emediately'] = 'sichtbar für alle: ja sofort, ohne Prüfung durch den Lehrenden';
+$string['published_aftercheck'] = 'sichtbar für alle: nein, erst nach Prüfung durch den Lehrenden';
+$string['save_changes'] = 'Änderungen Speichern';
