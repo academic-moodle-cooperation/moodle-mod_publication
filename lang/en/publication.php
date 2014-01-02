@@ -92,6 +92,8 @@ $string['myfiles'] = 'Own files';
 $string['edit_uploads'] = 'Edit files';
 $string['edit_timeover'] = 'Files can only be edited during the changeperiod.';
 $string['edit_notcapable'] = 'No files available';
+$string['notice_requireapproval'] = 'Notice: Entries require approving by a teacher before they are viewable by everyone.';
+$string['notice_noapproval'] = 'Notice: Files are immediately visible for everyone. The teacher has the right to overrule your setting.';
 
 // upload.php
 $string['guideline'] = 'Guideline';

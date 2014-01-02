@@ -97,6 +97,8 @@ $string['myfiles'] = 'Meine Dateien';
 $string['edit_uploads'] = 'Dateien bearbeiten';
 $string['edit_timeover'] = 'Dateien können nur während des Änderungszeitraumes geändert werden.';
 $string['edit_notcapable'] = 'Keine Dateien vorhanden';
+$string['notice_requireapproval'] = 'Hinweis: Alle Dateien die Sie hier hochladen, werden erst nach Überprüfung durch den Lehrenden für andere Teilnehmer/innen sichtbar.';
+$string['notice_noapproval'] = 'Hinweis: Alle Dateien die Sie hier hochladen, werden sofort für andere Teilnehmer/innen sichtbar geschaltet. Der Lehrende behält sich das Recht vor die Sichtbarkeit Ihrer Dateien wieder aufzuheben.';
 
 // upload.php
 $string['guideline'] = 'Hinweistext';

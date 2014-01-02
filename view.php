@@ -62,6 +62,12 @@ $submissionid = $USER->id;
 $files = new publication_files($context,$submissionid, 'attachment');
 
 $myfiles = $OUTPUT->heading(get_string('myfiles','publication'), 3);
+
+if($publication->get_instance()->obtainteacherapproval){
+	$myfiles .= get_string('notice_requireapproval', 'publication');
+}else{
+	$myfiles .= get_string('notice_noapproval', 'publication');
+}
 $myfiles .= $PAGE->get_renderer('mod_publication')->render($files);
 $myfiles .= $publication->display_uploadlink();
 
