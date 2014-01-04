@@ -23,7 +23,7 @@
 
 require_once('../../config.php');
 require_once($CFG->dirroot . '/mod/publication/locallib.php');
-require_once($CFG->dirroot . '/mod/publication/renderable.php');
+require_once($CFG->dirroot . '/mod/publication/mod_publication_files_form.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID
 
@@ -45,6 +45,38 @@ add_to_log($course->id, "publication", "view", "view.php?id={$cm->id}", $id, $cm
 
 $pagetitle = strip_tags($course->shortname.': '.format_string($publication->get_instance()->name));
 
+$submissionid = $USER->id;
+
+
+$filesform = new mod_publication_files_form(null, array('publication'=>$publication,'sid'=>$submissionid, 'filearea'=>'attachment'));
+
+if($data = $filesform->get_data() && $publication->is_open()){
+	$datasubmitted = $filesform->get_submitted_data();
+	
+	if(isset($datasubmitted->gotoupload)){
+		redirect(new moodle_url('/mod/publication/upload.php',
+		array('id'=>$publication->get_instance()->id,'cmid'=>$cm->id)));
+	}
+	
+	$studentapproval = optional_param_array('studentapproval', array(), PARAM_INT);
+	
+	$conditions = array();
+	$conditions['publication'] = $publication->get_instance()->id;
+	$conditions['userid'] = $USER->id;
+	
+	// update records
+	foreach($studentapproval as $idx => $approval){
+		$conditions['fileid'] = $idx;
+		
+		$approval = ($approval >= 1) ? $approval -1 : null;
+				
+		$DB->set_field('publication_file', 'studentapproval', $approval,$conditions);
+	}
+	
+}
+
+$filesform = new mod_publication_files_form(null, array('publication'=>$publication,'sid'=>$submissionid, 'filearea'=>'attachment'));
+
 // Print the page header.
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
@@ -57,20 +89,6 @@ echo $publication->display_intro();
 echo $publication->display_availability();
 echo $publication->display_importlink();
 
-$submissionid = $USER->id;
-
-$files = new publication_files($context,$submissionid, 'attachment');
-
-$myfiles = $OUTPUT->heading(get_string('myfiles','publication'), 3);
-
-if($publication->get_instance()->obtainteacherapproval){
-	$myfiles .= get_string('notice_requireapproval', 'publication');
-}else{
-	$myfiles .= get_string('notice_noapproval', 'publication');
-}
-$myfiles .= $PAGE->get_renderer('mod_publication')->render($files);
-$myfiles .= $publication->display_uploadlink();
-
-echo $OUTPUT->box($myfiles,"box generalbox boxaligncenter");
+$filesform->display();
 
 echo $OUTPUT->footer();

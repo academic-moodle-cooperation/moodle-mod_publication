@@ -91,12 +91,22 @@ $string['assignment_notfound'] = 'The assignment used to import from, couldnt be
 $string['myfiles'] = 'Own files';
 $string['edit_uploads'] = 'Edit files';
 $string['edit_timeover'] = 'Files can only be edited during the changeperiod.';
-$string['edit_notcapable'] = 'No files available';
-$string['notice_requireapproval'] = 'Notice: Entries require approving by a teacher before they are viewable by everyone.';
-$string['notice_noapproval'] = 'Notice: Files are immediately visible for everyone. The teacher has the right to overrule your setting.';
+$string['approval_timeover'] = 'You can only change your approval during the changeperiod.';
+$string['nofiles'] = 'No files available';
+$string['notice'] = 'Notice:';
+$string['notice_requireapproval'] = 'Entries require approving by a teacher before they are viewable by everyone.';
+$string['notice_noapproval'] = 'Files are immediately visible for everyone. The teacher has the right to overrule your setting.';
+$string['teacher_pending'] = 'confirmation pending';
+$string['teacher_approved'] = 'approved';
+$string['teacher_rejected'] = 'rejected';
+$string['teacher_blocked'] = 'rejected';
+$string['student_approve'] = 'approve';
+$string['student_approved'] = 'approved';
+$string['student_reject'] = 'reject';
+$string['student_rejected'] = 'rejected';
 
 // upload.php
-$string['guideline'] = 'Guideline';
+$string['guideline'] = 'Guideline:';
 $string['published_emediately'] = 'visible for everybody: yes emediately, without approval by a teacher';
 $string['published_aftercheck'] = 'visible for everybody: no, only after approval by a teacher';
 $string['save_changes'] = 'Save changes';

@@ -42,6 +42,8 @@ class publication{
 		$this->coursemodule = $coursemodule;
 		$this->course = $course;
 		$this->instance = $DB->get_record("publication", array("id"=>$coursemodule->instance));
+		
+		$this->instance->obtainteacherapproval = !$this->instance->obtainteacherapproval;
 	}
 	
 	public function show_intro(){
@@ -149,5 +151,13 @@ class publication{
 
 	public function get_instance(){
 		return $this->instance;
+	}
+	
+	public function get_context(){
+		return $this->context;
+	}
+	
+	public function get_coursemodule(){
+		return $this->coursemodule;
 	}
 }

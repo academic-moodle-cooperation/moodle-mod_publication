@@ -96,12 +96,22 @@ $string['assignment_notfound'] = 'Die Aufgabe von der Import wird konnte nicht m
 $string['myfiles'] = 'Meine Dateien';
 $string['edit_uploads'] = 'Dateien bearbeiten';
 $string['edit_timeover'] = 'Dateien können nur während des Änderungszeitraumes geändert werden.';
-$string['edit_notcapable'] = 'Keine Dateien vorhanden';
-$string['notice_requireapproval'] = 'Hinweis: Alle Dateien die Sie hier hochladen, werden erst nach Überprüfung durch den Lehrenden für andere Teilnehmer/innen sichtbar.';
-$string['notice_noapproval'] = 'Hinweis: Alle Dateien die Sie hier hochladen, werden sofort für andere Teilnehmer/innen sichtbar geschaltet. Der Lehrende behält sich das Recht vor die Sichtbarkeit Ihrer Dateien wieder aufzuheben.';
+$string['approval_timeover'] = 'Sie können ihre Zustimmung nur während des Änderungszeitraumes ändern.';
+$string['nofiles'] = 'Keine Dateien vorhanden';
+$string['notice'] = 'Hinweis:';
+$string['notice_requireapproval'] = 'Alle Dateien die Sie hier hochladen, werden erst nach Überprüfung durch den Lehrenden für andere Teilnehmer/innen sichtbar.';
+$string['notice_noapproval'] = 'Alle Dateien die Sie hier hochladen, werden sofort für andere Teilnehmer/innen sichtbar geschaltet. Der Lehrende behält sich das Recht vor die Sichtbarkeit Ihrer Dateien wieder aufzuheben.';
+$string['teacher_pending'] = 'Bestätigung ausstehend';
+$string['teacher_approved'] = 'freigegeben';
+$string['teacher_rejected'] = 'abgelehnt';
+$string['teacher_blocked'] = 'abgelehnt';
+$string['student_approve'] = 'zustimmen';
+$string['student_approved'] = 'Zugestimmt';
+$string['student_reject'] = 'ablehnen';
+$string['student_rejected'] = 'Abgelehnt';
 
 // upload.php
-$string['guideline'] = 'Hinweistext';
+$string['guideline'] = 'Hinweis:';
 $string['published_emediately'] = 'sichtbar für alle: ja sofort, ohne Prüfung durch den Lehrenden';
 $string['published_aftercheck'] = 'sichtbar für alle: nein, erst nach Prüfung durch den Lehrenden';
 $string['save_changes'] = 'Änderungen Speichern';
