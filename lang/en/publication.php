@@ -33,6 +33,7 @@ $string['pluginadministration'] = 'Student folder administration';
 $string['publication:addinstance'] = 'Add a new student folder';
 $string['publication:view'] = 'View student folder';
 $string['publication:upload'] = 'Upload files to a student folder';
+$string['publication:approve'] = 'Decide if files should be visible for every student';
 
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';

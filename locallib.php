@@ -23,8 +23,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/publication/renderable.php');
-
 define('PUBLICATION_MODE_UPLOAD', 0);
 define('PUBLICATION_MODE_IMPORT', 1);
 

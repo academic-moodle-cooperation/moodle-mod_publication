@@ -33,6 +33,7 @@ $string['pluginadministration'] = 'Studierendenordner Administration';
 $string['publication:addinstance'] = 'Studierendenordner hinzufügen';
 $string['publication:view'] = 'Studierendenordner anzeigen';
 $string['publication:upload'] = 'Dateien in den Studierendenordner hochladen';
+$string['publication:approve'] = 'Entscheiden ob Dateien für alle Studenten sichtbar sein sollen';
 
 $string['requiremodintro'] = 'Beschreibung notwendig';
 $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';
