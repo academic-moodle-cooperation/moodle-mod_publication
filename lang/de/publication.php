@@ -115,6 +115,8 @@ $string['downloadall'] = 'Alle Dateien als ZIP herunterladen';
 $string['optionalsettings'] = 'Optionale Einstellungen';
 $string['entiresperpage'] = 'Angaben pro Seite';
 $string['nothingtodisplay'] = 'Keine Einträge';
+$string['nofilestozip'] = 'Keine Dateien zu Zipen';
+
 // upload.php
 $string['guideline'] = 'Hinweis:';
 $string['published_emediately'] = 'sichtbar für alle: ja sofort, ohne Prüfung durch den Lehrenden';

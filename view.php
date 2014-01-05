@@ -45,41 +45,14 @@ add_to_log($course->id, "publication", "view", "view.php?id={$cm->id}", $id, $cm
 
 
 $pagetitle = strip_tags($course->shortname.': '.format_string($publication->get_instance()->name));
-
+$action = optional_param('action', 'view', PARAM_ALPHA);
 $download = optional_param('download',0, PARAM_INT);
 if($download > 0){
-	$conditions = array();
-	$conditions['publication'] = $publication->get_instance()->id;
-	$conditions['fileid'] = $download;
-	$record = $DB->get_record('publication_file', $conditions);
-	
-	$allowed = false;
-	
-	if($record->userid == $USER->id){
-		// owner is always allowed to see this files
-		$allowed = true;
-		
-	}else if(has_capability('mod/publication:approve', $context)){
-		// teachers has to see the files to know if they can allow them
-		$allowed = true;
-		
-	}else if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
-		|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))){
-		// verybody is allowed			
-		$allowed = true;
-	}
-	
-	if($allowed){
-		$sid = $record->userid;
-		$filearea = 'attachment';
-		
-		$fs = get_file_storage();
-		$file = $fs->get_file_by_id($download);
-		send_file($file, $file->get_filename(),'default' ,0,false, true, $file->get_mimetype(),false);
-		die();
-	}else{
-		die('You are not allowed to see this file');
-	}
+	$publication->download_file($download);
+}
+
+if($action == "zip"){
+	$publication->download_zip();
 }
 
 $submissionid = $USER->id;

@@ -110,6 +110,7 @@ $string['downloadall'] = 'Download all files as ZIP';
 $string['optionalsettings'] = 'Optional settings';
 $string['entiresperpage'] = 'Participants shown per page';
 $string['nothingtodisplay'] = 'No entries to display';
+$string['nofilestozip'] = 'No files to zip';
 
 // upload.php
 $string['guideline'] = 'Guideline:';

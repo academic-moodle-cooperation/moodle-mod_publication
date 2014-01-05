@@ -391,6 +391,14 @@ class publication{
 						}
 						</style>
 						';
+				
+				
+				if ($totalfiles > 0) {
+					$html .= html_writer::start_tag('div', array('class' => 'mod-publication-download-link'));
+					$html .= html_writer::link(new moodle_url('/mod/publication/view.php',
+							array('id' => $this->coursemodule->id, 'action' => 'zip')), get_string('downloadall', 'publication'));
+					$html .= html_writer::end_tag('div');
+				}
 
 				echo $html;
 				$html = "";
@@ -425,5 +433,135 @@ class publication{
 		$mform->display();
 	
 		return $html;
+	}
+	
+	
+	public function download_file($fileid){
+		global $DB, $USER;
+
+		$conditions = array();
+		$conditions['publication'] = $publication->get_instance()->id;
+		$conditions['fileid'] = $fileid;
+		$record = $DB->get_record('publication_file', $conditions);
+		
+		$allowed = false;
+		
+		if($record->userid == $USER->id){
+			// owner is always allowed to see this files
+			$allowed = true;
+		
+		}else if(has_capability('mod/publication:approve', $this->get_context())){
+			// teachers has to see the files to know if they can allow them
+			$allowed = true;
+		
+		}else if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
+		|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))){
+			// verybody is allowed
+			$allowed = true;
+		}
+		
+		if($allowed){
+			$sid = $record->userid;
+			$filearea = 'attachment';
+		
+			$fs = get_file_storage();
+			$file = $fs->get_file_by_id($fileid);
+			send_file($file, $file->get_filename(),'default' ,0,false, true, $file->get_mimetype(),false);
+			die();
+		}else{
+			print_error('You are not allowed to see this file'); //TODO ge_string
+		}
+	}
+	
+	/**
+	 * creates a zip of all uploaded files and sends a zip to the browser
+	 */
+	public function download_zip() {
+		global $CFG, $DB;
+		require_once($CFG->libdir.'/filelib.php');
+
+		$conditions = array();
+		$conditions['publication'] = $this->get_instance()->id;
+		
+		$uploaders = $DB->get_records_sql("SELECT DISTINCT userid FROM {publication_file} WHERE publication=:pubid",
+				array("pubid"=>$this->get_instance()->id));
+
+		$filesforzipping = array();
+		$fs = get_file_storage();
+		$filearea = 'attachment';
+	
+		$groupmode = groups_get_activity_groupmode($this->get_coursemodule());
+		$groupid = 0;   // All users.
+		$groupname = '';
+		if ($groupmode) {
+			$groupid = groups_get_activity_group($this->get_coursemodule(), true);
+			$groupname = groups_get_group_name($groupid).'-';
+		}
+		$filename = str_replace(' ', '_', clean_filename($this->course->shortname.'-'.
+				$this->get_instance()->name.'-'.$groupname.$this->get_instance()->id.'.zip')); // Name of new zip file.
+		
+		foreach ($uploaders as $uploader) {			
+			$a_userid = $uploader->userid; // Get userid.
+			
+			if ((groups_is_member($groupid, $a_userid)or !$groupmode or !$groupid)) {
+				$conditions['userid'] = $uploader->userid;
+				$records = $DB->get_records('publication_file', $conditions);
+				$filespermissions = array();
+				foreach($records as $record){
+					$filespermissions[$record->fileid] = $record;
+				}
+				
+				$a_assignid = $a_userid; // Get name of this assignment for use in the file names.
+				// Get user firstname/lastname.
+				$a_user = $DB->get_record('user', array('id'=>$a_userid), 'id,username,firstname,lastname');
+	
+				$files = $fs->get_area_files($this->get_context()->id, 'mod_publication', $filearea, $a_userid,
+						'timemodified', false);
+				foreach ($files as $file) {					
+					$filepermissions = $filespermissions[$file->get_id()];
+					
+					$allowed = false;
+					if(has_capability('mod/publication:approve', $this->get_context())){
+						// teachers has to see the files to know if they can allow them
+						$allowed = true;
+					
+					}else if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
+					|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))){
+						// verybody is allowed
+						$allowed = true;
+					}
+					
+					
+					if($allowed){
+						// Get files new name.
+						$fileext = strstr($file->get_filename(), '.');
+						$fileoriginal = str_replace($fileext, '', $file->get_filename());
+						$fileforzipname =  clean_filename(fullname($a_user) . '_' . $fileoriginal.'_'.$a_userid.$fileext);
+						// Save file name to array for zipping.
+						$filesforzipping[$fileforzipname] = $file;
+					}
+				}
+			}
+		} // End of foreach.
+		
+		if (empty($filesforzipping)) {
+			print_error('nofilestozip', 'publication');
+		}
+	
+		if ($zipfile = $this->pack_files($filesforzipping)) {
+			send_temp_file($zipfile, $filename); // Send file and delete after sending.
+		}
+	}
+	
+	private function pack_files($filesforzipping) {
+		global $CFG;
+		// Create path for new zip file.
+		$tempzip = tempnam($CFG->dataroot.'/temp/', 'publication_');
+		// Zip files.
+		$zipper = new zip_packer();
+		if ($zipper->archive_to_pathname($filesforzipping, $tempzip)) {
+			return $tempzip;
+		}
+		return false;
 	}
 }
