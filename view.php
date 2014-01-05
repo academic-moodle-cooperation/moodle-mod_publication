@@ -53,6 +53,10 @@ if($download > 0){
 
 if($action == "zip"){
 	$publication->download_zip();
+}else if($action == "zipusers"){
+	$users = optional_param_array('selectedeuser', array(), PARAM_INT);
+	$users = array_keys($users);
+	$publication->download_zip($users);
 }
 
 $submissionid = $USER->id;

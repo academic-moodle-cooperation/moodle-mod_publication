@@ -117,6 +117,12 @@ $string['entiresperpage'] = 'Angaben pro Seite';
 $string['nothingtodisplay'] = 'Keine Einträge';
 $string['nofilestozip'] = 'Keine Dateien zu Zipen';
 
+$string['go'] = 'Start';
+$string['withselected'] = 'Mit Auswahl...';
+$string['zipusers'] = "als ZIP herunterladen";
+$string['approveusers'] = "für alle sichtbar";
+$string['rejectusers'] = "für alle unsichtbar";
+
 // upload.php
 $string['guideline'] = 'Hinweis:';
 $string['published_emediately'] = 'sichtbar für alle: ja sofort, ohne Prüfung durch den Lehrenden';

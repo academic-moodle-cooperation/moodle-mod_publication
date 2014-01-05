@@ -193,6 +193,25 @@ class publication{
 		$currentgroup = groups_get_activity_group($cm, true);
 		echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
 		
+		
+		
+		
+		$formattrs = array();
+		$formattrs['action'] = new moodle_url('/mod/publication/view.php');
+		$formattrs['id'] = 'fastg';
+		$formattrs['method'] = 'post';
+		$formattrs['class'] = 'mform';
+		
+		$html = '';
+		$html .= html_writer::start_tag('form', $formattrs);
+		$html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'id',      'value'=> $this->get_coursemodule()->id));
+		$html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'page',    'value'=> $page));
+		$html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=> sesskey()));
+		echo $html;
+		
+		
+		
+		
 		$html = '';
 	
 		// Get all ppl that are allowed to submit assignments.
@@ -300,7 +319,7 @@ class publication{
 				foreach ($ausers as $auser) {
 					if ($currentposition >= $offset && $currentposition < $endposition) {
 						// Calculate user status.
-						$selected_user = html_writer::checkbox('selectedeuser'.$auser->id, 'selected', true,
+						$selected_user = html_writer::checkbox('selectedeuser['.$auser->id .']', 'selected', true,
 								null, array('class'=>'userselection'));
 	
 						$useridentity = explode(',', $CFG->showuseridentity);
@@ -412,6 +431,21 @@ class publication{
 			}
 		}
 	
+		$options = array();
+		$options['zipusers'] = get_string('zipusers', 'publication');
+//		$options['approveusers'] = get_string('approveusers', 'publication');
+//		$options['rejectusers'] = get_string('rejectusers', 'publication');
+		
+		$html .= html_writer::start_div('withselection');
+		$html .= html_writer::span(get_string('withselected', 'publication'));
+		$html .= html_writer::select($options, 'action');
+		$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'submit',
+				'value'=>get_string('go', 'publication')));
+		$html .= html_writer::end_div();
+		
+		$html .= html_writer::end_tag('form');
+
+	
 		echo $html;
 		// Mini form for setting user preference.
 		$html = '';
@@ -476,14 +510,19 @@ class publication{
 	/**
 	 * creates a zip of all uploaded files and sends a zip to the browser
 	 */
-	public function download_zip() {
+	public function download_zip($users = array()) {
 		global $CFG, $DB;
 		require_once($CFG->libdir.'/filelib.php');
 
 		$conditions = array();
 		$conditions['publication'] = $this->get_instance()->id;
 		
-		$uploaders = $DB->get_records_sql("SELECT DISTINCT userid FROM {publication_file} WHERE publication=:pubid",
+		$customusers = "";
+		if(count($users) > 0){
+			$customusers = " and userid IN (" . implode($users, ',') . ")";
+		}
+		
+		$uploaders = $DB->get_records_sql("SELECT DISTINCT userid FROM {publication_file} WHERE publication=:pubid" . $customusers,
 				array("pubid"=>$this->get_instance()->id));
 
 		$filesforzipping = array();

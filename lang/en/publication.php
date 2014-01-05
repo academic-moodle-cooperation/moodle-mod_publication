@@ -112,6 +112,12 @@ $string['entiresperpage'] = 'Participants shown per page';
 $string['nothingtodisplay'] = 'No entries to display';
 $string['nofilestozip'] = 'No files to zip';
 
+$string['go'] = 'Go';
+$string['withselected'] = 'With selected...';
+$string['zipusers'] = "Download as ZIP";
+$string['approveusers'] = "für alle sichtbar";
+$string['rejectusers'] = "für alle unsichtbar";
+
 // upload.php
 $string['guideline'] = 'Guideline:';
 $string['published_emediately'] = 'visible for everybody: yes emediately, without approval by a teacher';
