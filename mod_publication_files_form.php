@@ -90,7 +90,9 @@ class mod_publication_files_form extends moodleform {
 		
 			$data = array();
 			$data[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
-			$data[] = $file->get_filename();
+			
+			$dlurl = new moodle_url('/mod/publication/view.php',array('id'=>$publication->get_coursemodule()->id,'download'=>$file->get_id()));
+			$data[] = html_writer::link($dlurl, $file->get_filename());
 			
 			if($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT){
 				if($publication->is_open()){

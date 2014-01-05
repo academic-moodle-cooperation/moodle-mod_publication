@@ -106,6 +106,11 @@ $string['student_approved'] = 'approved';
 $string['student_reject'] = 'reject';
 $string['student_rejected'] = 'rejected';
 
+$string['downloadall'] = 'Download all files as ZIP';
+$string['optionalsettings'] = 'Optional settings';
+$string['entiresperpage'] = 'Participants shown per page';
+$string['nothingtodisplay'] = 'No entries to display';
+
 // upload.php
 $string['guideline'] = 'Guideline:';
 $string['published_emediately'] = 'visible for everybody: yes emediately, without approval by a teacher';

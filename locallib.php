@@ -158,4 +158,272 @@ class publication{
 	public function get_coursemodule(){
 		return $this->coursemodule;
 	}
+
+	
+	
+	public function display_allfilesform(){
+		global $CFG, $OUTPUT, $DB, $USER;
+	
+		$cm = $this->coursemodule;
+		$context = $this->context;
+		$course = $this->course;
+	
+		$updatepref = optional_param('updatepref', 0, PARAM_BOOL);
+		if ($updatepref) {
+			$perpage = optional_param('perpage', 10, PARAM_INT);
+			$perpage = ($perpage <= 0) ? 10 : $perpage;
+			$filter = optional_param('filter', 0, PARAM_INT);
+			set_user_preference('publication_perpage', $perpage);
+		}
+	
+	
+		/* next we get perpage and quickgrade (allow quick grade) params
+		 * from database
+		*/
+		$perpage    = get_user_preferences('publication_perpage', 10);
+		$quickgrade = get_user_preferences('publication_quickgrade', 0);
+		$filter = get_user_preferences('publicationfilter', 0);
+			
+		$page    = optional_param('page', 0, PARAM_INT);
+		
+		// Check to see if groups are being used in this assignment.
+	
+		// Find out current groups mode.
+		$groupmode = groups_get_activity_groupmode($cm);
+		$currentgroup = groups_get_activity_group($cm, true);
+		echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
+		
+		$html = '';
+	
+		// Get all ppl that are allowed to submit assignments.
+		list($esql, $params) = get_enrolled_sql($context, 'mod/publication:view', $currentgroup);
+	
+		if ($filter == 1 /*self::FILTER_ALL*/) {
+			$sql = 'SELECT u.id FROM {user} u '.
+					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
+					'WHERE u.deleted = 0 AND eu.id=u.id ';
+		} else {
+			$wherefilter = '';
+		
+			$sql = 'SELECT DISTINCT u.id FROM {user} u '.
+					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
+					'LEFT JOIN {publication_file} files ON (u.id = files.userid) '.
+					'WHERE u.deleted = 0 AND eu.id=u.id '.
+					'AND files.publication = '. $this->get_instance()->id .
+					$wherefilter;
+		}
+	
+		$users = $DB->get_records_sql($sql, $params);
+		if (!empty($users)) {
+			$users = array_keys($users);
+		}
+		
+		// If groupmembersonly used, remove users who are not in any group.
+		if ($users and !empty($CFG->enablegroupmembersonly) and $cm->groupmembersonly) {
+			if ($groupingusers = groups_get_grouping_members($cm->groupingid, 'u.id', 'u.id')) {
+				$users = array_intersect($users, array_keys($groupingusers));
+			}
+		}
+	
+		$tablecolumns = array('selection', 'fullname');
+		$tableheaders = array('', get_string('fullnameuser'));
+	
+		$useridentity = explode(',', $CFG->showuseridentity);
+		
+		foreach($useridentity as $cur){
+			$tablecolumns[] = $cur;
+			$tableheaders[] = ($cur == 'phone1') ? get_string('phone') : get_string($cur);
+		}
+	
+		$tableheaders[] = get_string('lastmodified');
+		$tablecolumns[] = 'timemodified';
+	
+	
+		require_once($CFG->libdir.'/tablelib.php');
+		$table = new flexible_table('mod-publication-allfiles');
+	
+		$table->define_columns($tablecolumns);
+		$table->define_headers($tableheaders);
+		$table->define_baseurl($CFG->wwwroot.'/mod/publication/view.php?id='.$cm->id.'&amp;currentgroup='.$currentgroup);
+	
+		$table->sortable(true, 'lastname'); // Sorted by lastname by default.
+		$table->collapsible(false);
+		$table->initialbars(true);
+	
+		$table->column_class('fullname', 'fullname');
+		$table->column_class('timemodified', 'timemodified');
+	
+		$table->set_attribute('cellspacing', '0');
+		$table->set_attribute('id', 'attempts');
+		$table->set_attribute('class', 'publications');
+		$table->set_attribute('width', '100%');
+	
+		// Start working -- this is necessary as soon as the niceties are over.
+		$table->setup();
+	
+		// Construct the SQL.
+		list($where, $params) = $table->get_sql_where();
+		if ($where) {
+			$where .= ' AND ';
+		}
+
+		if ($sort = $table->get_sql_sort()) {
+			$sort = ' ORDER BY '.$sort;
+		}
+
+		$ufields = user_picture::fields('u');
+		$useridentityfields = 'u.'.str_replace(',', ',u.', $CFG->showuseridentity);
+
+		$totalfiles = 0;
+		
+		if (!empty($users)) {
+			$select = 'SELECT '.$ufields.','.$useridentityfields.', username,
+                                COUNT(*) filecount,
+                                MAX(files.timecreated) timemodified ';
+			$sql = 'FROM {user} u '.
+					'LEFT JOIN {publication_file} files ON u.id = files.userid
+                            AND files.publication = '.$this->get_instance()->id.' '.
+	                            'WHERE '.$where.'u.id IN ('.implode(',', $users).') '.
+			                    'GROUP BY '.$ufields.','.$useridentityfields.', username ';
+			
+			$ausers = $DB->get_records_sql($select.$sql.$sort, $params, $table->get_page_start(), $table->get_page_size());
+			$table->pagesize($perpage, count($users));
+	
+			// Offset used to calculate index of student in that particular query, needed for the pop up to know who's next.
+			$offset = $page * $perpage;
+			$strupdate = get_string('update');
+	
+			if ($ausers !== false) {
+				$endposition = $offset + $perpage;
+				$currentposition = 0;
+				
+				foreach ($ausers as $auser) {
+					if ($currentposition >= $offset && $currentposition < $endposition) {
+						// Calculate user status.
+						$selected_user = html_writer::checkbox('selectedeuser'.$auser->id, 'selected', true,
+								null, array('class'=>'userselection'));
+	
+						$useridentity = explode(',', $CFG->showuseridentity);
+						foreach($useridentity as $cur){
+							if (!empty($auser->$cur)) {
+								$$cur = html_writer::tag('div', $auser->$cur,
+										array('id'=>'u'.$cur.$auser->id));
+							} else {
+								$$cur = html_writer::tag('div', '-', array('id'=>'u'.$cur.$auser->id));
+							}
+						}	
+
+						$userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $auser->id .
+						'&amp;course=' . $course->id . '">' .
+						fullname($auser, has_capability('moodle/site:viewfullnames', $this->context)) . '</a>';
+						
+						$row = array($selected_user,$userlink);
+	
+						$useridentity = explode(',', $CFG->showuseridentity);
+						foreach($useridentity as $cur) {
+							if(true /*!$this->column_is_hidden($cur)*/){
+								$row[] = $$cur;
+							}else{
+								$row[] = "";
+							}
+						}
+						
+						$filearea = 'attachment';
+						$sid = $auser->id;
+						$fs = get_file_storage();
+						$this->dir = $fs->get_area_tree($this->get_context()->id, 'mod_publication', $filearea, $sid);
+						
+						$files = $fs->get_area_files($this->get_context()->id,
+								'mod_publication',
+								$filearea,
+								$sid,
+								'timemodified',
+								false);
+						
+						$filetable = new html_table();
+						$filetable->attributes = array('class' => 'filetable');
+
+						$conditions = array();
+						$conditions['publication'] = $this->get_instance()->id;
+						$conditions['userid'] = $auser->id;
+						foreach($files as $file){
+							$conditions['fileid'] = $file->get_id();
+							$filepermissions = $DB->get_record('publication_file', $conditions);						
+
+							if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
+							|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))
+							|| has_capability('mod/publication:approve', $context)){			
+								if(!$filepermissions->blocked || has_capability('mod/publication:approve', $context)){
+									$filerow = array();
+									$filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
+									
+									$url = new moodle_url('/mod/publication/view.php',array('id'=>$cm->id,'download'=>$file->get_id()));
+									$filerow[] = html_writer::link($url, $file->get_filename());
+									
+									$filetable->data[] = $filerow;
+									$totalfiles++;
+								}
+							}
+						}
+						
+						$lastmodified = "";
+						if(count($filetable->data) > 0){
+							$lastmodified = html_writer::table($filetable);
+							$lastmodified .= userdate($auser->timemodified);
+						}else{
+							$lastmodified = "keine Dateien"; //TODO get_string
+						}
+						
+						$row[] = $lastmodified;
+
+						$table->add_data($row);
+					}
+					$currentposition++;
+				}
+
+				echo '<style type="text/css">
+						table.filetable,
+						table.filetable td,
+						table.filetable tr{
+							padding:0;
+							margin:0;
+							border-width:0 !important;
+						}
+						</style>
+						';
+
+				echo $html;
+				$html = "";
+				
+				
+				$table->print_html();  // Print the whole table.
+
+			} else {
+				$html .= html_writer::tag('div', get_string('nothingtodisplay', 'publication'),
+						array('class'=>'nosubmisson'));
+			}
+		}
+	
+		echo $html;
+		// Mini form for setting user preference.
+		$html = '';
+	
+		$formaction = new moodle_url('/mod/publication/view.php', array('id'=>$this->coursemodule->id));
+		$mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', array('class'=>'optionspref'));
+	
+		$mform->addElement('hidden', 'updatepref');
+		$mform->setDefault('updatepref', 1);
+		
+		$mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'publication'));
+	
+		$mform->addElement('text', 'perpage', get_string('entiresperpage', 'publication'), array('size'=>1));
+		$mform->setDefault('perpage', $perpage);
+	
+
+		$mform->addElement('submit', 'savepreferences', get_string('savepreferences'));
+	
+		$mform->display();
+	
+		return $html;
+	}
 }

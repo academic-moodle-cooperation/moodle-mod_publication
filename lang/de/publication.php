@@ -111,6 +111,10 @@ $string['student_approved'] = 'Zugestimmt';
 $string['student_reject'] = 'ablehnen';
 $string['student_rejected'] = 'Abgelehnt';
 
+$string['downloadall'] = 'Alle Dateien als ZIP herunterladen';
+$string['optionalsettings'] = 'Optionale Einstellungen';
+$string['entiresperpage'] = 'Angaben pro Seite';
+$string['nothingtodisplay'] = 'Keine Einträge';
 // upload.php
 $string['guideline'] = 'Hinweis:';
 $string['published_emediately'] = 'sichtbar für alle: ja sofort, ohne Prüfung durch den Lehrenden';
