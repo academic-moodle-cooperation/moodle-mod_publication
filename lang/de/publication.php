@@ -86,6 +86,9 @@ sind die Dateien auch wirklich sichtbar.';
 $string['choose'] = 'bitte auswählen ...';
 $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie importieren möchten.';
 
+// index.php
+$string['nopublicationsincourse'] = 'In diesem Kurs existieren keine Studierendenordner.';
+
 // view.php
 $string['allowsubmissionsfromdate_upload'] = 'Uploadmöglickeit von';
 $string['allowsubmissionsfromdate_import'] = 'Einverständniserklärung von';

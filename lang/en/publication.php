@@ -81,6 +81,9 @@ $string['obtainstudentapproval_help'] = 'You can decide whether students can pub
 $string['choose'] = 'please choose ...';
 $string['importfrom_err'] = 'You have to choose an assignment you want to import from.';
 
+// index.php
+$string['nopublicationsincourse'] = 'There are no publication instances in this course.';
+
 // view.php
 $string['allowsubmissionsfromdate_upload'] = 'Upload possibility from';
 $string['allowsubmissionsfromdate_import'] = 'Approval from';
