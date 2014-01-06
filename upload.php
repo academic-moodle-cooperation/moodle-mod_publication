@@ -61,24 +61,24 @@ $entry->definitionformat = FORMAT_HTML; // updated later
 $maxfiles = $publication->get_instance()->maxfiles;
 $maxbytes = $publication->get_instance()->maxbytes;
 
-$definitionoptions = array('trusttext'=>true, 'subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes, 'context'=>$context);
-$attachmentoptions = array('subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes);
+// Patch accepted filetypes.
+if (isset($publication->get_instance()->allowedfiletypes) AND !empty($publication->get_instance()->allowedfiletypes)) {
+	$acceptedfiletypes = explode(',', strtolower($publication->get_instance()->allowedfiletypes));
+	foreach($acceptedfiletypes as &$a) {
+		$a = '.'.trim($a); // Conversion to fe *.jpg...
+	}
+}else{
+	$acceptedfiletypes = array('*');
+}
+
+
+$definitionoptions = array('trusttext'=>true, 'subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes, 'context'=>$context, 'accepted_types'=>$acceptedfiletypes);
+$attachmentoptions = array('subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes,'accepted_types'=>$acceptedfiletypes);
 
 $entry = file_prepare_standard_editor($entry, 'definition', $definitionoptions, $context, 'mod_publication', 'entry', $entry->id);
 $entry = file_prepare_standard_filemanager($entry, 'attachment', $attachmentoptions, $context, 'mod_publication', 'attachment', $entry->id);
 
 $entry->cmid = $cm->id;
-
-// Patch accepted filetypes.
-/*
-if (isset($publication->uploadfilestype) AND !empty($publication->uploadfilestype)) {
-    $acceptedfiletypes = explode(',', strtolower($publication->uploadfilestype));
-    foreach ($acceptedfiletypes as &$a) {
-        $a = '.'.trim($a); // Conversion to fe *.jpg...
-    }
-} else {
-    $acceptedfiletypes = array('*');
-}*/
 
 // Create a new form object (found in lib.php)
 $mform = new mod_publication_upload_form(null, array('current'=>$entry,'cm'=>$cm, 'publication'=>$publication,
