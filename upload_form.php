@@ -41,11 +41,10 @@ class mod_publication_upload_form extends moodleform {
         
         //-----------------------------------
               
-        //TODO check by teacher or not?
-        if(true){
-        	$text = get_string('published_emediately','publication');
-        }else{
+        if($publication->get_instance()->obtainteacherapproval){
         	$text = get_string('published_aftercheck','publication');
+        }else{
+        	$text = get_string('published_emediately','publication');
         }        
         
         $mform->addElement('header','myfiles',get_string('myfiles','publication'));
