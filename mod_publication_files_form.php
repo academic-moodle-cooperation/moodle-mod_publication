@@ -94,7 +94,8 @@ class mod_publication_files_form extends moodleform {
 			$dlurl = new moodle_url('/mod/publication/view.php',array('id'=>$publication->get_coursemodule()->id,'download'=>$file->get_id()));
 			$data[] = html_writer::link($dlurl, $file->get_filename());
 			
-			if($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT){
+			if($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
+				$publication->get_instance()->obtainstudentapproval){
 				if($publication->is_open()){
 					$data[] = html_writer::select($options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
 				}else{
