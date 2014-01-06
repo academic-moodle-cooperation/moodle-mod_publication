@@ -106,6 +106,8 @@ $string['student_approved'] = 'approved';
 $string['student_reject'] = 'reject';
 $string['student_rejected'] = 'rejected';
 
+$string['allfiles'] = 'All files';
+$string['publicfiles'] = 'Public files';
 $string['downloadall'] = 'Download all files as ZIP';
 $string['optionalsettings'] = 'Optional settings';
 $string['entiresperpage'] = 'Participants shown per page';

@@ -186,15 +186,6 @@ class publication{
 			
 		$page    = optional_param('page', 0, PARAM_INT);
 		
-		// Check to see if groups are being used in this assignment.
-	
-		// Find out current groups mode.
-		$groupmode = groups_get_activity_groupmode($cm);
-		$currentgroup = groups_get_activity_group($cm, true);
-		echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
-		
-		
-		
 		
 		$formattrs = array();
 		$formattrs['action'] = new moodle_url('/mod/publication/view.php');
@@ -208,6 +199,18 @@ class publication{
 		$html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'page',    'value'=> $page));
 		$html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=> sesskey()));
 		echo $html;
+		
+		echo html_writer::start_tag('fieldset',array('class'=>'clearfix','aria-live'=>'polite'));
+		$title = (has_capability('mod/publication:approve', $context)) ? get_string('allfiles', 'publication') : get_string('publicfiles', 'publication');
+		echo html_writer::tag('legend', $title);
+		echo html_writer::start_div('fcontainer clearfix');
+		
+		// Check to see if groups are being used in this assignment.
+	
+		// Find out current groups mode.
+		$groupmode = groups_get_activity_groupmode($cm);
+		$currentgroup = groups_get_activity_group($cm, true);
+		echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
 		
 		
 		
@@ -424,29 +427,59 @@ class publication{
 				
 				
 				$table->print_html();  // Print the whole table.
-
+				
+				$options = array();
+				$options['zipusers'] = get_string('zipusers', 'publication');
+				//		$options['approveusers'] = get_string('approveusers', 'publication');
+				//		$options['rejectusers'] = get_string('rejectusers', 'publication');
+				
+				if ($totalfiles > 0){
+					$html .= html_writer::start_div('withselection');
+					$html .= html_writer::span(get_string('withselected', 'publication'));
+					$html .= html_writer::select($options, 'action');
+					$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'submit',
+							'value'=>get_string('go', 'publication')));
+					$html .= html_writer::end_div();
+				}
 			} else {
 				$html .= html_writer::tag('div', get_string('nothingtodisplay', 'publication'),
 						array('class'=>'nosubmisson'));
 			}
+		} else {
+			$html .= html_writer::tag('div', get_string('nothingtodisplay', 'publication'),
+					array('class'=>'nosubmisson'));
 		}
+		
+/*		
+		// select all/none 
+		$html .= html_writer::start_tag('div', array('class'=>'checkboxcontroller'));
+		$html .= "<script type=\"text/javascript\">
+                                        function toggle_userselection() {
+                                        var checkboxes = document.getElementsByClassName('userselection');
 	
-		$options = array();
-		$options['zipusers'] = get_string('zipusers', 'publication');
-//		$options['approveusers'] = get_string('approveusers', 'publication');
-//		$options['rejectusers'] = get_string('rejectusers', 'publication');
-		
-		$html .= html_writer::start_div('withselection');
-		$html .= html_writer::span(get_string('withselected', 'publication'));
-		$html .= html_writer::select($options, 'action');
-		$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'submit',
-				'value'=>get_string('go', 'publication')));
-		$html .= html_writer::end_div();
-		
-		$html .= html_writer::end_tag('form');
-
+                                        if(checkboxes.length > 0){
+                                        checkboxes[0].checked = !checkboxes[0].checked;
+	
+                                        for(var i = 1; i < checkboxes.length;i++){
+                                        checkboxes[i].checked = checkboxes[0].checked;
+    }
+    }
+    }
+                                        </script>";
+	
+		$html .= '<div style="padding-top:14px;margin-left:12px;">';
+		$html .= html_writer::tag('a', get_string('select_allnone', 'extserver'),
+				array('href'=>'#', 'onClick'=>'toggle_userselection()'));
+		$html .= '</div>';
+		$html .= html_writer::end_tag('div');
+*/
 	
 		echo $html;
+		
+		echo html_writer::end_div();
+		echo html_writer::end_tag('fieldset');
+		echo html_writer::end_tag('form');
+		
 		// Mini form for setting user preference.
 		$html = '';
 	

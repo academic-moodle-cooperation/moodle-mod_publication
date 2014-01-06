@@ -111,6 +111,8 @@ $string['student_approved'] = 'Zugestimmt';
 $string['student_reject'] = 'ablehnen';
 $string['student_rejected'] = 'Abgelehnt';
 
+$string['allfiles'] = 'Alle Dateien';
+$string['publicfiles'] = 'Öffentliche Dateien';
 $string['downloadall'] = 'Alle Dateien als ZIP herunterladen';
 $string['optionalsettings'] = 'Optionale Einstellungen';
 $string['entiresperpage'] = 'Angaben pro Seite';
