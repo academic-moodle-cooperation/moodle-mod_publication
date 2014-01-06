@@ -69,6 +69,8 @@ if($action == "zip"){
 		echo $OUTPUT->footer();
 		exit;
 	}
+	
+	$publication->importfiles();
 }
 
 $submissionid = $USER->id;

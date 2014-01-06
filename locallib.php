@@ -516,7 +516,7 @@ class publication{
 		global $DB, $USER;
 
 		$conditions = array();
-		$conditions['publication'] = $publication->get_instance()->id;
+		$conditions['publication'] = $this->get_instance()->id;
 		$conditions['fileid'] = $fileid;
 		$record = $DB->get_record('publication_file', $conditions);
 		
@@ -643,6 +643,94 @@ class publication{
 		if ($zipper->archive_to_pathname($filesforzipping, $tempzip)) {
 			return $tempzip;
 		}
+		return false;
+	}
+	
+	/**
+	 * Updates files from connected assignment
+	 */
+	public function importfiles(){
+		global $DB;
+		
+		if($this->instance->mode == PUBLICATION_MODE_IMPORT){
+			$assign = $DB->get_record('assign', array('id'=> $this->instance->importfrom));
+			$assigncm = $DB->get_record('course_modules', array('course'=>$this->course->id, 'instance'=>$this->instance->importfrom));
+					
+			$assigncontext = context_module::instance($assigncm->id);
+			
+			if($assign && $assigncm){		
+				if(has_capability('mod/publication:addinstance', $this->context)){
+					$records = $DB->get_records('assignsubmission_file',array('assignment'=>$this->get_instance()->importfrom));
+									
+					foreach($records as $record){
+						$userfilesids = array();
+						
+						// no need to do any of that if user has no files submitted
+						if($record->numfiles > 0){
+							$fs = get_file_storage();
+							$files = $fs->get_area_files($assigncontext->id,
+									"assignsubmission_file",
+									"submission_files",
+									$record->submission,
+									"id",
+									false);
+							$submission = $DB->get_record('assign_submission', array('id'=>$record->submission));
+							
+							//copy files
+							foreach($files as $file){	
+								$newfilerecord = new stdClass();
+								$newfilerecord->contextid = $this->get_context()->id;
+								$newfilerecord->component = 'mod_publication';
+								$newfilerecord->filearea = 'attachment';
+								$newfilerecord->itemid = $submission->userid;
+								
+								try{
+									$newfile = $fs->create_file_from_storedfile($newfilerecord, $file);
+									
+									$dataobject = new stdClass();
+									$dataobject->publication = $this->get_instance()->id;
+									$dataobject->userid = $submission->userid;
+									$dataobject->timecreated = time();
+									$dataobject->fileid = $newfile->get_id();
+									$dataobject->filename = $newfile->get_filename();
+									$dataobject->type = PUBLICATION_MODE_IMPORT;
+									$newid = $DB->insert_record('publication_file', $dataobject);
+									
+									array_push($userfilesids, $newid);
+									
+								}catch (Exception $e){
+									// file does allready exist
+									$conditions = array();
+									$conditions['publication'] = $this->get_instance()->id;
+									$conditions['userid'] = $submission->userid;
+									$conditions['contenthash'] = $file->get_contenthash();
+									
+									$oldrecord = $DB->get_record('publication_file', $conditions, 'id');
+									array_push($userfilesids, $oldrecord->id);
+								}
+							}
+						}
+						
+						// remove files and records wich dont exist any more
+						$recstodelete = $DB->get_records_sql('SELECT * FROM {publication_file}
+									WHERE publication=:publication AND userid=:uid AND NOT id IN(' . implode(",", $userfilesids) . ')',
+								array(	'publication'=>$this->get_instance()->id,
+										'uid'=>$submission->userid)
+						);
+							
+						foreach($recstodelete as $rectodelete){
+							$filetodelete = $fs->get_file_by_id($rectodelete->fileid);
+							$filetodelete->delete();
+						
+							$DB->delete_records('publication_file',array('id'=>$rectodelete->id));
+						}
+					}
+
+					return true;
+				}
+			}
+		}
+		
 		return false;
 	}
 }
