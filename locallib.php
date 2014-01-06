@@ -91,7 +91,7 @@ class publication{
 	 * assignment will be displayed
 	 */
 	public function display_importlink(){
-		global $DB;
+		global $DB, $OUTPUT;
 		
 		if($this->instance->mode == PUBLICATION_MODE_IMPORT){
 			$assign = $DB->get_record('assign', array('id'=> $this->instance->importfrom));
@@ -101,6 +101,15 @@ class publication{
 			if($assign && $assigncm){
 				$assignurl = new moodle_url('/mod/assign/view.php', array('id' => $assigncm->id));
 				echo get_string('assignment','publication') . ':' . html_writer::link($assignurl, $assign->name);
+				
+				if(has_capability('mod/publication:addinstance', $this->context)){
+					$url = new moodle_url('/mod/publication/view.php',
+							array('id'=>$this->coursemodule->id, 'sesskey'=>sesskey(), 'action'=>'import'));
+					$label = get_string('updatefiles','publication');
+					
+					echo $OUTPUT->single_button($url, $label);
+				}
+				
 			}else{
 				echo get_string('assignment_notfound', 'publication');
 			}

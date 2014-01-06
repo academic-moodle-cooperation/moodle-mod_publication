@@ -57,6 +57,18 @@ if($action == "zip"){
 	$users = optional_param_array('selectedeuser', array(), PARAM_INT);
 	$users = array_keys($users);
 	$publication->download_zip($users);
+}else if($action == "import"){
+	require_sesskey();
+	
+	if(!isset($_POST['confirm'])){
+		$message = get_string('updatefileswarning', 'publication');
+		
+		echo $OUTPUT->header();
+		echo $OUTPUT->heading(format_string($publication->get_instance()->name),1);
+		echo $OUTPUT->confirm($message, 'view.php?id='.$id.'&action=import&confirm=1', 'view.php?id='.$id);
+		echo $OUTPUT->footer();
+		exit;
+	}
 }
 
 $submissionid = $USER->id;
