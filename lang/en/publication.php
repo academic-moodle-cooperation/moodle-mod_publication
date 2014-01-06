@@ -81,6 +81,9 @@ $string['obtainstudentapproval_help'] = 'You can decide whether students can pub
 $string['choose'] = 'please choose ...';
 $string['importfrom_err'] = 'You have to choose an assignment you want to import from.';
 
+$string['warning_changefromobtainteacherapproval'] = 'After activating this setting, all uploaded files will be visible to other participants. All uploaded will become visible. You can manually make files invisible to certain students.';
+$string['warning_changetoobtainteacherapproval'] = 'After deactivating this setting uploaded files will not be visible to other participants automatically. You will have to determine which files are visible. Already visible files will become invisible.';
+
 // index.php
 $string['nopublicationsincourse'] = 'There are no publication instances in this course.';
 

@@ -100,8 +100,7 @@ class mod_publication_mod_form extends moodleform_mod{
 		$mform->addElement('select', 'importfrom', get_string('assignment', 'publication'), $choices);
 		$mform->disabledIf('importfrom', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
 		
-		
-		$mform->addElement('selectyesno', 'obtainstudentapproval', get_string('obtainstudentapproval','publication'));
+		$mform->addElement('selectyesno', 'obtainstudentapproval', get_string('obtainstudentapproval','publication'), array('onChange'=>'alert("Hello world");'));
 		$mform->setDefault('obtainstudentapproval', get_config('publication','obtainstudentapproval'));
 		$mform->addHelpButton('obtainstudentapproval','obtainstudentapproval','publication');
 		$mform->disabledIf('obtainstudentapproval', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
@@ -130,7 +129,19 @@ class mod_publication_mod_form extends moodleform_mod{
                 '/^([A-Za-z0-9]+([ ]*[,][ ]*[A-Za-z0-9]+)*)$/', 'client', false, false);
         $mform->disabledIf('allowedfiletypes', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
 		
-        $mform->addElement('selectyesno', 'obtainteacherapproval', get_string('obtainteacherapproval','publication'));
+        $attributes = array();
+        if(isset($this->current->id) && isset($this->current->obtainteacherapproval)){        	
+        	if(!$this->current->obtainteacherapproval){
+        		$message = get_string('warning_changefromobtainteacherapproval', 'publication');
+        	}else{
+        		$message =  get_string('warning_changetoobtainteacherapproval', 'publication');
+        	}
+        	
+        	$message = trim(preg_replace('/\s+/', ' ', $message));
+        	$attributes['onChange'] = "alert('" . $message .  "')";
+        }
+        
+        $mform->addElement('selectyesno', 'obtainteacherapproval', get_string('obtainteacherapproval','publication'), $attributes);
         $mform->setDefault('obtainteacherapproval', get_config('publication','obtainteacherapproval'));
         $mform->addHelpButton('obtainteacherapproval','obtainteacherapproval','publication');
         $mform->disabledIf('obtainteacherapproval', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);

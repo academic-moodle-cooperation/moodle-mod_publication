@@ -86,6 +86,9 @@ sind die Dateien auch wirklich sichtbar.';
 $string['choose'] = 'bitte auswählen ...';
 $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie importieren möchten.';
 
+$string['warning_changefromobtainteacherapproval'] = 'Wenn Sie diese Änderung durchführen werden hochgeladene Dateien sofort für andere TeilnehmerInnen sichtbar. Alle bis jetzt hochgeladenen Dateien werden mit diesen Schritt ebenfalls auf sichtbar gesetzt. Sie haben jedoch das Recht Studierenden die Sichtbarkeit aktiv zu entziehen.';
+$string['warning_changetoobtainteacherapproval'] = 'Wenn Sie diese Änderung durchführen werden hochgeladene Dateien nicht sofort für andere TeilnehmerInnen sichtbar. Sie müssen dann aktiv Dateien von Studierenden sichtbar schalten. Alle bis jetzt hochgeladenen Dateien werden mit diesem Schritt ebenfalls auf nicht sichtbar gesetzt.';
+
 // index.php
 $string['nopublicationsincourse'] = 'In diesem Kurs existieren keine Studierendenordner.';
 
