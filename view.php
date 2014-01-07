@@ -71,6 +71,19 @@ if($action == "zip"){
 	}
 	
 	$publication->importfiles();
+}else if($action == "grantextension"){
+	$users = optional_param_array('selectedeuser', array(), PARAM_INT);
+	$users = array_keys($users);
+	
+	if(count($users) > 0){	
+		$url = new moodle_url('/mod/publication/grantextension.php',array('id'=>$cm->id));
+		foreach($users as $idx => $u){
+			$url->param('userids[' . $idx . ']',$u);
+		}
+		
+		redirect($url);
+		die();
+	}
 }
 
 $submissionid = $USER->id;

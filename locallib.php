@@ -72,6 +72,8 @@ class publication{
 	}
 	
 	public function display_availability(){
+		global $USER;
+		
 		// display availability dates
 		$textsuffix = ($this->instance->mode == PUBLICATION_MODE_IMPORT) ? "_import" : "_upload";
 		
@@ -93,6 +95,13 @@ class publication{
 			echo html_writer::end_div();
 		}
 		
+		$extensionduedate = $extensionduedate = $this->user_extensionduedate($USER->id);
+		
+		if($extensionduedate){
+			echo html_writer::start_div();
+			echo html_Writer::tag('span',  get_string('extensionto','publication') . ': ') . userdate($extensionduedate);
+			echo html_writer::end_div();
+		}
 		echo html_writer::end_div();
 	}
 	
@@ -153,7 +162,23 @@ class publication{
 		}		
 	}
 	
+	public function user_extensionduedate($uid){
+		global $DB;
+		
+		$extensionduedate = $DB->get_field('publication_extduedates','extensionduedate', array(
+				'publication'=>$this->get_instance()->id,
+				'userid'=>$uid));
+		
+		if(!$extensionduedate){
+			return 0;
+		}
+		
+		return $extensionduedate;
+	}
+	
 	public function is_open(){
+		global $USER;
+		
 		$now = time();
 
 		$from = $this->get_instance()->allowsubmissionsfromdate;
@@ -161,6 +186,12 @@ class publication{
 		
 		if ($this->get_instance()->cutoffdate) {
 			$due = $this->get_instance()->cutoffdate;
+		}
+		
+		$extensionduedate = $this->user_extensionduedate($USER->id);
+		
+		if($extensionduedate){
+			$due = $extensionduedate;
 		}
 		
 		if(($from == 0 || $from < $now) &&
@@ -363,6 +394,12 @@ class publication{
 						'&amp;course=' . $course->id . '">' .
 						fullname($auser, has_capability('moodle/site:viewfullnames', $this->context)) . '</a>';
 						
+						$extension = $this->user_extensionduedate($auser->id);
+						
+						if($extension){
+							$userlink .= '<br/>' . get_string('extensionto', 'publication') . ': ' . userdate($extension);
+						}
+						
 						$row = array($selected_user,$userlink);
 	
 						$useridentity = explode(',', $CFG->showuseridentity);
@@ -443,6 +480,9 @@ class publication{
 				$options['zipusers'] = get_string('zipusers', 'publication');
 				//		$options['approveusers'] = get_string('approveusers', 'publication');
 				//		$options['rejectusers'] = get_string('rejectusers', 'publication');
+				if(has_capability('mod/publication:grantextension', $this->get_context())){
+					$options['grantextension'] = get_string('grantextension', 'publication');
+				}
 				
 				if ($totalfiles > 0){
 					$html .= html_writer::start_div('withselection');

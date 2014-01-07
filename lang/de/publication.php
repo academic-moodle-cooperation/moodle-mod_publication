@@ -34,6 +34,7 @@ $string['publication:addinstance'] = 'Studierendenordner hinzufügen';
 $string['publication:view'] = 'Studierendenordner anzeigen';
 $string['publication:upload'] = 'Dateien in den Studierendenordner hochladen';
 $string['publication:approve'] = 'Entscheiden ob Dateien für alle Studenten sichtbar sein sollen';
+$string['publication:grantextension'] = 'Erweiterung zulassen';
 
 $string['requiremodintro'] = 'Beschreibung notwendig';
 $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';
@@ -89,6 +90,11 @@ $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie imp
 $string['warning_changefromobtainteacherapproval'] = 'Wenn Sie diese Änderung durchführen werden hochgeladene Dateien sofort für andere TeilnehmerInnen sichtbar. Alle bis jetzt hochgeladenen Dateien werden mit diesen Schritt ebenfalls auf sichtbar gesetzt. Sie haben jedoch das Recht Studierenden die Sichtbarkeit aktiv zu entziehen.';
 $string['warning_changetoobtainteacherapproval'] = 'Wenn Sie diese Änderung durchführen werden hochgeladene Dateien nicht sofort für andere TeilnehmerInnen sichtbar. Sie müssen dann aktiv Dateien von Studierenden sichtbar schalten. Alle bis jetzt hochgeladenen Dateien werden mit diesem Schritt ebenfalls auf nicht sichtbar gesetzt.';
 
+// mod_publication_grantextension_form.php
+$string['extensionduedate'] = 'Erweiterung des Abgabdatums';
+$string['extensionnotafterduedate'] = 'Das erweiterte Abgabedatum muss nach dem (normalen) Abgabedatum liegen.';
+$string['extensionnotafterfromdate'] = 'Das erweiterte Abgabedatum muss nach Abgabedatum liegen.';
+
 // index.php
 $string['nopublicationsincourse'] = 'In diesem Kurs existieren keine Studierendenordner.';
 
@@ -99,6 +105,7 @@ $string['duedate_upload'] = 'Uploadmöglickeit bis';
 $string['duedate_import'] = 'Einverständniserklärung bis';
 $string['cutoffdate_upload'] = 'Letzte Uploadmöglichkeit bis';
 $string['cutoffdate_upload'] = 'Letzte Einverständniserklärung bis';
+$string['extensionto'] = 'Erweiterung bis';
 $string['assignment_notfound'] = 'Die Aufgabe von der Import wird konnte nicht mehr gefunden werden.';
 $string['updatefiles'] = 'Dateien aktualisieren';
 $string['updatefileswarning'] = 'Die Dateien der einzelnen Studierenden aus dem Studierendenordner werden mit denen der Aufgabe aktualisiert. Bereits sichtbare Dateien eines Studierenden werden ebenfalls überschrieben, falls diese in der Aufgabe nicht mehr vorhanden sind bzw. geändert wurden - d.h. das Einverständnis zur Sichtbarkeit des einzeln Studierenden bleibt unverändert.';
@@ -132,6 +139,7 @@ $string['withselected'] = 'Mit Auswahl...';
 $string['zipusers'] = "als ZIP herunterladen";
 $string['approveusers'] = "für alle sichtbar";
 $string['rejectusers'] = "für alle unsichtbar";
+$string['grantextension'] = 'Erweiterung zulassen';
 
 // upload.php
 $string['guideline'] = 'Hinweis:';

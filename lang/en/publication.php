@@ -34,6 +34,7 @@ $string['publication:addinstance'] = 'Add a new student folder';
 $string['publication:view'] = 'View student folder';
 $string['publication:upload'] = 'Upload files to a student folder';
 $string['publication:approve'] = 'Decide if files should be visible for every student';
+$string['publication:grantextension'] = 'Grant extension';
 
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
@@ -85,6 +86,11 @@ $string['importfrom_err'] = 'You have to choose an assignment you want to import
 $string['warning_changefromobtainteacherapproval'] = 'After activating this setting, all uploaded files will be visible to other participants. All uploaded will become visible. You can manually make files invisible to certain students.';
 $string['warning_changetoobtainteacherapproval'] = 'After deactivating this setting uploaded files will not be visible to other participants automatically. You will have to determine which files are visible. Already visible files will become invisible.';
 
+// mod_publication_grantextension_form.php
+$string['extensionduedate'] = 'Extension due date';
+$string['extensionnotafterduedate'] = 'Extension date must be after the due date';
+$string['extensionnotafterfromdate'] = 'Extension date must be after the allow submissions from date';
+
 // index.php
 $string['nopublicationsincourse'] = 'There are no publication instances in this course.';
 
@@ -95,6 +101,7 @@ $string['duedate_upload'] = 'Upload possibility to';
 $string['duedate_import'] = 'Approval to';
 $string['cutoffdate_upload'] = 'Last upload posssibility to';
 $string['cutoffdate_import'] = 'Last approval to';
+$string['extensionto'] = 'Extension to';
 $string['assignment_notfound'] = 'The assignment used to import from, couldnt be found.';
 $string['updatefiles'] = 'Update files';
 $string['updatefileswarning'] = 'Files from an individual student in the student folder will be updated with his/her submission of the assignment. Already visible files from students will be replaced too, if they are deleted or refreshed - the settings of the student as to the visibility will not be changed.';
@@ -126,8 +133,9 @@ $string['nofilestozip'] = 'No files to zip';
 $string['go'] = 'Go';
 $string['withselected'] = 'With selected...';
 $string['zipusers'] = "Download as ZIP";
-$string['approveusers'] = "für alle sichtbar";
-$string['rejectusers'] = "für alle unsichtbar";
+$string['approveusers'] = "visible for all";
+$string['rejectusers'] = "invisible for all";
+$string['grantextension'] = 'grant extension';
 
 // upload.php
 $string['guideline'] = 'Guideline:';
