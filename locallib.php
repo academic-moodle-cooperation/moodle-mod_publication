@@ -75,15 +75,25 @@ class publication{
 		// display availability dates
 		$textsuffix = ($this->instance->mode == PUBLICATION_MODE_IMPORT) ? "_import" : "_upload";
 		
+		echo html_writer::start_div('availability');
+		
 		if($this->instance->allowsubmissionsfromdate){
-			echo get_string('allowsubmissionsfromdate' . $textsuffix,'publication') . ': ' . userdate($this->instance->allowsubmissionsfromdate) . "<br/>";
-		}
-		if($this->instance->cutoffdate){
-			echo get_string('cutoffdate' . $textsuffix,'publication') . ': ' . userdate($this->instance->cutoffdate) . "<br/>";
+			echo html_writer::start_div();
+			echo html_Writer::tag('span', get_string('allowsubmissionsfromdate' . $textsuffix,'publication') . ': ') . userdate($this->instance->allowsubmissionsfromdate);
+			echo html_writer::end_div();
 		}
 		if($this->instance->duedate){
-			echo get_string('duedate' . $textsuffix,'publication') . ': ' . userdate($this->instance->duedate) . "<br/>";
+			echo html_writer::start_div();
+			echo html_Writer::tag('span', get_string('duedate' . $textsuffix,'publication') . ': ') . userdate($this->instance->duedate);
+			echo html_writer::end_div();
 		}
+		if($this->instance->cutoffdate){
+			echo html_writer::start_div();
+			echo html_Writer::tag('span',  get_string('cutoffdate' . $textsuffix,'publication') . ': ') . userdate($this->instance->cutoffdate);
+			echo html_writer::end_div();
+		}
+		
+		echo html_writer::end_div();
 	}
 	
 	/**
@@ -146,10 +156,15 @@ class publication{
 	public function is_open(){
 		$now = time();
 
-		if(
-			($this->get_instance()->allowsubmissionsfromdate == 0 || $this->get_instance()->allowsubmissionsfromdate < $now) &&
-			($this->get_instance()->duedate == 0 || $this->get_instance()->duedate > $now)
-		){
+		$from = $this->get_instance()->allowsubmissionsfromdate;
+		$due = $this->get_instance()->duedate;
+		
+		if ($this->get_instance()->cutoffdate) {
+			$due = $this->get_instance()->cutoffdate;
+		}
+		
+		if(($from == 0 || $from < $now) &&
+			($due == 0 || $due > $now)){
 			return true;
 		}
 		
@@ -209,7 +224,7 @@ class publication{
 		$html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=> sesskey()));
 		echo $html;
 		
-		echo html_writer::start_tag('fieldset',array('class'=>'clearfix','aria-live'=>'polite'));
+		echo html_writer::start_tag('fieldset',array('id'=>'id_allfiles', 'class'=>'clearfix','aria-live'=>'polite'));
 		$title = (has_capability('mod/publication:approve', $context)) ? get_string('allfiles', 'publication') : get_string('publicfiles', 'publication');
 		echo html_writer::tag('legend', $title);
 		echo html_writer::start_div('fcontainer clearfix');
@@ -362,7 +377,6 @@ class publication{
 						$filearea = 'attachment';
 						$sid = $auser->id;
 						$fs = get_file_storage();
-						$this->dir = $fs->get_area_tree($this->get_context()->id, 'mod_publication', $filearea, $sid);
 						
 						$files = $fs->get_area_files($this->get_context()->id,
 								'mod_publication',
@@ -410,19 +424,7 @@ class publication{
 						$table->add_data($row);
 					}
 					$currentposition++;
-				}
-
-				echo '<style type="text/css">
-						table.filetable,
-						table.filetable td,
-						table.filetable tr{
-							padding:0;
-							margin:0;
-							border-width:0 !important;
-						}
-						</style>
-						';
-				
+				}			
 				
 				if ($totalfiles > 0) {
 					$html .= html_writer::start_tag('div', array('class' => 'mod-publication-download-link'));

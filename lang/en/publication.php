@@ -56,14 +56,15 @@ $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment detai
 $string['alwaysshowdescription'] = 'Always show description';
 $string['alwaysshowdescription_help'] = 'If disabled, the Assignment Description above will only become visible to students at the "Allow submissions from" date.';
 
+$string['duedate'] = 'Due date';
+$string['duedate_help'] = 'This is when the assignment is due. Submissions will still be allowed after this date but any assignments submitted after this date are marked as late. To prevent submissions after a certain date - set the assignment cut off date.';
+$string['duedatevalidation'] = 'Due date must be after the allow submissions from date.';
+
 $string['cutoffdate'] = 'Cut-off date';
 $string['cutoffdate_help'] = 'If set, the assignment will not accept submissions after this date without an extension.';
 $string['cutoffdatevalidation'] = 'The cut-off date cannot be earlier than the due date.';
 $string['cutoffdatefromdatevalidation'] = 'Cut-off date must be after the allow submissions from date.';
 
-$string['duedate'] = 'Due date';
-$string['duedate_help'] = 'This is when the assignment is due. Submissions will still be allowed after this date but any assignments submitted after this date are marked as late. To prevent submissions after a certain date - set the assignment cut off date.';
-$string['duedatevalidation'] = 'Due date must be after the allow submissions from date.';
 
 $string['mode'] = 'Mode';
 $string['mode_help'] = 'Choose whether students can upload documents in the folder or documents of an assignment are the source of it.';
@@ -90,10 +91,10 @@ $string['nopublicationsincourse'] = 'There are no publication instances in this 
 // view.php
 $string['allowsubmissionsfromdate_upload'] = 'Upload possibility from';
 $string['allowsubmissionsfromdate_import'] = 'Approval from';
-$string['cutoffdate_upload'] = 'Cut-off date';
-$string['cutoffdate_import'] = 'Cut-off date';
 $string['duedate_upload'] = 'Upload possibility to';
 $string['duedate_import'] = 'Approval to';
+$string['cutoffdate_upload'] = 'Last upload posssibility to';
+$string['cutoffdate_import'] = 'Last approval to';
 $string['assignment_notfound'] = 'The assignment used to import from, couldnt be found.';
 $string['updatefiles'] = 'Update files';
 $string['updatefileswarning'] = 'Files from an individual student in the student folder will be updated with his/her submission of the assignment. Already visible files from students will be replaced too, if they are deleted or refreshed - the settings of the student as to the visibility will not be changed.';
@@ -117,7 +118,7 @@ $string['student_rejected'] = 'rejected';
 $string['allfiles'] = 'All files';
 $string['publicfiles'] = 'Public files';
 $string['downloadall'] = 'Download all files as ZIP';
-$string['optionalsettings'] = 'Optional settings';
+$string['optionalsettings'] = 'Options';
 $string['entiresperpage'] = 'Participants shown per page';
 $string['nothingtodisplay'] = 'No entries to display';
 $string['nofilestozip'] = 'No files to zip';

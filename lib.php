@@ -33,7 +33,6 @@ function publication_add_instance($publication, $mform=null) {
 	global $CFG, $DB;
 
 	$cmid       = $publication->coursemodule;
-	$cmidnumber = $publication->cmidnumber;
 	$courseid   = $publication->course;
 
 	try {
@@ -47,7 +46,6 @@ function publication_add_instance($publication, $mform=null) {
 	$record = $DB->get_record('publication', array('id'=>$id));
 
 	$record->course     = $courseid;
-	$record->cmidnumber = $cmidnumber;
 	$record->cmid       = $cmid;
 
 	return $record->id;

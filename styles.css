@@ -1,0 +1,75 @@
+/* General Styles */
+
+#page-mod-publication-view div.availability{
+    margin-bottom:10px;
+    margin-left:10px;
+}
+
+#page-mod-publication-view div.availability div{
+    clear:both;
+}
+
+#page-mod-publication-view div.availability span{
+
+    min-width:140px;
+    display:block;
+    float:left;
+}
+
+#page-mod-publication-view div.assignurl{
+	margin-left:10px;
+    margin-bottom:10px;
+}
+
+#page-mod-publication-view div.assignurl div.singlebutton,
+#page-mod-publication-view div.assignurl div.singlebutton form,
+#page-mod-publication-view div.assignurl div.singlebutton form div{
+    display:inline;
+}
+
+#page-mod-publication-view div.assignurl div.singlebutton form div{
+    padding-left:10px;
+}
+
+#page-mod-publication-view fieldset#id_myfiles table{
+    margin-left:8px;
+}
+
+#page-mod-publication-view fieldset#id_myfiles table td{
+    padding:1px;
+    padding-right:3px;
+}
+
+
+#page-mod-publication-view fieldset#id_allfiles{
+    padding-top:4px;
+}
+
+#page-mod-publication-view div.mod-publication-download-link{
+    text-align:right;
+}
+
+
+#page-mod-publication-view table.filetable,
+#page-mod-publication-view table.filetable td,
+#page-mod-publication-view table.filetable tr{
+    padding:1px;
+    padding-right:3px;
+    border-width:0px !important;
+}
+
+#page-mod-publication-view table.filetable tbody tr{
+	background-color:transparent;
+}
+
+#page-mod-publication-view div.withselection{
+	text-align:center;
+}
+
+#page-mod-publication-view div.withselection{
+	text-align:center;
+}
+#page-mod-publication-view div.withselection select{
+	margin-left:4px;
+	margin-right:4px;
+}

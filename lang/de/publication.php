@@ -56,14 +56,14 @@ $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment detai
 $string['alwaysshowdescription'] = 'Beschreibung immer anzeigen';
 $string['alwaysshowdescription_help'] = 'Wenn diese Option deaktiviert ist, wird die Aufgabenbeschreibung für Teilnehmer/innen nur während des Abgabezeitraums angezeigt.';
 
-$string['cutoffdate'] = 'Abgabetermin';
-$string['cutoffdate_help'] = 'Zum Abgabetermin wird die Aufgabe fällig. Wenn spätere Abgaben erlaubt sind, wird jede nach diesem Datum eingereichte Abgabe als verspätet markiert. Um eine Abgabe nach einem bestimmten Verspätungsdatum zu verhindern kann ein endgültiges Abgabedatum gesetzt werden.';
-$string['cutoffdatevalidation'] = 'Der letzte Abgabetermin muss nach der erstmöglichen Abgabe liegen.';
-$string['cutoffdatefromdatevalidation'] = 'Der Abgabetermin muss später als der Abgabebeginn sein.';
+$string['duedate'] = 'Abgabetermin';
+$string['duedate_help'] = 'Zum Abgabetermin wird die Aufgabe fällig. Wenn spätere Abgaben erlaubt sind, wird jede nach diesem Datum eingereichte Abgabe als verspätet markiert. Um eine Abgabe nach einem bestimmten Verspätungsdatum zu verhindern kann ein endgültiges Abgabedatum gesetzt werden.';
+$string['duedatevalidation'] = 'Der Abgabetermin muss später als der Abgabebeginn sein.';
 
-$string['duedate'] = 'Letzter Abgabetermin';
-$string['duedate_help'] = 'Diese Funktion sperrt die Abgabe von Lösungen ab diesem Termin, sofern keine Terminverlängerung gewährt wird.';
-$string['duedatevalidation'] = 'Der letzte Abgabetermin muss nach dem Abgabestart liegen.';
+$string['cutoffdate'] = 'Letzter Abgabetermin';
+$string['cutoffdate_help'] = 'Diese Funktion sperrt die Abgabe von Lösungen ab diesem Termin, sofern keine Terminverlängerung gewährt wird.';
+$string['cutoffdatevalidation'] = 'Der letzte Abgabetermin muss nach dem Abgabestart liegen.';
+$string['cutoffdatefromdatevalidation'] = 'Der letzte Abgabetermin muss nach der erstmöglichen Abgabe liegen.';
 
 $string['mode'] = 'Modus';
 $string['mode_help'] = 'Treffen Sie hier die Entscheidung, ob die Aktivität als “Upload-Platz” für Studierende dienen soll oder Sie eine Aufgabe als Ursprung der Dateien festgelegen wollen.';
@@ -95,10 +95,10 @@ $string['nopublicationsincourse'] = 'In diesem Kurs existieren keine Studierende
 // view.php
 $string['allowsubmissionsfromdate_upload'] = 'Uploadmöglickeit von';
 $string['allowsubmissionsfromdate_import'] = 'Einverständniserklärung von';
-$string['cutoffdate_upload'] = 'Uploadmöglichkeit bis';
-$string['cutoffdate_upload'] = 'Einverständniserklärung bis';
 $string['duedate_upload'] = 'Uploadmöglickeit bis';
 $string['duedate_import'] = 'Einverständniserklärung bis';
+$string['cutoffdate_upload'] = 'Letzte Uploadmöglichkeit bis';
+$string['cutoffdate_upload'] = 'Letzte Einverständniserklärung bis';
 $string['assignment_notfound'] = 'Die Aufgabe von der Import wird konnte nicht mehr gefunden werden.';
 $string['updatefiles'] = 'Dateien aktualisieren';
 $string['updatefileswarning'] = 'Die Dateien der einzelnen Studierenden aus dem Studierendenordner werden mit denen der Aufgabe aktualisiert. Bereits sichtbare Dateien eines Studierenden werden ebenfalls überschrieben, falls diese in der Aufgabe nicht mehr vorhanden sind bzw. geändert wurden - d.h. das Einverständnis zur Sichtbarkeit des einzeln Studierenden bleibt unverändert.';
@@ -122,7 +122,7 @@ $string['student_rejected'] = 'Abgelehnt';
 $string['allfiles'] = 'Alle Dateien';
 $string['publicfiles'] = 'Öffentliche Dateien';
 $string['downloadall'] = 'Alle Dateien als ZIP herunterladen';
-$string['optionalsettings'] = 'Optionale Einstellungen';
+$string['optionalsettings'] = 'Optionen';
 $string['entiresperpage'] = 'Angaben pro Seite';
 $string['nothingtodisplay'] = 'Keine Einträge';
 $string['nofilestozip'] = 'Keine Dateien zu Zipen';

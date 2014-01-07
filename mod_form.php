@@ -95,7 +95,9 @@ class mod_publication_mod_form extends moodleform_mod{
 		$modearray[] =& $mform->createElement('radio', 'mode', '', get_string('modeimport', 'publication'), PUBLICATION_MODE_IMPORT, $disabled);
 		$mform->addGroup($modearray, 'modegrp', get_string('mode', 'publication'), array(' '), false);
 		$mform->addHelpButton('modegrp','mode','publication');
-		$mform->addRule('modegrp', null, 'required', null, 'client');  
+		if(count($filecount) == 0){
+			$mform->addRule('modegrp', null, 'required', null, 'client');
+		}  
 		
 		// Publication mode import specific elements
 		
