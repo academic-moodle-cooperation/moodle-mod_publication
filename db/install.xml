@@ -21,7 +21,7 @@
         <FIELD NAME="obtainstudentapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="maxfiles" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="maxbytes" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="allowedfiletypes" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="allowedfiletypes" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
         <FIELD NAME="obtainteacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>

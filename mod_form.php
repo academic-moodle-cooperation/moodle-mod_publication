@@ -81,9 +81,18 @@ class mod_publication_mod_form extends moodleform_mod{
         $mform->addElement('header','publication', get_string('modulename','publication'));
         $mform->setExpanded('publication');
         
+        if(isset($this->current->id)){
+        	$filecount = $DB->count_records('publication_file', array('publication'=>$this->current->id));
+        }
+        
+        $disabled = array();
+        if($filecount > 0){
+        	$disabled['disabled'] = 'disabled';
+        }
+        
         $modearray = array();
-		$modearray[] =& $mform->createElement('radio', 'mode', '', get_string('modeupload', 'publication'), PUBLICATION_MODE_UPLOAD);
-		$modearray[] =& $mform->createElement('radio', 'mode', '', get_string('modeimport', 'publication'), PUBLICATION_MODE_IMPORT);
+		$modearray[] =& $mform->createElement('radio', 'mode', '', get_string('modeupload', 'publication'), PUBLICATION_MODE_UPLOAD, $disabled);
+		$modearray[] =& $mform->createElement('radio', 'mode', '', get_string('modeimport', 'publication'), PUBLICATION_MODE_IMPORT, $disabled);
 		$mform->addGroup($modearray, 'modegrp', get_string('mode', 'publication'), array(' '), false);
 		$mform->addHelpButton('modegrp','mode','publication');
 		$mform->addRule('modegrp', null, 'required', null, 'client');  
@@ -97,13 +106,16 @@ class mod_publication_mod_form extends moodleform_mod{
 			$choices[$assigninstance->id] = $assigninstance->name;
 		}
 		
-		$mform->addElement('select', 'importfrom', get_string('assignment', 'publication'), $choices);
-		$mform->disabledIf('importfrom', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
+		$mform->addElement('select', 'importfrom', get_string('assignment', 'publication'), $choices, $disabled);
+		if(count($disabled) == 0){
+			$mform->disabledIf('importfrom', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
+		}
 		
-		$mform->addElement('selectyesno', 'obtainstudentapproval', get_string('obtainstudentapproval','publication'), array('onChange'=>'alert("Hello world");'));
+		$mform->addElement('selectyesno', 'obtainstudentapproval', get_string('obtainstudentapproval','publication'));
 		$mform->setDefault('obtainstudentapproval', get_config('publication','obtainstudentapproval'));
 		$mform->addHelpButton('obtainstudentapproval','obtainstudentapproval','publication');
 		$mform->disabledIf('obtainstudentapproval', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
+		
 		
 		// Publication mode upload specific elements
 		
