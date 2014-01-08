@@ -57,7 +57,9 @@ if($action == "zip"){
 	$users = optional_param_array('selectedeuser', array(), PARAM_INT);
 	$users = array_keys($users);
 	$publication->download_zip($users);
+
 }else if($action == "import"){
+	require_capability('mod/publication:approve', $context);
 	require_sesskey();
 	
 	if(!isset($_POST['confirm'])){
@@ -72,6 +74,8 @@ if($action == "zip"){
 	
 	$publication->importfiles();
 }else if($action == "grantextension"){
+	require_capability('mod/publication:grantextension', $context);
+	
 	$users = optional_param_array('selectedeuser', array(), PARAM_INT);
 	$users = array_keys($users);
 	
@@ -83,6 +87,22 @@ if($action == "zip"){
 		
 		redirect($url);
 		die();
+	}
+}else if($action == "approveusers" || $action == "rejectusers"){
+	require_capability('mod/publication:approve', $context);
+	
+	$users = optional_param_array('selectedeuser', array(), PARAM_INT);
+	$users = array_keys($users);
+	
+	if(count($users) > 0){
+	
+		$sql = 'UPDATE {publication_file} SET teacherapproval=:approval WHERE publication=:pubid AND userid  IN (' . implode(',', $users) . ')';
+	
+		$params = array();
+		$params['approval'] = ($action == "approveusers") ? 1 : 0;
+		$params['pubid'] = $publication->get_instance()->id;
+		
+		$DB->execute($sql,$params);
 	}
 }
 

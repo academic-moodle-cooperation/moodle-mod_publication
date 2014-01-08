@@ -398,7 +398,7 @@ class publication{
 				foreach ($ausers as $auser) {
 					if ($currentposition >= $offset && $currentposition < $endposition) {
 						// Calculate user status.
-						$selected_user = html_writer::checkbox('selectedeuser['.$auser->id .']', 'selected', true,
+						$selected_user = html_writer::checkbox('selectedeuser['.$auser->id .']', 'selected', false,
 								null, array('class'=>'userselection'));
 	
 						$useridentity = explode(',', $CFG->showuseridentity);
@@ -533,9 +533,9 @@ class publication{
 									}
 									$statustable->data[] = $statusrow;
 									$permissiontable->data[] = $permissionrow;
-									$totalfiles++;
 								}
 								$filetable->data[] = $filerow;
+								$totalfiles++;
 							}
 						}
 						
@@ -589,8 +589,10 @@ class publication{
 				
 				$options = array();
 				$options['zipusers'] = get_string('zipusers', 'publication');
-				//		$options['approveusers'] = get_string('approveusers', 'publication');
-				//		$options['rejectusers'] = get_string('rejectusers', 'publication');
+				if(has_capability('mod/publication:approve', $context)){
+					$options['approveusers'] = get_string('approveusers', 'publication');
+					$options['rejectusers'] = get_string('rejectusers', 'publication');
+				}
 				if(has_capability('mod/publication:grantextension', $this->get_context())){
 					$options['grantextension'] = get_string('grantextension', 'publication');
 				}
