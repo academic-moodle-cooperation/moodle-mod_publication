@@ -116,9 +116,9 @@ $string['notice_noapproval'] = 'Files are immediately visible for everyone. The 
 $string['teacher_pending'] = 'confirmation pending';
 $string['teacher_approved'] = 'approved';
 $string['teacher_rejected'] = 'rejected';
-$string['teacher_blocked'] = 'rejected';
 $string['student_approve'] = 'approve';
 $string['student_approved'] = 'approved';
+$string['student_pending'] = 'pending';
 $string['student_reject'] = 'reject';
 $string['student_rejected'] = 'rejected';
 
@@ -129,6 +129,8 @@ $string['optionalsettings'] = 'Options';
 $string['entiresperpage'] = 'Participants shown per page';
 $string['nothingtodisplay'] = 'No entries to display';
 $string['nofilestozip'] = 'No files to zip';
+$string['status'] = 'Status';
+$string['visibility'] = 'visible for all';
 
 $string['go'] = 'Go';
 $string['withselected'] = 'With selected...';

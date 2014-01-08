@@ -44,7 +44,6 @@
     		<FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
     		<FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"/>
     		<FIELD NAME="studentapproval" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"/>
-    		<FIELD NAME="blocked" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
     	</FIELDS>
     	<KEYS>
     		<KEY NAME="primary" TYPE="primary" FIELDS="id"/>

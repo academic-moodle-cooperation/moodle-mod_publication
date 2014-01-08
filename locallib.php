@@ -265,31 +265,31 @@ class publication{
 		// Find out current groups mode.
 		$groupmode = groups_get_activity_groupmode($cm);
 		$currentgroup = groups_get_activity_group($cm, true);
-		echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
-		
-		
-		
 		
 		$html = '';
 	
 		// Get all ppl that are allowed to submit assignments.
 		list($esql, $params) = get_enrolled_sql($context, 'mod/publication:view', $currentgroup);
 	
-		if ($filter == 1 /*self::FILTER_ALL*/) {
+		$showall = false;
+		
+		if(has_capability('mod/publication:approve', $context) ||
+			has_capability('mod/publication:grantextension', $context)){
+			$showall = true;
+		}
+
+		if ($showall) {
 			$sql = 'SELECT u.id FROM {user} u '.
 					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
 					'WHERE u.deleted = 0 AND eu.id=u.id ';
-		} else {
-			$wherefilter = '';
-		
+		} else {		
 			$sql = 'SELECT DISTINCT u.id FROM {user} u '.
 					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
 					'LEFT JOIN {publication_file} files ON (u.id = files.userid) '.
 					'WHERE u.deleted = 0 AND eu.id=u.id '.
-					'AND files.publication = '. $this->get_instance()->id .
-					$wherefilter;
+					'AND files.publication = '. $this->get_instance()->id;
 		}
-	
+		
 		$users = $DB->get_records_sql($sql, $params);
 		if (!empty($users)) {
 			$users = array_keys($users);
@@ -314,6 +314,19 @@ class publication{
 	
 		$tableheaders[] = get_string('lastmodified');
 		$tablecolumns[] = 'timemodified';
+		
+		if(has_capability('mod/publication:approve', $context)){
+			// not necessary in upload mode, approving by uploading
+			// cusomer wants to see it anyways
+			// if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT)
+			{
+				$tablecolumns[] = 'status';
+				$tableheaders[] = get_string('status', 'publication');
+			}
+			
+			$tablecolumns[] = 'visibility';
+			$tableheaders[] = get_string('visibility', 'publication');
+		}
 	
 	
 		require_once($CFG->libdir.'/tablelib.php');
@@ -326,7 +339,7 @@ class publication{
 		$table->sortable(true, 'lastname'); // Sorted by lastname by default.
 		$table->collapsible(false);
 		$table->initialbars(true);
-	
+		
 		$table->column_class('fullname', 'fullname');
 		$table->column_class('timemodified', 'timemodified');
 	
@@ -373,6 +386,14 @@ class publication{
 			if ($ausers !== false) {
 				$endposition = $offset + $perpage;
 				$currentposition = 0;
+				
+				$valid = $OUTPUT->pix_icon('i/valid',
+						get_string('student_approved', 'publication'));
+				$questionmark = $OUTPUT->pix_icon('questionmark',
+						get_string('student_pending', 'publication'),
+						'mod_publication');
+				$cross_red = $OUTPUT->pix_icon('i/cross_red_big',
+						get_string('student_rejected', 'publication'));
 				
 				foreach ($ausers as $auser) {
 					if ($currentposition >= $offset && $currentposition < $endposition) {
@@ -424,27 +445,97 @@ class publication{
 						
 						$filetable = new html_table();
 						$filetable->attributes = array('class' => 'filetable');
+						
+						$statustable = new html_table();
+						$statustable->attributes = array('class' => 'filetable');
+						
+						$permissiontable = new html_table();
+						$permissiontable->attributes = array('class' => 'filetable');
 
 						$conditions = array();
 						$conditions['publication'] = $this->get_instance()->id;
 						$conditions['userid'] = $auser->id;
 						foreach($files as $file){
 							$conditions['fileid'] = $file->get_id();
-							$filepermissions = $DB->get_record('publication_file', $conditions);						
+							$filepermissions = $DB->get_record('publication_file', $conditions);
+							
+							$showfile = false;
+							
+							// always show all files to teachers
+							if(has_capability('mod/publication:approve', $context)){
+								$showfile = true;
+							}
+							
+							
+							if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
+								// mode upload
+								if($this->get_instance()->obtainteacherapproval){
+									// need teacher approval
+									if($filepermissions->teacherapproval == 1){
+										// teacher has approved
+										$showfile = true;
+									}
+								}else{									
+									// no need for teacher approval
+									if(is_null($filepermissions->teacherapproval) || $filepermissions->teacherapproval == 1){
+										// teacher only hasnt rejected
+										$showfile = true;
+									}
+								}
+								
+							}else{
+								
+								// mode import
+								if(!$this->get_instance()->obtainstudentapproval && $filepermissions->teacherapproval == 1){
+									// no need to ask student and teacher has approved	
+									$showfile = true;
+								}else if($this->get_instance()->obtainstudentapproval &&
+										$filepermissions->teacherapproval == 1 &&
+										$filepermissions->studentapproval == 1){
+									// student and teacher have approved
+									$showfile = true;
+								}
+							}
 
-							if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
-							|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))
-							|| has_capability('mod/publication:approve', $context)){			
-								if(!$filepermissions->blocked || has_capability('mod/publication:approve', $context)){
-									$filerow = array();
-									$filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
+//							if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
+//							|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))
+//							|| has_capability('mod/publication:approve', $context)){
+							if($showfile){			
+								
+								$filerow = array();
+								$filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
 									
-									$url = new moodle_url('/mod/publication/view.php',array('id'=>$cm->id,'download'=>$file->get_id()));
-									$filerow[] = html_writer::link($url, $file->get_filename());
+								$url = new moodle_url('/mod/publication/view.php',array('id'=>$cm->id,'download'=>$file->get_id()));
+								$filerow[] = html_writer::link($url, $file->get_filename());
+								if(has_capability('mod/publication:approve', $context)){	
+									$checked = $filepermissions->teacherapproval;
 									
-									$filetable->data[] = $filerow;
+									if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && is_null($checked)){
+										// if checked is null set defaults for upload mode
+										if($this->get_instance()->obtainteacherapproval){
+											$checked = false;
+										}else{
+											$checked = true;
+										}
+									}
+									
+									$permissionrow = array();
+									$permissionrow[] = html_writer::checkbox('file', 'value',$checked);
+									
+									$statusrow = array();
+									
+									if(is_null($filepermissions->studentapproval)){
+										$statusrow[] = $questionmark;
+									}else if($filepermissions->studentapproval){
+										$statusrow[] = $valid;
+									}else{
+										$statusrow[] = $cross_red;
+									}
+									$statustable->data[] = $statusrow;
+									$permissiontable->data[] = $permissionrow;
 									$totalfiles++;
 								}
+								$filetable->data[] = $filerow;
 							}
 						}
 						
@@ -457,6 +548,26 @@ class publication{
 						}
 						
 						$row[] = $lastmodified;
+						
+						if(has_capability('mod/publication:approve', $context)){
+							// not necessary in upload mode, approving by uploading
+							// cusomer wants to see it anyways
+							// if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT)
+							{
+								if(count($statustable->data) > 0){
+									$status = html_writer::table($statustable);
+								}else{
+									$status = '';
+								}
+								$row[] = $status;
+							}
+							if(count($permissiontable->data) > 0){								
+								$permissions = html_writer::table($permissiontable);
+							}else{
+								$permissions = '';
+							}
+							$row[] = $permissions;
+						}
 
 						$table->add_data($row);
 					}

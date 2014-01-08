@@ -38,13 +38,15 @@ class mod_publication_files_form extends moodleform {
 		$mform->addElement('header', 'myfiles', get_string('myfiles', 'publication'));
 		$mform->setExpanded('myfiles');
 
-		if($publication->get_instance()->obtainteacherapproval){
-			$notice = get_string('notice_requireapproval', 'publication');
-		}else{
-			$notice = get_string('notice_noapproval', 'publication');
+		if($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
+			if($publication->get_instance()->obtainteacherapproval){
+				$notice = get_string('notice_requireapproval', 'publication');
+			}else{
+				$notice = get_string('notice_noapproval', 'publication');
+			}
+
+			$mform->addElement('static','notice',get_string('notice', 'publication'), $notice);
 		}
-		
-		$mform->addElement('static','notice',get_string('notice', 'publication'), $notice);
 		
 		require_once($CFG->libdir.'/tablelib.php');
 		$table = new html_table();
@@ -80,11 +82,12 @@ class mod_publication_files_form extends moodleform {
 		$conditions['publication'] = $publication->get_instance()->id;
 		$conditions['userid'] = $USER->id;
 		
+		$changepossible = false;
+		
 		foreach($files as $file){
 			$conditions['fileid'] = $file->get_id();
 			$studentapproval = $DB->get_field('publication_file', 'studentapproval', $conditions);
 			$teacherapproval = $DB->get_field('publication_file', 'teacherapproval', $conditions);
-			$blocked = $DB->get_field('publication_file', 'blocked', $conditions);
 			
 			$studentapproval = (!is_null($studentapproval)) ? $studentapproval + 1 : null;
 		
@@ -95,8 +98,10 @@ class mod_publication_files_form extends moodleform {
 			$data[] = html_writer::link($dlurl, $file->get_filename());
 			
 			if($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
+				$teacherapproval &&
 				$publication->get_instance()->obtainstudentapproval){
 				if($publication->is_open()){
+					$changepossible = true;
 					$data[] = html_writer::select($options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
 				}else{
 					switch($studentapproval){
@@ -108,17 +113,26 @@ class mod_publication_files_form extends moodleform {
 			}
 			
 			if($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
-				if(is_null($teacherapproval)){
-					$data[] = get_string('teacher_pending', 'publication');
-				}else if($teacherapproval == 1){
-					$data[] = get_string('teacher_approved', 'publication');
+
+				if($publication->get_instance()->obtainteacherapproval){
+					// teacher has to approve: show all status
+					if(is_null($teacherapproval)){
+						$data[] = get_string('teacher_pending', 'publication');
+					}else if($teacherapproval == 1){
+						$data[] = get_string('teacher_approved', 'publication');
+					}else{
+						$data[] = get_string('teacher_rejected', 'publication');
+					}					
 				}else{
-					$data[] = get_string('teacher_rejected', 'publication');
+					// teacher doenst have to approve: only show when rejected
+					if(is_null($teacherapproval)){
+						$data[] = "";
+					}else if($teacherapproval == 1){
+						$data[] = "";
+					}else{
+						$data[] = get_string('teacher_rejected', 'publication');
+					}					
 				}
-			}
-			
-			if($blocked){
-				$data[] = get_string('teacher_blocked', 'publication');
 			}
 			
 			$table->data[] = $data;
@@ -133,8 +147,8 @@ class mod_publication_files_form extends moodleform {
 		$mform->addElement('html',$tablehtml);	
 
 		// display submit buttons if necessary
-		if($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT){
-			if($publication->get_instance()->obtainstudentapproval){
+		if($changepossible){
+	//		if($publication->get_instance()->obtainstudentapproval){
 				if($publication->is_open()){
 					$buttonarray=array();
 					$buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
@@ -144,7 +158,7 @@ class mod_publication_files_form extends moodleform {
 				}else{
 					$mform->addElement('static','approvaltimeover', '', get_string('approval_timeover', 'publication'));
 				}
-			}
+	//		}
 		}
 		
 		if($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD){

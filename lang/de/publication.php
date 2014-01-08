@@ -120,9 +120,9 @@ $string['notice_noapproval'] = 'Alle Dateien die Sie hier hochladen, werden sofo
 $string['teacher_pending'] = 'Bestätigung ausstehend';
 $string['teacher_approved'] = 'freigegeben';
 $string['teacher_rejected'] = 'abgelehnt';
-$string['teacher_blocked'] = 'abgelehnt';
 $string['student_approve'] = 'zustimmen';
 $string['student_approved'] = 'Zugestimmt';
+$string['student_pending'] = 'noch keine Angabe';
 $string['student_reject'] = 'ablehnen';
 $string['student_rejected'] = 'Abgelehnt';
 
@@ -133,6 +133,8 @@ $string['optionalsettings'] = 'Optionen';
 $string['entiresperpage'] = 'Angaben pro Seite';
 $string['nothingtodisplay'] = 'Keine Einträge';
 $string['nofilestozip'] = 'Keine Dateien zu Zipen';
+$string['status'] = 'Status';
+$string['visibility'] = 'für alle sichtbar';
 
 $string['go'] = 'Start';
 $string['withselected'] = 'Mit Auswahl...';
