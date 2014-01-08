@@ -422,7 +422,10 @@ class publication{
 						$extension = $this->user_extensionduedate($auser->id);
 						
 						if($extension){
-							$userlink .= '<br/>' . get_string('extensionto', 'publication') . ': ' . userdate($extension);
+							if(has_capability('mod/publication:grantextension', $context) ||
+								has_capability('mod/publication:approve', $context)){
+								$userlink .= '<br/>' . get_string('extensionto', 'publication') . ': ' . userdate($extension);
+							}
 						}
 						
 						$row = array($selected_user,$userlink);
