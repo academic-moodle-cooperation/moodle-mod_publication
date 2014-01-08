@@ -263,7 +263,9 @@ class publication{
 	
 		// Find out current groups mode.
 		$groupmode = groups_get_activity_groupmode($cm);
-		$currentgroup = groups_get_activity_group($cm, true);
+		//$currentgroup = groups_get_activity_group($cm, true);
+		$currentgroup = 0; // always show all groups
+		//echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
 		
 		$html = '';
 	
@@ -460,46 +462,15 @@ class publication{
 						foreach($files as $file){
 							$conditions['fileid'] = $file->get_id();
 							$filepermissions = $DB->get_record('publication_file', $conditions);
+							
 							$showfile = false;
 							
-							if($filepermissions){
-								// always show all files to teachers
-								if(has_capability('mod/publication:approve', $context)){
-									$showfile = true;
-								}
-								
-								
-								if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
-									// mode upload
-									if($this->get_instance()->obtainteacherapproval){
-										// need teacher approval
-										if($filepermissions->teacherapproval == 1){
-											// teacher has approved
-											$showfile = true;
-										}
-									}else{									
-										// no need for teacher approval
-										if(is_null($filepermissions->teacherapproval) || $filepermissions->teacherapproval == 1){
-											// teacher only hasnt rejected
-											$showfile = true;
-										}
-									}
-									
-								}else{
-									
-									// mode import
-									if(!$this->get_instance()->obtainstudentapproval && $filepermissions->teacherapproval == 1){
-										// no need to ask student and teacher has approved	
-										$showfile = true;
-									}else if($this->get_instance()->obtainstudentapproval &&
-											$filepermissions->teacherapproval == 1 &&
-											$filepermissions->studentapproval == 1){
-										// student and teacher have approved
-										$showfile = true;
-									}
-								}
+							if(has_capability('mod/publication:approve', $context)){
+								$showfile = true;
+							}else if($this->has_filepermission($file->get_id())){
+								$showfile = true;
 							}
-
+							
 //							if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
 //							|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))
 //							|| has_capability('mod/publication:approve', $context)){
@@ -682,6 +653,65 @@ class publication{
 		return $html;
 	}
 	
+	/**
+	 * Returns if a user has the permission to view a file
+	 * @param unknown $fileid
+	 * @param number $userid use for custom user, if 0 then if public visible
+	 * @return boolean
+	 */
+	function has_filepermission($fileid, $userid=0){
+		global $DB;
+		
+		$conditions = array();
+		$conditions['publication'] = $this->get_instance()->id;
+		$conditions['fileid'] = $fileid;
+	
+		$filepermissions = $DB->get_record('publication_file', $conditions);
+	
+		$haspermission = false;
+	
+		if($filepermissions){
+				
+			if($userid != 0){
+				if($filepermissions->userid == $userid){
+					// everyone is allowed to view their own files
+					$haspermission = true;
+				}
+			}
+	
+			if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
+				// mode upload
+				if($this->get_instance()->obtainteacherapproval){
+					// need teacher approval
+					if($filepermissions->teacherapproval == 1){
+						// teacher has approved
+						$haspermission = true;
+					}
+				}else{
+					// no need for teacher approval
+					if(is_null($filepermissions->teacherapproval) || $filepermissions->teacherapproval == 1){
+						// teacher only hasnt rejected
+						$haspermission = true;
+					}
+				}
+					
+			}else{
+					
+				// mode import
+				if(!$this->get_instance()->obtainstudentapproval && $filepermissions->teacherapproval == 1){
+					// no need to ask student and teacher has approved
+					$haspermission = true;
+				}else if($this->get_instance()->obtainstudentapproval &&
+				$filepermissions->teacherapproval == 1 &&
+				$filepermissions->studentapproval == 1){
+					// student and teacher have approved
+					$haspermission = true;
+				}
+			}
+		}
+	
+		return $haspermission;
+	}
 	
 	public function download_file($fileid){
 		global $DB, $USER;
@@ -693,19 +723,13 @@ class publication{
 		
 		$allowed = false;
 		
-		if($record->userid == $USER->id){
-			// owner is always allowed to see this files
-			$allowed = true;
-		
-		}else if(has_capability('mod/publication:approve', $this->get_context())){
+		if(has_capability('mod/publication:approve', $this->get_context())){
 			// teachers has to see the files to know if they can allow them
 			$allowed = true;
-		
-		}else if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
-		|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))){
-			// verybody is allowed
+		}else if($this->has_filepermission($fileid,$USER->id)){
+			// file is publicly viewable or is owned by the user
 			$allowed = true;
-		}
+		}	
 		
 		if($allowed){
 			$sid = $record->userid;
@@ -737,11 +761,12 @@ class publication{
 		
 		$uploaders = $DB->get_records_sql("SELECT DISTINCT userid FROM {publication_file} WHERE publication=:pubid" . $customusers,
 				array("pubid"=>$this->get_instance()->id));
-
+		
 		$filesforzipping = array();
 		$fs = get_file_storage();
 		$filearea = 'attachment';
 	
+		// get group name for filename
 		$groupmode = groups_get_activity_groupmode($this->get_coursemodule());
 		$groupid = 0;   // All users.
 		$groupname = '';
@@ -752,46 +777,34 @@ class publication{
 		$filename = str_replace(' ', '_', clean_filename($this->course->shortname.'-'.
 				$this->get_instance()->name.'-'.$groupname.$this->get_instance()->id.'.zip')); // Name of new zip file.
 		
+		
+		// get all files from each user
 		foreach ($uploaders as $uploader) {			
 			$a_userid = $uploader->userid; // Get userid.
 			
-			if ((groups_is_member($groupid, $a_userid)or !$groupmode or !$groupid)) {
-				$conditions['userid'] = $uploader->userid;
-				$records = $DB->get_records('publication_file', $conditions);
-				$filespermissions = array();
-				foreach($records as $record){
-					$filespermissions[$record->fileid] = $record;
-				}
+			$conditions['userid'] = $uploader->userid;
+			$records = $DB->get_records('publication_file', $conditions);
 				
-				$a_assignid = $a_userid; // Get name of this assignment for use in the file names.
-				// Get user firstname/lastname.
-				$a_user = $DB->get_record('user', array('id'=>$a_userid), 'id,username,firstname,lastname');
-	
-				$files = $fs->get_area_files($this->get_context()->id, 'mod_publication', $filearea, $a_userid,
-						'timemodified', false);
-				foreach ($files as $file) {					
-					$filepermissions = $filespermissions[$file->get_id()];
+				
+			$a_assignid = $a_userid; // Get name of this assignment for use in the file names.
+			// Get user firstname/lastname.
+			$a_user = $DB->get_record('user', array('id'=>$a_userid), 'id,username,firstname,lastname');
+				
+				
+			foreach($records as $record){
 					
-					$allowed = false;
-					if(has_capability('mod/publication:approve', $this->get_context())){
-						// teachers has to see the files to know if they can allow them
-						$allowed = true;
+				if(has_capability('mod/publication:approve', $this->get_context()) ||
+					$this->has_filepermission($record->fileid)){
+					// is teacher or file is public
 					
-					}else if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
-					|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))){
-						// verybody is allowed
-						$allowed = true;
-					}
-					
-					
-					if($allowed){
-						// Get files new name.
-						$fileext = strstr($file->get_filename(), '.');
-						$fileoriginal = str_replace($fileext, '', $file->get_filename());
-						$fileforzipname =  clean_filename(fullname($a_user) . '_' . $fileoriginal.'_'.$a_userid.$fileext);
-						// Save file name to array for zipping.
-						$filesforzipping[$fileforzipname] = $file;
-					}
+					$file = $fs->get_file_by_id($record->fileid);
+						
+					// Get files new name.
+					$fileext = strstr($file->get_filename(), '.');
+					$fileoriginal = str_replace($fileext, '', $file->get_filename());
+					$fileforzipname =  clean_filename(fullname($a_user) . '_' . $fileoriginal.'_'.$a_userid.$fileext);
+					// Save file name to array for zipping.
+					$filesforzipping[$fileforzipname] = $file;
 				}
 			}
 		} // End of foreach.
