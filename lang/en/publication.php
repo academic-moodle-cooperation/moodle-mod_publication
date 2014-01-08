@@ -138,6 +138,7 @@ $string['zipusers'] = "Download as ZIP";
 $string['approveusers'] = "visible for all";
 $string['rejectusers'] = "invisible for all";
 $string['grantextension'] = 'grant extension';
+$string['savevisibility'] = 'save visibility';
 
 // upload.php
 $string['guideline'] = 'Guideline:';

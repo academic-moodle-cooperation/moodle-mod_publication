@@ -46,12 +46,39 @@ add_to_log($course->id, "publication", "view", "view.php?id={$cm->id}", $id, $cm
 
 $pagetitle = strip_tags($course->shortname.': '.format_string($publication->get_instance()->name));
 $action = optional_param('action', 'view', PARAM_ALPHA);
+$savevisibility = optional_param('savevisibility', false, PARAM_RAW);
+
 $download = optional_param('download',0, PARAM_INT);
 if($download > 0){
 	$publication->download_file($download);
 }
 
-if($action == "zip"){
+if($savevisibility){
+	require_capability('mod/publication:approve', $context);
+	
+	$files = optional_param_array('files', array(), PARAM_INT);
+	$filesshown = optional_param_array('filesshown', array(), PARAM_INT);
+	
+	$visible = $files;
+	$invisible = array_diff($filesshown,$files);
+	
+	$sql = 'UPDATE {publication_file} SET teacherapproval=:approval WHERE publication=:pubid AND fileid  IN ';
+	
+	$params = array();
+	
+	$params['pubid'] = $publication->get_instance()->id;
+	
+	if(count($visible) > 0){
+		$params['approval'] = 1;
+		$DB->execute($sql . '(' . implode(',', $visible) . ')',$params);
+	}
+	
+	if(count($invisible) > 0){
+		$params['approval'] = 0;
+		$DB->execute($sql . '(' . implode(',', $invisible) . ')',$params);
+	}
+	
+}else if($action == "zip"){
 	$publication->download_zip();
 }else if($action == "zipusers"){
 	$users = optional_param_array('selectedeuser', array(), PARAM_INT);

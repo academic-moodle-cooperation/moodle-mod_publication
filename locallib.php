@@ -229,8 +229,7 @@ class publication{
 			$perpage = ($perpage <= 0) ? 10 : $perpage;
 			$filter = optional_param('filter', 0, PARAM_INT);
 			set_user_preference('publication_perpage', $perpage);
-		}
-	
+		}	
 	
 		/* next we get perpage and quickgrade (allow quick grade) params
 		 * from database
@@ -347,7 +346,9 @@ class publication{
 		$table->set_attribute('id', 'attempts');
 		$table->set_attribute('class', 'publications');
 		$table->set_attribute('width', '100%');
-	
+		
+//		$table->no_sorting('status');
+		$table->no_sorting('visibility');
 		// Start working -- this is necessary as soon as the niceties are over.
 		$table->setup();
 	
@@ -369,6 +370,7 @@ class publication{
 		if (!empty($users)) {
 			$select = 'SELECT '.$ufields.','.$useridentityfields.', username,
                                 COUNT(*) filecount,
+								SUM(files.studentapproval) as status,
                                 MAX(files.timecreated) timemodified ';
 			$sql = 'FROM {user} u '.
 					'LEFT JOIN {publication_file} files ON u.id = files.userid
@@ -458,42 +460,43 @@ class publication{
 						foreach($files as $file){
 							$conditions['fileid'] = $file->get_id();
 							$filepermissions = $DB->get_record('publication_file', $conditions);
-							
 							$showfile = false;
 							
-							// always show all files to teachers
-							if(has_capability('mod/publication:approve', $context)){
-								$showfile = true;
-							}
-							
-							
-							if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
-								// mode upload
-								if($this->get_instance()->obtainteacherapproval){
-									// need teacher approval
-									if($filepermissions->teacherapproval == 1){
-										// teacher has approved
-										$showfile = true;
-									}
-								}else{									
-									// no need for teacher approval
-									if(is_null($filepermissions->teacherapproval) || $filepermissions->teacherapproval == 1){
-										// teacher only hasnt rejected
-										$showfile = true;
-									}
+							if($filepermissions){
+								// always show all files to teachers
+								if(has_capability('mod/publication:approve', $context)){
+									$showfile = true;
 								}
 								
-							}else{
 								
-								// mode import
-								if(!$this->get_instance()->obtainstudentapproval && $filepermissions->teacherapproval == 1){
-									// no need to ask student and teacher has approved	
-									$showfile = true;
-								}else if($this->get_instance()->obtainstudentapproval &&
-										$filepermissions->teacherapproval == 1 &&
-										$filepermissions->studentapproval == 1){
-									// student and teacher have approved
-									$showfile = true;
+								if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
+									// mode upload
+									if($this->get_instance()->obtainteacherapproval){
+										// need teacher approval
+										if($filepermissions->teacherapproval == 1){
+											// teacher has approved
+											$showfile = true;
+										}
+									}else{									
+										// no need for teacher approval
+										if(is_null($filepermissions->teacherapproval) || $filepermissions->teacherapproval == 1){
+											// teacher only hasnt rejected
+											$showfile = true;
+										}
+									}
+									
+								}else{
+									
+									// mode import
+									if(!$this->get_instance()->obtainstudentapproval && $filepermissions->teacherapproval == 1){
+										// no need to ask student and teacher has approved	
+										$showfile = true;
+									}else if($this->get_instance()->obtainstudentapproval &&
+											$filepermissions->teacherapproval == 1 &&
+											$filepermissions->studentapproval == 1){
+										// student and teacher have approved
+										$showfile = true;
+									}
 								}
 							}
 
@@ -518,9 +521,14 @@ class publication{
 											$checked = true;
 										}
 									}
-									
+																
 									$permissionrow = array();
-									$permissionrow[] = html_writer::checkbox('file', 'value',$checked);
+									$permissionrow[] = html_writer::checkbox('files[]', $file->get_id(),$checked) . 
+									html_writer::empty_tag('input', array(
+											'type'=>'hidden',
+											'name'=>'filesshown[]',
+											'value'=>$file->get_id()
+									));
 									
 									$statusrow = array();
 									
@@ -544,7 +552,7 @@ class publication{
 							$lastmodified = html_writer::table($filetable);
 							$lastmodified .= userdate($auser->timemodified);
 						}else{
-							$lastmodified = "keine Dateien"; //TODO get_string
+							$lastmodified = get_string('nofiles', 'publication');
 						}
 						
 						$row[] = $lastmodified;
@@ -598,11 +606,19 @@ class publication{
 				}
 				
 				if ($totalfiles > 0){
+					if(has_capability('mod/publication:approve', $context)){
+						$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'savevisibility',
+								'value'=>get_string('savevisibility', 'publication'),
+								'class'=>'visibilitysaver'
+						));
+					}
+					
 					$html .= html_writer::start_div('withselection');
 					$html .= html_writer::span(get_string('withselected', 'publication'));
 					$html .= html_writer::select($options, 'action');
 					$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'submit',
 							'value'=>get_string('go', 'publication')));
+					
 					$html .= html_writer::end_div();
 				}
 			} else {
