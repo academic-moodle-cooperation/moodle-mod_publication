@@ -773,10 +773,12 @@ class publication{
 		$groupmode = groups_get_activity_groupmode($this->get_coursemodule());
 		$groupid = 0;   // All users.
 		$groupname = '';
+		/* // Do not include groupname in the zip filename
 		if ($groupmode) {
 			$groupid = groups_get_activity_group($this->get_coursemodule(), true);
 			$groupname = groups_get_group_name($groupid).'-';
 		}
+		*/
 		$filename = str_replace(' ', '_', clean_filename($this->course->shortname.'-'.
 				$this->get_instance()->name.'-'.$groupname.$this->get_instance()->id.'.zip')); // Name of new zip file.
 		
