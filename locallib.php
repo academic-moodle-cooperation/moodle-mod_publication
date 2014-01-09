@@ -114,7 +114,11 @@ class publication{
 		
 		if($this->instance->mode == PUBLICATION_MODE_IMPORT){
 			$assign = $DB->get_record('assign', array('id'=> $this->instance->importfrom));
-			$assigncm = $DB->get_record('course_modules', array('course'=>$this->course->id, 'instance'=>$this->instance->importfrom));
+			
+			$assign_module_id = $DB->get_field('modules', 'id', array('name'=>'assign'));
+			
+			$assigncm = $DB->get_record('course_modules',
+					array('course'=>$assign->course, 'module'=>$assign_module_id, 'instance'=>$assign->id));
 		
 			echo html_writer::start_div('assignurl');
 			if($assign && $assigncm){
@@ -843,7 +847,9 @@ class publication{
 		
 		if($this->instance->mode == PUBLICATION_MODE_IMPORT){
 			$assign = $DB->get_record('assign', array('id'=> $this->instance->importfrom));
-			$assigncm = $DB->get_record('course_modules', array('course'=>$this->course->id, 'instance'=>$this->instance->importfrom));
+			$assign_module_id = $DB->get_field('modules', 'id', array('name'=>'assign'));
+			$assigncm = $DB->get_record('course_modules',
+					array('course'=>$assign->course, 'module'=>$assign_module_id, 'instance'=>$assign->id));
 					
 			$assigncontext = context_module::instance($assigncm->id);
 			
@@ -882,6 +888,7 @@ class publication{
 									$dataobject->timecreated = time();
 									$dataobject->fileid = $newfile->get_id();
 									$dataobject->filename = $newfile->get_filename();
+									$dataobject->contenthash = $newfile->get_contenthash();
 									$dataobject->type = PUBLICATION_MODE_IMPORT;
 									$newid = $DB->insert_record('publication_file', $dataobject);
 									
@@ -894,7 +901,7 @@ class publication{
 									$conditions['userid'] = $submission->userid;
 									$conditions['contenthash'] = $file->get_contenthash();
 									
-									$oldrecord = $DB->get_record('publication_file', $conditions, 'id');
+									$oldrecord = $DB->get_record('publication_file', $conditions, 'id, fileid');
 									array_push($userfilesids, $oldrecord->id);
 								}
 							}
