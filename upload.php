@@ -22,8 +22,8 @@
  */
 
 require_once('../../config.php');
-require_once('/locallib.php');
-require_once('/upload_form.php');
+require_once($CFG->dirroot . '/mod/publication/locallib.php');
+require_once($CFG->dirroot . '/mod/publication/upload_form.php');
 
 $cmid = required_param('cmid', PARAM_INT); // Course Module ID
 $id = optional_param('id', 0, PARAM_INT); // EntryID
