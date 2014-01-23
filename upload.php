@@ -106,7 +106,7 @@ if ($mform->is_cancelled()) {
 		$values[] = $file->get_id();
 	}
 	
-	$rows = $DB->get_records('publication_file',array('userid'=>$USER->id));
+	$rows = $DB->get_records('publication_file',array('publication'=>$publication->get_instance()->id, 'userid'=>$USER->id));
 
 	// find new files and store in db
 	foreach($files as $file){
