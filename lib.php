@@ -105,7 +105,19 @@ function publication_delete_instance($id) {
 	if (! $publication = $DB->get_record('publication', array('id'=>$id))) {
 		return false;
 	}
+	
+	$DB->delete_records('publication_extduedates',array('publication'=>$publication->id));
 
+	$filerecords = $DB->get_records('publication_file', array('publication'=>$publication->id));
+	
+	$fs = get_file_storage();
+	foreach($filerecords as $filerecord){
+		$file = $fs->get_file_by_id($filerecord->fileid);
+		$file->delete();
+	}
+	
+	$DB->delete_records('publication_file', array('publication'=>$publication->id));
+	
 	$result = true;
 	if (! $DB->delete_records('publication', array('id'=>$publication->id))) {
 		$result = false;
