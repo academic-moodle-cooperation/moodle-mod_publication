@@ -51,31 +51,6 @@ class mod_publication_mod_form extends moodleform_mod{
         $requireintro = (isset($config->requiremodintro) && $config->requiremodintro == 1) ? true : false;
         
         $this->add_intro_editor($requireintro);
-
-        // availability
-        $mform->addElement('header', 'availability', get_string('availability', 'publication'));
-        $mform->setExpanded('availability', true);
-        
-        $name = get_string('allowsubmissionsfromdate', 'publication');
-        $options = array('optional'=>true);
-        $mform->addElement('date_time_selector', 'allowsubmissionsfromdate', $name, $options);
-        $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'assign');
-        $mform->setDefault('allowsubmissionsfromdate', time());
-        
-        $name = get_string('duedate', 'publication');
-        $mform->addElement('date_time_selector', 'duedate', $name, array('optional'=>true));
-        $mform->addHelpButton('duedate', 'duedate', 'publication');
-        $mform->setDefault('duedate', time()+7*24*3600);
-        
-        $name = get_string('cutoffdate', 'publication');
-        $mform->addElement('date_time_selector', 'cutoffdate', $name, array('optional'=>true));
-        $mform->addHelpButton('cutoffdate', 'cutoffdate', 'publication');
-        
-        $name = get_string('alwaysshowdescription', 'publication');
-        $mform->addElement('checkbox', 'alwaysshowdescription', $name);
-        $mform->addHelpButton('alwaysshowdescription', 'alwaysshowdescription', 'publication');
-        $mform->setDefault('alwaysshowdescription', 1);
-        $mform->disabledIf('alwaysshowdescription', 'allowsubmissionsfromdate[enabled]', 'notchecked');
         
         // Publication specific elements
         $mform->addElement('header','publication', get_string('modulename','publication'));
@@ -159,6 +134,34 @@ class mod_publication_mod_form extends moodleform_mod{
         $mform->setDefault('obtainteacherapproval', get_config('publication','obtainteacherapproval'));
         $mform->addHelpButton('obtainteacherapproval','obtainteacherapproval','publication');
         $mform->disabledIf('obtainteacherapproval', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
+        
+        // availability
+        $mform->addElement('header', 'availability', get_string('availability', 'publication'));
+        $mform->setExpanded('availability', true);
+        
+        $name = get_string('allowsubmissionsfromdate', 'publication');
+        $options = array('optional'=>true);
+        $mform->addElement('date_time_selector', 'allowsubmissionsfromdate', $name, $options);
+        $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'assign');
+        $mform->setDefault('allowsubmissionsfromdate', time());
+        
+        $name = get_string('duedate', 'publication');
+        $mform->addElement('date_time_selector', 'duedate', $name, array('optional'=>true));
+        $mform->addHelpButton('duedate', 'duedate', 'publication');
+        $mform->setDefault('duedate', time()+7*24*3600);
+        /*
+         $name = get_string('cutoffdate', 'publication');
+        $mform->addElement('date_time_selector', 'cutoffdate', $name, array('optional'=>true));
+        $mform->addHelpButton('cutoffdate', 'cutoffdate', 'publication');
+        */
+        $mform->addElement('hidden', 'cutoffdate', false);
+        $mform->setType('cutoffdate', PARAM_BOOL);
+        
+        $name = get_string('alwaysshowdescription', 'publication');
+        $mform->addElement('checkbox', 'alwaysshowdescription', $name);
+        $mform->addHelpButton('alwaysshowdescription', 'alwaysshowdescription', 'publication');
+        $mform->setDefault('alwaysshowdescription', 1);
+        $mform->disabledIf('alwaysshowdescription', 'allowsubmissionsfromdate[enabled]', 'notchecked');
         
         // Standard coursemodule elements
         $this->standard_coursemodule_elements();

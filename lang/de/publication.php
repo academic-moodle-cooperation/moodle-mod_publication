@@ -49,16 +49,16 @@ $string['maxbytes'] = 'Maximale Dateigröße';
 $string['configmaxbytes'] = 'Voreinstellung für die Dateigröße von Dateien im Studierendenordner.';
 
 // mod_form
-$string['availability'] = 'Verfügbarkeit';
+$string['availability'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
 
-$string['allowsubmissionsfromdate'] = 'Abgabebeginn';
+$string['allowsubmissionsfromdate'] = 'Von';
 $string['allowsubmissionsfromdate_help'] = 'Wenn diese Option aktiviert ist, können Lösungen nicht vor diesem Zeitpunkt abgegeben werden. Wenn diese Option deaktiviert ist, ist die Abgabe sofort möglich.';
 $string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
 $string['alwaysshowdescription'] = 'Beschreibung immer anzeigen';
 $string['alwaysshowdescription_help'] = 'Wenn diese Option deaktiviert ist, wird die Aufgabenbeschreibung für Teilnehmer/innen nur während des Abgabezeitraums angezeigt.';
 
-$string['duedate'] = 'Abgabetermin';
+$string['duedate'] = 'bis';
 $string['duedate_help'] = 'Zum Abgabetermin wird die Aufgabe fällig. Wenn spätere Abgaben erlaubt sind, wird jede nach diesem Datum eingereichte Abgabe als verspätet markiert. Um eine Abgabe nach einem bestimmten Verspätungsdatum zu verhindern kann ein endgültiges Abgabedatum gesetzt werden.';
 $string['duedatevalidation'] = 'Der Abgabetermin muss später als der Abgabebeginn sein.';
 
