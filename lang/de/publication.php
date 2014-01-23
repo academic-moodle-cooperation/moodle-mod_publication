@@ -83,7 +83,7 @@ $string['obtainteacherapproval_help'] = 'Diese Option legt fest, ob Dateien sofo
 * Nein - Einträge werden von Trainer/innen geprüft und freigegeben';
 $string['assignment'] = 'Aufgabe';
 $string['obtainstudentapproval_help'] = 'Hier legen Sie fest ob Studierende selbst entscheiden können ob ihre Aufgaben für andere sichtbar sind oder nicht.
-Sie können festlegen von welchen Studiernden das Einverständnis eingeholt wird. Erst nach Einverständnis des Studierenden
+Sie können festlegen von welchen Studierenden das Einverständnis eingeholt wird. Erst nach Einverständnis des Studierenden
 sind die Dateien auch wirklich sichtbar.';
 $string['choose'] = 'bitte auswählen ...';
 $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie importieren möchten.';
