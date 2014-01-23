@@ -36,6 +36,7 @@ $string['publication:upload'] = 'Dateien in den Studierendenordner hochladen';
 $string['publication:approve'] = 'Entscheiden ob Dateien für alle Studenten sichtbar sein sollen';
 $string['publication:grantextension'] = 'Erweiterung zulassen';
 
+$string['name'] = 'Name des Studierendenordners';
 $string['requiremodintro'] = 'Beschreibung notwendig';
 $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';
 $string['obtainstudentapproval'] = 'Einverständnis einholen';

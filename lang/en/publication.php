@@ -36,6 +36,7 @@ $string['publication:upload'] = 'Upload files to a student folder';
 $string['publication:approve'] = 'Decide if files should be visible for every student';
 $string['publication:grantextension'] = 'Grant extension';
 
+$string['name'] = 'Student folder name';
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
 $string['obtainstudentapproval'] = 'Obtain approval';
