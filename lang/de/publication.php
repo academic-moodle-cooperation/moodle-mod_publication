@@ -36,6 +36,7 @@ $string['publication:upload'] = 'Dateien in den Studierendenordner hochladen';
 $string['publication:approve'] = 'Entscheiden ob Dateien für alle Studenten sichtbar sein sollen';
 $string['publication:grantextension'] = 'Erweiterung zulassen';
 
+$string['name'] = 'Name des Studierendenordners';
 $string['requiremodintro'] = 'Beschreibung notwendig';
 $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';
 $string['obtainstudentapproval'] = 'Einverständnis einholen';
@@ -48,16 +49,16 @@ $string['maxbytes'] = 'Maximale Dateigröße';
 $string['configmaxbytes'] = 'Voreinstellung für die Dateigröße von Dateien im Studierendenordner.';
 
 // mod_form
-$string['availability'] = 'Verfügbarkeit';
+$string['availability'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
 
-$string['allowsubmissionsfromdate'] = 'Abgabebeginn';
+$string['allowsubmissionsfromdate'] = 'Von';
 $string['allowsubmissionsfromdate_help'] = 'Wenn diese Option aktiviert ist, können Lösungen nicht vor diesem Zeitpunkt abgegeben werden. Wenn diese Option deaktiviert ist, ist die Abgabe sofort möglich.';
 $string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
 $string['alwaysshowdescription'] = 'Beschreibung immer anzeigen';
 $string['alwaysshowdescription_help'] = 'Wenn diese Option deaktiviert ist, wird die Aufgabenbeschreibung für Teilnehmer/innen nur während des Abgabezeitraums angezeigt.';
 
-$string['duedate'] = 'Abgabetermin';
+$string['duedate'] = 'bis';
 $string['duedate_help'] = 'Zum Abgabetermin wird die Aufgabe fällig. Wenn spätere Abgaben erlaubt sind, wird jede nach diesem Datum eingereichte Abgabe als verspätet markiert. Um eine Abgabe nach einem bestimmten Verspätungsdatum zu verhindern kann ein endgültiges Abgabedatum gesetzt werden.';
 $string['duedatevalidation'] = 'Der Abgabetermin muss später als der Abgabebeginn sein.';
 
@@ -82,7 +83,7 @@ $string['obtainteacherapproval_help'] = 'Diese Option legt fest, ob Dateien sofo
 * Nein - Einträge werden von Trainer/innen geprüft und freigegeben';
 $string['assignment'] = 'Aufgabe';
 $string['obtainstudentapproval_help'] = 'Hier legen Sie fest ob Studierende selbst entscheiden können ob ihre Aufgaben für andere sichtbar sind oder nicht.
-Sie können festlegen von welchen Studiernden das Einverständnis eingeholt wird. Erst nach Einverständnis des Studierenden
+Sie können festlegen von welchen Studierenden das Einverständnis eingeholt wird. Erst nach Einverständnis des Studierenden
 sind die Dateien auch wirklich sichtbar.';
 $string['choose'] = 'bitte auswählen ...';
 $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie importieren möchten.';
@@ -130,7 +131,7 @@ $string['allfiles'] = 'Alle Dateien';
 $string['publicfiles'] = 'Öffentliche Dateien';
 $string['downloadall'] = 'Alle Dateien als ZIP herunterladen';
 $string['optionalsettings'] = 'Optionen';
-$string['entiresperpage'] = 'Angaben pro Seite';
+$string['entiresperpage'] = 'Einträge pro Seite';
 $string['nothingtodisplay'] = 'Keine Einträge';
 $string['nofilestozip'] = 'Keine Dateien zu Zipen';
 $string['status'] = 'Status';

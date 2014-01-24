@@ -36,6 +36,7 @@ $string['publication:upload'] = 'Upload files to a student folder';
 $string['publication:approve'] = 'Decide if files should be visible for every student';
 $string['publication:grantextension'] = 'Grant extension';
 
+$string['name'] = 'Student folder name';
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
 $string['obtainstudentapproval'] = 'Obtain approval';
@@ -48,16 +49,16 @@ $string['maxbytes'] = 'Maximum attachment size';
 $string['configmaxbytes'] = 'Default maximum size for all files in the studentfolder.';
 
 // mod_form
-$string['availability'] = 'Availability';
+$string['availability'] = 'Timeslot for Upload/Approval';
 
-$string['allowsubmissionsfromdate'] = 'Allow submissions from';
+$string['allowsubmissionsfromdate'] = 'from';
 $string['allowsubmissionsfromdate_help'] = 'If enabled, students will not be able to submit before this date. If disabled, students will be able to start submitting right away.';
 $string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
 $string['alwaysshowdescription'] = 'Always show description';
 $string['alwaysshowdescription_help'] = 'If disabled, the Assignment Description above will only become visible to students at the "Allow submissions from" date.';
 
-$string['duedate'] = 'Due date';
+$string['duedate'] = 'to';
 $string['duedate_help'] = 'This is when the assignment is due. Submissions will still be allowed after this date but any assignments submitted after this date are marked as late. To prevent submissions after a certain date - set the assignment cut off date.';
 $string['duedatevalidation'] = 'Due date must be after the allow submissions from date.';
 

@@ -60,7 +60,7 @@ function publication_add_instance($publication, $mform=null) {
 function publication_supports($feature) {
 	switch($feature) {
 
-		case FEATURE_GROUPS:                  return true;
+		case FEATURE_GROUPS:                  return false;
 		case FEATURE_GROUPINGS:               return true;
 		case FEATURE_GROUPMEMBERSONLY:        return true;
 		case FEATURE_MOD_INTRO:               return true;
@@ -105,7 +105,19 @@ function publication_delete_instance($id) {
 	if (! $publication = $DB->get_record('publication', array('id'=>$id))) {
 		return false;
 	}
+	
+	$DB->delete_records('publication_extduedates',array('publication'=>$publication->id));
 
+	$filerecords = $DB->get_records('publication_file', array('publication'=>$publication->id));
+	
+	$fs = get_file_storage();
+	foreach($filerecords as $filerecord){
+		$file = $fs->get_file_by_id($filerecord->fileid);
+		$file->delete();
+	}
+	
+	$DB->delete_records('publication_file', array('publication'=>$publication->id));
+	
 	$result = true;
 	if (! $DB->delete_records('publication', array('id'=>$publication->id))) {
 		$result = false;
