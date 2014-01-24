@@ -157,11 +157,14 @@ class mod_publication_mod_form extends moodleform_mod{
         $mform->addElement('hidden', 'cutoffdate', false);
         $mform->setType('cutoffdate', PARAM_BOOL);
         
-        $name = get_string('alwaysshowdescription', 'publication');
-        $mform->addElement('checkbox', 'alwaysshowdescription', $name);
+        /*
+        $mform->addElement('checkbox', 'alwaysshowdescription', get_string('alwaysshowdescription', 'publication'));
         $mform->addHelpButton('alwaysshowdescription', 'alwaysshowdescription', 'publication');
         $mform->setDefault('alwaysshowdescription', 1);
         $mform->disabledIf('alwaysshowdescription', 'allowsubmissionsfromdate[enabled]', 'notchecked');
+        */
+        $mform->addElement('hidden', 'alwaysshowdescription', true);
+        $mform->setType('alwaysshowdescription', PARAM_BOOL);
         
         // Standard coursemodule elements
         $this->standard_coursemodule_elements();
