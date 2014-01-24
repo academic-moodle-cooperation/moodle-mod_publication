@@ -123,7 +123,7 @@ class publication{
 			echo html_writer::start_div('assignurl');
 			if($assign && $assigncm){
 				$assignurl = new moodle_url('/mod/assign/view.php', array('id' => $assigncm->id));
-				echo get_string('assignment','publication') . ':' . html_writer::link($assignurl, $assign->name);
+				echo get_string('assignment','publication') . ': ' . html_writer::link($assignurl, $assign->name);
 				
 				if(has_capability('mod/publication:addinstance', $this->context)){
 					$url = new moodle_url('/mod/publication/view.php',
