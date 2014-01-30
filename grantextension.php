@@ -22,8 +22,8 @@
  */
 
 require_once('../../config.php');
-require_once('/locallib.php');
-require_once('/mod_publication_grantextension_form.php');
+require_once($CFG->dirroot . '/mod/publication/locallib.php');
+require_once($CFG->dirroot . '/mod/publication/mod_publication_grantextension_form.php');
 
 $id = optional_param('id', 0, PARAM_INT); /// Course Module ID
 $userids = required_param_array('userids', PARAM_INT); // User id
