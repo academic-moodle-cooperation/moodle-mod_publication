@@ -147,7 +147,7 @@ class mod_publication_mod_form extends moodleform_mod{
         
         $name = get_string('duedate', 'publication');
         $mform->addElement('date_time_selector', 'duedate', $name, array('optional'=>true));
-        $mform->addHelpButton('duedate', 'duedate', 'publication');
+        //$mform->addHelpButton('duedate', 'duedate', 'publication');
         $mform->setDefault('duedate', time()+7*24*3600);
         /*
          $name = get_string('cutoffdate', 'publication');
