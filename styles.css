@@ -52,15 +52,29 @@
 
 #page-mod-publication-view table.filetable,
 #page-mod-publication-view table.filetable td,
-#page-mod-publication-view table.filetable tr{
+#page-mod-publication-view table.filetable tr,
+#page-mod-publication-view table.statustable,
+#page-mod-publication-view table.statustable td,
+#page-mod-publication-view table.statustable tr,
+#page-mod-publication-view table.permissionstable,
+#page-mod-publication-view table.permissionstable td,
+#page-mod-publication-view table.permissionstable tr{
     padding:1px;
     padding-right:3px;
     border-width:0px !important;
 }
 
+#page-mod-publication-view table.statustable tbody tr,
+#page-mod-publication-view table.permissionstable tbody tr,
 #page-mod-publication-view table.filetable tbody tr{
 	background-color:transparent;
 }
+
+#page-mod-publication-view table.statustable,
+#page-mod-publication-view table.permissionstable{
+width:100%;
+text-align:center;
+} 
 
 #page-mod-publication-view div.withselection{
 	text-align:center;

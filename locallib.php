@@ -458,10 +458,10 @@ class publication{
 						$filetable->attributes = array('class' => 'filetable');
 						
 						$statustable = new html_table();
-						$statustable->attributes = array('class' => 'filetable');
+						$statustable->attributes = array('class' => 'statustable');
 						
 						$permissiontable = new html_table();
-						$permissiontable->attributes = array('class' => 'filetable');
+						$permissiontable->attributes = array('class' => 'permissionstable');
 
 						$conditions = array();
 						$conditions['publication'] = $this->get_instance()->id;
