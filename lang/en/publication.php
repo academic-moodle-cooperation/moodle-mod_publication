@@ -116,12 +116,14 @@ $string['notice_requireapproval'] = 'Entries require approving by a teacher befo
 $string['notice_noapproval'] = 'Files are immediately visible for everyone. The teacher has the right to overrule your setting.';
 $string['teacher_pending'] = 'confirmation pending';
 $string['teacher_approved'] = 'approved';
-$string['teacher_rejected'] = 'rejected';
+$string['teacher_rejected'] = 'declined';
 $string['student_approve'] = 'approve';
 $string['student_approved'] = 'approved';
 $string['student_pending'] = 'pending';
 $string['student_reject'] = 'reject';
 $string['student_rejected'] = 'rejected';
+$string['visible'] = 'visible';
+$string['hidden'] = 'hidden';
 
 $string['allfiles'] = 'All files';
 $string['publicfiles'] = 'Public files';

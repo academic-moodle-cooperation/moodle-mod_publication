@@ -126,6 +126,8 @@ $string['student_approved'] = 'Zugestimmt';
 $string['student_pending'] = 'noch keine Angabe';
 $string['student_reject'] = 'ablehnen';
 $string['student_rejected'] = 'Abgelehnt';
+$string['visible'] = 'sichtbar';
+$string['hidden'] = 'verborgen';
 
 $string['allfiles'] = 'Alle Dateien';
 $string['publicfiles'] = 'Öffentliche Dateien';

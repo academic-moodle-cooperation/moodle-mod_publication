@@ -117,20 +117,20 @@ class mod_publication_files_form extends moodleform {
 				if($publication->get_instance()->obtainteacherapproval){
 					// teacher has to approve: show all status
 					if(is_null($teacherapproval)){
-						$data[] = get_string('teacher_pending', 'publication');
+						$data[] = get_string('hidden', 'publication') .' ('. get_string('teacher_pending', 'publication') . ')';
 					}else if($teacherapproval == 1){
-						$data[] = get_string('teacher_approved', 'publication');
+						$data[] = get_string('visible','publication');
 					}else{
-						$data[] = get_string('teacher_rejected', 'publication');
+						$data[] = get_string('hidden', 'publication') .' ('. get_string('teacher_rejected', 'publication') . ')';
 					}					
 				}else{
 					// teacher doenst have to approve: only show when rejected
 					if(is_null($teacherapproval)){
-						$data[] = "";
+						$data[] = get_string('visible', 'publication');
 					}else if($teacherapproval == 1){
-						$data[] = "";
+						$data[] = get_string('visible', 'publication');
 					}else{
-						$data[] = get_string('teacher_rejected', 'publication');
+						$data[] = get_string('hidden', 'publication') .' ('. get_string('teacher_rejected', 'publication') .')';
 					}					
 				}
 			}
