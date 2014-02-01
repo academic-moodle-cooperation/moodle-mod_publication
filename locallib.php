@@ -287,11 +287,36 @@ class publication{
 					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
 					'WHERE u.deleted = 0 AND eu.id=u.id ';
 		} else {		
-			$sql = 'SELECT DISTINCT u.id FROM {user} u '.
+			$sql = 'SELECT u.id FROM {user} u '.
 					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
-					'LEFT JOIN {publication_file} files ON (u.id = files.userid) '.
+					'LEFT JOIN {publication_file} files ON (u.id = files.userid) '. 
 					'WHERE u.deleted = 0 AND eu.id=u.id '.
-					'AND files.publication = '. $this->get_instance()->id;
+					'AND files.publication = '. $this->get_instance()->id . ' ';
+					
+			if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
+				// mode upload
+				if($this->get_instance()->obtainteacherapproval){
+					// need teacher approval
+					
+					$where = 'files.teacherapproval = 1';
+				}else{
+					// no need for teacher approval
+					// teacher only hasnt rejected
+					$where = '(files.teacherapproval = 1 OR files.teacherapproval IS NULL)';
+				}
+			}else{	
+				// mode import
+				if(!$this->get_instance()->obtainstudentapproval){
+					// no need to ask student and teacher has approved
+					$where = 'files.teacherapproval = 1';
+				}else{
+					// student and teacher have approved					
+					$where ='files.teacherapproval = 1 AND files.studentapproval = 1';
+				}
+			}
+			
+			$sql .= 'AND ' . $where . ' ';
+			$sql .= 'GROUP BY u.id';
 		}
 		
 		$users = $DB->get_records_sql($sql, $params);
