@@ -91,3 +91,16 @@ text-align:center;
 #page-mod-publication-view .visibilitysaver{
 	float:right;
 }
+
+#page-mod-publication-view #dates{
+	border-width:0;
+}
+
+#page-mod-publication-view #dates .c0 {
+	text-align: left;
+}
+
+#page-mod-publication-view #dates td{
+	padding-top:0;
+	padding-bottom:0;
+}

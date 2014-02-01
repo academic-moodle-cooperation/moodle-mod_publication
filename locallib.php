@@ -72,37 +72,36 @@ class publication{
 	}
 	
 	public function display_availability(){
-		global $USER;
-		
+		global $USER, $OUTPUT;
+
 		// display availability dates
 		$textsuffix = ($this->instance->mode == PUBLICATION_MODE_IMPORT) ? "_import" : "_upload";
 		
-		echo html_writer::start_div('availability');
+		echo $OUTPUT->box_start('generalbox boxaligncenter', 'dates');
+		echo '<table>';
+		if ($this->instance->allowsubmissionsfromdate) {
+			echo '<tr><td class="c0">'.get_string('allowsubmissionsfromdate' . $textsuffix,'publication').':</td>';
+			echo '    <td class="c1">'.userdate($this->instance->allowsubmissionsfromdate).'</td></tr>';
+		}
+		if ($this->instance->duedate) {
+			echo '<tr><td class="c0">'.get_string('duedate' . $textsuffix,'publication').':</td>';
+			echo '    <td class="c1">'.userdate($this->instance->duedate).'</td></tr>';
+		}
 		
-		if($this->instance->allowsubmissionsfromdate){
-			echo html_writer::start_div();
-			echo html_Writer::tag('span', get_string('allowsubmissionsfromdate' . $textsuffix,'publication') . ': ') . userdate($this->instance->allowsubmissionsfromdate);
-			echo html_writer::end_div();
-		}
-		if($this->instance->duedate){
-			echo html_writer::start_div();
-			echo html_Writer::tag('span', get_string('duedate' . $textsuffix,'publication') . ': ') . userdate($this->instance->duedate);
-			echo html_writer::end_div();
-		}
-		if($this->instance->cutoffdate){
-			echo html_writer::start_div();
-			echo html_Writer::tag('span',  get_string('cutoffdate' . $textsuffix,'publication') . ': ') . userdate($this->instance->cutoffdate);
-			echo html_writer::end_div();
+		if ($this->instance->cutoffdate) {
+			echo '<tr><td class="c0">'.get_string('cutoffdate' . $textsuffix,'publication').':</td>';
+			echo '    <td class="c1">'.userdate($this->instance->cutoffdate).'</td></tr>';
 		}
 		
 		$extensionduedate = $extensionduedate = $this->user_extensionduedate($USER->id);
 		
-		if($extensionduedate){
-			echo html_writer::start_div();
-			echo html_Writer::tag('span',  get_string('extensionto','publication') . ': ') . userdate($extensionduedate);
-			echo html_writer::end_div();
+		if($extensionduedate){			
+			echo '<tr><td class="c0">'.get_string('extensionto','publication').':</td>';
+			echo '    <td class="c1">'.userdate($extensionduedate).'</td></tr>';
 		}
-		echo html_writer::end_div();
+		
+		echo '</table>';
+		echo $OUTPUT->box_end();
 	}
 	
 	/**
