@@ -40,13 +40,23 @@ class mod_publication_files_form extends moodleform {
 
 		if($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
 			if($publication->get_instance()->obtainteacherapproval){
-				$notice = get_string('notice_requireapproval', 'publication');
+				$notice = get_string('notice_uploadrequireapproval', 'publication');
 			}else{
-				$notice = get_string('notice_noapproval', 'publication');
+				$notice = get_string('notice_uploadnoapproval', 'publication');
 			}
-
-			$mform->addElement('static','notice',get_string('notice', 'publication'), $notice);
+		}else{
+			if($publication->get_instance()->obtainstudentapproval){
+				$notice = get_string('notice_importrequireapproval', 'publication');
+			}else{
+				$notice = get_string('notice_importnoapproval', 'publication');
+			}
 		}
+		
+		$notice_html = html_writer::start_tag('div', array('class'=>'notice'));
+		$notice_html .= get_string('notice', 'publication') . ' ' . $notice;
+		$notice_html .= html_writer::end_tag('div');
+		
+		$mform->addElement('html',$notice_html);
 		
 		require_once($CFG->libdir.'/tablelib.php');
 		$table = new html_table();

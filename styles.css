@@ -108,3 +108,8 @@ text-align:center;
 #page-mod-publication-upload .fstatic{
 	font-style:italic;
 }
+
+#page-mod-publication-view fieldset#id_myfiles .notice{
+	padding:8px;
+	margin-bottom:6px;
+}
