@@ -146,7 +146,7 @@ $string['grantextension'] = 'Erweiterung zulassen';
 $string['savevisibility'] = 'Sichtbarkeit sichern';
 
 // upload.php
-$string['guideline'] = 'Hinweis:';
-$string['published_emediately'] = 'sichtbar für alle: ja sofort, ohne Prüfung durch den Lehrenden';
-$string['published_aftercheck'] = 'sichtbar für alle: nein, erst nach Prüfung durch den Lehrenden';
+$string['guideline'] = 'sichtbar für alle:';
+$string['published_emediately'] = 'ja sofort, ohne Prüfung durch den Lehrenden';
+$string['published_aftercheck'] = 'nein, erst nach Prüfung durch den Lehrenden';
 $string['save_changes'] = 'Änderungen Speichern';

@@ -142,7 +142,7 @@ $string['grantextension'] = 'grant extension';
 $string['savevisibility'] = 'save visibility';
 
 // upload.php
-$string['guideline'] = 'Guideline:';
-$string['published_emediately'] = 'visible for everybody: yes emediately, without approval by a teacher';
-$string['published_aftercheck'] = 'visible for everybody: no, only after approval by a teacher';
+$string['guideline'] = 'visible for everybody:';
+$string['published_emediately'] = 'yes emediately, without approval by a teacher';
+$string['published_aftercheck'] = 'no, only after approval by a teacher';
 $string['save_changes'] = 'Save changes';
