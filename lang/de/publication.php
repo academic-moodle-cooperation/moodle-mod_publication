@@ -51,7 +51,7 @@ $string['configmaxbytes'] = 'Voreinstellung für die Dateigröße von Dateien im
 // mod_form
 $string['availability'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
 
-$string['allowsubmissionsfromdate'] = 'Von';
+$string['allowsubmissionsfromdate'] = 'von';
 $string['allowsubmissionsfromdate_help'] = 'Wenn diese Option aktiviert ist, können Lösungen nicht vor diesem Zeitpunkt abgegeben werden. Wenn diese Option deaktiviert ist, ist die Abgabe sofort möglich.';
 $string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
