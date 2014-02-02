@@ -105,7 +105,8 @@ text-align:center;
 	padding-bottom:0;
 }
 
-#page-mod-publication-upload .fstatic{
+#page-mod-publication-upload .fstatic,
+#page-mod-publication-upload .fstaticlabel{
 	font-style:italic;
 }
 
