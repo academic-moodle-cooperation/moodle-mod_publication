@@ -34,6 +34,14 @@ class mod_publication_mod_form extends moodleform_mod{
     public function definition() {
         global $DB, $CFG, $COURSE, $PAGE, $OUTPUT;
         
+        $jsmodule = array(
+        		'name' => 'mod_publication',
+        		'fullpath' => '/mod/publication/publication.js',
+        		'requires' => array('node-base', 'node-event-simulate'),
+        );
+        
+        $PAGE->requires->js_init_call('M.mod_publication.init_mod_form', array(), false, $jsmodule);
+        
         $config = get_config('publication');
 
         $mform = $this->_form;
