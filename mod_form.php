@@ -119,15 +119,18 @@ class mod_publication_mod_form extends moodleform_mod{
         $mform->disabledIf('allowedfiletypes', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
 		
         $attributes = array();
-        if(isset($this->current->id) && isset($this->current->obtainteacherapproval)){        	
+        if(isset($this->current->id) && isset($this->current->obtainteacherapproval)){
+        	   	
         	if(!$this->current->obtainteacherapproval){
         		$message = get_string('warning_changefromobtainteacherapproval', 'publication');
+        		$showwhen = "1";
         	}else{
         		$message =  get_string('warning_changetoobtainteacherapproval', 'publication');
+        		$showwhen = "0";
         	}
         	
         	$message = trim(preg_replace('/\s+/', ' ', $message));
-        	$attributes['onChange'] = "alert('" . $message .  "')";
+        	$attributes['onChange'] = "if(this.value==".$showwhen."){alert('" . $message .  "')}";
         }
         
         $mform->addElement('selectyesno', 'obtainteacherapproval', get_string('obtainteacherapproval','publication'), $attributes);
