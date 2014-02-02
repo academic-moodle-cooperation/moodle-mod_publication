@@ -598,16 +598,19 @@ class publication{
 				$table->print_html();  // Print the whole table.
 				
 				$options = array();
-				$options['zipusers'] = get_string('zipusers', 'publication');
-				if(has_capability('mod/publication:approve', $context)){
-					$options['approveusers'] = get_string('approveusers', 'publication');
-					$options['rejectusers'] = get_string('rejectusers', 'publication');
+				if ($totalfiles > 0) {
+					$options['zipusers'] = get_string('zipusers', 'publication');
+				
+					if(has_capability('mod/publication:approve', $context)){
+						$options['approveusers'] = get_string('approveusers', 'publication');
+						$options['rejectusers'] = get_string('rejectusers', 'publication');
+					}
 				}
 				if(has_capability('mod/publication:grantextension', $this->get_context())){
 					$options['grantextension'] = get_string('grantextension', 'publication');
 				}
 				
-				if ($totalfiles > 0){
+				if (count($options) > 0){
 					if(has_capability('mod/publication:approve', $context)){
 						$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'savevisibility',
 								'value'=>get_string('savevisibility', 'publication'),
