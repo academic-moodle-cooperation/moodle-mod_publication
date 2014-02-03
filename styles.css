@@ -40,6 +40,29 @@
     padding-right:3px;
 }
 
+/* scroll table if page is too small */
+#page-mod-publication-view fieldset#id_allfiles{
+    padding-top:4px;
+    min-width: initial; /* for chrome */
+    display: table-column; /* for firefox */
+}
+
+ /* .. ie */
+.ie#page-mod-publication-view fieldset#id_allfiles {
+    display: block !important;
+}
+
+/* end scroll */
+
+#page-mod-publication-view fieldset#id_allfiles div div.no-overflow {
+    margin-bottom:1em;
+    padding-bottom:0px;
+}
+
+
+#page-mod-publication-view fieldset#id_allfiles table#attempts {
+    margin-bottom:0;
+}
 
 #page-mod-publication-view fieldset#id_allfiles{
     padding-top:4px;
