@@ -584,7 +584,7 @@ class publication{
 					$currentposition++;
 				}			
 				
-				if ($totalfiles > 0) {
+				if (/*$totalfiles > 0*/true) { // always display download option
 					$html .= html_writer::start_tag('div', array('class' => 'mod-publication-download-link'));
 					$html .= html_writer::link(new moodle_url('/mod/publication/view.php',
 							array('id' => $this->coursemodule->id, 'action' => 'zip')), get_string('downloadall', 'publication'));
@@ -598,9 +598,12 @@ class publication{
 				$table->print_html();  // Print the whole table.
 				
 				$options = array();
-				if ($totalfiles > 0) {
+				if (/*$totalfiles > 0*/true) { // always display download option
 					$options['zipusers'] = get_string('zipusers', 'publication');
 				
+				}
+
+				if($totalfiles > 0){
 					if(has_capability('mod/publication:approve', $context)){
 						$options['approveusers'] = get_string('approveusers', 'publication');
 						$options['rejectusers'] = get_string('rejectusers', 'publication');
@@ -779,7 +782,8 @@ class publication{
 	}
 	
 	/**
-	 * creates a zip of all uploaded files and sends a zip to the browser
+	 * Creates a zip of all uploaded files and sends a zip to the browser
+	 * @param unknown $users false => empty zip, true all users, array files from users in array
 	 */
 	public function download_zip($users = array()) {
 		global $CFG, $DB;
@@ -789,8 +793,12 @@ class publication{
 		$conditions['publication'] = $this->get_instance()->id;
 		
 		$customusers = "";
-		if(count($users) > 0){
+		
+		if(is_array($users) && count($users) > 0){
 			$customusers = " and userid IN (" . implode($users, ',') . ")";
+			
+		}else if($users == false){
+			$customusers = " AND 1=2 ";
 		}
 		
 		$uploaders = $DB->get_records_sql("SELECT DISTINCT userid FROM {publication_file} WHERE publication=:pubid" . $customusers,
@@ -845,9 +853,11 @@ class publication{
 			}
 		} // End of foreach.
 		
+		/*
 		if (empty($filesforzipping)) {
 			print_error('nofilestozip', 'publication');
 		}
+		*/
 	
 		if ($zipfile = $this->pack_files($filesforzipping)) {
 			send_temp_file($zipfile, $filename); // Send file and delete after sending.

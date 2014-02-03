@@ -79,9 +79,9 @@ if($savevisibility){
 	}
 	
 }else if($action == "zip"){
-	$publication->download_zip();
+	$publication->download_zip(true);
 }else if($action == "zipusers"){
-	$users = optional_param_array('selectedeuser', array(), PARAM_INT);
+	$users = optional_param_array('selectedeuser', false, PARAM_INT);
 	$users = array_keys($users);
 	$publication->download_zip($users);
 
