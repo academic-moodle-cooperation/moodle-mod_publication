@@ -72,6 +72,10 @@
     text-align:right;
 }
 
+#page-mod-publication-view fieldset#id_allfiles table#attempts td.c0{
+	text-align:center;
+}
+
 
 #page-mod-publication-view table.filetable,
 #page-mod-publication-view table.filetable td,

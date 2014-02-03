@@ -330,9 +330,14 @@ class publication{
 				$users = array_intersect($users, array_keys($groupingusers));
 			}
 		}
+		
+		$selectallnone = html_writer::checkbox('selectallnone', false,false,'',
+				array('id'=>'selectallnone',
+						'onClick'=>'toggle_userselection()'
+				));
 	
 		$tablecolumns = array('selection', 'fullname');
-		$tableheaders = array('', get_string('fullnameuser'));
+		$tableheaders = array($selectallnone, get_string('fullnameuser'));
 	
 		$useridentity = explode(',', $CFG->showuseridentity);
 		
@@ -378,6 +383,7 @@ class publication{
 		$table->set_attribute('width', '100%');
 		
 //		$table->no_sorting('status');
+		$table->no_sorting('selection');
 		$table->no_sorting('visibility');
 		// Start working -- this is necessary as soon as the niceties are over.
 		$table->setup();
@@ -638,15 +644,16 @@ class publication{
 					array('class'=>'nosubmisson'));
 		}
 		
-/*		
+		
 		// select all/none 
 		$html .= html_writer::start_tag('div', array('class'=>'checkboxcontroller'));
 		$html .= "<script type=\"text/javascript\">
                                         function toggle_userselection() {
                                         var checkboxes = document.getElementsByClassName('userselection');
-	
+										var sel = document.getElementById('selectallnone');
+				
                                         if(checkboxes.length > 0){
-                                        checkboxes[0].checked = !checkboxes[0].checked;
+                                        checkboxes[0].checked = sel.checked;
 	
                                         for(var i = 1; i < checkboxes.length;i++){
                                         checkboxes[i].checked = checkboxes[0].checked;
@@ -654,7 +661,7 @@ class publication{
     }
     }
                                         </script>";
-	
+	/*
 		$html .= '<div style="padding-top:14px;margin-left:12px;">';
 		$html .= html_writer::tag('a', get_string('select_allnone', 'extserver'),
 				array('href'=>'#', 'onClick'=>'toggle_userselection()'));
