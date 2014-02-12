@@ -153,4 +153,4 @@ $string['savevisibility'] = 'Sichtbarkeit sichern';
 $string['guideline'] = 'sichtbar für alle:';
 $string['published_emediately'] = 'ja sofort, ohne Prüfung durch den Lehrenden';
 $string['published_aftercheck'] = 'nein, erst nach Prüfung durch den Lehrenden';
-$string['save_changes'] = 'Änderungen Speichern';
+$string['save_changes'] = 'Änderungen speichern';
