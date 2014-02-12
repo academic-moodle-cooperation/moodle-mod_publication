@@ -52,7 +52,8 @@ $string['configmaxbytes'] = 'Voreinstellung für die Dateigröße von Dateien im
 $string['availability'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
 
 $string['allowsubmissionsfromdate'] = 'von';
-$string['allowsubmissionsfromdate_help'] = 'Wenn diese Option aktiviert ist, können Lösungen nicht vor diesem Zeitpunkt abgegeben werden. Wenn diese Option deaktiviert ist, ist die Abgabe sofort möglich.';
+$string['allowsubmissionsfromdateh'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
+$string['allowsubmissionsfromdateh_help'] = 'Im festgelegten Zeitraum können Studierende je nach Modus entweder Dateien hochladen oder ihre Einverständis für die Sichtbarkeit ihrer Dateien geben. Solange der Zeitraum geöffnet ist, können Sie ihre hochgeladenen Dateien bearbeiten oder ihr Einverständnis für die Sichtbarkeit wieder entziehen.';
 $string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
 $string['alwaysshowdescription'] = 'Beschreibung immer anzeigen';

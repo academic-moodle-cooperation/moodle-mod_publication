@@ -153,7 +153,7 @@ class mod_publication_mod_form extends moodleform_mod{
         $name = get_string('allowsubmissionsfromdate', 'publication');
         $options = array('optional'=>true);
         $mform->addElement('date_time_selector', 'allowsubmissionsfromdate', $name, $options);
-        $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'assign');
+        $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdateh', 'publication');
         $mform->setDefault('allowsubmissionsfromdate', time());
         
         $name = get_string('duedate', 'publication');
