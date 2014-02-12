@@ -115,10 +115,10 @@ class publication{
 			$assign = $DB->get_record('assign', array('id'=> $this->instance->importfrom));
 			
 			$assign_module_id = $DB->get_field('modules', 'id', array('name'=>'assign'));
-			
-			$assigncm = $DB->get_record('course_modules',
+			if($assign){
+				$assigncm = $DB->get_record('course_modules',
 					array('course'=>$assign->course, 'module'=>$assign_module_id, 'instance'=>$assign->id));
-		
+			}
 			echo html_writer::start_div('assignurl');
 			if($assign && $assigncm){
 				$assignurl = new moodle_url('/mod/assign/view.php', array('id' => $assigncm->id));
