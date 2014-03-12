@@ -342,8 +342,10 @@ class publication{
 		$useridentity = explode(',', $CFG->showuseridentity);
 		
 		foreach($useridentity as $cur){
-			$tablecolumns[] = $cur;
-			$tableheaders[] = ($cur == 'phone1') ? get_string('phone') : get_string($cur);
+			if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))){
+				$tablecolumns[] = $cur;
+				$tableheaders[] = ($cur == 'phone1') ? get_string('phone') : get_string($cur);
+			}
 		}
 	
 		$tableheaders[] = get_string('lastmodified');
@@ -441,11 +443,13 @@ class publication{
 	
 						$useridentity = explode(',', $CFG->showuseridentity);
 						foreach($useridentity as $cur){
-							if (!empty($auser->$cur)) {
-								$$cur = html_writer::tag('div', $auser->$cur,
-										array('id'=>'u'.$cur.$auser->id));
-							} else {
-								$$cur = html_writer::tag('div', '-', array('id'=>'u'.$cur.$auser->id));
+							if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))){	
+								if (!empty($auser->$cur)) {
+									$$cur = html_writer::tag('div', $auser->$cur,
+											array('id'=>'u'.$cur.$auser->id));
+								} else {
+									$$cur = html_writer::tag('div', '-', array('id'=>'u'.$cur.$auser->id));
+								}
 							}
 						}	
 
@@ -466,10 +470,13 @@ class publication{
 	
 						$useridentity = explode(',', $CFG->showuseridentity);
 						foreach($useridentity as $cur) {
-							if(true /*!$this->column_is_hidden($cur)*/){
-								$row[] = $$cur;
-							}else{
-								$row[] = "";
+
+							if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))){
+								if(true /*!$this->column_is_hidden($cur)*/){
+									$row[] = $$cur;
+								}else{
+									$row[] = "";
+								}
 							}
 						}
 						

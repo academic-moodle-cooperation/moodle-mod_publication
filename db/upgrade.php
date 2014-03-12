@@ -21,7 +21,7 @@
  */
 
 
-function xmldb_rssplayer_upgrade($oldversion) {
+function xmldb_publication_upgrade($oldversion) {
     global $CFG, $DB, $OUTPUT;
 
     return true;
