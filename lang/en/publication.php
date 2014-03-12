@@ -107,6 +107,7 @@ $string['assignment_notfound'] = 'The assignment used to import from, couldnt be
 $string['updatefiles'] = 'Update files';
 $string['updatefileswarning'] = 'Files from an individual student in the student folder will be updated with his/her submission of the assignment. Already visible files from students will be replaced too, if they are deleted or refreshed - the settings of the student as to the visibility will not be changed.';
 $string['myfiles'] = 'Own files';
+$string['add_uploads'] = 'Add files';
 $string['edit_uploads'] = 'Edit files';
 $string['edit_timeover'] = 'Files can only be edited during the changeperiod.';
 $string['approval_timeover'] = 'You can only change your approval during the changeperiod.';

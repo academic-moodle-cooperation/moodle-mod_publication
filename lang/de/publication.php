@@ -111,6 +111,7 @@ $string['assignment_notfound'] = 'Die Aufgabe von der Import wird konnte nicht m
 $string['updatefiles'] = 'Dateien aktualisieren';
 $string['updatefileswarning'] = 'Die Dateien der einzelnen Studierenden aus dem Studierendenordner werden mit denen der Aufgabe aktualisiert. Bereits sichtbare Dateien eines Studierenden werden ebenfalls überschrieben, falls diese in der Aufgabe nicht mehr vorhanden sind bzw. geändert wurden - d.h. das Einverständnis zur Sichtbarkeit des einzeln Studierenden bleibt unverändert.';
 $string['myfiles'] = 'Meine Dateien';
+$string['add_uploads'] = 'Datei hochladen';
 $string['edit_uploads'] = 'Dateien bearbeiten';
 $string['edit_timeover'] = 'Dateien können nur während des Änderungszeitraumes geändert werden.';
 $string['approval_timeover'] = 'Sie können ihre Zustimmung nur während des Änderungszeitraumes ändern.';

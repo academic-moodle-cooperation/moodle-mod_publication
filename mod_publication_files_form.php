@@ -174,7 +174,14 @@ class mod_publication_files_form extends moodleform {
 		if($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
 			if($publication->is_open()){
 				$buttonarray=array();
-				$buttonarray[] = &$mform->createElement('submit', 'gotoupload', get_string('edit_uploads','publication'));
+				
+				$label = get_string('edit_uploads','publication');
+				
+				if(count($files) == 0){
+					$label = get_string('add_uploads','publication');
+				}
+				
+				$buttonarray[] = &$mform->createElement('submit', 'gotoupload', $label);
 				$mform->addGroup($buttonarray, 'uploadgrp', '', array(' '), false);
 			}else{
 				$mform->addElement('static','edittimeover', '', get_string('edit_timeover', 'publication'));
