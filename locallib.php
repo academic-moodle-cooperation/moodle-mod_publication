@@ -558,7 +558,7 @@ class publication{
 						$lastmodified = "";
 						if(count($filetable->data) > 0){
 							$lastmodified = html_writer::table($filetable);
-							$lastmodified .= userdate($auser->timemodified);
+							$lastmodified .= html_writer::span(userdate($auser->timemodified),"timemodified");
 						}else{
 							$lastmodified = get_string('nofiles', 'publication');
 						}

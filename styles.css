@@ -64,6 +64,11 @@
     margin-bottom:0;
 }
 
+#page-mod-publication-view fieldset#id_allfiles table#attempts span.timemodified{
+	font-style:italic;
+	font-size:0.9em;
+} 
+
 #page-mod-publication-view fieldset#id_allfiles{
     padding-top:4px;
 }
