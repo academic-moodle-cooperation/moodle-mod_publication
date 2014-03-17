@@ -112,28 +112,34 @@ class publication{
 		global $DB, $OUTPUT;
 		
 		if($this->instance->mode == PUBLICATION_MODE_IMPORT){
-			$assign = $DB->get_record('assign', array('id'=> $this->instance->importfrom));
-			
-			$assign_module_id = $DB->get_field('modules', 'id', array('name'=>'assign'));
-			
-			$assigncm = $DB->get_record('course_modules',
-					array('course'=>$assign->course, 'module'=>$assign_module_id, 'instance'=>$assign->id));
-		
 			echo html_writer::start_div('assignurl');
-			if($assign && $assigncm){
-				$assignurl = new moodle_url('/mod/assign/view.php', array('id' => $assigncm->id));
-				echo get_string('assignment','publication') . ': ' . html_writer::link($assignurl, $assign->name);
-				
-				if(has_capability('mod/publication:addinstance', $this->context)){
-					$url = new moodle_url('/mod/publication/view.php',
-							array('id'=>$this->coursemodule->id, 'sesskey'=>sesskey(), 'action'=>'import'));
-					$label = get_string('updatefiles','publication');
-					
-					echo $OUTPUT->single_button($url, $label);
-				}
+			
+			if($this->get_instance()->importfrom == -1){
+				echo get_string('assignment_notset', 'publication');
 				
 			}else{
-				echo get_string('assignment_notfound', 'publication');
+				$assign = $DB->get_record('assign', array('id'=> $this->instance->importfrom));
+				
+				$assign_module_id = $DB->get_field('modules', 'id', array('name'=>'assign'));
+				
+				$assigncm = $DB->get_record('course_modules',
+						array('course'=>$assign->course, 'module'=>$assign_module_id, 'instance'=>$assign->id));
+				
+				if($assign && $assigncm){
+					$assignurl = new moodle_url('/mod/assign/view.php', array('id' => $assigncm->id));
+					echo get_string('assignment','publication') . ': ' . html_writer::link($assignurl, $assign->name);
+					
+					if(has_capability('mod/publication:addinstance', $this->context)){
+						$url = new moodle_url('/mod/publication/view.php',
+								array('id'=>$this->coursemodule->id, 'sesskey'=>sesskey(), 'action'=>'import'));
+						$label = get_string('updatefiles','publication');
+						
+						echo $OUTPUT->single_button($url, $label);
+					}
+					
+				}else{
+					echo get_string('assignment_notfound', 'publication');
+				}
 			}
 			echo html_writer::end_div();
 		}
