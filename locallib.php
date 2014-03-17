@@ -527,23 +527,20 @@ class publication{
 								$filerow[] = html_writer::link($url, $file->get_filename());
 								if(has_capability('mod/publication:approve', $context)){	
 									$checked = $filepermissions->teacherapproval;
-									
-									if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && is_null($checked)){
-										// if checked is null set defaults for upload mode
-										if($this->get_instance()->obtainteacherapproval){
-											$checked = false;
-										}else{
-											$checked = true;
-										}
+
+									if(is_null($checked)){
+										$checked = "";
+									}else{
+										$checked = $checked + 1;
 									}
 																
 									$permissionrow = array();
-									$permissionrow[] = html_writer::checkbox('files[]', $file->get_id(),$checked) . 
-									html_writer::empty_tag('input', array(
-											'type'=>'hidden',
-											'name'=>'filesshown[]',
-											'value'=>$file->get_id()
-									));
+																	
+									$options = array();
+									$options['2'] = get_string('yes');
+									$options['1'] = get_string('no');
+									
+									$permissionrow[] = html_writer::select($options, 'files[' . $file->get_id() . ']',$checked);									
 									
 									$statusrow = array();
 									

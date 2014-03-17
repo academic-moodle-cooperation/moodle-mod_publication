@@ -57,10 +57,6 @@ if($savevisibility){
 	require_capability('mod/publication:approve', $context);
 	
 	$files = optional_param_array('files', array(), PARAM_INT);
-	$filesshown = optional_param_array('filesshown', array(), PARAM_INT);
-	
-	$visible = $files;
-	$invisible = array_diff($filesshown,$files);
 	
 	$sql = 'UPDATE {publication_file} SET teacherapproval=:approval WHERE publication=:pubid AND fileid  IN ';
 	
@@ -68,14 +64,13 @@ if($savevisibility){
 	
 	$params['pubid'] = $publication->get_instance()->id;
 	
-	if(count($visible) > 0){
-		$params['approval'] = 1;
-		$DB->execute($sql . '(' . implode(',', $visible) . ')',$params);
-	}
-	
-	if(count($invisible) > 0){
-		$params['approval'] = 0;
-		$DB->execute($sql . '(' . implode(',', $invisible) . ')',$params);
+	foreach($files as $fileid => $val){		
+		$val = $val-1;
+		if($val == -1){
+			$val = null;
+		}
+		
+		$DB->set_field('publication_file', 'teacherapproval', $val,array('fileid'=>$fileid));
 	}
 	
 }else if($action == "zip"){
