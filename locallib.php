@@ -361,7 +361,11 @@ class publication{
 			}
 			
 			$tablecolumns[] = 'visibility';
-			$tableheaders[] = get_string('visibility', 'publication');
+			if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && $this->get_instance()->obtainstudentapproval){
+				$tableheaders[] = get_string('obtainstudentapproval', 'publication');
+			}else{
+				$tableheaders[] = get_string('visibility', 'publication');					
+			}
 			
 			$tablecolumns[] = 'visibleforstudents';
 			$tableheaders[] = get_string('visibleforstudents', 'publication');
@@ -652,10 +656,17 @@ class publication{
 								'class'=>'visibilitysaver'
 						));
 						
-						$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'savevisibility',
-								'value'=>get_string('savevisibility', 'publication'),
-								'class'=>'visibilitysaver'
-						));
+						if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && $this->get_instance()->obtainstudentapproval){
+							$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'savevisibility',
+									'value'=>get_string('saveapproval', 'publication'),
+									'class'=>'visibilitysaver'
+							));
+						}else{
+							$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'savevisibility',
+									'value'=>get_string('savevisibility', 'publication'),
+									'class'=>'visibilitysaver'
+							));
+						}
 					}
 					
 					$html .= html_writer::start_div('withselection');

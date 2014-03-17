@@ -40,6 +40,7 @@ $string['name'] = 'Student folder name';
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
 $string['obtainstudentapproval'] = 'Obtain approval';
+$string['saveapproval'] = 'save approval';
 $string['configobtainstudentapproval'] = 'Documents are visible after the student´s consent.';
 $string['hideidnumberfromstudents'] = 'Hide ID-Number';
 $string['hideidnumberfromstudents_desc'] = 'Hide column ID-Number in Public Files table for students';

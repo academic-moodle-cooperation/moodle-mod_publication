@@ -40,6 +40,7 @@ $string['name'] = 'Name des Studierendenordners';
 $string['requiremodintro'] = 'Beschreibung notwendig';
 $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';
 $string['obtainstudentapproval'] = 'Einverständnis einholen';
+$string['saveapproval'] = 'Einverständnis aktualisieren';
 $string['configobtainstudentapproval'] = 'Daten werden erst nach Einverstädnis des Studierenden für alle sichtbar geschaltet.';
 $string['hideidnumberfromstudents'] = 'ID-Number verbergen';
 $string['hideidnumberfromstudents_desc'] = 'Spalte ID-Number in den Öffentlichen Dateien für Studierende verbergen';
