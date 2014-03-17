@@ -362,6 +362,9 @@ class publication{
 			
 			$tablecolumns[] = 'visibility';
 			$tableheaders[] = get_string('visibility', 'publication');
+			
+			$tablecolumns[] = 'visibleforstudents';
+			$tableheaders[] = get_string('visibleforstudents', 'publication');
 		}
 	
 	
@@ -387,6 +390,7 @@ class publication{
 //		$table->no_sorting('status');
 		$table->no_sorting('selection');
 		$table->no_sorting('visibility');
+		$table->no_sorting('visibleforstudents');
 		// Start working -- this is necessary as soon as the niceties are over.
 		$table->setup();
 	
@@ -434,6 +438,13 @@ class publication{
 						'mod_publication');
 				$cross_red = $OUTPUT->pix_icon('i/cross_red_big',
 						get_string('student_rejected', 'publication'));
+				
+				
+				$visibleforstundets_yes = $OUTPUT->pix_icon('i/valid',
+						get_string('visibleforstudents_yes', 'publication'));
+
+				$visibleforstundets_no = $OUTPUT->pix_icon('i/cross_red_big',
+						get_string('visibleforstudents_no', 'publication'));
 				
 				foreach ($ausers as $auser) {
 					if ($currentposition >= $offset && $currentposition < $endposition) {
@@ -499,7 +510,10 @@ class publication{
 						
 						$permissiontable = new html_table();
 						$permissiontable->attributes = array('class' => 'permissionstable');
-
+						
+						$visibleforuserstable = new html_table();
+						$visibleforuserstable->attributes = array('class' => 'statustable');
+						
 						$conditions = array();
 						$conditions['publication'] = $this->get_instance()->id;
 						$conditions['userid'] = $auser->id;
@@ -513,6 +527,12 @@ class publication{
 								$showfile = true;
 							}else if($this->has_filepermission($file->get_id())){
 								$showfile = true;
+							}
+							
+							if($this->has_filepermission($file->get_id())){
+								$visibleforuserstable->data[]= array($visibleforstundets_yes);
+							}else{
+								$visibleforuserstable->data[]= array($visibleforstundets_no);
 							}
 							
 //							if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
@@ -587,6 +607,8 @@ class publication{
 								$permissions = '';
 							}
 							$row[] = $permissions;
+							
+							$row[] = html_writer::table($visibleforuserstable);
 						}
 
 						$table->add_data($row);

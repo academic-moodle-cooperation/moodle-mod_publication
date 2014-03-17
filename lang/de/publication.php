@@ -143,6 +143,9 @@ $string['nothingtodisplay'] = 'Keine Einträge';
 $string['nofilestozip'] = 'Keine Dateien zu Zipen';
 $string['status'] = 'Status';
 $string['visibility'] = 'für alle sichtbar';
+$string['visibleforstudents'] = 'für Studierende sichtbar';
+$string['visibleforstudents_yes'] = 'Studierende können diese Datei sehen';
+$string['visibleforstudents_no'] = 'Diese Datei ist für Studierende NICHT sichtbar';
 
 $string['go'] = 'Start';
 $string['withselected'] = 'Mit Auswahl...';
