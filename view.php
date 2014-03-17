@@ -148,6 +148,8 @@ $submissionid = $USER->id;
 
 $filesform = new mod_publication_files_form(null, array('publication'=>$publication,'sid'=>$submissionid, 'filearea'=>'attachment'));
 
+
+
 if($data = $filesform->get_data() && $publication->is_open()){
 	$datasubmitted = $filesform->get_submitted_data();
 	

@@ -144,6 +144,7 @@ $string['visibleforstudents'] = 'visible for students';
 $string['visibleforstudents_yes'] = 'Stundets can see this file';
 $string['visibleforstudents_no'] = 'This file is NOT visible to stundets';
 $string['resetstudentapproval'] = 'Status status';
+$string['savestudentapprovalwarning'] = 'Are you sure you want to save these changes? You can not change the status once is it set.';
 
 $string['go'] = 'Go';
 $string['withselected'] = 'With selected...';

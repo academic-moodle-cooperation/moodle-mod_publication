@@ -28,12 +28,12 @@ require_once($CFG->dirroot.'/mod/publication/locallib.php');
  */
 class mod_publication_files_form extends moodleform {	
 	public function definition(){
-		global $CFG, $OUTPUT, $DB, $USER;
+		global $CFG, $OUTPUT, $DB, $USER, $PAGE;
 		
 		$publication = &$this->_customdata['publication'];
 		$sid = &$this->_customdata['sid'];
 		$filearea = &$this->_customdata['filearea'];
-		
+			
 		$mform = $this->_form;
 		$mform->addElement('header', 'myfiles', get_string('myfiles', 'publication'));
 		$mform->setExpanded('myfiles');
@@ -110,7 +110,7 @@ class mod_publication_files_form extends moodleform {
 			if($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
 				$teacherapproval &&
 				$publication->get_instance()->obtainstudentapproval){
-				if($publication->is_open()){
+				if($publication->is_open() && $studentapproval == 0){
 					$changepossible = true;
 					$data[] = html_writer::select($options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
 				}else{
@@ -161,7 +161,10 @@ class mod_publication_files_form extends moodleform {
 	//		if($publication->get_instance()->obtainstudentapproval){
 				if($publication->is_open()){
 					$buttonarray=array();
-					$buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
+					
+					$onclick = 'return confirm("' . get_string('savestudentapprovalwarning','publication') . '")';
+					
+					$buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'), array('onClick'=>$onclick));
 					$buttonarray[] = &$mform->createElement('reset', 'resetbutton', get_string('revert'));
 					
 					$mform->addGroup($buttonarray, 'submitgrp', '', array(' '), false);

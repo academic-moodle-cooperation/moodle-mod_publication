@@ -157,6 +157,7 @@ $string['rejectusers'] = "für alle unsichtbar";
 $string['grantextension'] = 'Erweiterung zulassen';
 $string['savevisibility'] = 'Sichtbarkeit aktualisieren';
 $string['reset'] = 'Zurücksetzen';
+$string['savestudentapprovalwarning'] = 'Sind Sie sicher dass Sie diese Änderungen speichern möchten? Der Status kann im Nachhinein nicht mehr geändert werden.';
 
 // upload.php
 $string['guideline'] = 'sichtbar für alle:';
