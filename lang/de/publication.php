@@ -155,7 +155,7 @@ $string['zipusers'] = "als ZIP herunterladen";
 $string['approveusers'] = "für alle sichtbar";
 $string['rejectusers'] = "für alle unsichtbar";
 $string['grantextension'] = 'Erweiterung zulassen';
-$string['savevisibility'] = 'Sichtbarkeit sichern';
+$string['savevisibility'] = 'Sichtbarkeit aktualisieren';
 $string['reset'] = 'Zurücksetzen';
 
 // upload.php
