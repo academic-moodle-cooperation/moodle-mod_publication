@@ -643,6 +643,7 @@ class publication{
 					if(has_capability('mod/publication:approve', $context)){
 						$options['approveusers'] = get_string('approveusers', 'publication');
 						$options['rejectusers'] = get_string('rejectusers', 'publication');
+						$options['resetstudentapproval'] = get_string('resetstudentapproval', 'publication');
 					}
 				}
 				if(has_capability('mod/publication:grantextension', $this->get_context())){

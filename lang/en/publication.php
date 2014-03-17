@@ -143,6 +143,7 @@ $string['visibility'] = 'visible for all';
 $string['visibleforstudents'] = 'visible for students';
 $string['visibleforstudents_yes'] = 'Stundets can see this file';
 $string['visibleforstudents_no'] = 'This file is NOT visible to stundets';
+$string['resetstudentapproval'] = 'Status status';
 
 $string['go'] = 'Go';
 $string['withselected'] = 'With selected...';

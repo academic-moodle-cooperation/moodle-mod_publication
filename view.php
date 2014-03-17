@@ -126,6 +126,21 @@ if($savevisibility){
 		
 		$DB->execute($sql,$params);
 	}
+}else if($action == "resetstudentapproval"){
+	require_capability('mod/publication:approve', $context);
+	
+	$users = optional_param_array('selectedeuser', array(), PARAM_INT);
+	$users = array_keys($users);
+	
+	if(count($users) > 0){
+	
+		$sql = 'UPDATE {publication_file} SET studentapproval=NULL WHERE publication=:pubid AND userid  IN (' . implode(',', $users) . ')';
+	
+		$params = array();
+		$params['pubid'] = $publication->get_instance()->id;
+		
+		$DB->execute($sql,$params);
+	}
 }
 
 $submissionid = $USER->id;
