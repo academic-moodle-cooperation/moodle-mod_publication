@@ -625,6 +625,11 @@ class publication{
 				
 				if (count($options) > 0){
 					if(has_capability('mod/publication:approve', $context)){
+						$html .= html_writer::empty_tag('input', array('type'=>'reset', 'name'=>'resetvisibility',
+								'value'=>get_string('reset', 'publication'),
+								'class'=>'visibilitysaver'
+						));
+						
 						$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'savevisibility',
 								'value'=>get_string('savevisibility', 'publication'),
 								'class'=>'visibilitysaver'

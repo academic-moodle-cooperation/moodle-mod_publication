@@ -151,6 +151,7 @@ $string['approveusers'] = "für alle sichtbar";
 $string['rejectusers'] = "für alle unsichtbar";
 $string['grantextension'] = 'Erweiterung zulassen';
 $string['savevisibility'] = 'Sichtbarkeit sichern';
+$string['reset'] = 'Zurücksetzen';
 
 // upload.php
 $string['guideline'] = 'sichtbar für alle:';
