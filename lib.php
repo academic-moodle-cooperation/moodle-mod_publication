@@ -150,3 +150,47 @@ function publication_get_coursemodule_info($coursemodule) {
 	}
 	return $result;
 }
+
+function publication_reset_course_form_definition(&$mform) {
+	$mform->addElement('header', 'publicationheader', get_string('modulenameplural', 'publication'));
+	$mform->addElement('checkbox', 'reset_publication_userdata', get_string('reset_userdata', 'publication'));
+}
+
+function publication_reset_userdata($data){
+	global $DB;
+	
+    if (!$DB->count_records('publication', array('course' => $data->courseid))) {
+        return array();
+    }
+
+    $componentstr = get_string('modulenameplural', 'publication');
+    $status = array();
+
+    if (isset($data->reset_publication_userdata)) {
+        
+    	$publications = $DB->get_records('publication',array('course'=>$data->courseid));
+    	
+    	
+    	foreach($publications as $publication){
+    	
+	        
+	        $DB->delete_records('publication_extduedates',array('publication'=>$publication->id));
+	        
+	        $filerecords = $DB->get_records('publication_file', array('publication'=>$publication->id));
+	        
+	        $fs = get_file_storage();
+	        foreach($filerecords as $filerecord){
+	        	$file = $fs->get_file_by_id($filerecord->fileid);
+	        	$file->delete();
+	        }
+	        
+	        $DB->delete_records('publication_file', array('publication'=>$publication->id));
+	
+	        $status[] = array('component' => $componentstr, 'item' => $publication->name,
+	                'error' => false);
+    	}
+    }
+
+    return $status;
+
+}

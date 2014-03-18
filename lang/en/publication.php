@@ -51,6 +51,8 @@ $string['configmaxfiles'] = 'Default maximum number of attachments allowed per u
 $string['maxbytes'] = 'Maximum attachment size';
 $string['configmaxbytes'] = 'Default maximum size for all files in the studentfolder.';
 
+$string['reset_userdata'] = 'All data';
+
 // mod_form
 $string['availability'] = 'Timeslot for Upload/Approval';
 

@@ -51,6 +51,8 @@ $string['configmaxfiles'] = 'Voreinstellung für die Anzahl von Dateien, die pro
 $string['maxbytes'] = 'Maximale Dateigröße';
 $string['configmaxbytes'] = 'Voreinstellung für die Dateigröße von Dateien im Studierendenordner.';
 
+$string['reset_userdata'] = 'Alle Daten';
+
 // mod_form
 $string['availability'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
 
