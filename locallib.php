@@ -358,19 +358,18 @@ class publication{
 		$tablecolumns[] = 'timemodified';
 		
 		if(has_capability('mod/publication:approve', $context)){
-			// not necessary in upload mode, approving by uploading
-			// cusomer wants to see it anyways
-			// if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-			{
-				$tablecolumns[] = 'status';
-				$tableheaders[] = get_string('status', 'publication');
+			// not necessary in upload mode without studentapproval
+			if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
+				$this->get_instance()->obtainstudentapproval){
+				$tablecolumns[] = 'studentapproval';
+				$tableheaders[] = get_string('studentapproval', 'publication');
 			}
 			
-			$tablecolumns[] = 'visibility';
+			$tablecolumns[] = 'teacherapproval';
 			if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && $this->get_instance()->obtainstudentapproval){
 				$tableheaders[] = get_string('obtainstudentapproval', 'publication');
 			}else{
-				$tableheaders[] = get_string('visibility', 'publication');					
+				$tableheaders[] = get_string('teacherapproval', 'publication');					
 			}
 			
 			$tablecolumns[] = 'visibleforstudents';
@@ -399,7 +398,7 @@ class publication{
 		
 //		$table->no_sorting('status');
 		$table->no_sorting('selection');
-		$table->no_sorting('visibility');
+		$table->no_sorting('teacherapproval');
 		$table->no_sorting('visibleforstudents');
 		// Start working -- this is necessary as soon as the niceties are over.
 		$table->setup();
@@ -678,10 +677,9 @@ class publication{
 						$row[] = $lastmodified;
 						
 						if(has_capability('mod/publication:approve', $context)){
-							// not necessary in upload mode, approving by uploading
-							// cusomer wants to see it anyways
-							// if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-							{
+							// not necessary in upload mode without studentapproval
+							if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
+								$this->get_instance()->obtainstudentapproval){
 								if(count($statustable->data) > 0){
 									$status = html_writer::table($statustable);
 								}else{
@@ -748,7 +746,7 @@ class publication{
 							));
 						}else{
 							$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'savevisibility',
-									'value'=>get_string('savevisibility', 'publication'),
+									'value'=>get_string('saveteacherapproval', 'publication'),
 									'class'=>'visibilitysaver'
 							));
 						}

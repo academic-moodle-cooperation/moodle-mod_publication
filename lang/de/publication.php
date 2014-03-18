@@ -145,6 +145,8 @@ $string['entiresperpage'] = 'Einträge pro Seite';
 $string['nothingtodisplay'] = 'Keine Einträge';
 $string['nofilestozip'] = 'Keine Dateien zu Zipen';
 $string['status'] = 'Status';
+$string['studentapproval'] = 'Studierenden Zustimmung';
+$string['teacherapproval'] = 'Lehrenden Zustimmung';
 $string['visibility'] = 'für alle sichtbar';
 $string['visibleforstudents'] = 'für Studierende sichtbar';
 $string['visibleforstudents_yes'] = 'Studierende können diese Datei sehen';
@@ -157,7 +159,7 @@ $string['zipusers'] = "als ZIP herunterladen";
 $string['approveusers'] = "für alle sichtbar";
 $string['rejectusers'] = "für alle unsichtbar";
 $string['grantextension'] = 'Erweiterung zulassen';
-$string['savevisibility'] = 'Sichtbarkeit aktualisieren';
+$string['saveteacherapproval'] = 'Zustimmung aktualisieren';
 $string['reset'] = 'Zurücksetzen';
 $string['savestudentapprovalwarning'] = 'Sind Sie sicher dass Sie diese Änderungen speichern möchten? Der Status kann im Nachhinein nicht mehr geändert werden.';
 

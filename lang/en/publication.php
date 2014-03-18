@@ -55,6 +55,8 @@ $string['configmaxbytes'] = 'Default maximum size for all files in the studentfo
 $string['availability'] = 'Timeslot for Upload/Approval';
 
 $string['allowsubmissionsfromdate'] = 'from';
+$string['allowsubmissionsfromdateh'] = 'Timeslot for Upload/Approval';
+$string['allowsubmissionsfromdateh_help'] = 'You can determine the period of time during which students can upload files or give their approval for file publication. During this time period students can edit their files and can also withdraw their approval for publication.';
 $string['allowsubmissionsfromdate_help'] = 'If enabled, students will not be able to submit before this date. If disabled, students will be able to start submitting right away.';
 $string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
@@ -140,7 +142,8 @@ $string['entiresperpage'] = 'Participants shown per page';
 $string['nothingtodisplay'] = 'No entries to display';
 $string['nofilestozip'] = 'No files to zip';
 $string['status'] = 'Status';
-
+$string['studentapproval'] = 'Student approval';
+$string['teacherapproval'] = 'Teacher approval';
 $string['visibility'] = 'visible for all';
 $string['visibleforstudents'] = 'visible for students';
 $string['visibleforstudents_yes'] = 'Stundets can see this file';
@@ -154,7 +157,7 @@ $string['zipusers'] = "Download as ZIP";
 $string['approveusers'] = "visible for all";
 $string['rejectusers'] = "invisible for all";
 $string['grantextension'] = 'grant extension';
-$string['savevisibility'] = 'save visibility';
+$string['saveteacherapproval'] = 'save approval';
 $string['reset'] = 'Revert';
 
 // upload.php
