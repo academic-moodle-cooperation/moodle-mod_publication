@@ -93,6 +93,14 @@ class mod_publication_files_form extends moodleform {
 		$conditions['userid'] = $USER->id;
 		
 		$changepossible = false;
+
+		$valid = $OUTPUT->pix_icon('i/valid',
+				get_string('student_approved', 'publication'));
+		$questionmark = $OUTPUT->pix_icon('questionmark',
+				get_string('student_pending', 'publication'),
+				'mod_publication');
+		$cross_red = $OUTPUT->pix_icon('i/cross_red_big',
+				get_string('student_rejected', 'publication'));
 		
 		foreach($files as $file){
 			$conditions['fileid'] = $file->get_id();
@@ -107,18 +115,20 @@ class mod_publication_files_form extends moodleform {
 			$dlurl = new moodle_url('/mod/publication/view.php',array('id'=>$publication->get_coursemodule()->id,'download'=>$file->get_id()));
 			$data[] = html_writer::link($dlurl, $file->get_filename());
 			
-			if($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
-				$teacherapproval &&
-				$publication->get_instance()->obtainstudentapproval){
-				if($publication->is_open() && $studentapproval == 0){
-					$changepossible = true;
-					$data[] = html_writer::select($options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
-				}else{
-					switch($studentapproval){
-						case 2: $data[] = get_string('student_approved', 'publication'); break;
-						case 1: $data[] = get_string('student_rejected', 'publication'); break;
-						default: $data[] = '';
+			if($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT){			
+				if($teacherapproval && $publication->get_instance()->obtainstudentapproval){
+					if($publication->is_open() && $studentapproval == 0){
+						$changepossible = true;
+						$data[] = html_writer::select($options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
+					}else{						
+						switch($studentapproval){
+							case 2: $data[] = get_string('student_approved', 'publication'); break;
+							case 1: $data[] = get_string('student_rejected', 'publication'); break;
+							default: $data[] = get_string('student_pending', 'publication');
+						}
 					}
+				}else{
+					$data[] = get_string('student_pending', 'publication');
 				}
 			}
 			
