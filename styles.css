@@ -145,4 +145,5 @@ text-align:center;
 #page-mod-publication-view fieldset#id_myfiles .notice{
 	padding:8px;
 	margin-bottom:6px;
+	font-style:italic;
 }

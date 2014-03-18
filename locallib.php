@@ -101,9 +101,10 @@ class publication{
 		}
 		
 		echo '</table>';
+
 		echo $OUTPUT->box_end();
 	}
-	
+
 	/**
 	 * If the mode is set to import then the link to the corresponding
 	 * assignment will be displayed
@@ -116,7 +117,6 @@ class publication{
 			
 			if($this->get_instance()->importfrom == -1){
 				echo get_string('assignment_notset', 'publication');
-				
 			}else{
 				$assign = $DB->get_record('assign', array('id'=> $this->instance->importfrom));
 				
@@ -374,7 +374,7 @@ class publication{
 			}
 			
 			$tablecolumns[] = 'visibleforstudents';
-			$tableheaders[] = get_string('visibleforstudents', 'publication');
+			$tableheaders[] = get_string('visibleforstudents', 'publication');			
 		}
 	
 	
@@ -448,7 +448,6 @@ class publication{
 						'mod_publication');
 				$cross_red = $OUTPUT->pix_icon('i/cross_red_big',
 						get_string('student_rejected', 'publication'));
-				
 				
 				$visibleforstundets_yes = $OUTPUT->pix_icon('i/valid',
 						get_string('visibleforstudents_yes', 'publication'));
@@ -593,6 +592,85 @@ class publication{
 						if(count($filetable->data) > 0){
 							$lastmodified = html_writer::table($filetable);
 							$lastmodified .= html_writer::span(userdate($auser->timemodified),"timemodified");
+						}else{
+							$lastmodified = get_string('nofiles', 'publication');
+						}
+						
+						$filetable = new html_table();
+						$filetable->attributes = array('class' => 'filetable');
+						
+						$statustable = new html_table();
+						$statustable->attributes = array('class' => 'statustable');
+						
+						$permissiontable = new html_table();
+						$permissiontable->attributes = array('class' => 'permissionstable');
+
+						$conditions = array();
+						$conditions['publication'] = $this->get_instance()->id;
+						$conditions['userid'] = $auser->id;
+						foreach($files as $file){
+							$conditions['fileid'] = $file->get_id();
+							$filepermissions = $DB->get_record('publication_file', $conditions);
+							
+							$showfile = false;
+							
+							if(has_capability('mod/publication:approve', $context)){
+								$showfile = true;
+							}else if($this->has_filepermission($file->get_id())){
+								$showfile = true;
+							}
+							
+//							if(($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && (!$this->get_instance()->obtainstudentapproval || $filepermissions->studentapproval))
+//							|| ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && (!$this->get_instance()->obtainteacherapproval || $filepermissions->teacherapproval))
+//							|| has_capability('mod/publication:approve', $context)){
+							if($showfile){			
+								
+								$filerow = array();
+								$filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
+									
+								$url = new moodle_url('/mod/publication/view.php',array('id'=>$cm->id,'download'=>$file->get_id()));
+								$filerow[] = html_writer::link($url, $file->get_filename());
+								if(has_capability('mod/publication:approve', $context)){	
+									$checked = $filepermissions->teacherapproval;
+									
+									if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && is_null($checked)){
+										// if checked is null set defaults for upload mode
+										if($this->get_instance()->obtainteacherapproval){
+											$checked = false;
+										}else{
+											$checked = true;
+										}
+									}
+																
+									$permissionrow = array();
+									$permissionrow[] = html_writer::checkbox('files[]', $file->get_id(),$checked) . 
+									html_writer::empty_tag('input', array(
+											'type'=>'hidden',
+											'name'=>'filesshown[]',
+											'value'=>$file->get_id()
+									));
+									
+									$statusrow = array();
+									
+									if(is_null($filepermissions->studentapproval)){
+										$statusrow[] = $questionmark;
+									}else if($filepermissions->studentapproval){
+										$statusrow[] = $valid;
+									}else{
+										$statusrow[] = $cross_red;
+									}
+									$statustable->data[] = $statusrow;
+									$permissiontable->data[] = $permissionrow;
+								}
+								$filetable->data[] = $filerow;
+								$totalfiles++;
+							}
+						}
+						
+						$lastmodified = "";
+						if(count($filetable->data) > 0){
+							$lastmodified = html_writer::table($filetable);
+							$lastmodified .= userdate($auser->timemodified);
 						}else{
 							$lastmodified = get_string('nofiles', 'publication');
 						}

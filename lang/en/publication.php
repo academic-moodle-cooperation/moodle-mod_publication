@@ -140,6 +140,7 @@ $string['entiresperpage'] = 'Participants shown per page';
 $string['nothingtodisplay'] = 'No entries to display';
 $string['nofilestozip'] = 'No files to zip';
 $string['status'] = 'Status';
+
 $string['visibility'] = 'visible for all';
 $string['visibleforstudents'] = 'visible for students';
 $string['visibleforstudents_yes'] = 'Stundets can see this file';
