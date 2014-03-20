@@ -72,18 +72,16 @@ class backup_publication_activity_structure_step extends backup_activity_structu
                                                 	  'studentapproval'));
 
 
-
-        // Build the tree.
-        $publication->add_child($extduedates);
-        $extduedates->add_child($extduedate);
-        $publication->add_child($files);
-        $files->add_child($file);
-
-
         // Define sources.
         $publication->set_source_table('publication', array('id' => backup::VAR_ACTIVITYID));
-
+        
         if ($userinfo) {
+        	// Build the tree.
+        	$publication->add_child($extduedates);
+        	$extduedates->add_child($extduedate);
+        	$publication->add_child($files);
+        	$files->add_child($file);
+
             $extduedate->set_source_table('publication_extduedates',
                                      array('publication' => backup::VAR_PARENTID));
 
@@ -91,25 +89,21 @@ class backup_publication_activity_structure_step extends backup_activity_structu
                                      array('publication' => backup::VAR_PARENTID));
 
            
-            // The parent is the submission.
             $file->annotate_files('mod_publication',
             		'attachment',
             		null);
             
-            // Support 2 types of subplugins.
-//            $this->add_subplugin_structure('assignsubmission', $submission, true);
+
+	        // Define id annotations.
+	        $extduedate->annotate_ids('user', 'userid');
+	        $file->annotate_ids('user', 'userid');
+	
+	        // Define file annotations.
+	        // This file area hasn't itemid.
+	        $publication->annotate_files('mod_publication', 'attachment', null);
+        
         }
-
-        // Define id annotations.
-        $extduedate->annotate_ids('user', 'userid');
-        $file->annotate_ids('user', 'userid');
-//        $assign->annotate_ids('grouping', 'teamsubmissiongroupingid');
-
-        // Define file annotations.
-        // This file area hasn't itemid.
-        $publication->annotate_files('mod_publication', 'attachment', null);
-
-        // Return the root element (choice), wrapped into standard activity structure.
+        // Return the root element (publication), wrapped into standard activity structure.
 
         return $this->prepare_activity_structure($publication);
     }
