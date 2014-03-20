@@ -147,7 +147,12 @@ $string['entiresperpage'] = 'Einträge pro Seite';
 $string['nothingtodisplay'] = 'Keine Einträge';
 $string['nofilestozip'] = 'Keine Dateien zu Zipen';
 $string['status'] = 'Status';
-$string['studentapproval'] = 'Studierenden Zustimmung';
+$string['studentapproval'] = 'Status'; // 'Studierenden Zustimmung';
+$string['studentapproval_help'] = 'In der Spalte Status wird die Rückmeldung des Studierenden angezeigt:
+
+* ? - Einverständnis noch nicht erfolgt
+* ✓ - Einverständnis gegeben
+* ✖ - Einverständnis entzogen';
 $string['teacherapproval'] = 'Lehrenden Zustimmung';
 $string['visibility'] = 'für alle sichtbar';
 $string['visibleforstudents'] = 'für Studierende sichtbar';

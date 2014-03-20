@@ -144,7 +144,12 @@ $string['entiresperpage'] = 'Participants shown per page';
 $string['nothingtodisplay'] = 'No entries to display';
 $string['nofilestozip'] = 'No files to zip';
 $string['status'] = 'Status';
-$string['studentapproval'] = 'Student approval';
+$string['studentapproval'] = 'Status'; // 'Student approval';
+$string['studentapproval_help'] = 'The colum status represents the students reply of the approval:
+
+* ? - approval pending
+* ✓ - approval given
+* ✖ - approval declined';
 $string['teacherapproval'] = 'Teacher approval';
 $string['visibility'] = 'visible for all';
 $string['visibleforstudents'] = 'visible for students';

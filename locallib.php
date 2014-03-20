@@ -362,7 +362,8 @@ class publication{
 			if($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
 				$this->get_instance()->obtainstudentapproval){
 				$tablecolumns[] = 'studentapproval';
-				$tableheaders[] = get_string('studentapproval', 'publication');
+				$tableheaders[] = get_string('studentapproval', 'publication') .' '.
+					$OUTPUT->help_icon('studentapproval','publication');
 			}
 			
 			$tablecolumns[] = 'teacherapproval';
@@ -395,8 +396,8 @@ class publication{
 		$table->set_attribute('id', 'attempts');
 		$table->set_attribute('class', 'publications');
 		$table->set_attribute('width', '100%');
-		
-//		$table->no_sorting('status');
+
+		$table->no_sorting('studentapproval');
 		$table->no_sorting('selection');
 		$table->no_sorting('teacherapproval');
 		$table->no_sorting('visibleforstudents');
