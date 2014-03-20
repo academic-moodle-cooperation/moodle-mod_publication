@@ -153,7 +153,7 @@ $string['visibility'] = 'für alle sichtbar';
 $string['visibleforstudents'] = 'für Studierende sichtbar';
 $string['visibleforstudents_yes'] = 'Studierende können diese Datei sehen';
 $string['visibleforstudents_no'] = 'Diese Datei ist für Studierende NICHT sichtbar';
-$string['resetstudentapproval'] = 'Studierenden zustimmung zurücksetzen';
+$string['resetstudentapproval'] = 'Status zurücksetzen'; // 'Studierenden zustimmung zurücksetzen';
 
 $string['go'] = 'Start';
 $string['withselected'] = 'Mit Auswahl...';
