@@ -96,7 +96,22 @@ class mod_publication_mod_form extends moodleform_mod{
 			$mform->disabledIf('importfrom', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
 		}
 		
-		$mform->addElement('selectyesno', 'obtainstudentapproval', get_string('obtainstudentapproval','publication'));
+		$attributes = array();
+		if(isset($this->current->id) && isset($this->current->obtainstudentapproval)){
+			if($this->current->obtainstudentapproval){
+				$message = get_string('warning_changefromobtainstudentapproval', 'publication');
+				$showwhen = "0";
+			}else{
+				$message =  get_string('warning_changetoobtainstudentapproval', 'publication');
+				$showwhen = "1";
+			}
+			 
+			$message = trim(preg_replace('/\s+/', ' ', $message));
+			$message = str_replace('\'','\\\'', $message);
+			$attributes['onChange'] = "if(this.value==".$showwhen."){alert('" . $message .  "')}";
+		}
+		
+		$mform->addElement('selectyesno', 'obtainstudentapproval', get_string('obtainstudentapproval','publication'), $attributes);
 		$mform->setDefault('obtainstudentapproval', get_config('publication','obtainstudentapproval'));
 		$mform->addHelpButton('obtainstudentapproval','obtainstudentapproval','publication');
 		$mform->disabledIf('obtainstudentapproval', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
@@ -128,7 +143,6 @@ class mod_publication_mod_form extends moodleform_mod{
 		
         $attributes = array();
         if(isset($this->current->id) && isset($this->current->obtainteacherapproval)){
-        	   	
         	if(!$this->current->obtainteacherapproval){
         		$message = get_string('warning_changefromobtainteacherapproval', 'publication');
         		$showwhen = "1";

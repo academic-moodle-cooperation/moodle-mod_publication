@@ -97,6 +97,9 @@ $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie imp
 $string['warning_changefromobtainteacherapproval'] = 'Wenn Sie diese Änderung durchführen werden hochgeladene Dateien sofort für andere TeilnehmerInnen sichtbar. Alle bis jetzt hochgeladenen Dateien werden mit diesen Schritt ebenfalls auf sichtbar gesetzt. Sie haben jedoch das Recht Studierenden die Sichtbarkeit aktiv zu entziehen.';
 $string['warning_changetoobtainteacherapproval'] = 'Wenn Sie diese Änderung durchführen werden hochgeladene Dateien nicht sofort für andere TeilnehmerInnen sichtbar. Sie müssen dann aktiv Dateien von Studierenden sichtbar schalten. Alle bis jetzt hochgeladenen Dateien werden mit diesem Schritt ebenfalls auf nicht sichtbar gesetzt.';
 
+$string['warning_changefromobtainstudentapproval'] = 'Wenn Sie diese Änderung durchführen, können nur Sie bestimmen welche Dateien für alle anderen Teilnehmer/Innen sichtbar sind. Das Einverständnis von Studierenden wird nicht eingeholt. Alle zum Einverständis gekennzeichneten Dateien werden unabhängig von der Studierendenzustimmung nach dieser Änderung sofort für alle sichtbar.';
+$string['warning_changetoobtainstudentapproval'] = 'Wenn Sie diese Änderung durchführen, wird das Einverständnis der Studierenden eingeholt. Nach dieser Änderung wird für alle als sichtbar gekennzeichneten Dateien das Einverständnis der einzelnen Studierenden eingeholt - die Dateien sind erst nach gegebenem Einverständnis für alle sichtbar.';
+
 // mod_publication_grantextension_form.php
 $string['extensionduedate'] = 'Erweiterung des Abgabdatums';
 $string['extensionnotafterduedate'] = 'Das erweiterte Abgabedatum muss nach dem (normalen) Abgabedatum liegen.';
