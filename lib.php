@@ -67,7 +67,7 @@ function publication_supports($feature) {
 		case FEATURE_GRADE_HAS_GRADE:         return false;
 		case FEATURE_GRADE_OUTCOMES:          return false;
 		case FEATURE_GRADE_HAS_GRADE:         return false;
-		case FEATURE_BACKUP_MOODLE2:          return false;
+		case FEATURE_BACKUP_MOODLE2:          return true;
 		case FEATURE_SHOW_DESCRIPTION:        return true;
 		case FEATURE_IDNUMBER:                return false;
 
@@ -111,10 +111,8 @@ function publication_delete_instance($id) {
 	$filerecords = $DB->get_records('publication_file', array('publication'=>$publication->id));
 	
 	$fs = get_file_storage();
-	foreach($filerecords as $filerecord){
-		$file = $fs->get_file_by_id($filerecord->fileid);
-		$file->delete();
-	}
+	
+	$fs->delete_area_files($publication->id,'mod_publication','attachment');
 	
 	$DB->delete_records('publication_file', array('publication'=>$publication->id));
 	
