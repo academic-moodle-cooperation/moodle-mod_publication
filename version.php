@@ -21,7 +21,7 @@
  * @copyright TSC
  */
 
-$module->version  = 2014031801;
+$module->version  = 2014032201;
 $module->requires = 2011070100.01;  // Requires this Moodle version.
 $module->component = 'mod_publication'; // Full name of the plugin (used for diagnostics).
 $module->cron = 300;
