@@ -60,7 +60,7 @@ function publication_add_instance($publication, $mform=null) {
 function publication_supports($feature) {
 	switch($feature) {
 
-		case FEATURE_GROUPS:                  return false;
+		case FEATURE_GROUPS:                  return true;
 		case FEATURE_GROUPINGS:               return true;
 		case FEATURE_GROUPMEMBERSONLY:        return true;
 		case FEATURE_MOD_INTRO:               return true;

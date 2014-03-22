@@ -272,9 +272,9 @@ class publication{
 	
 		// Find out current groups mode.
 		$groupmode = groups_get_activity_groupmode($cm);
-		//$currentgroup = groups_get_activity_group($cm, true);
-		$currentgroup = 0; // always show all groups
-		//echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
+		$currentgroup = groups_get_activity_group($cm, true);
+
+		echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);	
 		
 		$html = '';
 	
@@ -679,7 +679,7 @@ class publication{
 					$html .= html_writer::start_div('withselection');
 					$html .= html_writer::span(get_string('withselected', 'publication'));
 					$html .= html_writer::select($options, 'action');
-					$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'submit',
+					$html .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'submitgo',
 							'value'=>get_string('go', 'publication')));
 					
 					$html .= html_writer::end_div();
