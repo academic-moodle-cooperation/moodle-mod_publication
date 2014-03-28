@@ -262,10 +262,10 @@ class publication{
 		$html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'page',    'value'=> $page));
 		$html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=> sesskey()));
 		echo $html;
-		
-		echo html_writer::start_tag('fieldset',array('id'=>'id_allfiles', 'class'=>'clearfix','aria-live'=>'polite'));
+
+		echo html_writer::start_tag('div',array('id'=>'id_allfiles', 'class'=>'clearfix','aria-live'=>'polite'));
 		$title = (has_capability('mod/publication:approve', $context)) ? get_string('allfiles', 'publication') : get_string('publicfiles', 'publication');
-		echo html_writer::tag('legend', $title);
+		echo html_writer::tag('div', $title, array('class' => 'legend'));
 		echo html_writer::start_div('fcontainer clearfix');
 		
 		// Check to see if groups are being used in this assignment.
@@ -721,7 +721,7 @@ class publication{
 		echo $html;
 		
 		echo html_writer::end_div();
-		echo html_writer::end_tag('fieldset');
+		echo html_writer::end_tag('div');
 		echo html_writer::end_tag('form');
 		
 		// Mini form for setting user preference.

@@ -41,10 +41,18 @@
 }
 
 /* scroll table if page is too small */
-#page-mod-publication-view fieldset#id_allfiles{
-    padding-top:4px;
-    min-width: initial; /* for chrome */
-    display: table-column; /* for firefox */
+#page-mod-publication-view div#id_allfiles{
+	border: 1px solid #D0D3CA;
+	padding: 10px;
+	margin: 10px;
+}
+
+#page-mod-publication-view div#id_allfiles div.legend{
+	font-weight: bold;
+	background-color: #fff;
+	position: absolute;
+	padding: 2px 5px;
+	margin-top: -20px;
 }
 
  /* .. ie */
