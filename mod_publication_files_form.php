@@ -128,7 +128,10 @@ class mod_publication_files_form extends moodleform {
 						}
 					}
 				}else{
-					$data[] = get_string('student_pending', 'publication');
+					switch($teacherapproval){
+						case 1: $data[] = get_string('teacher_approved', 'publication'); break;
+						default: $data[] = get_string('student_pending', 'publication');
+					}
 				}
 			}
 			
