@@ -718,10 +718,12 @@ class publication{
 		$html .= html_writer::end_tag('div');
 */
 	
+		$html .= html_writer::end_div();
+		$html .= html_writer::end_div();
+		$html .= html_writer::end_div();
+		
 		echo $html;
 		
-		echo html_writer::end_div();
-		echo html_writer::end_tag('div');
 		echo html_writer::end_tag('form');
 		
 		// Mini form for setting user preference.
