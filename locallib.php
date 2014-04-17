@@ -446,13 +446,13 @@ class publication{
 				$questionmark = $OUTPUT->pix_icon('questionmark',
 						get_string('student_pending', 'publication'),
 						'mod_publication');
-				$cross_red = $OUTPUT->pix_icon('i/cross_red_big',
+				$invalid = $OUTPUT->pix_icon('i/invalid',
 						get_string('student_rejected', 'publication'));
 				
 				$visibleforstundets_yes = $OUTPUT->pix_icon('i/valid',
 						get_string('visibleforstudents_yes', 'publication'));
 
-				$visibleforstundets_no = $OUTPUT->pix_icon('i/cross_red_big',
+				$visibleforstundets_no = $OUTPUT->pix_icon('i/invalid',
 						get_string('visibleforstudents_no', 'publication'));
 				
 				foreach ($ausers as $auser) {
@@ -580,7 +580,7 @@ class publication{
 									}else if($filepermissions->studentapproval){
 										$statusrow[] = $valid;
 									}else{
-										$statusrow[] = $cross_red;
+										$statusrow[] = $invalid;
 									}
 									$statustable->data[] = $statusrow;
 									$permissiontable->data[] = $permissionrow;

@@ -99,7 +99,7 @@ class mod_publication_files_form extends moodleform {
 		$questionmark = $OUTPUT->pix_icon('questionmark',
 				get_string('student_pending', 'publication'),
 				'mod_publication');
-		$cross_red = $OUTPUT->pix_icon('i/cross_red_big',
+		$invalid = $OUTPUT->pix_icon('i/invalid',
 				get_string('student_rejected', 'publication'));
 		
 		foreach($files as $file){
