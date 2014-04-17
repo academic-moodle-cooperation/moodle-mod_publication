@@ -878,7 +878,13 @@ class publication{
 		*/
 		$filename = str_replace(' ', '_', clean_filename($this->course->shortname.'-'.
 				$this->get_instance()->name.'-'.$groupname.$this->get_instance()->id.'.zip')); // Name of new zip file.
+
+		$userfields = get_all_user_name_fields();
+		$userfields['id'] = 'id';
+		$userfields['username'] ='username';
+		$userfields = implode(', ', $userfields);
 		
+		$viewfullnames = has_capability('moodle/site:viewfullnames', $this->context);
 		
 		// get all files from each user
 		foreach ($uploaders as $uploader) {			
@@ -890,7 +896,7 @@ class publication{
 				
 			$a_assignid = $a_userid; // Get name of this assignment for use in the file names.
 			// Get user firstname/lastname.
-			$a_user = $DB->get_record('user', array('id'=>$a_userid), 'id,username,firstname,lastname');
+			$a_user = $DB->get_record('user', array('id'=>$a_userid), $userfields);
 				
 				
 			foreach($records as $record){
@@ -904,7 +910,7 @@ class publication{
 					// Get files new name.
 					$fileext = strstr($file->get_filename(), '.');
 					$fileoriginal = str_replace($fileext, '', $file->get_filename());
-					$fileforzipname =  clean_filename(fullname($a_user) . '_' . $fileoriginal.'_'.$a_userid.$fileext);
+					$fileforzipname =  clean_filename(fullname($a_user,$viewfullnames) . '_' . $fileoriginal.'_'.$a_userid.$fileext);
 					// Save file name to array for zipping.
 					$filesforzipping[$fileforzipname] = $file;
 				}
