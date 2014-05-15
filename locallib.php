@@ -345,8 +345,8 @@ class publication{
 		$tablecolumns = array('selection', 'fullname');
 		$tableheaders = array($selectallnone, get_string('fullnameuser'));
 	
-		$useridentity = explode(',', $CFG->showuseridentity);
-		
+		$useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
+
 		foreach($useridentity as $cur){
 			if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))){
 				$tablecolumns[] = $cur;
@@ -415,12 +415,11 @@ class publication{
 		}
 
 		$ufields = user_picture::fields('u');
-		$useridentityfields = 'u.'.str_replace(',', ',u.', $CFG->showuseridentity);
-
+		$useridentityfields =  $CFG->showuseridentity != '' ? 'u.'.str_replace(',', ',u.', $CFG->showuseridentity) . ', ' : '';
 		$totalfiles = 0;
 		
 		if (!empty($users)) {
-			$select = 'SELECT '.$ufields.','.$useridentityfields.', username,
+			$select = 'SELECT '.$ufields.','.$useridentityfields.' username,
                                 COUNT(*) filecount,
 								SUM(files.studentapproval) as status,
                                 MAX(files.timecreated) timemodified ';
@@ -428,7 +427,7 @@ class publication{
 					'LEFT JOIN {publication_file} files ON u.id = files.userid
                             AND files.publication = '.$this->get_instance()->id.' '.
 	                            'WHERE '.$where.'u.id IN ('.implode(',', $users).') '.
-			                    'GROUP BY '.$ufields.','.$useridentityfields.', username ';
+			                    'GROUP BY '.$ufields.','.$useridentityfields.' username ';
 			
 			$ausers = $DB->get_records_sql($select.$sql.$sort, $params, $table->get_page_start(), $table->get_page_size());
 			$table->pagesize($perpage, count($users));
@@ -461,7 +460,7 @@ class publication{
 						$selected_user = html_writer::checkbox('selectedeuser['.$auser->id .']', 'selected', false,
 								null, array('class'=>'userselection'));
 	
-						$useridentity = explode(',', $CFG->showuseridentity);
+						$useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
 						foreach($useridentity as $cur){
 							if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))){	
 								if (!empty($auser->$cur)) {
@@ -488,7 +487,7 @@ class publication{
 						
 						$row = array($selected_user,$userlink);
 	
-						$useridentity = explode(',', $CFG->showuseridentity);
+						$useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
 						foreach($useridentity as $cur) {
 
 							if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))){
