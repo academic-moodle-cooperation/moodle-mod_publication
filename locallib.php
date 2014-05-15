@@ -280,7 +280,7 @@ class publication{
 	
 		// Get all ppl that are allowed to submit assignments.
 		list($esql, $params) = get_enrolled_sql($context, 'mod/publication:view', $currentgroup);
-	
+
 		$showall = false;
 		
 		if(has_capability('mod/publication:approve', $context) ||
@@ -846,6 +846,9 @@ class publication{
 		global $CFG, $DB;
 		require_once($CFG->libdir.'/filelib.php');
 
+		$context = $this->get_context();
+		$cm = $this->get_coursemodule();
+		
 		$conditions = array();
 		$conditions['publication'] = $this->get_instance()->id;
 		
@@ -864,17 +867,76 @@ class publication{
 		$filesforzipping = array();
 		$fs = get_file_storage();
 		$filearea = 'attachment';
-	
-		// get group name for filename
+
+		// Find out current groups mode.
 		$groupmode = groups_get_activity_groupmode($this->get_coursemodule());
-		$groupid = 0;   // All users.
+		$currentgroup = groups_get_activity_group($this->get_coursemodule(), true);
+		
+		// get group name for filename
 		$groupname = '';
-		/* // Do not include groupname in the zip filename
-		if ($groupmode) {
-			$groupid = groups_get_activity_group($this->get_coursemodule(), true);
-			$groupname = groups_get_group_name($groupid).'-';
+
+		
+		// Get all ppl that are allowed to submit assignments.
+		list($esql, $params) = get_enrolled_sql($context, 'mod/publication:view', $currentgroup);
+		
+		$showall = false;
+		
+		if(has_capability('mod/publication:approve', $context) ||
+		has_capability('mod/publication:grantextension', $context)){
+			$showall = true;
 		}
-		*/
+		
+		if ($showall) {
+			$sql = 'SELECT u.id FROM {user} u '.
+					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
+					'WHERE u.deleted = 0 AND eu.id=u.id ';
+		} else {
+			$sql = 'SELECT u.id FROM {user} u '.
+					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
+					'LEFT JOIN {publication_file} files ON (u.id = files.userid) '.
+					'WHERE u.deleted = 0 AND eu.id=u.id '.
+					'AND files.publication = '. $this->get_instance()->id . ' ';
+				
+			if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
+				// mode upload
+				if($this->get_instance()->obtainteacherapproval){
+					// need teacher approval
+						
+					$where = 'files.teacherapproval = 1';
+				}else{
+					// no need for teacher approval
+					// teacher only hasnt rejected
+					$where = '(files.teacherapproval = 1 OR files.teacherapproval IS NULL)';
+				}
+			}else{
+				// mode import
+				if(!$this->get_instance()->obtainstudentapproval){
+					// no need to ask student and teacher has approved
+					$where = 'files.teacherapproval = 1';
+				}else{
+					// student and teacher have approved
+					$where ='files.teacherapproval = 1 AND files.studentapproval = 1';
+				}
+			}
+				
+			$sql .= 'AND ' . $where . ' ';
+			$sql .= 'GROUP BY u.id';
+		}
+		
+		$users = $DB->get_records_sql($sql, $params);
+		if (!empty($users)) {
+			$users = array_keys($users);
+		}
+		
+		// If groupmembersonly used, remove users who are not in any group.
+		if ($users and !empty($CFG->enablegroupmembersonly) and $cm->groupmembersonly) {
+			if ($groupingusers = groups_get_grouping_members($cm->groupingid, 'u.id', 'u.id')) {
+				$users = array_intersect($users, array_keys($groupingusers));
+			}
+		}
+		
+		
+			
 		$filename = str_replace(' ', '_', clean_filename($this->course->shortname.'-'.
 				$this->get_instance()->name.'-'.$groupname.$this->get_instance()->id.'.zip')); // Name of new zip file.
 
@@ -884,12 +946,12 @@ class publication{
 		$userfields = implode(', ', $userfields);
 		
 		$viewfullnames = has_capability('moodle/site:viewfullnames', $this->context);
-		
+
 		// get all files from each user
-		foreach ($uploaders as $uploader) {			
-			$a_userid = $uploader->userid; // Get userid.
+		foreach ($users as $uploader) {
+			$a_userid = $uploader;
 			
-			$conditions['userid'] = $uploader->userid;
+			$conditions['userid'] = $uploader;
 			$records = $DB->get_records('publication_file', $conditions);
 				
 				
