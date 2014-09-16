@@ -348,7 +348,8 @@ class publication{
 		$useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
 
 		foreach($useridentity as $cur){
-			if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))){
+			if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))
+				&& !($cur != "idnumber" && !has_capability('mod/publication:approve', $context))){
 				$tablecolumns[] = $cur;
 				$tableheaders[] = ($cur == 'phone1') ? get_string('phone') : get_string($cur);
 			}
@@ -490,7 +491,8 @@ class publication{
 						$useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
 						foreach($useridentity as $cur) {
 
-							if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))){
+							if(!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" && !has_capability('mod/publication:approve', $context))
+								&& !($cur != "idnumber" && !has_capability('mod/publication:approve', $context))){
 								if(true /*!$this->column_is_hidden($cur)*/){
 									$row[] = $$cur;
 								}else{
