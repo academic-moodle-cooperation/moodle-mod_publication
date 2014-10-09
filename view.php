@@ -41,8 +41,12 @@ require_capability('mod/publication:view', $context);
 
 $publication = new publication($context, $cm, $course);
 
-add_to_log($course->id, "publication", "view", "view.php?id={$cm->id}", $id, $cm->id);
-
+$event = \mod_publication\event\course_module_viewed::create(array(
+		'objectid' => $PAGE->cm->instance,
+		'context' => $PAGE->context,
+));
+$event->add_record_snapshot('course', $PAGE->course);
+$event->trigger();
 
 $pagetitle = strip_tags($course->shortname.': '.format_string($publication->get_instance()->name));
 $action = optional_param('action', 'view', PARAM_ALPHA);

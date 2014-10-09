@@ -33,7 +33,10 @@ if (!$course = $DB->get_record('course', array('id'=>$id))) {
 require_course_login($course);
 $PAGE->set_pagelayout('incourse');
 
-add_to_log($course->id, 'publication', 'view all', 'index.php?id=$course->id', '');
+$event = \mod_publication\event\course_module_instance_list_viewed::create(array(
+		'context' => context_course::instance($course->id)
+));
+$event->trigger();
 
 $strmodulenameplural = get_string('modulenameplural', 'publication');
 $strmodulname = get_String('modulename', 'publication');
