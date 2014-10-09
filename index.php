@@ -80,8 +80,6 @@ foreach ($modinfo->instances['publication'] as $cm) {
         continue;
     }
 
-    $cm->idnumber       = $cms[$cm->id]->idnumber;
-
     // Show dimmed if the mod is hidden!
     $class = $cm->visible ? '' : 'dimmed';
 

@@ -21,7 +21,7 @@
  * @copyright TSC
  */
 
-$module->version  = 2014100900;
+$module->version  = 2014100901;
 $module->release   = "2014-10-09"; 	  // User-friendly version number
 $module->maturity  = MATURITY_ALPHA;
 $module->requires = 2011070100.01;  // Requires this Moodle version.
