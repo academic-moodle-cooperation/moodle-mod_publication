@@ -81,6 +81,11 @@ if($savevisibility){
 	$publication->download_zip(true);
 }else if($action == "zipusers"){
 	$users = optional_param_array('selectedeuser', false, PARAM_INT);
+	if(!$users){
+		// no users selected
+		header("Location: view.php?id=" . $id);
+		die();
+	}
 	$users = array_keys($users);
 	$publication->download_zip($users);
 
