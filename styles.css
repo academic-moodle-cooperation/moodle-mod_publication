@@ -85,6 +85,7 @@
     text-align:right;
 }
 
+#page-mod-publication-view div#id_allfiles table#attempts th.c0,
 #page-mod-publication-view div#id_allfiles table#attempts td.c0{
 	text-align:center;
 }
