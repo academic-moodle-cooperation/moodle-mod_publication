@@ -90,7 +90,6 @@
 	text-align:center;
 }
 
-
 #page-mod-publication-view table.filetable,
 #page-mod-publication-view table.filetable td,
 #page-mod-publication-view table.filetable tr,
@@ -105,17 +104,26 @@
     border-width:0px !important;
 }
 
-#page-mod-publication-view table.statustable tbody tr,
-#page-mod-publication-view table.permissionstable tbody tr,
-#page-mod-publication-view table.filetable tbody tr{
+#page-mod-publication-view table.statustable tbody td,
+#page-mod-publication-view table.permissionstable tbody td,
+#page-mod-publication-view table.filetable tbody td{
 	background-color:transparent;
 }
+
+#page-mod-publication-view table.statustable td,
+#page-mod-publication-view table.filetable td{
+  	height:30px;
+} 
 
 #page-mod-publication-view table.statustable,
 #page-mod-publication-view table.permissionstable{
 width:100%;
 text-align:center;
-} 
+}
+
+#page-mod-publication-view table.permissionstable select{
+	margin-bottom:0;
+}
 
 #page-mod-publication-view div.withselection{
 	text-align:center;
