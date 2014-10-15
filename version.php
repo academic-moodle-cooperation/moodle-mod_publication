@@ -25,9 +25,9 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$module->version  = 2014101001;
-$module->release   = "2014-10-09"; 	  // User-friendly version number
+$module->version  = 2014101500;
+$module->release   = "2014-10-15"; 	  // User-friendly version number
 $module->maturity  = MATURITY_ALPHA;
-$module->requires = 2011070100.01;  // Requires this Moodle version.
+$module->requires = 2014041100;  // Requires this Moodle version.
 $module->component = 'mod_publication'; // Full name of the plugin (used for diagnostics).
 $module->cron = 300;
