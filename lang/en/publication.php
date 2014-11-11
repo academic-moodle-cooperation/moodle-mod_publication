@@ -176,6 +176,6 @@ $string['reset'] = 'Revert';
 
 // upload.php
 $string['guideline'] = 'visible for everybody:';
-$string['published_emediately'] = 'yes emediately, without approval by a teacher';
+$string['published_immediately'] = 'yes immediately, without approval by a teacher';
 $string['published_aftercheck'] = 'no, only after approval by a teacher';
 $string['save_changes'] = 'Save changes';

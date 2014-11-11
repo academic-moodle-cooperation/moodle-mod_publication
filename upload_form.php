@@ -48,7 +48,7 @@ class mod_publication_upload_form extends moodleform {
         if($publication->get_instance()->obtainteacherapproval){
         	$text = get_string('published_aftercheck','publication');
         }else{
-        	$text = get_string('published_emediately','publication');
+        	$text = get_string('published_immediately','publication');
         }        
         
         $mform->addElement('header','myfiles',get_string('myfiles','publication'));

@@ -178,6 +178,6 @@ $string['savestudentapprovalwarning'] = 'Sind Sie sicher dass Sie diese Änderun
 
 // upload.php
 $string['guideline'] = 'sichtbar für alle:';
-$string['published_emediately'] = 'ja sofort, ohne Prüfung durch den Lehrenden';
+$string['published_immediately'] = 'ja sofort, ohne Prüfung durch den Lehrenden';
 $string['published_aftercheck'] = 'nein, erst nach Prüfung durch den Lehrenden';
 $string['save_changes'] = 'Änderungen Speichern';
