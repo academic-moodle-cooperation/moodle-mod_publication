@@ -43,3 +43,18 @@ M.mod_publication.init_mod_form = function (Y, atts) {
 	toggle_available_options();
 
 }
+
+M.mod_publication.init_files_form = function(Y){
+	YUI().use('event', function (Y) {
+        Y.one('#fastg').on('submit', function (e) {
+			if(Y.one('#menuaction').get('value') == 'zipusers'){				
+				setTimeout(
+					function(){
+						Y.all('.userselection').each( function() {
+						  this.set('checked', false);
+						});
+					}, 100);
+			}
+        });
+    });
+}

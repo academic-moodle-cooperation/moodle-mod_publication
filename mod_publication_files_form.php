@@ -46,6 +46,13 @@ class mod_publication_files_form extends moodleform {
 		$mform = $this->_form;
 		$mform->addElement('header', 'myfiles', get_string('myfiles', 'publication'));
 		$mform->setExpanded('myfiles');
+		
+		$jsmodule = array(
+				'name' => 'mod_publication',
+				'fullpath' => '/mod/publication/publication.js',
+				'requires' => array('node-base', 'node-event-simulate'),
+		);
+		$PAGE->requires->js_init_call('M.mod_publication.init_files_form',null,false, $jsmodule);
 
 		if($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
 			if($publication->get_instance()->obtainteacherapproval){
