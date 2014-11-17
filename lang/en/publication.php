@@ -88,9 +88,9 @@ $string['allowedfiletypes'] = 'Allowed filetypes (,)';
 $string['allowedfiletypes_help'] = 'Set the allowed filetypes for uploading assignments, separated by a comma (,). e.g.: txt, jpg.
 If any file type is possible, leave the field empty. The filter is not case sensitive, so PDF equals pdf.';
 $string['allowedfiletypes_err'] = 'Check input! Invalid file extensions or seperators';
-$string['obtainteacherapproval_help'] = 'If set to no, entries require approving by a teacher before they are viewable by everyone.';
+$string['obtainteacherapproval_help'] = 'Decide if files will be made visible immediately upon upload or not: <br><ul><li> yes - all files will be visible to everyone right away</li><li> no - files will be published only after the teacher approved</li></ul>';
 $string['assignment'] = 'Assignment';
-$string['obtainstudentapproval_help'] = 'You can decide whether students can publish their assignment submissions on their own or not. The list of students asked for their approval can be chosen. The submissions are only visible after students have given their approval';
+$string['obtainstudentapproval_help'] = 'Decide if students approval will be obtained: <br><ul><li> yes - files will be visible to all only after the student approved. The teacher may select individual students/files to ask for approval.</li><li> no - the student’s approval will not be obtained via Moodle. The file’s visibility is solely the teacher’s desicion.</li></ul>';
 $string['choose'] = 'please choose ...';
 $string['importfrom_err'] = 'You have to choose an assignment you want to import from.';
 
@@ -123,15 +123,15 @@ $string['updatefiles'] = 'Update files';
 $string['updatefileswarning'] = 'Files from an individual student in the student folder will be updated with his/her submission of the assignment. Already visible files from students will be replaced too, if they are deleted or refreshed - the settings of the student as to the visibility will not be changed.';
 $string['myfiles'] = 'Own files';
 $string['add_uploads'] = 'Add files';
-$string['edit_uploads'] = 'Edit files';
+$string['edit_uploads'] = 'edit/upload files';
 $string['edit_timeover'] = 'Files can only be edited during the changeperiod.';
 $string['approval_timeover'] = 'You can only change your approval during the changeperiod.';
 $string['nofiles'] = 'No files available';
 $string['notice'] = 'Notice:';
-$string['notice_uploadrequireapproval'] = 'Entries require approving by a teacher before they are viewable by everyone.';
-$string['notice_uploadnoapproval'] = 'Files are immediately visible for everyone. The teacher has the right to overrule your setting.';
-$string['notice_importrequireapproval'] = 'Choose whether your submissions are visible for all students.';
-$string['notice_importnoapproval'] = 'The following files were made visible for all students by the teacher.';
+$string['notice_uploadrequireapproval'] = 'All uploaded files will be made visible only after the teacher’s review';
+$string['notice_uploadnoapproval'] = 'All files will be immediately visible to everyone upon upload. The teacher reserves the right to hide published files at any time.';
+$string['notice_importrequireapproval'] = 'Decide whether your files are available for everyone.';
+$string['notice_importnoapproval'] = 'The following files are visible to all.';
 $string['teacher_pending'] = 'confirmation pending';
 $string['teacher_approved'] = 'visible (approved)';
 $string['teacher_rejected'] = 'declined';
@@ -157,9 +157,9 @@ $string['studentapproval_help'] = 'The colum status represents the students repl
 * ? - approval pending
 * ✓ - approval given
 * ✖ - approval declined';
-$string['teacherapproval'] = 'Teacher approval';
+$string['teacherapproval'] = 'Approval';
 $string['visibility'] = 'visible for all';
-$string['visibleforstudents'] = 'visible for students';
+$string['visibleforstudents'] = 'visible to all';
 $string['visibleforstudents_yes'] = 'Stundets can see this file';
 $string['visibleforstudents_no'] = 'This file is NOT visible to stundets';
 $string['resetstudentapproval'] = 'Reset status'; // 'Reset student approval';

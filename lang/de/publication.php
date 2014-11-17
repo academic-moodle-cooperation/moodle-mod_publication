@@ -86,14 +86,9 @@ $string['allowedfiletypes'] = 'Erlaubte Dateiendungen (,)';
 $string['allowedfiletypes_help'] = 'Hier können Sie die erlaubten Dateiendungen beim Hochladen von Aufgaben setzen, separiert durch Kommas (,). z.B.: txt, jpg.
 Wenn jeder Dateityp erlaubt ist, das Feld freilassen. Groß- und Kleinschreibung wird hierbei ignoriert.';
 $string['allowedfiletypes_err'] = 'Bitte Eingabe überprüfen! Dateiendungen enthalten ungültige Sonder- oder Trennzeichen';
-$string['obtainteacherapproval_help'] = 'Diese Option legt fest, ob Dateien sofort ohne Prüfung sichtbar werden:
-
-* Ja - Einträge werden sofort nach dem Speichern für alle angezeigt
-* Nein - Einträge werden von Trainer/innen geprüft und freigegeben';
+$string['obtainteacherapproval_help'] = 'Diese Option legt fest, ob Dateien sofort für alle ohne Prüfung sichtbar werden: <br><ul><li> Ja - Einträge werden sofort nach dem Speichern angezeigt </li><li> Nein - Einträge werden von Lehrenden geprüft und freigegeben</li></ul>';
 $string['assignment'] = 'Aufgabe';
-$string['obtainstudentapproval_help'] = 'Hier legen Sie fest ob Studierende selbst entscheiden können ob ihre Aufgaben für andere sichtbar sind oder nicht.
-Sie können festlegen von welchen Studierenden das Einverständnis eingeholt wird. Erst nach Einverständnis des Studierenden
-sind die Dateien auch wirklich sichtbar.';
+$string['obtainstudentapproval_help'] = 'Hier legen Sie fest, ob Sie das Einverständnis der Studierenden über Moodle (ja) oder auf eine andere Weise einholen (nein). <br> In Moodle können Sie festlegen, von welchen Studierenden das Einverständnis eingeholt wird. Erst nach Einverständnis der Studierenden sind die Dateien auch wirklich für alle sichtbar.';
 $string['choose'] = 'bitte auswählen ...';
 $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie importieren möchten.';
 
@@ -125,15 +120,15 @@ $string['updatefiles'] = 'Dateien aktualisieren';
 $string['updatefileswarning'] = 'Die Dateien der einzelnen Studierenden aus dem Studierendenordner werden mit denen der Aufgabe aktualisiert. Bereits sichtbare Dateien eines Studierenden werden ebenfalls überschrieben, falls diese in der Aufgabe nicht mehr vorhanden sind bzw. geändert wurden - d.h. das Einverständnis zur Sichtbarkeit des einzeln Studierenden bleibt unverändert.';
 $string['myfiles'] = 'Meine Dateien';
 $string['add_uploads'] = 'Datei hochladen';
-$string['edit_uploads'] = 'Dateien bearbeiten';
+$string['edit_uploads'] = 'Dateien bearbeiten/hochladen';
 $string['edit_timeover'] = 'Dateien können nur während des Änderungszeitraumes geändert werden.';
 $string['approval_timeover'] = 'Sie können ihre Zustimmung nur während des Änderungszeitraumes ändern.';
 $string['nofiles'] = 'Keine Dateien vorhanden';
 $string['notice'] = 'Hinweis:';
-$string['notice_uploadrequireapproval'] = 'Alle Dateien die Sie hier hochladen, werden erst nach Überprüfung durch den Lehrenden für andere Teilnehmer/innen sichtbar.';
-$string['notice_uploadnoapproval'] = 'Alle Dateien die Sie hier hochladen, werden sofort für andere Teilnehmer/innen sichtbar geschaltet. Der Lehrende behält sich das Recht vor die Sichtbarkeit Ihrer Dateien wieder aufzuheben.';
-$string['notice_importrequireapproval'] = 'Entscheiden Sie hier, ob sie Ihre Dateien allen Teilnehmer/innen zur Verfügung stellen.';
-$string['notice_importnoapproval'] = 'Folgende Dateien wurden durch den Lehrenden für alle Teilnehmer/innen sichtbar geschaltet.';
+$string['notice_uploadrequireapproval'] = 'Alle Dateien, die Sie hier hochladen, werden erst nach Überprüfung durch die Lehrenden für alle sichtbar.';
+$string['notice_uploadnoapproval'] = 'Alle Dateien, die Sie hier hochladen, werden sofort für alle sichtbar geschaltet. Lehrende behalten sich das Recht vor die Sichtbarkeit Ihrer Dateien wieder aufzuheben.';
+$string['notice_importrequireapproval'] = 'Entscheiden Sie hier, ob sie Ihre Dateien allen zur Verfügung stellen.';
+$string['notice_importnoapproval'] = 'Folgende Dateien wurden für alle sichtbar geschaltet.';
 $string['teacher_pending'] = 'Bestätigung ausstehend';
 $string['teacher_approved'] = 'sichtbar (freigegeben)';
 $string['teacher_rejected'] = 'abgelehnt';
@@ -159,9 +154,9 @@ $string['studentapproval_help'] = 'In der Spalte Status wird die Rückmeldung de
 * ? - Einverständnis noch nicht erfolgt
 * ✓ - Einverständnis gegeben
 * ✖ - Einverständnis entzogen';
-$string['teacherapproval'] = 'Lehrenden Zustimmung';
+$string['teacherapproval'] = 'Zustimmung';
 $string['visibility'] = 'für alle sichtbar';
-$string['visibleforstudents'] = 'für Studierende sichtbar';
+$string['visibleforstudents'] = 'Für alle sichtbar';
 $string['visibleforstudents_yes'] = 'Studierende können diese Datei sehen';
 $string['visibleforstudents_no'] = 'Diese Datei ist für Studierende NICHT sichtbar';
 $string['resetstudentapproval'] = 'Status zurücksetzen'; // 'Studierenden zustimmung zurücksetzen';
