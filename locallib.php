@@ -860,19 +860,7 @@ class publication{
 		
 		$conditions = array();
 		$conditions['publication'] = $this->get_instance()->id;
-		
-		$customusers = "";
-		
-		if(is_array($users) && count($users) > 0){
-			$customusers = " and userid IN (" . implode($users, ',') . ")";
 			
-		}else if($users == false){
-			$customusers = " AND 1=2 ";
-		}
-		
-		$uploaders = $DB->get_records_sql("SELECT DISTINCT userid FROM {publication_file} WHERE publication=:pubid" . $customusers,
-				array("pubid"=>$this->get_instance()->id));
-		
 		$filesforzipping = array();
 		$fs = get_file_storage();
 		$filearea = 'attachment';
@@ -895,15 +883,22 @@ class publication{
 			$showall = true;
 		}
 		
+		if(is_array($users) && count($users) > 0){
+			$customusers = " and u.id IN (" . implode($users, ',') . ") ";
+				
+		}else if($users == false){
+			$customusers = " AND 1=2 ";
+		}
+		
 		if ($showall) {
 			$sql = 'SELECT u.id FROM {user} u '.
 					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
-					'WHERE u.deleted = 0 AND eu.id=u.id ';
+					'WHERE u.deleted = 0 AND eu.id=u.id '. $customusers;
 		} else {
 			$sql = 'SELECT u.id FROM {user} u '.
 					'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
 					'LEFT JOIN {publication_file} files ON (u.id = files.userid) '.
-					'WHERE u.deleted = 0 AND eu.id=u.id '.
+					'WHERE u.deleted = 0 AND eu.id=u.id '. $customusers . 
 					'AND files.publication = '. $this->get_instance()->id . ' ';
 				
 			if($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD){
