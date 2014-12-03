@@ -15,17 +15,18 @@
 
 /**
  * README.txt
- * @version       2014-03-22
+ * @version       2014-12-03
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author        Andreas Windbichler
+ * @author        Eva Karall (eva.maria.karall@univie.ac.at)
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 # ---------------------------------------------------------------
-# FOR Moodle 2.6+
+# FOR Moodle 2.7+
 # ---------------------------------------------------------------
 
 Publication module
@@ -47,7 +48,7 @@ OVERVIEW
 
 REQUIREMENTS
 ================================================================================
-	Moodle 2.6 or later
+	Moodle 2.7.2 or later
 
 INSTALLATION 
 ================================================================================
