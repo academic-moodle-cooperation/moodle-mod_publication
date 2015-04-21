@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // This file is part of mod_publication for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
