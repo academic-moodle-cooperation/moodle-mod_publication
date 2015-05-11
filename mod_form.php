@@ -72,9 +72,11 @@ class mod_publication_mod_form extends moodleform_mod{
         // Publication specific elements
         $mform->addElement('header','publication', get_string('modulename','publication'));
         $mform->setExpanded('publication');
-        
-        if(isset($this->current->id)){
+
+        if(isset($this->current->id) && $this->current->id != ""){
         	$filecount = $DB->count_records('publication_file', array('publication'=>$this->current->id));
+        }else{
+        	$filecount = 0;
         }
         
         $disabled = array();
