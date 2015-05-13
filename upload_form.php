@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * upload_form.php
@@ -31,34 +31,31 @@ class mod_publication_upload_form extends moodleform {
 
     public function definition() {
         $mform = $this->_form;
-        
-        $currententry		= $this->_customdata['current'];
-        $publication		= $this->_customdata['publication'];
+
+        $currententry       = $this->_customdata['current'];
+        $publication        = $this->_customdata['publication'];
         $cm                = $this->_customdata['cm'];
         $definitionoptions = $this->_customdata['definitionoptions'];
         $attachmentoptions = $this->_customdata['attachmentoptions'];
-        
+
         $context  = context_module::instance($cm->id);
-        // Prepare format_string/text options
+        // Prepare format_string/text options.
         $fmtoptions = array(
-        		'context' => $context);
-        
-        //-----------------------------------
-              
-        if($publication->get_instance()->obtainteacherapproval){
-        	$text = get_string('published_aftercheck','publication');
-        }else{
-        	$text = get_string('published_immediately','publication');
-        }        
-        
-        $mform->addElement('header','myfiles',get_string('myfiles','publication'));
-        
-        $mform->addElement('static','guideline',get_string('guideline','publication'),$text);
-        
+                'context' => $context);
+
+        if ($publication->get_instance()->obtainteacherapproval) {
+            $text = get_string('published_aftercheck', 'publication');
+        } else {
+            $text = get_string('published_immediately', 'publication');
+        }
+
+        $mform->addElement('header', 'myfiles', get_string('myfiles', 'publication'));
+
+        $mform->addElement('static', 'guideline', get_string('guideline', 'publication'), $text);
+
         $mform->addElement('filemanager', 'attachment_filemanager', '', null, $attachmentoptions);
 
         // Hidden params.
-        
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'cmid');
@@ -66,7 +63,6 @@ class mod_publication_upload_form extends moodleform {
 
         // Buttons.
         $this->add_action_buttons(true, get_string('save_changes', 'publication'));
-        
         $this->set_data($currententry);
     }
 }

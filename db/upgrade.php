@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * db/upgrade.php
@@ -27,22 +27,22 @@
 
 function xmldb_publication_upgrade($oldversion) {
     global $CFG, $DB, $OUTPUT;
-    
+
     $dbman = $DB->get_manager();
-    
+
     if ($oldversion < 2014032201) {
-    	$table = new xmldb_table('publication_file');
-       
-    	// add field alwaysshowdescription
-    	$field = new xmldb_field('filesourceid', XMLDB_TYPE_INTEGER, '10', false, false, false, '0', 'fileid');
-    
-    	// Conditionally launch add field alwaysshowdescription.
-    	if (!$dbman->field_exists($table, $field)) {
-    		$dbman->add_field($table, $field);
-    	}
-    	 
-    	// organizer savepoint reached
-    	upgrade_mod_savepoint(true, 2014032201, 'publication');
+        $table = new xmldb_table('publication_file');
+
+        // Add field alwaysshowdescription.
+        $field = new xmldb_field('filesourceid', XMLDB_TYPE_INTEGER, '10', false, false, false, '0', 'fileid');
+
+        // Conditionally launch add field alwaysshowdescription.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Organizer savepoint reached.
+        upgrade_mod_savepoint(true, 2014032201, 'publication');
     }
 
     return true;

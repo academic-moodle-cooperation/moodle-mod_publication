@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * lib.php
@@ -33,26 +33,26 @@ defined('MOODLE_INTERNAL') || die();
  * @param publication $publication
  * @param mform $mform
  */
-function publication_add_instance($publication, $mform=null) {
-	global $CFG, $DB;
+function publication_add_instance($publication, $mform = null) {
+    global $CFG, $DB;
 
-	$cmid       = $publication->coursemodule;
-	$courseid   = $publication->course;
+    $cmid       = $publication->coursemodule;
+    $courseid   = $publication->course;
 
-	try {
-		$id = $DB->insert_record('publication', $publication);
-	} catch (Exception $e) {
-		var_dump($e);
-	}
+    try {
+        $id = $DB->insert_record('publication', $publication);
+    } catch (Exception $e) {
+        var_dump($e);
+    }
 
-	$DB->set_field('course_modules', 'instance', $id, array('id'=>$cmid));
+    $DB->set_field('course_modules', 'instance', $id, array('id' => $cmid));
 
-	$record = $DB->get_record('publication', array('id'=>$id));
+    $record = $DB->get_record('publication', array('id' => $id));
 
-	$record->course     = $courseid;
-	$record->cmid       = $cmid;
+    $record->course     = $courseid;
+    $record->cmid       = $cmid;
 
-	return $record->id;
+    return $record->id;
 }
 
 /**
@@ -62,21 +62,31 @@ function publication_add_instance($publication, $mform=null) {
  * @return mixed True if module supports feature, null if doesn't know
  */
 function publication_supports($feature) {
-	switch($feature) {
+    switch($feature) {
+        case FEATURE_GROUPS:
+            return true;
+        case FEATURE_GROUPINGS:
+            return true;
+        case FEATURE_GROUPMEMBERSONLY:
+            return true;
+        case FEATURE_MOD_INTRO:
+            return true;
+        case FEATURE_GRADE_HAS_GRADE:
+            return false;
+        case FEATURE_GRADE_OUTCOMES:
+            return false;
+        case FEATURE_GRADE_HAS_GRADE:
+            return false;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
+        case FEATURE_IDNUMBER:
+            return false;
 
-		case FEATURE_GROUPS:                  return true;
-		case FEATURE_GROUPINGS:               return true;
-		case FEATURE_GROUPMEMBERSONLY:        return true;
-		case FEATURE_MOD_INTRO:               return true;
-		case FEATURE_GRADE_HAS_GRADE:         return false;
-		case FEATURE_GRADE_OUTCOMES:          return false;
-		case FEATURE_GRADE_HAS_GRADE:         return false;
-		case FEATURE_BACKUP_MOODLE2:          return true;
-		case FEATURE_SHOW_DESCRIPTION:        return true;
-		case FEATURE_IDNUMBER:                return false;
-
-		default: return null;
-	}
+        default:
+            return null;
+    }
 }
 
 /**
@@ -85,16 +95,16 @@ function publication_supports($feature) {
  * @param publication $publication
  * @param mform $mform
  */
-function publication_update_instance($publication, $mform=null) {
-	global $CFG, $DB;
+function publication_update_instance($publication, $mform = null) {
+    global $CFG, $DB;
 
-	$publication->id = $publication->instance;
+    $publication->id = $publication->instance;
 
-	$publication->timemodified = time();
+    $publication->timemodified = time();
 
-	$DB->update_record('publication', $publication);
+    $DB->update_record('publication', $publication);
 
-	return true;
+    return true;
 }
 
 /**
@@ -104,27 +114,27 @@ function publication_update_instance($publication, $mform=null) {
  * @return boolean
  */
 function publication_delete_instance($id) {
-	global $CFG, $DB;
+    global $CFG, $DB;
 
-	if (! $publication = $DB->get_record('publication', array('id'=>$id))) {
-		return false;
-	}
-	
-	$DB->delete_records('publication_extduedates',array('publication'=>$publication->id));
+    if (! $publication = $DB->get_record('publication', array('id' => $id))) {
+        return false;
+    }
 
-	$filerecords = $DB->get_records('publication_file', array('publication'=>$publication->id));
-	
-	$fs = get_file_storage();
-	
-	$fs->delete_area_files($publication->id,'mod_publication','attachment');
-	
-	$DB->delete_records('publication_file', array('publication'=>$publication->id));
-	
-	$result = true;
-	if (! $DB->delete_records('publication', array('id'=>$publication->id))) {
-		$result = false;
-	}
-	return $result;
+    $DB->delete_records('publication_extduedates', array('publication' => $publication->id));
+
+    $filerecords = $DB->get_records('publication_file', array('publication' => $publication->id));
+
+    $fs = get_file_storage();
+
+    $fs->delete_area_files($publication->id, 'mod_publication', 'attachment');
+
+    $DB->delete_records('publication_file', array('publication' => $publication->id));
+
+    $result = true;
+    if (! $DB->delete_records('publication', array('id' => $publication->id))) {
+        $result = false;
+    }
+    return $result;
 }
 
 /**
@@ -134,33 +144,33 @@ function publication_delete_instance($id) {
  *                        will know about (most noticeably, an icon).
  */
 function publication_get_coursemodule_info($coursemodule) {
-	global $CFG, $DB;
+    global $CFG, $DB;
 
-	$dbparams = array('id'=>$coursemodule->instance);
-	$fields = 'id, name, alwaysshowdescription, allowsubmissionsfromdate, intro, introformat';
-	if (! $publication = $DB->get_record('publication', $dbparams, $fields)) {
-		return false;
-	}
+    $dbparams = array('id' => $coursemodule->instance);
+    $fields = 'id, name, alwaysshowdescription, allowsubmissionsfromdate, intro, introformat';
+    if (! $publication = $DB->get_record('publication', $dbparams, $fields)) {
+        return false;
+    }
 
-	$result = new cached_cm_info();
-	$result->name = $publication->name;
-	if ($coursemodule->showdescription) {
-		if ($publication->alwaysshowdescription || time() > $publication->allowsubmissionsfromdate) {
-			// Convert intro to html. Do not filter cached version, filters run at display time.
-			$result->content = format_module_intro('publication', $publication, $coursemodule->id, false);
-		}
-	}
-	return $result;
+    $result = new cached_cm_info();
+    $result->name = $publication->name;
+    if ($coursemodule->showdescription) {
+        if ($publication->alwaysshowdescription || time() > $publication->allowsubmissionsfromdate) {
+            // Convert intro to html. Do not filter cached version, filters run at display time.
+            $result->content = format_module_intro('publication', $publication, $coursemodule->id, false);
+        }
+    }
+    return $result;
 }
 
 function publication_reset_course_form_definition(&$mform) {
-	$mform->addElement('header', 'publicationheader', get_string('modulenameplural', 'publication'));
-	$mform->addElement('checkbox', 'reset_publication_userdata', get_string('reset_userdata', 'publication'));
+    $mform->addElement('header', 'publicationheader', get_string('modulenameplural', 'publication'));
+    $mform->addElement('checkbox', 'reset_publication_userdata', get_string('reset_userdata', 'publication'));
 }
 
-function publication_reset_userdata($data){
-	global $DB;
-	
+function publication_reset_userdata($data) {
+    global $DB;
+
     if (!$DB->count_records('publication', array('course' => $data->courseid))) {
         return array();
     }
@@ -169,28 +179,26 @@ function publication_reset_userdata($data){
     $status = array();
 
     if (isset($data->reset_publication_userdata)) {
-        
-    	$publications = $DB->get_records('publication',array('course'=>$data->courseid));
-    	
-    	
-    	foreach($publications as $publication){
-    	
-	        
-	        $DB->delete_records('publication_extduedates',array('publication'=>$publication->id));
-	        
-	        $filerecords = $DB->get_records('publication_file', array('publication'=>$publication->id));
-	        
-	        $fs = get_file_storage();
-	        foreach($filerecords as $filerecord){
-	        	$file = $fs->get_file_by_id($filerecord->fileid);
-	        	$file->delete();
-	        }
-	        
-	        $DB->delete_records('publication_file', array('publication'=>$publication->id));
-	
-	        $status[] = array('component' => $componentstr, 'item' => $publication->name,
-	                'error' => false);
-    	}
+
+        $publications = $DB->get_records('publication', array('course' => $data->courseid));
+
+        foreach ($publications as $publication) {
+
+            $DB->delete_records('publication_extduedates', array('publication' => $publication->id));
+
+            $filerecords = $DB->get_records('publication_file', array('publication' => $publication->id));
+
+            $fs = get_file_storage();
+            foreach ($filerecords as $filerecord) {
+                $file = $fs->get_file_by_id($filerecord->fileid);
+                $file->delete();
+            }
+
+            $DB->delete_records('publication_file', array('publication' => $publication->id));
+
+            $status[] = array('component' => $componentstr, 'item' => $publication->name,
+                    'error' => false);
+        }
     }
 
     return $status;

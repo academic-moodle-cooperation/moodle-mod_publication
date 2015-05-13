@@ -102,7 +102,7 @@
 #page-mod-publication-view fieldset#id_allfiles table#attempts span.timemodified{
 	font-style:italic;
 	font-size:0.9em;
-} 
+}
 
 #page-mod-publication-view fieldset#id_allfiles{
     padding-top:4px;
@@ -140,7 +140,7 @@
 #page-mod-publication-view table.statustable td,
 #page-mod-publication-view table.filetable td{
   	height:30px;
-} 
+}
 
 #page-mod-publication-view table.statustable,
 #page-mod-publication-view table.permissionstable{

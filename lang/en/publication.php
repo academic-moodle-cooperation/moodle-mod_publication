@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * lang/en/publication.php
@@ -56,7 +56,7 @@ $string['configmaxbytes'] = 'Default maximum size for all files in the studentfo
 
 $string['reset_userdata'] = 'All data';
 
-// mod_form
+// Strings from the File  mod_form.
 $string['availability'] = 'Timeslot for Upload/Approval';
 
 $string['allowsubmissionsfromdate'] = 'from';
@@ -101,15 +101,15 @@ $string['warning_changefromobtainstudentapproval'] = 'If you perform this change
 $string['warning_changetoobtainstudentapproval'] = 'If you perform this change, the students are asked for their approval for all files marked as visible. Files will only become visible after the students\' approval.';
 
 
-// mod_publication_grantextension_form.php
+// Strings from the File  mod_publication_grantextension_form.php.
 $string['extensionduedate'] = 'Extension due date';
 $string['extensionnotafterduedate'] = 'Extension date must be after the due date';
 $string['extensionnotafterfromdate'] = 'Extension date must be after the allow submissions from date';
 
-// index.php
+// Strings from the File  index.php.
 $string['nopublicationsincourse'] = 'There are no publication instances in this course.';
 
-// view.php
+// Strings from the File  view.php.
 $string['allowsubmissionsfromdate_upload'] = 'Upload possibility from';
 $string['allowsubmissionsfromdate_import'] = 'Approval from';
 $string['duedate_upload'] = 'Upload possibility to';
@@ -151,7 +151,7 @@ $string['entiresperpage'] = 'Participants shown per page';
 $string['nothingtodisplay'] = 'No entries to display';
 $string['nofilestozip'] = 'No files to zip';
 $string['status'] = 'Status';
-$string['studentapproval'] = 'Status'; // 'Student approval';
+$string['studentapproval'] = 'Status'; // Previous 'Student approval'.
 $string['studentapproval_help'] = 'The colum status represents the students reply of the approval:
 
 * ? - approval pending
@@ -162,7 +162,7 @@ $string['visibility'] = 'visible for all';
 $string['visibleforstudents'] = 'visible to all';
 $string['visibleforstudents_yes'] = 'Stundets can see this file';
 $string['visibleforstudents_no'] = 'This file is NOT visible to stundets';
-$string['resetstudentapproval'] = 'Reset status'; // 'Reset student approval';
+$string['resetstudentapproval'] = 'Reset status'; // Previous 'Reset student approval'.
 $string['savestudentapprovalwarning'] = 'Are you sure you want to save these changes? You can not change the status once is it set.';
 
 $string['go'] = 'Go';
@@ -174,7 +174,7 @@ $string['grantextension'] = 'grant extension';
 $string['saveteacherapproval'] = 'save approval';
 $string['reset'] = 'Revert';
 
-// upload.php
+// Strings from the File  upload.php.
 $string['guideline'] = 'visible for everybody:';
 $string['published_immediately'] = 'yes immediately, without approval by a teacher';
 $string['published_aftercheck'] = 'no, only after approval by a teacher';

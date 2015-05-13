@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * lang/de/publication.php
@@ -56,7 +56,7 @@ $string['configmaxbytes'] = 'Voreinstellung für die Dateigröße von Dateien im
 
 $string['reset_userdata'] = 'Alle Daten';
 
-// mod_form
+// Strings from the File mod_form.
 $string['availability'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
 
 $string['allowsubmissionsfromdate'] = 'von';
@@ -98,15 +98,15 @@ $string['warning_changetoobtainteacherapproval'] = 'Wenn Sie diese Änderung dur
 $string['warning_changefromobtainstudentapproval'] = 'Wenn Sie diese Änderung durchführen, können nur Sie bestimmen welche Dateien für alle anderen Teilnehmer/Innen sichtbar sind. Das Einverständnis von Studierenden wird nicht eingeholt. Alle zum Einverständis gekennzeichneten Dateien werden unabhängig von der Studierendenzustimmung nach dieser Änderung sofort für alle sichtbar.';
 $string['warning_changetoobtainstudentapproval'] = 'Wenn Sie diese Änderung durchführen, wird das Einverständnis der Studierenden eingeholt. Nach dieser Änderung wird für alle als sichtbar gekennzeichneten Dateien das Einverständnis der einzelnen Studierenden eingeholt - die Dateien sind erst nach gegebenem Einverständnis für alle sichtbar.';
 
-// mod_publication_grantextension_form.php
+// Strings from the File mod_publication_grantextension_form.php.
 $string['extensionduedate'] = 'Erweiterung des Abgabdatums';
 $string['extensionnotafterduedate'] = 'Das erweiterte Abgabedatum muss nach dem (normalen) Abgabedatum liegen.';
 $string['extensionnotafterfromdate'] = 'Das erweiterte Abgabedatum muss nach Abgabedatum liegen.';
 
-// index.php
+// Strings from the File index.php.
 $string['nopublicationsincourse'] = 'In diesem Kurs existieren keine Studierendenordner.';
 
-// view.php
+// Strings from the File view.php.
 $string['allowsubmissionsfromdate_upload'] = 'Uploadmöglickeit von';
 $string['allowsubmissionsfromdate_import'] = 'Einverständniserklärung von';
 $string['duedate_upload'] = 'Uploadmöglickeit bis';
@@ -148,7 +148,7 @@ $string['entiresperpage'] = 'Einträge pro Seite';
 $string['nothingtodisplay'] = 'Keine Einträge';
 $string['nofilestozip'] = 'Keine Dateien zu Zipen';
 $string['status'] = 'Status';
-$string['studentapproval'] = 'Status'; // 'Studierenden Zustimmung';
+$string['studentapproval'] = 'Status'; // Previous 'Studierenden Zustimmung'.
 $string['studentapproval_help'] = 'In der Spalte Status wird die Rückmeldung des Studierenden angezeigt:
 
 * ? - Einverständnis noch nicht erfolgt
@@ -159,7 +159,7 @@ $string['visibility'] = 'für alle sichtbar';
 $string['visibleforstudents'] = 'Für alle sichtbar';
 $string['visibleforstudents_yes'] = 'Studierende können diese Datei sehen';
 $string['visibleforstudents_no'] = 'Diese Datei ist für Studierende NICHT sichtbar';
-$string['resetstudentapproval'] = 'Status zurücksetzen'; // 'Studierenden zustimmung zurücksetzen';
+$string['resetstudentapproval'] = 'Status zurücksetzen'; // Previous 'Studierenden zustimmung zurücksetzen'.
 
 $string['go'] = 'Start';
 $string['withselected'] = 'Mit Auswahl...';
@@ -171,7 +171,7 @@ $string['saveteacherapproval'] = 'Zustimmung aktualisieren';
 $string['reset'] = 'Zurücksetzen';
 $string['savestudentapprovalwarning'] = 'Sind Sie sicher dass Sie diese Änderungen speichern möchten? Der Status kann im Nachhinein nicht mehr geändert werden.';
 
-// upload.php
+// Strings from the File  upload.php.
 $string['guideline'] = 'sichtbar für alle:';
 $string['published_immediately'] = 'ja sofort, ohne Prüfung durch den Lehrenden';
 $string['published_aftercheck'] = 'nein, erst nach Prüfung durch den Lehrenden';

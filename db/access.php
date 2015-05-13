@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // This file is part of mod_publication for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * db/access.php
@@ -26,18 +26,17 @@
  */
 
 $capabilities = array(
-		'mod/publication:view' => array(
-		
-				'captype' => 'read',
-				'contextlevel' => CONTEXT_MODULE,
-				'archetypes' => array(
-						'guest' => CAP_ALLOW,
-						'student' => CAP_ALLOW,
-						'teacher' => CAP_ALLOW,
-						'editingteacher' => CAP_ALLOW,
-						'manager' => CAP_ALLOW
-				)
-		),
+        'mod/publication:view' => array(
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_MODULE,
+                'archetypes' => array(
+                        'guest' => CAP_ALLOW,
+                        'student' => CAP_ALLOW,
+                        'teacher' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW
+                )
+        ),
 
         'mod/publication:addinstance' => array(
                 'riskbitmask' => RISK_XSS,
@@ -49,35 +48,35 @@ $capabilities = array(
                 ),
                 'clonepermissionsfrom' => 'moodle/course:manageactivities'
         ),
-        
+
         'mod/publication:upload' => array(
-        		'captype' => 'read',
-        		'contextlevel' => CONTEXT_MODULE,
-        		'archetypes' => array(
-						'student' => CAP_ALLOW,
-						'teacher' => CAP_ALLOW,
-						'editingteacher' => CAP_ALLOW,
-						'manager' => CAP_ALLOW
-        		)
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_MODULE,
+                'archetypes' => array(
+                        'student' => CAP_ALLOW,
+                        'teacher' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW
+                )
         ),
-        
+
         'mod/publication:approve' => array(
-        		'captype' => 'read',
-        		'contextlevel' => CONTEXT_MODULE,
-        		'archetypes' => array(
-						'teacher' => CAP_ALLOW,
-						'editingteacher' => CAP_ALLOW,
-						'manager' => CAP_ALLOW
-        		)
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_MODULE,
+                'archetypes' => array(
+                        'teacher' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW
+                )
         ),
-        
+
         'mod/publication:grantextension' => array(
-        		'captype' => 'write',
-        		'contextlevel' => CONTEXT_MODULE,
-        		'archetypes' => array(
-        				'teacher' => CAP_ALLOW,
-        				'editingteacher' => CAP_ALLOW,
-        				'manager' => CAP_ALLOW
-        		)
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_MODULE,
+                'archetypes' => array(
+                        'teacher' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW
+                )
         ),
 );
