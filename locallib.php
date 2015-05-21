@@ -349,7 +349,7 @@ class publication{
         $tablecolumns = array('selection', 'fullname');
         $tableheaders = array($selectallnone, get_string('fullnameuser'));
 
-        $useridentity = $CFG->showuseridentity != '' ? explode(', ', $CFG->showuseridentity) : array();
+        $useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
 
         foreach ($useridentity as $cur) {
             if (!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" &&
