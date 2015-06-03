@@ -458,6 +458,8 @@ class publication{
                 $visibleforstundetsno = $OUTPUT->pix_icon('i/invalid',
                         get_string('visibleforstudents_no', 'publication'));
 
+                $viewfullnames = has_capability('moodle/site:viewfullnames', $this->context);
+
                 foreach ($ausers as $auser) {
                     if ($currentposition >= $offset && $currentposition < $endposition) {
                         // Calculate user status.
@@ -476,10 +478,9 @@ class publication{
                                 }
                             }
                         }
-
+                        
                         $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $auser->id .
-                        '&amp;course=' . $course->id . '">' .
-                        fullname($auser, has_capability('moodle/site:viewfullnames', $this->context)) . '</a>';
+                        '&amp;course=' . $course->id . '">' . ($viewfullnames ? fullname($auser) : '') . '</a>';
 
                         $extension = $this->user_extensionduedate($auser->id);
 
@@ -956,7 +957,7 @@ class publication{
                     // Get files new name.
                     $fileext = strstr($file->get_filename(), '.');
                     $fileoriginal = str_replace($fileext, '', $file->get_filename());
-                    $fileforzipname = clean_filename(fullname($auser, $viewfullnames) .
+                    $fileforzipname = clean_filename(($viewfullnames ? fullname($auser) : '') .
                             '_' . $fileoriginal.'_'.$auserid.$fileext);
                     // Save file name to array for zipping.
                     $filesforzipping[$fileforzipname] = $file;
