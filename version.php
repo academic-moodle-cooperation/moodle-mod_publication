@@ -25,7 +25,7 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$module->version  = 2015061700;
+$module->version  = 2015061701;
 $module->release   = "2015-06-17";  // User-friendly version number.
 $module->maturity  = MATURITY_STABLE;
 $module->requires = 2014041100;  // Requires this Moodle version.

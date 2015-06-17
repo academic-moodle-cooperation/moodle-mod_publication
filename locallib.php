@@ -94,12 +94,7 @@ class publication{
             echo '    <td class="c1">'.userdate($this->instance->duedate).'</td></tr>';
         }
 
-        if ($this->instance->cutoffdate) {
-            echo '<tr><td class="c0">'.get_string('cutoffdate' . $textsuffix, 'publication').':</td>';
-            echo '    <td class="c1">'.userdate($this->instance->cutoffdate).'</td></tr>';
-        }
-
-        $extensionduedate = $extensionduedate = $this->user_extensionduedate($USER->id);
+        $extensionduedate = $this->user_extensionduedate($USER->id);
 
         if ($extensionduedate) {
             echo '<tr><td class="c0">'.get_string('extensionto', 'publication').':</td>';
@@ -198,10 +193,6 @@ class publication{
 
         $from = $this->get_instance()->allowsubmissionsfromdate;
         $due = $this->get_instance()->duedate;
-
-        if ($this->get_instance()->cutoffdate) {
-            $due = $this->get_instance()->cutoffdate;
-        }
 
         $extensionduedate = $this->user_extensionduedate($USER->id);
 
@@ -478,7 +469,7 @@ class publication{
                                 }
                             }
                         }
-                        
+
                         $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $auser->id .
                         '&amp;course=' . $course->id . '">' . ($viewfullnames ? fullname($auser) : '') . '</a>';
 
