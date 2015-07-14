@@ -457,10 +457,11 @@ class publication{
                         $selecteduser = html_writer::checkbox('selectedeuser['.$auser->id .']', 'selected', false,
                                 null, array('class' => 'userselection'));
 
-                        $useridentity = $CFG->showuseridentity != '' ? explode(', ', $CFG->showuseridentity) : array();
+                        $useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
                         foreach ($useridentity as $cur) {
-                            if (!(get_config('publication', 'hideidnumberfromstudents') &&
-                                    $cur == "idnumber" && !has_capability('mod/publication:approve', $context))) {
+                            if (!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" &&
+                                    !has_capability('mod/publication:approve', $context))
+                                && !($cur != "idnumber" && !has_capability('mod/publication:approve', $context))) {
                                 if (!empty($auser->$cur)) {
                                     $$cur = html_writer::tag('div', $auser->$cur,
                                             array('id' => 'u'.$cur.$auser->id));
@@ -484,9 +485,8 @@ class publication{
 
                         $row = array($selecteduser, $userlink);
 
-                        $useridentity = $CFG->showuseridentity != '' ? explode(', ', $CFG->showuseridentity) : array();
+                        $useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
                         foreach ($useridentity as $cur) {
-
                             if (!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" &&
                                     !has_capability('mod/publication:approve', $context))
                                 && !($cur != "idnumber" && !has_capability('mod/publication:approve', $context))) {
