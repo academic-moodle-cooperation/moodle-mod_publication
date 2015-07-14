@@ -472,7 +472,7 @@ class publication{
                         }
 
                         $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $auser->id .
-                        '&amp;course=' . $course->id . '">' . ($viewfullnames ? fullname($auser) : '') . '</a>';
+                        '&amp;course=' . $course->id . '">' . fullname($auser, $viewfullnames) . '</a>';
 
                         $extension = $this->user_extensionduedate($auser->id);
 
