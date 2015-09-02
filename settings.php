@@ -12,11 +12,11 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * settings.php
- * 
+ *
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
@@ -29,22 +29,22 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('publication/requiremodintro',
-    		get_string('requiremodintro', 'publication'), get_string('configrequiremodintro', 'publication'), 1));
-    
+            get_string('requiremodintro', 'publication'), get_string('configrequiremodintro', 'publication'), 1));
+
     $settings->add(new admin_setting_configcheckbox('publication/obtainstudentapproval',
-    		get_string('obtainstudentapproval', 'publication'), get_string('configobtainstudentapproval', 'publication'), 1));
-    
+            get_string('obtainstudentapproval', 'publication'), get_string('configobtainstudentapproval', 'publication'), 1));
+
     $settings->add(new admin_setting_configcheckbox('publication/obtainteacherapproval',
-    		get_string('obtainteacherapproval', 'publication'), get_string('configobtainteacherapproval', 'publication'), 1));
-    
+            get_string('obtainteacherapproval', 'publication'), get_string('configobtainteacherapproval', 'publication'), 1));
+
     $settings->add(new admin_setting_configtext('publication/maxfiles', get_string('maxfiles', 'publication'),
-    		get_string('configmaxfiles', 'publication'), 5, PARAM_INT));
-    
+            get_string('configmaxfiles', 'publication'), 5, PARAM_INT));
+
     if (isset($CFG->maxbytes)) {
-    	$settings->add(new admin_setting_configselect('publication/maxbytes', get_string('maxbytes', 'publication'),
-    			get_string('configmaxbytes', 'publication'), 5242880, get_max_upload_sizes($CFG->maxbytes)));
+        $settings->add(new admin_setting_configselect('publication/maxbytes', get_string('maxbytes', 'publication'),
+                get_string('configmaxbytes', 'publication'), 5242880, get_max_upload_sizes($CFG->maxbytes)));
     }
-    
+
     $settings->add(new admin_setting_configcheckbox('publication/hideidnumberfromstudents',
-    		get_string('hideidnumberfromstudents', 'publication'), get_string('hideidnumberfromstudents_desc', 'publication'), 1));
+            get_string('hideidnumberfromstudents', 'publication'), get_string('hideidnumberfromstudents_desc', 'publication'), 1));
 }

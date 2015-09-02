@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * backup/moodle2/restore_publication_stepslib.php
@@ -46,15 +46,11 @@ class restore_publication_activity_structure_step extends restore_activity_struc
             $files = new restore_path_element('publication_file',
                                                    '/activity/publication/files/file');
             $paths[] = $files;
-            
-            $extduedates = new restore_path_element('publication_extduedates',
-            		'/activity/publication/extduedates/extduedate');
-            
-            $paths[] = $extduedates;
-  //          $this->add_subplugin_structure('assignsubmission', $submission);
 
-//            $paths[] = $grade;
-//            $this->add_subplugin_structure('assignfeedback', $grade);
+            $extduedates = new restore_path_element('publication_extduedates',
+                    '/activity/publication/extduedates/extduedate');
+
+            $paths[] = $extduedates;
         }
 
         return $this->prepare_activity_structure($paths);
@@ -73,7 +69,6 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         $oldid = $data->id;
         $data->course = $this->get_courseid();
 
-//        $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->allowsubmissionsfromdate = $this->apply_date_offset($data->allowsubmissionsfromdate);
         $data->duedate = $this->apply_date_offset($data->duedate);
 
@@ -86,10 +81,9 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         } else {
             $data->cutoffdate = $this->apply_date_offset($data->cutoffdate);
         }
-        
-        // delete importfrom after restore
-        $data->importfrom = -1;
 
+        // Delete importfrom after restore.
+        $data->importfrom = - 1;
 
         $newitemid = $DB->insert_record('publication', $data);
 
@@ -114,12 +108,10 @@ class restore_publication_activity_structure_step extends restore_activity_struc
             $data->userid = $this->get_mappingid('user', $data->userid);
         }
 
-
         $newitemid = $DB->insert_record('publication_file', $data);
 
         // Note - the old contextid is required in order to be able to restore files stored in
         // sub plugin file areas attached to the submissionid.
-        //$this->set_mapping('publication', $oldid, $newitemid, false, null, $this->task->get_old_contextid());
     }
 
     /**
@@ -151,31 +143,31 @@ class restore_publication_activity_structure_step extends restore_activity_struc
      * @return void
      */
     protected function after_execute() {
-    	$this->add_related_files('mod_publication', 'attachment', null);    	
+        $this->add_related_files('mod_publication', 'attachment', null);
     }
-    
-    protected function after_restore(){
-    	global $DB;
-    	
-    	// get set new fileids after restoring   	
-    	
-    	$pubid = $this->get_new_parentid('publication');   	
-    	
-    	$coursemodule = get_coursemodule_from_instance('publication', $pubid);
 
-    	$context = context_module::instance($coursemodule->id);
-		
-		$contextid = $context->id;
-    	
-		$fs = get_file_storage();
-    	$files = $fs->get_area_files($contextid, 'mod_publication', 'attachment');
+    protected function after_restore() {
+        global $DB;
 
-    	foreach($files as $file){    		
-    		$DB->set_field('publication_file', 'fileid', $file->get_id(),
-    				array('publication'=>$pubid,
-    						'userid'=>$file->get_userid(),
-    						'filename'=>$file->get_filename()
-    		));    		
-    	}
+        // Get set new fileids after restoring.
+
+        $pubid = $this->get_new_parentid('publication');
+
+        $coursemodule = get_coursemodule_from_instance('publication', $pubid);
+
+        $context = context_module::instance($coursemodule->id);
+
+        $contextid = $context->id;
+
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($contextid, 'mod_publication', 'attachment');
+
+        foreach ($files as $file) {
+            $DB->set_field('publication_file', 'fileid', $file->get_id(),
+                        array('publication' => $pubid,
+                            'userid' => $file->get_userid(),
+                            'filename' => $file->get_filename()
+            ));
+        }
     }
 }

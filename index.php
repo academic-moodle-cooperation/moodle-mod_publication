@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * index.php
@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/mod/publication/locallib.php');
 
 $id = required_param('id', PARAM_INT);   // We need a course!
 
-if (!$course = $DB->get_record('course', array('id'=>$id))) {
+if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error('invalidcourseid');
 }
 
@@ -38,18 +38,17 @@ require_course_login($course);
 $PAGE->set_pagelayout('incourse');
 
 $event = \mod_publication\event\course_module_instance_list_viewed::create(array(
-		'context' => context_course::instance($course->id)
+        'context' => context_course::instance($course->id)
 ));
 $event->trigger();
 
 $strmodulenameplural = get_string('modulenameplural', 'publication');
-$strmodulname = get_String('modulename', 'publication');
+$strmodulname = get_string('modulename', 'publication');
 $strsectionname  = get_string('sectionname', 'format_'.$course->format);
 $strname = get_string('name');
 $strdesc = get_string('description');
 
-
-$PAGE->set_url('/mod/publication/index.php', array('id'=>$course->id));
+$PAGE->set_url('/mod/publication/index.php', array('id' => $course->id));
 $PAGE->navbar->add($strmodulenameplural);
 $PAGE->set_title($strmodulenameplural);
 $PAGE->set_heading($course->fullname);
@@ -88,8 +87,8 @@ foreach ($modinfo->instances['publication'] as $cm) {
     $class = $cm->visible ? '' : 'dimmed';
 
     $link = html_writer::tag('a', format_string($cm->name),
-                             array('href'=>'view.php?id='.$cm->id,
-                                   'class'=>$class));
+                             array('href' => 'view.php?id='.$cm->id,
+                                   'class' => $class));
 
     $printsection = '';
     if ($usesections) {
@@ -104,8 +103,8 @@ foreach ($modinfo->instances['publication'] as $cm) {
         }
     }
 
-    $publication = new publication(null,$cm,$course);
-	$desc = $publication->get_instance()->intro;
+    $publication = new publication(null, $cm, $course);
+    $desc = $publication->get_instance()->intro;
 
     if ($usesections) {
         $table->data[] = array ($printsection, $link, $desc);

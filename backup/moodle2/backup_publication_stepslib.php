@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * backup/moodle2/backup_publication_stepslieb.php
@@ -41,20 +41,20 @@ class backup_publication_activity_structure_step extends backup_activity_structu
         // Define each element separated.
         $publication = new backup_nested_element('publication', array('id'),
                                             array('name',
-                                            		'intro',
-                                            		'introformat',
-                                            		'alwaysshowdescription',
-                                            		'duedate',
-                                            		'allowsubmissionsfromdate',
-                                            		'timemodified',
-                                            		'cutoffdate',
-                                            		'mode',
-                                            		'importfrom',
-                                            		'obtainstudentapproval',
-                                            		'maxfiles',
-                                            		'maxbytes',
-                                            		'allowedfiletypes',
-                                            		'obtainteacherapproval'));
+                                                    'intro',
+                                                    'introformat',
+                                                    'alwaysshowdescription',
+                                                    'duedate',
+                                                    'allowsubmissionsfromdate',
+                                                    'timemodified',
+                                                    'cutoffdate',
+                                                    'mode',
+                                                    'importfrom',
+                                                    'obtainstudentapproval',
+                                                    'maxfiles',
+                                                    'maxbytes',
+                                                    'allowedfiletypes',
+                                                    'obtainteacherapproval'));
 
         $extduedates = new backup_nested_element('extduedates');
 
@@ -72,19 +72,18 @@ class backup_publication_activity_structure_step extends backup_activity_structu
                                                       'filename',
                                                       'contenthash',
                                                       'type',
-                                                	  'teacherapproval',
-                                                	  'studentapproval'));
-
+                                                      'teacherapproval',
+                                                      'studentapproval'));
 
         // Define sources.
         $publication->set_source_table('publication', array('id' => backup::VAR_ACTIVITYID));
-        
+
         if ($userinfo) {
-        	// Build the tree.
-        	$publication->add_child($extduedates);
-        	$extduedates->add_child($extduedate);
-        	$publication->add_child($files);
-        	$files->add_child($file);
+            // Build the tree.
+            $publication->add_child($extduedates);
+            $extduedates->add_child($extduedate);
+            $publication->add_child($files);
+            $files->add_child($file);
 
             $extduedate->set_source_table('publication_extduedates',
                                      array('publication' => backup::VAR_PARENTID));
@@ -92,20 +91,17 @@ class backup_publication_activity_structure_step extends backup_activity_structu
             $file->set_source_table('publication_file',
                                      array('publication' => backup::VAR_PARENTID));
 
-           
             $file->annotate_files('mod_publication',
-            		'attachment',
-            		null);
-            
+                    'attachment',
+                    null);
 
-	        // Define id annotations.
-	        $extduedate->annotate_ids('user', 'userid');
-	        $file->annotate_ids('user', 'userid');
-	
-	        // Define file annotations.
-	        // This file area hasn't itemid.
-	        $publication->annotate_files('mod_publication', 'attachment', null);
-        
+            // Define id annotations.
+            $extduedate->annotate_ids('user', 'userid');
+            $file->annotate_ids('user', 'userid');
+
+            // Define file annotations.
+            // This file area hasn't itemid.
+            $publication->annotate_files('mod_publication', 'attachment', null);
         }
         // Return the root element (publication), wrapped into standard activity structure.
 

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * version.php
@@ -25,8 +25,8 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$module->version  = 2014113000;
-$module->release   = "2014-11-30"; 	  // User-friendly version number
+$module->version  = 2015062400;
+$module->release   = "2015-06-24";  // User-friendly version number.
 $module->maturity  = MATURITY_STABLE;
 $module->requires = 2014041100;  // Requires this Moodle version.
 $module->component = 'mod_publication'; // Full name of the plugin (used for diagnostics).
