@@ -65,8 +65,6 @@ if ($savevisibility) {
 
     $files = optional_param_array('files', array(), PARAM_INT);
 
-    $sql = 'UPDATE {publication_file} SET teacherapproval=:approval WHERE publication=:pubid AND fileid  IN ';
-
     $params = array();
 
     $params['pubid'] = $publication->get_instance()->id;
