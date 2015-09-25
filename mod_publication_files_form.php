@@ -44,6 +44,7 @@ class mod_publication_files_form extends moodleform {
         $filearea = &$this->_customdata['filearea'];
 
         $mform = $this->_form;
+        if(has_capability('mod/publication:upload', $publication->get_context())){
         $mform->addElement('header', 'myfiles', get_string('myfiles', 'publication'));
         $mform->setExpanded('myfiles');
 
@@ -73,6 +74,7 @@ class mod_publication_files_form extends moodleform {
         $noticehtml .= html_writer::end_tag('div');
 
         $mform->addElement('html', $noticehtml);
+        }
 
         require_once($CFG->libdir.'/tablelib.php');
         $table = new html_table();
@@ -186,7 +188,7 @@ class mod_publication_files_form extends moodleform {
             $table->data[] = $data;
         }
 
-        if (count($files) == 0) {
+        if (count($files) == 0 && has_capability('mod/publication:upload', $publication->get_context())) {
             $mform->addElement('static', 'nofiles', '', get_string('nofiles', 'publication'));
         }
 
@@ -211,7 +213,7 @@ class mod_publication_files_form extends moodleform {
             }
         }
 
-        if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
+        if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD && has_capability('mod/publication:upload', $publication->get_context())) {
             if ($publication->is_open()) {
                 $buttonarray = array();
 
