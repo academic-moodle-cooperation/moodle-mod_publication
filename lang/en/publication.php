@@ -62,7 +62,6 @@ $string['availability'] = 'Timeslot for Upload/Approval';
 $string['allowsubmissionsfromdate'] = 'from';
 $string['allowsubmissionsfromdateh'] = 'Timeslot for Upload/Approval';
 $string['allowsubmissionsfromdateh_help'] = 'You can determine the period of time during which students can upload files or give their approval for file publication. During this time period students can edit their files and can also withdraw their approval for publication.';
-$string['allowsubmissionsfromdate_help'] = 'If enabled, students will not be able to submit before this date. If disabled, students will be able to start submitting right away.';
 $string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
 $string['alwaysshowdescription'] = 'Always show description';
@@ -76,7 +75,6 @@ $string['cutoffdate'] = 'Cut-off date';
 $string['cutoffdate_help'] = 'If set, the assignment will not accept submissions after this date without an extension.';
 $string['cutoffdatevalidation'] = 'The cut-off date cannot be earlier than the due date.';
 $string['cutoffdatefromdatevalidation'] = 'Cut-off date must be after the allow submissions from date.';
-
 
 $string['mode'] = 'Mode';
 $string['mode_help'] = 'Choose whether students can upload documents in the folder or documents of an assignment are the source of it.';
