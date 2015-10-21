@@ -44,35 +44,37 @@ class mod_publication_files_form extends moodleform {
         $filearea = &$this->_customdata['filearea'];
 
         $mform = $this->_form;
-        $mform->addElement('header', 'myfiles', get_string('myfiles', 'publication'));
-        $mform->setExpanded('myfiles');
+        if (has_capability('mod/publication:upload', $publication->get_context())) {
+            $mform->addElement('header', 'myfiles', get_string('myfiles', 'publication'));
+            $mform->setExpanded('myfiles');
 
-        $jsmodule = array(
-                'name' => 'mod_publication',
-                'fullpath' => '/mod/publication/publication.js',
-                'requires' => array('node-base', 'node-event-simulate'),
-        );
-        $PAGE->requires->js_init_call('M.mod_publication.init_files_form', null, false, $jsmodule);
+            $jsmodule = array(
+                    'name' => 'mod_publication',
+                    'fullpath' => '/mod/publication/publication.js',
+                    'requires' => array('node-base', 'node-event-simulate'),
+            );
+            $PAGE->requires->js_init_call('M.mod_publication.init_files_form', null, false, $jsmodule);
 
-        if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
-            if ($publication->get_instance()->obtainteacherapproval) {
-                $notice = get_string('notice_uploadrequireapproval', 'publication');
+            if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
+                if ($publication->get_instance()->obtainteacherapproval) {
+                    $notice = get_string('notice_uploadrequireapproval', 'publication');
+                } else {
+                    $notice = get_string('notice_uploadnoapproval', 'publication');
+                }
             } else {
-                $notice = get_string('notice_uploadnoapproval', 'publication');
+                if ($publication->get_instance()->obtainstudentapproval) {
+                    $notice = get_string('notice_importrequireapproval', 'publication');
+                } else {
+                    $notice = get_string('notice_importnoapproval', 'publication');
+                }
             }
-        } else {
-            if ($publication->get_instance()->obtainstudentapproval) {
-                $notice = get_string('notice_importrequireapproval', 'publication');
-            } else {
-                $notice = get_string('notice_importnoapproval', 'publication');
-            }
+
+            $noticehtml = html_writer::start_tag('div', array('class' => 'notice'));
+            $noticehtml .= get_string('notice', 'publication') . ' ' . $notice;
+            $noticehtml .= html_writer::end_tag('div');
+
+            $mform->addElement('html', $noticehtml);
         }
-
-        $noticehtml = html_writer::start_tag('div', array('class' => 'notice'));
-        $noticehtml .= get_string('notice', 'publication') . ' ' . $notice;
-        $noticehtml .= html_writer::end_tag('div');
-
-        $mform->addElement('html', $noticehtml);
 
         require_once($CFG->libdir.'/tablelib.php');
         $table = new html_table();
@@ -186,7 +188,7 @@ class mod_publication_files_form extends moodleform {
             $table->data[] = $data;
         }
 
-        if (count($files) == 0) {
+        if (count($files) == 0 && has_capability('mod/publication:upload', $publication->get_context())) {
             $mform->addElement('static', 'nofiles', '', get_string('nofiles', 'publication'));
         }
 
@@ -211,7 +213,8 @@ class mod_publication_files_form extends moodleform {
             }
         }
 
-        if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
+        if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD
+            && has_capability('mod/publication:upload', $publication->get_context())) {
             if ($publication->is_open()) {
                 $buttonarray = array();
 
