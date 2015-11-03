@@ -861,6 +861,8 @@ class publication{
             $showall = true;
         }
 
+        $customusers = '';
+
         if (is_array($users) && count($users) > 0) {
             $customusers = " and u.id IN (" . implode($users, ', ') . ") ";
 
