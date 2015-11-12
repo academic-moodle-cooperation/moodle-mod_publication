@@ -44,9 +44,9 @@ $string['requiremodintro'] = 'Beschreibung notwendig';
 $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';
 $string['obtainstudentapproval'] = 'Einverständnis einholen';
 $string['saveapproval'] = 'Einverständnis aktualisieren';
-$string['configobtainstudentapproval'] = 'Daten werden erst nach Einverstädnis der Teilnehmer/innen für alle sichtbar geschaltet.';
+$string['configobtainstudentapproval'] = 'Daten werden erst nach Einverständnis der Teilnehmer/innen für alle sichtbar geschaltet.';
 $string['hideidnumberfromstudents'] = 'ID-Number verbergen';
-$string['hideidnumberfromstudents_desc'] = 'Spalte ID-Number in den Öffentlichen Dateien für Teilnehmer/innen verbergen';
+$string['hideidnumberfromstudents_desc'] = 'Spalte ID-Number in den öffentlichen Dateien für Teilnehmer/innen verbergen';
 $string['obtainteacherapproval'] = 'sofortige Freigabe';
 $string['configobtainteacherapproval'] = 'Dateien von Teilnehmer/innen werden sofort ohne Überprüfung für alle sichtbar geschaltet.';
 $string['maxfiles'] = 'Anzahl hochladbarer Dateien';
@@ -61,9 +61,9 @@ $string['availability'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserkl�
 
 $string['allowsubmissionsfromdate'] = 'von';
 $string['allowsubmissionsfromdateh'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
-$string['allowsubmissionsfromdateh_help'] = 'Im festgelegten Zeitraum können Teilnhemer/innen je nach Modus entweder Dateien hochladen oder ihre Einverständis für die Sichtbarkeit ihrer Dateien geben. Solange der Zeitraum geöffnet ist, können Sie ihre hochgeladenen Dateien bearbeiten oder ihr Einverständnis für die Sichtbarkeit wieder entziehen.';
-$string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
-$string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
+$string['allowsubmissionsfromdateh_help'] = 'Im festgelegten Zeitraum können Teilnehmer/innen je nach Modus entweder Dateien hochladen oder ihre Einverständnis für die Sichtbarkeit ihrer Dateien geben. Solange der Zeitraum geöffnet ist, können Sie ihre hochgeladenen Dateien bearbeiten oder ihr Einverständnis für die Sichtbarkeit wieder entziehen.';
+$string['allowsubmissionsfromdatesummary'] = 'Diese Aufgabe akzeptiert Abgaben von <strong>{$a}</strong>';
+$string['allowsubmissionsanddescriptionfromdatesummary'] = 'Die Aufgabendetails und das Abgabeformular ist von <strong>{$a}</strong> verfügbar';
 $string['alwaysshowdescription'] = 'Beschreibung immer anzeigen';
 $string['alwaysshowdescription_help'] = 'Wenn diese Option deaktiviert ist, wird die Aufgabenbeschreibung für Teilnehmer/innen nur während des Abgabezeitraums angezeigt.';
 
@@ -99,7 +99,7 @@ $string['warning_changefromobtainstudentapproval'] = 'Wenn Sie diese Änderung d
 $string['warning_changetoobtainstudentapproval'] = 'Wenn Sie diese Änderung durchführen, wird das Einverständnis der Teilnehmer/innen eingeholt. Nach dieser Änderung wird für alle als sichtbar gekennzeichneten Dateien das Einverständnis der einzelnen Teilnehmer/innen eingeholt - die Dateien sind erst nach gegebenem Einverständnis für alle sichtbar.';
 
 // Strings from the File mod_publication_grantextension_form.php.
-$string['extensionduedate'] = 'Erweiterung des Abgabdatums';
+$string['extensionduedate'] = 'Erweiterung des Abgabedatums';
 $string['extensionnotafterduedate'] = 'Das erweiterte Abgabedatum muss nach dem (normalen) Abgabedatum liegen.';
 $string['extensionnotafterfromdate'] = 'Das erweiterte Abgabedatum muss nach Abgabedatum liegen.';
 
@@ -146,7 +146,7 @@ $string['downloadall'] = 'Alle Dateien als ZIP herunterladen';
 $string['optionalsettings'] = 'Optionen';
 $string['entiresperpage'] = 'Einträge pro Seite';
 $string['nothingtodisplay'] = 'Keine Einträge';
-$string['nofilestozip'] = 'Keine Dateien zu Zipen';
+$string['nofilestozip'] = 'Keine Dateien zu zippen';
 $string['status'] = 'Status';
 $string['studentapproval'] = 'Status'; // Previous 'Studierenden Zustimmung'.
 $string['studentapproval_help'] = 'In der Spalte Status wird die Rückmeldung des Teilnehmers/der Teilnehmerin angezeigt:
