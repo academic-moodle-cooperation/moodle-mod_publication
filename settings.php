@@ -28,8 +28,6 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
-    $settings->add(new admin_setting_configcheckbox('publication/requiremodintro',
-            get_string('requiremodintro', 'publication'), get_string('configrequiremodintro', 'publication'), 1));
 
     $settings->add(new admin_setting_configcheckbox('publication/obtainstudentapproval',
             get_string('obtainstudentapproval', 'publication'), get_string('configobtainstudentapproval', 'publication'), 1));

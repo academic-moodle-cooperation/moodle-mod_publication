@@ -65,9 +65,8 @@ class mod_publication_mod_form extends moodleform_mod{
         }
         $mform->addRule('name', null, 'required', null, 'client');
 
-        $requireintro = (isset($config->requiremodintro) && $config->requiremodintro == 1) ? true : false;
-
-        $this->add_intro_editor($requireintro);
+        // Adding the standard "intro" and "introformat" fields!
+        $this->standard_intro_elements();
 
         // Publication specific elements.
         $mform->addElement('header', 'publication', get_string('modulename', 'publication'));

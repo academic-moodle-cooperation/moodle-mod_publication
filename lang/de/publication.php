@@ -40,8 +40,6 @@ $string['publication:approve'] = 'Entscheiden ob Dateien für alle Teilnehmer/in
 $string['publication:grantextension'] = 'Erweiterung zulassen';
 
 $string['name'] = 'Name des Studierendenordners';
-$string['requiremodintro'] = 'Beschreibung notwendig';
-$string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';
 $string['obtainstudentapproval'] = 'Einverständnis einholen';
 $string['saveapproval'] = 'Einverständnis aktualisieren';
 $string['configobtainstudentapproval'] = 'Daten werden erst nach Einverständnis der Teilnehmer/innen für alle sichtbar geschaltet.';
@@ -176,3 +174,7 @@ $string['guideline'] = 'sichtbar für alle:';
 $string['published_immediately'] = 'ja sofort, ohne Prüfung durch den Trainer/in';
 $string['published_aftercheck'] = 'nein, erst nach Prüfung durch den Trainer/in';
 $string['save_changes'] = 'Änderungen Speichern';
+
+// Deprecated since Moodle 2.9!
+$string['requiremodintro'] = 'Beschreibung notwendig';
+$string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';

@@ -1,1 +1,3 @@
-publication:allowsubmissionsfromdate_help
+publication:allowsubmissionsfromdate_help,mod_publication
+requiremodintro,mod_publication
+configrequiremodintro,mod_publication
