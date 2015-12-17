@@ -20,6 +20,7 @@
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Philpp Hager (office@phager.at)
  * @author        Andreas Windbichler
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -42,7 +43,7 @@ $context = context_module::instance($cm->id);
 
 require_capability('mod/publication:view', $context);
 
-$publication = new publication($context, $cm, $course);
+$publication = new publication($cm, $course, $context);
 
 $event = \mod_publication\event\course_module_viewed::create(array(
         'objectid' => $PAGE->cm->instance,

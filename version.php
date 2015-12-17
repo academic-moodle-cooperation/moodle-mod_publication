@@ -20,14 +20,15 @@
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Philipp Hager (office@phager.at)
  * @author        Andreas Windbichler
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version  = 2015100803;
-$plugin->release   = "2015-10-08 (03)";  // User-friendly version number.
+$plugin->version  = 2015120200;
+$plugin->release   = "v2.9";            // User-friendly version number.
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->requires = 2014041100;  // Requires this Moodle version.
+$plugin->requires = 2015051100;         // Requires this Moodle version.
 $plugin->component = 'mod_publication'; // Full name of the plugin (used for diagnostics).
 $plugin->cron = 300;

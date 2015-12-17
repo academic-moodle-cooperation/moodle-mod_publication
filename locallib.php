@@ -20,6 +20,7 @@
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Philipp Hager (office@phager.at)
  * @author        Andreas Windbichler
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -30,24 +31,61 @@ defined('MOODLE_INTERNAL') || die();
 define('PUBLICATION_MODE_UPLOAD', 0);
 define('PUBLICATION_MODE_IMPORT', 1);
 
+/**
+ * publication class contains much logic used in mod_publication
+ *
+ * @package       mod_publication
+ * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Philipp Hager (office@phager.at)
+ * @author        Andreas Windbichler
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class publication{
-
+    /** @var object instance */
     private $instance;
+    /** @var object context */
     private $context;
+    /** @var object course */
     private $course;
+    /** @var object coursemodule */
     private $coursemodule;
 
-    public function __construct($coursemodulecontext, $coursemodule, $course) {
+    /**
+     * Constructor
+     *
+     * @param object $cm course module object
+     * @param object $course (optional) course object
+     * @param context_module $context (optional) Course Module Context
+     */
+    public function __construct($cm, $course=null, $context=null) {
         global $PAGE, $DB;
 
-        $this->context = context_module::instance($coursemodule->id);
-        $this->coursemodule = $coursemodule;
-        $this->course = $course;
-        $this->instance = $DB->get_record("publication", array("id" => $coursemodule->instance));
+        $this->coursemodule = $cm;
+
+        if ($course != null) {
+            $this->course = $course;
+        } else {
+            $this->course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+        }
+
+        if ($context != null) {
+            $this->context = $context;
+        } else {
+            $this->context = context_module::instance($cm->id);
+        }
+
+        $this->instance = $DB->get_record("publication", array("id" => $cm->instance));
 
         $this->instance->obtainteacherapproval = !$this->instance->obtainteacherapproval;
     }
 
+    /**
+     * Whether or not to show intro text right now
+     *
+     * @return bool
+     */
     public function show_intro() {
         if ($this->get_instance()->alwaysshowdescription ||
                 time() > $this->get_instance()->allowsubmissionfromdate) {
@@ -56,6 +94,9 @@ class publication{
         return false;
     }
 
+    /**
+     * Display the intro text if available
+     */
     public function display_intro() {
         global $OUTPUT;
 
@@ -77,6 +118,9 @@ class publication{
         }
     }
 
+    /**
+     * Display dates which limit submission timespan
+     */
     public function display_availability() {
         global $USER, $OUTPUT;
 
@@ -150,6 +194,8 @@ class publication{
     /**
      * Display Link to upload form if submission date is open
      * and the user has the capability to upload files
+     *
+     * @return string HTML snippet with upload link (single button or plain text if not allowed)
      */
     public function display_uploadlink() {
         global $OUTPUT;
@@ -172,6 +218,12 @@ class publication{
         }
     }
 
+    /**
+     * Get the extension due date (if set)
+     *
+     * @param int $uid User ID to fetch extension due date for
+     * @return int extension due date if set or 0
+     */
     public function user_extensionduedate($uid) {
         global $DB;
 
@@ -186,6 +238,11 @@ class publication{
         return $extensionduedate;
     }
 
+    /**
+     * Check if submission is currently allowed due to allowsubmissionsfromdae and duedate
+     *
+     * @return bool
+     */
     public function is_open() {
         global $USER;
 
@@ -208,17 +265,36 @@ class publication{
         return false;
     }
 
+    /**
+     * Instance getter
+     *
+     * @return object instance object
+     */
     public function get_instance() {
         return $this->instance;
     }
 
+    /**
+     * Context getter
+     *
+     * @return object context object
+     */
     public function get_context() {
         return $this->context;
     }
 
+    /**
+     * Coursemodule getter
+     *
+     * @return object coursemodule object
+     */
     public function get_coursemodule() {
         return $this->coursemodule;
     }
+
+    /**
+     * Display form with table containing all files
+     */
     public function display_allfilesform() {
         global $CFG, $OUTPUT, $DB, $USER;
 
@@ -739,6 +815,7 @@ class publication{
 
     /**
      * Returns if a user has the permission to view a file
+     *
      * @param unknown $fileid
      * @param number $userid use for custom user, if 0 then if public visible
      * @return boolean
@@ -795,6 +872,11 @@ class publication{
         return $haspermission;
     }
 
+    /**
+     * Download a single file, returns file content and terminated script.
+     *
+     * @param int $fileid ID of the submitted file in filespace
+     */
     public function download_file($fileid) {
         global $DB, $USER;
 
@@ -828,6 +910,7 @@ class publication{
 
     /**
      * Creates a zip of all uploaded files and sends a zip to the browser
+     *
      * @param unknown $users false => empty zip, true all users, array files from users in array
      */
     public function download_zip($users = array()) {
@@ -963,6 +1046,12 @@ class publication{
         }
     }
 
+    /**
+     * Pack files in ZIP
+     *
+     * @param object[] $filesforzipping Files for zipping
+     * @return object zipped files
+     */
     private function pack_files($filesforzipping) {
         global $CFG;
         // Create path for new zip file.

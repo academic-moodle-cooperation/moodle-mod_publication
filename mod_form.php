@@ -20,6 +20,7 @@
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Philipp Hager (office@phager.at)
  * @author        Andreas Windbichler
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -33,7 +34,13 @@ require_once($CFG->dirroot.'/mod/publication/locallib.php');
 /**
  * Form for creating and editing rssplayer instances
  *
- * @author Andreas Windbichler
+ * @package       mod_publication
+ * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Philipp Hager (office@phager.at)
+ * @author        Andreas Windbichler
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_publication_mod_form extends moodleform_mod{
 
@@ -193,13 +200,9 @@ class mod_publication_mod_form extends moodleform_mod{
         $this->add_action_buttons();
     }
 
-    public function data_preprocessing(&$defaultvalues) {
-        // Prepares the data to show up in the edit form.
-
-    }
-
     /**
      * Perform minimal validation on the settings form
+     *
      * @param array $data
      * @param array $files
      */

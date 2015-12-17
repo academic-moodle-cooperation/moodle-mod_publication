@@ -20,6 +20,7 @@
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Philipp Hager (office@phager.at)
  * @author        Andreas Windbichler
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -138,6 +139,7 @@ function publication_delete_instance($id) {
 }
 
 /**
+ * Returns info object about the course module
  *
  * @param stdClass $coursemodule The coursemodule object (record).
  * @return cached_cm_info An object on information that the courses
@@ -163,11 +165,22 @@ function publication_get_coursemodule_info($coursemodule) {
     return $result;
 }
 
+/**
+ * Defines which elements mod_publication needs to add to reset form
+ *
+ * @param moodleform $mform The reset course form to extend
+ */
 function publication_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'publicationheader', get_string('modulenameplural', 'publication'));
     $mform->addElement('checkbox', 'reset_publication_userdata', get_string('reset_userdata', 'publication'));
 }
 
+/**
+ * Reset the userdata in publication module
+ *
+ * @param object $data settings object which userdata to reset
+ * @return array[] array of associative arrays giving feedback what has been successfully reset
+ */
 function publication_reset_userdata($data) {
     global $DB;
 

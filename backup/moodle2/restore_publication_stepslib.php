@@ -20,6 +20,7 @@
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Philipp Hager (office@phager.at)
  * @author        Andreas Windbichler
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,6 +28,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Class performing all restore structure steps for mod_publication
+ *
+ * @package       mod_publication
+ * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Philipp Hager (office@phager.at)
+ * @author        Andreas Windbichler
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class restore_publication_activity_structure_step extends restore_activity_structure_step {
 
     /**
@@ -146,6 +158,10 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         $this->add_related_files('mod_publication', 'attachment', null);
     }
 
+    /**
+     * Proceses to execute after the restoration, handles links to restored files
+     *
+     */
     protected function after_restore() {
         global $DB;
 
