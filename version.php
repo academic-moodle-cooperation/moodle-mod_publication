@@ -31,4 +31,3 @@ $plugin->release   = "v2.9";            // User-friendly version number.
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->requires = 2015051100;         // Requires this Moodle version.
 $plugin->component = 'mod_publication'; // Full name of the plugin (used for diagnostics).
-$plugin->cron = 300;
