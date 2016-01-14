@@ -52,5 +52,13 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2014032201, 'publication');
     }
 
+    if ($oldversion < 2015120201) {
+        // Remove unused settings (requiremodintro and duplicates of stdexamplecount and requiremodintro)!
+        $DB->delete_records('config_plugins', array('plugin' => 'publication',
+                                                    'name'   => 'requiremodintro'));
+
+        upgrade_mod_savepoint(true, 2015120201, 'publication');
+    }
+
     return true;
 }
