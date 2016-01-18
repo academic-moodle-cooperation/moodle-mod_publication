@@ -525,8 +525,6 @@ class publication{
                 $visibleforstundetsno = $OUTPUT->pix_icon('i/invalid',
                         get_string('visibleforstudents_no', 'publication'));
 
-                $viewfullnames = has_capability('moodle/site:viewfullnames', $this->context);
-
                 foreach ($ausers as $auser) {
                     if ($currentposition >= $offset && $currentposition < $endposition) {
                         // Calculate user status.
@@ -548,7 +546,7 @@ class publication{
                         }
 
                         $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $auser->id .
-                        '&amp;course=' . $course->id . '">' . fullname($auser, $viewfullnames) . '</a>';
+                        '&amp;course=' . $course->id . '">' . fullname($auser) . '</a>';
 
                         $extension = $this->user_extensionduedate($auser->id);
 
