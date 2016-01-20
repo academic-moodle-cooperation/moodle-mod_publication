@@ -15,7 +15,7 @@
 
 /**
  * README.txt
- * @version       2014-12-03
+ * @version       2016-01-20-00
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
@@ -67,3 +67,14 @@ INSTALLATION
 
 CHANGELOG
 ================================================================================
+v 2016012000
+-------------------------
+*) removed some unused code
+*) updated language strings (fix typos, termini, etc.)
+*) check capability publication:upload for submit button
+*) fix uninitialized variable corrupting ZIP files with debugging enabled
+*) remove unused settings and deprecate unused lang strings
+*) replace javascript with AMD modules based on JQuery instead of YUI
+*) remove unused cron setting from version.php
+*) disable assignments with teamsubmissions enabled in publication until teamsubmissions are supported
+*) fix usage of fullname function (don't override fullname format anymore)
