@@ -99,11 +99,18 @@ class mod_publication_mod_form extends moodleform_mod{
         $choices = array();
         $choices[- 1] = get_string('choose', 'publication');
         $assigninstances = $DB->get_records('assign', array('course' => $COURSE->id));
+        $select = $mform->createElement('select', 'importfrom', get_string('assignment', 'publication'), $choices, $disabled);
         foreach ($assigninstances as $assigninstance) {
-            $choices[$assigninstance->id] = $assigninstance->name;
+            // Disable option if teamsubmission is enabled! TODO: make teamsubmissions work with mod_publication!
+            if ($assigninstance->teamsubmission) {
+                $options = array('disabled' => 'disabled');
+            } else {
+                $options = array();
+            }
+            $select->addOption($assigninstance->name, $assigninstance->id, $options);
         }
-
-        $mform->addElement('select', 'importfrom', get_string('assignment', 'publication'), $choices, $disabled);
+        $mform->addElement($select);
+        $mform->addHelpButton('importfrom', 'assignment', 'publication');
         if (count($disabled) == 0) {
             $mform->disabledif ('importfrom', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
         }

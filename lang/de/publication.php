@@ -87,6 +87,7 @@ Wenn jeder Dateityp erlaubt ist, das Feld freilassen. Groß- und Kleinschreibung
 $string['allowedfiletypes_err'] = 'Bitte Eingabe überprüfen! Dateitypen enthalten ungültige Sonder- oder Trennzeichen';
 $string['obtainteacherapproval_help'] = 'Diese Option legt fest, ob Dateien sofort für alle ohne Prüfung sichtbar werden: <br><ul><li> Ja - Einträge werden sofort nach dem Speichern angezeigt </li><li> Nein - Einträge werden von Trainer/innen geprüft und freigegeben</li></ul>';
 $string['assignment'] = 'Aufgabe';
+$string['assignment_help'] = 'Aufgabe für den Dateiimport auswählen. Derzeit können Gruppenabgaben nicht zum Import herangezogen werden.';
 $string['obtainstudentapproval_help'] = 'Hier legen Sie fest, ob Sie das Einverständnis der Teilnehmer/innen über Moodle (ja) oder auf eine andere Weise einholen (nein). <br> In Moodle können Sie festlegen, von welchen Teilnehmer/innen das Einverständnis eingeholt wird. Erst nach Einverständnis der Teilnehmer/innen sind die Dateien auch wirklich für alle sichtbar.';
 $string['choose'] = 'bitte auswählen ...';
 $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie importieren möchten.';

@@ -192,3 +192,7 @@ text-align:center;
 	margin-bottom:6px;
 	font-style:italic;
 }
+
+#page-mod-publication-mod select[name=importfrom] option[disabled] {
+    color:#999;
+}
