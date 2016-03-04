@@ -60,19 +60,19 @@ $string['availability'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserkl�
 
 $string['allowsubmissionsfromdate'] = 'von';
 $string['allowsubmissionsfromdateh'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
-$string['allowsubmissionsfromdateh_help'] = 'Im festgelegten Zeitraum können Teilnehmer/innen je nach Modus entweder Dateien hochladen oder ihre Einverständnis für die Sichtbarkeit ihrer Dateien geben. Solange der Zeitraum geöffnet ist, können Sie ihre hochgeladenen Dateien bearbeiten oder ihr Einverständnis für die Sichtbarkeit wieder entziehen.';
+$string['allowsubmissionsfromdateh_help'] = 'Im festgelegten Zeitraum können Teilnehmer/innen je nach Modus entweder Dateien hochladen oder ihr Einverständnis für die Sichtbarkeit ihrer Dateien geben. Solange der Zeitraum geöffnet ist, können Sie ihre hochgeladenen Dateien bearbeiten oder ihr Einverständnis für die Sichtbarkeit wieder entziehen.';
 $string['allowsubmissionsfromdatesummary'] = 'Diese Aufgabe akzeptiert Abgaben von <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'Die Aufgabendetails und das Abgabeformular ist von <strong>{$a}</strong> verfügbar';
 $string['alwaysshowdescription'] = 'Beschreibung immer anzeigen';
 $string['alwaysshowdescription_help'] = 'Wenn diese Option deaktiviert ist, wird die Aufgabenbeschreibung für Teilnehmer/innen nur während des Abgabezeitraums angezeigt.';
 
 $string['duedate'] = 'bis';
-$string['duedate_help'] = 'Zum Abgabetermin wird die Aufgabe fällig. Wenn spätere Abgaben erlaubt sind, wird jede nach diesem Datum eingereichte Abgabe als verspätet markiert. Um eine Abgabe nach einem bestimmten Verspätungsdatum zu verhindern kann ein endgültiges Abgabedatum gesetzt werden.';
-$string['duedatevalidation'] = 'Der Abgabetermin muss später als der Abgabebeginn sein.';
+$string['duedate_help'] = 'Zum Abgabeende wird die Aufgabe fällig. Wenn spätere Abgaben erlaubt sind, wird jede nach diesem Datum eingereichte Abgabe als verspätet markiert. Um eine Abgabe nach einem bestimmten Verspätungsdatum zu verhindern kann ein letzter Abgabetermin gesetzt werden.';
+$string['duedatevalidation'] = 'Das Abgabeende muss später als der Abgabebeginn sein.';
 
 $string['cutoffdate'] = 'Letzter Abgabetermin';
 $string['cutoffdate_help'] = 'Diese Funktion sperrt die Abgabe von Lösungen ab diesem Termin, sofern keine Terminverlängerung gewährt wird.';
-$string['cutoffdatevalidation'] = 'Der letzte Abgabetermin muss nach dem Abgabestart liegen.';
+$string['cutoffdatevalidation'] = 'Der letzte Abgabetermin muss nach dem Abgabebeginn liegen.';
 $string['cutoffdatefromdatevalidation'] = 'Der letzte Abgabetermin muss nach der erstmöglichen Abgabe liegen.';
 
 $string['mode'] = 'Modus';
@@ -99,9 +99,9 @@ $string['warning_changefromobtainstudentapproval'] = 'Wenn Sie diese Änderung d
 $string['warning_changetoobtainstudentapproval'] = 'Wenn Sie diese Änderung durchführen, wird das Einverständnis der Teilnehmer/innen eingeholt. Nach dieser Änderung wird für alle als sichtbar gekennzeichneten Dateien das Einverständnis der einzelnen Teilnehmer/innen eingeholt - die Dateien sind erst nach gegebenem Einverständnis für alle sichtbar.';
 
 // Strings from the File mod_publication_grantextension_form.php.
-$string['extensionduedate'] = 'Erweiterung des Abgabedatums';
-$string['extensionnotafterduedate'] = 'Das erweiterte Abgabedatum muss nach dem (normalen) Abgabedatum liegen.';
-$string['extensionnotafterfromdate'] = 'Das erweiterte Abgabedatum muss nach Abgabedatum liegen.';
+$string['extensionduedate'] = 'Erweiterung des Abgabeendes';
+$string['extensionnotafterduedate'] = 'Das erweiterte Abgabeende muss nach dem (normalen) Abgabeende liegen.';
+$string['extensionnotafterfromdate'] = 'Das erweiterte Abgabeende muss nach Abgabeende liegen.';
 
 // Strings from the File index.php.
 $string['nopublicationsincourse'] = 'In diesem Kurs existieren keine Studierendenordner.';
@@ -125,7 +125,7 @@ $string['edit_timeover'] = 'Dateien können nur während des Änderungszeitraume
 $string['approval_timeover'] = 'Sie können ihre Zustimmung nur während des Änderungszeitraumes ändern.';
 $string['nofiles'] = 'Keine Dateien vorhanden';
 $string['notice'] = 'Hinweis:';
-$string['notice_uploadrequireapproval'] = 'Alle Dateien, die Sie hier hochladen, werden erst nach Überprüfung durch die Trainer/in für alle sichtbar.';
+$string['notice_uploadrequireapproval'] = 'Alle Dateien, die Sie hier hochladen, werden erst nach Überprüfung durch die Trainer/innen für alle sichtbar.';
 $string['notice_uploadnoapproval'] = 'Alle Dateien, die Sie hier hochladen, werden sofort für alle sichtbar geschaltet. Trainer/innen behalten sich das Recht vor die Sichtbarkeit Ihrer Dateien wieder aufzuheben.';
 $string['notice_importrequireapproval'] = 'Entscheiden Sie hier, ob sie Ihre Dateien allen zur Verfügung stellen.';
 $string['notice_importnoapproval'] = 'Folgende Dateien wurden für alle sichtbar geschaltet.';
@@ -173,9 +173,9 @@ $string['savestudentapprovalwarning'] = 'Sind Sie sicher dass Sie diese Änderun
 
 // Strings from the File  upload.php.
 $string['guideline'] = 'sichtbar für alle:';
-$string['published_immediately'] = 'ja sofort, ohne Prüfung durch den Trainer/in';
-$string['published_aftercheck'] = 'nein, erst nach Prüfung durch den Trainer/in';
-$string['save_changes'] = 'Änderungen Speichern';
+$string['published_immediately'] = 'ja sofort, ohne Prüfung durch die Trainer/innen';
+$string['published_aftercheck'] = 'nein, erst nach Prüfung durch die Trainer/innen';
+$string['save_changes'] = 'Änderungen speichern';
 
 // Deprecated since Moodle 2.9!
 $string['requiremodintro'] = 'Beschreibung notwendig';
