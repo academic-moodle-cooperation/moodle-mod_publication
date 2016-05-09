@@ -334,8 +334,9 @@ class publication{
         echo $html;
 
         echo html_writer::start_tag('div', array('id' => 'id_allfiles', 'class' => 'clearfix', 'aria-live' => 'polite'));
-        $title = (has_capability('mod/publication:approve', $context)) ?
-            get_string('allfiles', 'publication') : get_string('publicfiles', 'publication');
+        $allfiles = get_string('allfiles', 'publication');
+        $publicfiles = get_string('publicfiles', 'publication');
+        $title = (has_capability('mod/publication:approve', $context)) ? $allfiles : $publication;
         echo html_writer::tag('div', $title, array('class'  => 'legend'));
         echo html_writer::start_div('fcontainer clearfix');
 
@@ -408,10 +409,8 @@ class publication{
             }
         }
 
-        $selectallnone = html_writer::checkbox('selectallnone', false, false, '',
-                array('id' => 'selectallnone',
-                        'onClick' => 'toggle_userselection()'
-                ));
+        $selectallnone = html_writer::checkbox('selectallnone', false, false, '', array('id'      => 'selectallnone',
+                                                                                        'onClick' => 'toggle_userselection()'));
 
         $tablecolumns = array('selection', 'fullname');
         $tableheaders = array($selectallnone, get_string('fullnameuser'));
@@ -564,11 +563,7 @@ class publication{
                             if (!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" &&
                                     !has_capability('mod/publication:approve', $context))
                                 && !($cur != "idnumber" && !has_capability('mod/publication:approve', $context))) {
-                                if (true /*!$this->column_is_hidden($cur)*/) {
-                                    $row[] = $$cur;
-                                } else {
-                                    $row[] = "";
-                                }
+                                $row[] = $$cur;
                             }
                         }
 
@@ -1066,7 +1061,7 @@ class publication{
      * Updates files from connected assignment
      */
     public function importfiles() {
-        global $DB;
+        global $DB, $OUTPUT;
 
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
             $assign = $DB->get_record('assign', array('id' => $this->instance->importfrom));
@@ -1150,6 +1145,7 @@ class publication{
                             } catch (Exception $e) {
                                 // File could not be copied, maybe it does allready exist.
                                 // Should not happen.
+                                echo $OUTPUT->box($OUTPUT->notification($e->message, 'notifyproblem'), 'generalbox');
                             }
                         }
                     }

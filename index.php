@@ -87,9 +87,7 @@ foreach ($modinfo->instances['publication'] as $cm) {
     // Show dimmed if the mod is hidden!
     $class = $cm->visible ? '' : 'dimmed';
 
-    $link = html_writer::tag('a', format_string($cm->name),
-                             array('href' => 'view.php?id='.$cm->id,
-                                   'class' => $class));
+    $link = html_writer::tag('a', format_string($cm->name), array('href' => 'view.php?id='.$cm->id, 'class' => $class));
 
     $printsection = '';
     if ($usesections) {

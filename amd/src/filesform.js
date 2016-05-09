@@ -27,19 +27,15 @@
  /**
   * @module mod_publication/filesform
   */
-define(['jquery', 'core/log'],
-       function($, log) {
+define(['jquery', 'core/log'], function($, log) {
 
     /**
      * @constructor
      * @alias module:mod_publication/modform
      */
     var Filesform = function() {
-        /** @access private */
         this.form = $("#fastg");
-        /** @access private */
         this.menuaction = $("#menuaction");
-        /** @access private */
         this.usersel = $(".userselection");
     };
 

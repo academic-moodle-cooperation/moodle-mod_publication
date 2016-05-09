@@ -179,11 +179,9 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         $files = $fs->get_area_files($contextid, 'mod_publication', 'attachment');
 
         foreach ($files as $file) {
-            $DB->set_field('publication_file', 'fileid', $file->get_id(),
-                        array('publication' => $pubid,
-                            'userid' => $file->get_userid(),
-                            'filename' => $file->get_filename()
-            ));
+            $DB->set_field('publication_file', 'fileid', $file->get_id(), array('publication' => $pubid,
+                                                                                'userid' => $file->get_userid(),
+                                                                                'filename' => $file->get_filename()));
         }
     }
 }

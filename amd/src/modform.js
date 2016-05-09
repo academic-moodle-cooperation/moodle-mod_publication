@@ -27,28 +27,21 @@
  /**
   * @module mod_publication/modform
   */
-define(['jquery', 'core/log'],
-       function($, log) {
+define(['jquery', 'core/log'], function($, log) {
 
     /**
      * @constructor
      * @alias module:mod_publication/modform
      */
     var Modform = function() {
-        /** @access private */
         this.importfrom = $(".path-mod-publication #fitem_id_importfrom");
-        /** @access private */
         this.optainstudentapproval = $(".path-mod-publication #fitem_id_obtainstudentapproval");
 
-        /** @access private */
         this.maxfiles = $(".path-mod-publication #fitem_id_maxfiles");
-        /** @access private */
         this.maxbytes = $(".path-mod-publication #fitem_id_maxbytes");
-        /** @access private */
         this.allowedfiletypes = $(".path-mod-publication #fitem_id_allowedfiletypes");
-        /** @access private */
         this.optainteacherapproval = $(".path-mod-publication #fitem_id_obtainteacherapproval");
-        /** @access private more than 1 input (selection of radio buttons) */
+        // More than 1 input (selection of radio buttons)!
         this.mode = $(".path-mod-publication #fgroup_id_modegrp input[name=mode]");
     };
 

@@ -45,7 +45,7 @@
 }
 
 #page-mod-publication-view div.assignurl{
-	margin-left:10px;
+    margin-left:10px;
     margin-bottom:10px;
 }
 
@@ -70,17 +70,17 @@
 
 /* scroll table if page is too small */
 #page-mod-publication-view div#id_allfiles{
-	border: 1px solid #D0D3CA;
-	padding: 10px;
-	margin: 10px;
+    border: 1px solid #D0D3CA;
+    padding: 10px;
+    margin: 10px;
 }
 
 #page-mod-publication-view div#id_allfiles div.legend{
-	font-weight: bold;
-	background-color: #fff;
-	position: absolute;
-	padding: 2px 5px;
-	margin-top: -20px;
+    font-weight: bold;
+    background-color: #fff;
+    position: absolute;
+    padding: 2px 5px;
+    margin-top: -20px;
 }
 
  /* .. ie */
@@ -101,8 +101,8 @@
 }
 
 #page-mod-publication-view fieldset#id_allfiles table#attempts span.timemodified{
-	font-style:italic;
-	font-size:0.9em;
+    font-style:italic;
+    font-size:0.9em;
 }
 
 #page-mod-publication-view fieldset#id_allfiles{
@@ -115,7 +115,7 @@
 
 #page-mod-publication-view div#id_allfiles table#attempts th.c0,
 #page-mod-publication-view div#id_allfiles table#attempts td.c0{
-	text-align:center;
+    text-align:center;
 }
 
 #page-mod-publication-view table.filetable,
@@ -135,12 +135,12 @@
 #page-mod-publication-view table.statustable tbody td,
 #page-mod-publication-view table.permissionstable tbody td,
 #page-mod-publication-view table.filetable tbody td{
-	background-color:transparent;
+    background-color:transparent;
 }
 
 #page-mod-publication-view table.statustable td,
 #page-mod-publication-view table.filetable td{
-  	height:30px;
+      height:30px;
 }
 
 #page-mod-publication-view table.statustable,
@@ -150,47 +150,47 @@ text-align:center;
 }
 
 #page-mod-publication-view table.permissionstable select{
-	margin-bottom:0;
+    margin-bottom:0;
 }
 
 #page-mod-publication-view div.withselection{
-	text-align:center;
+    text-align:center;
 }
 
 #page-mod-publication-view div.withselection{
-	text-align:center;
+    text-align:center;
 }
 #page-mod-publication-view div.withselection select{
-	margin-left:4px;
-	margin-right:4px;
+    margin-left:4px;
+    margin-right:4px;
 }
 
 #page-mod-publication-view .visibilitysaver{
-	float:right;
+    float:right;
 }
 
 #page-mod-publication-view #dates{
-	border-width:0;
+    border-width:0;
 }
 
 #page-mod-publication-view #dates .c0 {
-	text-align: left;
+    text-align: left;
 }
 
 #page-mod-publication-view #dates td{
-	padding-top:0;
-	padding-bottom:0;
+    padding-top:0;
+    padding-bottom:0;
 }
 
 #page-mod-publication-upload .fstatic,
 #page-mod-publication-upload .fstaticlabel{
-	font-style:italic;
+    font-style:italic;
 }
 
 #page-mod-publication-view fieldset#id_myfiles .notice{
-	padding:8px;
-	margin-bottom:6px;
-	font-style:italic;
+    padding:8px;
+    margin-bottom:6px;
+    font-style:italic;
 }
 
 #page-mod-publication-mod select[name=importfrom] option[disabled] {
