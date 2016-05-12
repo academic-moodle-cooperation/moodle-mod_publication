@@ -15,7 +15,7 @@
 
 /**
  * README.txt
- * @version       2016-01-20-00
+ * @version       2016-01-20-02
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
@@ -67,6 +67,14 @@ INSTALLATION
 
 CHANGELOG
 ================================================================================
+v 2016012002
+-------------------------
+*) fixed bug causing files to not be restored correctly
+
+v 2016012001
+-------------------------
+*) lang string changes
+
 v 2016012000
 -------------------------
 *) removed some unused code
