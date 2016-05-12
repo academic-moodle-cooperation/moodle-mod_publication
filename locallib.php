@@ -625,7 +625,11 @@ class publication{
                                         array('id' => $cm->id, 'download' => $file->get_id()));
                                 $filerow[] = html_writer::link($url, $file->get_filename());
                                 if (has_capability('mod/publication:approve', $context)) {
-                                    $checked = $filepermissions->teacherapproval;
+                                    if ($filepermissions !== false) {
+                                        $checked = $filepermissions->teacherapproval;
+                                    } else {
+                                        $checked = null;
+                                    }
 
                                     if (is_null($checked)) {
                                         $checked = "";
@@ -643,7 +647,7 @@ class publication{
 
                                     $statusrow = array();
 
-                                    if (is_null($filepermissions->studentapproval)) {
+                                    if (($filepermissions === false) || is_null($filepermissions->studentapproval)) {
                                         $statusrow[] = $questionmark;
                                     } else if ($filepermissions->studentapproval) {
                                         $statusrow[] = $valid;
