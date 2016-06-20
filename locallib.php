@@ -336,7 +336,7 @@ class publication{
         echo html_writer::start_tag('div', array('id' => 'id_allfiles', 'class' => 'clearfix', 'aria-live' => 'polite'));
         $allfiles = get_string('allfiles', 'publication');
         $publicfiles = get_string('publicfiles', 'publication');
-        $title = (has_capability('mod/publication:approve', $context)) ? $allfiles : $publication;
+        $title = (has_capability('mod/publication:approve', $context)) ? $allfiles : $publicfiles;
         echo html_writer::tag('div', $title, array('class'  => 'legend'));
         echo html_writer::start_div('fcontainer clearfix');
 
