@@ -67,6 +67,10 @@ INSTALLATION
 
 CHANGELOG
 ================================================================================
+v 2016051101
+-------------------------
+*) fixed typo causing warning about undefined variable
+
 v 2016051100
 -------------------------
 *) PHP 7 compatibility!
