@@ -60,5 +60,24 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015120201, 'publication');
     }
 
+    // Moodle v3.1.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2016051200) {
+
+        // Define field autoimport to be added to publication.
+        $table = new xmldb_table('publication');
+        $field = new xmldb_field('autoimport', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'obtainteacherapproval');
+
+        // Conditionally launch add field autoimport.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Assign savepoint reached.
+        upgrade_mod_savepoint(true, 2016051200, 'publication');
+    }
+
+
     return true;
 }

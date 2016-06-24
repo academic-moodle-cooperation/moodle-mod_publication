@@ -53,6 +53,17 @@ function publication_add_instance($publication, $mform = null) {
     $record->course     = $courseid;
     $record->cmid       = $cmid;
 
+    $course = $DB->get_record('course', array('id' => $record->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('publication', $cmid, 0, false, MUST_EXIST);
+    $context = context_module::instance($cm->id);
+    $instance = new publication($cm, $course, $context);
+
+    if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT
+            && !empty($instance->get_instance()->autoimport)) {
+        // Fetch all files right now!
+        $instance->importfiles();
+    }
+
     return $record->id;
 }
 
@@ -104,6 +115,17 @@ function publication_update_instance($publication, $mform = null) {
     $publication->timemodified = time();
 
     $DB->update_record('publication', $publication);
+
+    $course = $DB->get_record('course', array('id' => $publication->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('publication', $publication->id, 0, false, MUST_EXIST);
+    $context = context_module::instance($cm->id);
+    $instance = new publication($cm, $course, $context);
+
+    if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT
+            && !empty($instance->get_instance()->autoimport)) {
+        // Fetch all files right now!
+        $instance->importfiles();
+    }
 
     return true;
 }

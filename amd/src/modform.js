@@ -36,6 +36,7 @@ define(['jquery', 'core/log'], function($, log) {
     var Modform = function() {
         this.importfrom = $(".path-mod-publication #fitem_id_importfrom");
         this.optainstudentapproval = $(".path-mod-publication #fitem_id_obtainstudentapproval");
+        this.autoimport = $(".path-mod-publication #fitem_id_autoimport");
 
         this.maxfiles = $(".path-mod-publication #fitem_id_maxfiles");
         this.maxbytes = $(".path-mod-publication #fitem_id_maxbytes");
@@ -51,6 +52,7 @@ define(['jquery', 'core/log'], function($, log) {
         if (mode === 0) { // Uploads by students!
             e.data.importfrom.fadeOut(600);
             e.data.optainstudentapproval.fadeOut(600);
+            e.data.autoimport.fadeOut(600);
 
             // We make sure they appear after the fadeout!
             window.setTimeout(function() {
@@ -69,6 +71,7 @@ define(['jquery', 'core/log'], function($, log) {
             window.setTimeout(function() {
                 e.data.importfrom.fadeIn(600);
                 e.data.optainstudentapproval.fadeIn(600);
+                e.data.autoimport.fadeIn(600);
             }, 600);
         } else {
             log.error("Incorrect comparison of mode (Type: " + typeof(mode) + "; Value: " + mode + ")", "publication");

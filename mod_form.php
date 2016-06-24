@@ -115,6 +115,11 @@ class mod_publication_mod_form extends moodleform_mod{
             $mform->disabledif ('importfrom', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
         }
 
+        $mform->addElement('advcheckbox', 'autoimport', get_string('autoimport', 'publication'));
+        $mform->setDefault('autoimport', get_config('publication', 'autoimport'));
+        $mform->addHelpButton('autoimport', 'autoimport', 'publication');
+        $mform->disabledIf('autoimport', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
+
         $attributes = array();
         if (isset($this->current->id) && isset($this->current->obtainstudentapproval)) {
             if ($this->current->obtainstudentapproval) {

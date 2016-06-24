@@ -56,6 +56,9 @@ $string['configmaxbytes'] = 'Voreinstellung für die Dateigröße von Dateien im
 $string['reset_userdata'] = 'Alle Daten';
 
 // Strings from the File mod_form.
+$string['autoimport'] = 'Automatische Synchronisation mit Aufgabe';
+$string['autoimport_help'] = 'Wenn aktiviert, werden neue Abgaben in der Aufgabe automatisch in den Studierendenordner übernommen. Eventuelle Zustimmungen müssen neu eingeholt werden.';
+$string['configautoimport'] = 'Wenn Sie bevorzugen, dass Abgaben automatisch in den/die Studierendenordner importiert werden. Dieses Feature kann für jeden Studierendenordner separat an-/ausgeschaltet werden.';
 $string['availability'] = 'Zeitraum für Uploadmöglichkeit/Einverständniserklärung';
 
 $string['allowsubmissionsfromdate'] = 'von';

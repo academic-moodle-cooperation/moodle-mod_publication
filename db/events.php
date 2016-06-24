@@ -15,19 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php
+ * db/events.php
  *
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Philipp Hager (office@phager.at)
- * @author        Andreas Windbichler
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @author        Philipp Hager
+ * @copyright     2016 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version  = 2016051200;
-$plugin->release   = "v3.1.0-dev";          // User-friendly version number.
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->requires = 2015111600;         // Requires this Moodle version.
-$plugin->component = 'mod_publication'; // Full name of the plugin (used for diagnostics).
+defined('MOODLE_INTERNAL') || die();
+
+$observers = array (
+        array (
+            'eventname'    => 'mod_assign\event\assessable_submitted',
+            'callback'     => 'mod_publication\observer::import_assessable',
+            'includefile'  => '/mod/publication/classes/observer.php',
+            'priority'     => 0,
+            'internal'     => true,
+        ),
+
+);

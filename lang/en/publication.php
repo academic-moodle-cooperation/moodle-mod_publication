@@ -55,6 +55,9 @@ $string['configmaxbytes'] = 'Default maximum size for all files in the studentfo
 $string['reset_userdata'] = 'All data';
 
 // Strings from the File  mod_form.
+$string['autoimport'] = 'Sync automatically with Assignment';
+$string['autoimport_help'] = 'If activated, new submissions will in corresponding Assigment will be imported automatically into Publication module. (Optional) Studentapproval has to be obtained again for the new files.';
+$string['configautoimport'] = 'If you prefer to have student submissions be automatically imported into Publication instances. This feature can be enabled/disabled for each Publication instance separately.';
 $string['availability'] = 'Timeslot for Upload/Approval';
 
 $string['allowsubmissionsfromdate'] = 'from';
