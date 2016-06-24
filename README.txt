@@ -15,7 +15,7 @@
 
 /**
  * README.txt
- * @version       2016-05-11
+ * @version       2016-06-22
  * @package       mod_publication
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
@@ -27,7 +27,7 @@
  */
 
 # ---------------------------------------------------------------
-# FOR Moodle 3.0+
+# FOR Moodle 3.1+
 # ---------------------------------------------------------------
 
 Publication module
@@ -48,7 +48,7 @@ OVERVIEW
 
 REQUIREMENTS
 ================================================================================
-    Moodle 3.0 or later
+    Moodle 3.1 or later
 
 INSTALLATION
 ================================================================================
@@ -67,6 +67,11 @@ INSTALLATION
 
 CHANGELOG
 ================================================================================
+v 2016062200
+-------------------------
+*) Moodle 3.1 update
+*) New Feature: Sync Assignment-Submissions automatically!
+
 v 2016051101
 -------------------------
 *) fixed typo causing warning about undefined variable
