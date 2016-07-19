@@ -293,6 +293,73 @@ class publication{
     }
 
     /**
+     * Get userids to fetch files for, when displaying all submitted files or downloading them as ZIP
+     *
+     * @param int[] $customusers (optional) user ids for which the returned user ids have to filter
+     * @return int[] array of userids
+     */
+    public function get_users($users = array()) {
+        global $DB;
+
+        $customusers = '';
+
+        if (is_array($users) && count($users) > 0) {
+            $customusers = " and u.id IN (" . implode($users, ', ') . ") ";
+        } else if ($users === false) {
+            return array();
+        }
+
+        // Find out current groups mode.
+        $currentgroup = groups_get_activity_group($this->get_coursemodule(), true);
+
+        // Get all ppl that are allowed to submit assignments.
+        list($esql, $params) = get_enrolled_sql($this->context, 'mod/publication:view', $currentgroup);
+
+        if (has_capability('mod/publication:approve', $this->context)
+                || has_capability('mod/publication:grantextension', $this->context)) {
+            // We can skip the approval-checks for teachers!
+            $sql = 'SELECT u.id FROM {user} u '.
+                    'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
+                    'WHERE u.deleted = 0 AND eu.id=u.id '. $customusers;
+        } else {
+            $sql = 'SELECT u.id FROM {user} u '.
+                    'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
+                    'LEFT JOIN {publication_file} files ON (u.id = files.userid) '.
+                    'WHERE u.deleted = 0 AND eu.id=u.id '. $customusers .
+                    'AND files.publication = '. $this->get_instance()->id . ' ';
+
+            if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
+                // Mode upload.
+                if ($this->get_instance()->obtainteacherapproval) {
+                    // Need teacher approval.
+
+                    $where = 'files.teacherapproval = 1';
+                } else {
+                    // No need for teacher approval.
+                    // Teacher only hasnt rejected.
+                    $where = '(files.teacherapproval = 1 OR files.teacherapproval IS NULL)';
+                }
+            } else {
+                // Mode import.
+                if (!$this->get_instance()->obtainstudentapproval) {
+                    // No need to ask student and teacher has approved.
+                    $where = 'files.teacherapproval = 1';
+                } else {
+                    // Student and teacher have approved.
+                    $where = 'files.teacherapproval = 1 AND files.studentapproval = 1';
+                }
+            }
+
+            $sql .= 'AND ' . $where . ' ';
+            $sql .= 'GROUP BY u.id';
+        }
+
+        $users = $DB->get_fieldset_sql($sql, $params);
+
+        return $users;
+    }
+
+    /**
      * Display form with table containing all files
      */
     public function display_allfilesform() {
@@ -350,64 +417,7 @@ class publication{
 
         $html = '';
 
-        // Get all ppl that are allowed to submit assignments.
-        list($esql, $params) = get_enrolled_sql($context, 'mod/publication:view', $currentgroup);
-
-        $showall = false;
-
-        if (has_capability('mod/publication:approve', $context) ||
-            has_capability('mod/publication:grantextension', $context)) {
-            $showall = true;
-        }
-
-        if ($showall) {
-            $sql = 'SELECT u.id FROM {user} u '.
-                    'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
-                    'WHERE u.deleted = 0 AND eu.id=u.id ';
-        } else {
-            $sql = 'SELECT u.id FROM {user} u '.
-                    'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
-                    'LEFT JOIN {publication_file} files ON (u.id = files.userid) '.
-                    'WHERE u.deleted = 0 AND eu.id=u.id '.
-                    'AND files.publication = '. $this->get_instance()->id . ' ';
-
-            if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
-                // Node upload.
-                if ($this->get_instance()->obtainteacherapproval) {
-                    // Need teacher approval.
-
-                    $where = 'files.teacherapproval = 1';
-                } else {
-                    // No need for teacher approval.
-                    // Teacher only hasnt rejected.
-                    $where = '(files.teacherapproval = 1 OR files.teacherapproval IS NULL)';
-                }
-            } else {
-                // Mode import.
-                if (!$this->get_instance()->obtainstudentapproval) {
-                    // No need to ask student and teacher has approved.
-                    $where = 'files.teacherapproval = 1';
-                } else {
-                    // Student and teacher have approved.
-                    $where = 'files.teacherapproval = 1 AND files.studentapproval = 1';
-                }
-            }
-
-            $sql .= 'AND ' . $where . ' ';
-            $sql .= 'GROUP BY u.id';
-        }
-
-        $users = $DB->get_records_sql($sql, $params);
-        if (!empty($users)) {
-            $users = array_keys($users);
-        }
-
-        // If groupmembersonly used, remove users who are not in any group.
-        if ($users and !empty($CFG->enablegroupmembersonly) and $cm->groupmembersonly) {
-            if ($groupingusers = groups_get_grouping_members($cm->groupingid, 'u.id', 'u.id')) {
-                $users = array_intersect($users, array_keys($groupingusers));
-            }
-        }
+        $users = $this->get_users();
 
         $selectallnone = html_writer::checkbox('selectallnone', false, false, '', array('id'      => 'selectallnone',
                                                                                         'onClick' => 'toggle_userselection()'));
@@ -489,6 +499,7 @@ class publication{
         $totalfiles = 0;
 
         if (!empty($users)) {
+            list($usersql, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED);
             $select = 'SELECT '.$ufields.', '.$useridentityfields.' username,
                                 COUNT(*) filecount,
                                 SUM(files.studentapproval) as status,
@@ -496,8 +507,9 @@ class publication{
             $sql = 'FROM {user} u '.
                     'LEFT JOIN {publication_file} files ON u.id = files.userid
                             AND files.publication = '.$this->get_instance()->id.' '.
-                                'WHERE '.$where.'u.id IN ('.implode(', ', $users).') '.
+                                'WHERE '.$where.'u.id '.$usersql.' '.
                                 'GROUP BY '.$ufields.', '.$useridentityfields.' username ';
+            $params = array_merge($params, $userparams);
 
             $ausers = $DB->get_records_sql($select.$sql.$sort, $params, $table->get_page_start(), $table->get_page_size());
             $table->pagesize($perpage, count($users));
@@ -924,80 +936,14 @@ class publication{
         $fs = get_file_storage();
         $filearea = 'attachment';
 
-        // Find out current groups mode.
-        $groupmode = groups_get_activity_groupmode($this->get_coursemodule());
-        $currentgroup = groups_get_activity_group($this->get_coursemodule(), true);
-
         // Get group name for filename.
         $groupname = '';
-
-        // Get all ppl that are allowed to submit assignments.
-        list($esql, $params) = get_enrolled_sql($context, 'mod/publication:view', $currentgroup);
-
-        $showall = false;
-
-        if (has_capability('mod/publication:approve', $context) ||
-        has_capability('mod/publication:grantextension', $context)) {
-            $showall = true;
+        $currentgroup = groups_get_activity_group($cm, true);
+        if (!empty($currentgroup)) {
+            $groupname = $DB->get_field('groups', 'name', array('id' => $currentgroup)).'-';
         }
 
-        $customusers = '';
-
-        if (is_array($users) && count($users) > 0) {
-            $customusers = " and u.id IN (" . implode($users, ', ') . ") ";
-
-        } else if ($users == false) {
-            $customusers = " AND 1=2 ";
-        }
-
-        if ($showall) {
-            $sql = 'SELECT u.id FROM {user} u '.
-                    'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
-                    'WHERE u.deleted = 0 AND eu.id=u.id '. $customusers;
-        } else {
-            $sql = 'SELECT u.id FROM {user} u '.
-                    'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
-                    'LEFT JOIN {publication_file} files ON (u.id = files.userid) '.
-                    'WHERE u.deleted = 0 AND eu.id=u.id '. $customusers .
-                    'AND files.publication = '. $this->get_instance()->id . ' ';
-
-            if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
-                // Mode upload.
-                if ($this->get_instance()->obtainteacherapproval) {
-                    // Need teacher approval.
-
-                    $where = 'files.teacherapproval = 1';
-                } else {
-                    // No need for teacher approval.
-                    // Teacher only hasnt rejected.
-                    $where = '(files.teacherapproval = 1 OR files.teacherapproval IS NULL)';
-                }
-            } else {
-                // Mode import.
-                if (!$this->get_instance()->obtainstudentapproval) {
-                    // No need to ask student and teacher has approved.
-                    $where = 'files.teacherapproval = 1';
-                } else {
-                    // Student and teacher have approved.
-                    $where = 'files.teacherapproval = 1 AND files.studentapproval = 1';
-                }
-            }
-
-            $sql .= 'AND ' . $where . ' ';
-            $sql .= 'GROUP BY u.id';
-        }
-
-        $users = $DB->get_records_sql($sql, $params);
-        if (!empty($users)) {
-            $users = array_keys($users);
-        }
-
-        // If groupmembersonly used, remove users who are not in any group.
-        if ($users and !empty($CFG->enablegroupmembersonly) and $cm->groupmembersonly) {
-            if ($groupingusers = groups_get_grouping_members($cm->groupingid, 'u.id', 'u.id')) {
-                $users = array_intersect($users, array_keys($groupingusers));
-            }
-        }
+        $users = $this->get_users($users);
 
         $filename = str_replace(' ', '_', clean_filename($this->course->shortname.'-'.
                 $this->get_instance()->name.'-'.$groupname.$this->get_instance()->id.'.zip')); // Name of new zip file.
@@ -1006,8 +952,6 @@ class publication{
         $userfields['id'] = 'id';
         $userfields['username'] = 'username';
         $userfields = implode(', ', $userfields);
-
-        $viewfullnames = has_capability('moodle/site:viewfullnames', $this->context);
 
         // Get all files from each user.
         foreach ($users as $uploader) {
