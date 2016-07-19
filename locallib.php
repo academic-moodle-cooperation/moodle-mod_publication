@@ -1030,8 +1030,7 @@ class publication{
                     // Get files new name.
                     $fileext = strstr($file->get_filename(), '.');
                     $fileoriginal = str_replace($fileext, '', $file->get_filename());
-                    $fileforzipname = clean_filename(($viewfullnames ? fullname($auser) : '') .
-                            '_' . $fileoriginal.'_'.$auserid.$fileext);
+                    $fileforzipname = clean_filename(fullname($auser).'_'.$fileoriginal.'_'.$auserid.$fileext);
                     // Save file name to array for zipping.
                     $filesforzipping[$fileforzipname] = $file;
                 }
