@@ -85,7 +85,6 @@ class mod_publication_files_form extends moodleform {
         $table = new html_table();
 
         $tablecolumns = array();
-        $tableheaders = array();
 
         $tablecolumns[] = 'id';
 
@@ -116,14 +115,6 @@ class mod_publication_files_form extends moodleform {
         $conditions['userid'] = $USER->id;
 
         $changepossible = false;
-
-        $valid = $OUTPUT->pix_icon('i/valid',
-                get_string('student_approved', 'publication'));
-        $questionmark = $OUTPUT->pix_icon('questionmark',
-                get_string('student_pending', 'publication'),
-                'mod_publication');
-        $invalid = $OUTPUT->pix_icon('i/invalid',
-                get_string('student_rejected', 'publication'));
 
         foreach ($files as $file) {
             $conditions['fileid'] = $file->get_id();

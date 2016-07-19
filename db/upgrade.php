@@ -33,7 +33,7 @@
  * @return bool true if everythings allright
  */
 function xmldb_publication_upgrade($oldversion) {
-    global $CFG, $DB, $OUTPUT;
+    global $DB;
 
     $dbman = $DB->get_manager();
 
@@ -77,7 +77,6 @@ function xmldb_publication_upgrade($oldversion) {
         // Assign savepoint reached.
         upgrade_mod_savepoint(true, 2016051200, 'publication');
     }
-
 
     return true;
 }

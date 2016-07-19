@@ -50,13 +50,9 @@ class mod_publication_upload_form extends moodleform {
         $currententry       = $this->_customdata['current'];
         $publication        = $this->_customdata['publication'];
         $cm                = $this->_customdata['cm'];
-        $definitionoptions = $this->_customdata['definitionoptions'];
         $attachmentoptions = $this->_customdata['attachmentoptions'];
 
         $context  = context_module::instance($cm->id);
-        // Prepare format_string/text options.
-        $fmtoptions = array(
-                'context' => $context);
 
         if ($publication->get_instance()->obtainteacherapproval) {
             $text = get_string('published_aftercheck', 'publication');

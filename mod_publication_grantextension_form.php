@@ -50,8 +50,6 @@ class mod_publication_grantextension_form extends moodleform {
      * Form definition method
      */
     public function definition() {
-        global $CFG, $OUTPUT, $DB, $USER;
-
         $publication = &$this->_customdata['publication'];
         $this->instance = $publication->get_instance();
         $userids = &$this->_customdata['userids'];

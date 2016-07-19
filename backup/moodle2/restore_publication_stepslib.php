@@ -78,7 +78,6 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         global $DB;
 
         $data = (object)$data;
-        $oldid = $data->id;
         $data->course = $this->get_courseid();
 
         $data->allowsubmissionsfromdate = $this->apply_date_offset($data->allowsubmissionsfromdate);
@@ -111,7 +110,6 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         global $DB;
 
         $data = (object)$data;
-        $oldid = $data->id;
 
         $data->publication = $this->get_new_parentid('publication');
 
@@ -120,7 +118,7 @@ class restore_publication_activity_structure_step extends restore_activity_struc
             $data->userid = $this->get_mappingid('user', $data->userid);
         }
 
-        $newitemid = $DB->insert_record('publication_file', $data);
+        $DB->insert_record('publication_file', $data);
 
         // Note - the old contextid is required in order to be able to restore files stored in
         // sub plugin file areas attached to the submissionid.
@@ -135,7 +133,6 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         global $DB;
 
         $data = (object)$data;
-        $oldid = $data->id;
 
         $data->publication = $this->get_new_parentid('publication');
 
@@ -147,7 +144,7 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         }
         // Flags mailed and locked need no translation on restore.
 
-        $newitemid = $DB->insert_record('publication_extduedates', $data);
+        $DB->insert_record('publication_extduedates', $data);
     }
 
     /**

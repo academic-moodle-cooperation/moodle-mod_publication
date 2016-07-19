@@ -60,7 +60,7 @@ class publication{
      * @param context_module $context (optional) Course Module Context
      */
     public function __construct($cm, $course=null, $context=null) {
-        global $PAGE, $DB;
+        global $DB;
 
         $this->coursemodule = $cm;
 
@@ -363,7 +363,7 @@ class publication{
      * Display form with table containing all files
      */
     public function display_allfilesform() {
-        global $CFG, $OUTPUT, $DB, $USER;
+        global $CFG, $OUTPUT, $DB;
 
         $cm = $this->coursemodule;
         $context = $this->context;
@@ -377,11 +377,8 @@ class publication{
             set_user_preference('publication_perpage', $perpage);
         }
 
-        /* next we get perpage and quickgrade (allow quick grade) params
-         * from database
-        */
+        // Next we get perpage param from database!
         $perpage    = get_user_preferences('publication_perpage', 10);
-        $quickgrade = get_user_preferences('publication_quickgrade', 0);
         $filter = get_user_preferences('publicationfilter', 0);
 
         $page    = optional_param('page', 0, PARAM_INT);
@@ -410,7 +407,6 @@ class publication{
         // Check to see if groups are being used in this assignment.
 
         // Find out current groups mode.
-        $groupmode = groups_get_activity_groupmode($cm);
         $currentgroup = groups_get_activity_group($cm, true);
 
         echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
@@ -516,25 +512,18 @@ class publication{
 
             // Offset used to calculate index of student in that particular query, needed for the pop up to know who's next.
             $offset = $page * $perpage;
-            $strupdate = get_string('update');
 
             if ($ausers !== false) {
                 $endposition = $offset + $perpage;
                 $currentposition = 0;
 
-                $valid = $OUTPUT->pix_icon('i/valid',
-                        get_string('student_approved', 'publication'));
-                $questionmark = $OUTPUT->pix_icon('questionmark',
-                        get_string('student_pending', 'publication'),
-                        'mod_publication');
-                $invalid = $OUTPUT->pix_icon('i/invalid',
-                        get_string('student_rejected', 'publication'));
+                $valid = $OUTPUT->pix_icon('i/valid', get_string('student_approved', 'publication'));
+                $questionmark = $OUTPUT->pix_icon('questionmark', get_string('student_pending', 'publication'), 'mod_publication');
+                $invalid = $OUTPUT->pix_icon('i/invalid', get_string('student_rejected', 'publication'));
 
-                $visibleforstundetsyes = $OUTPUT->pix_icon('i/valid',
-                        get_string('visibleforstudents_yes', 'publication'));
+                $studvisibleyes = $OUTPUT->pix_icon('i/valid', get_string('visibleforstudents_yes', 'publication'));
 
-                $visibleforstundetsno = $OUTPUT->pix_icon('i/invalid',
-                        get_string('visibleforstudents_no', 'publication'));
+                $studvisibleno = $OUTPUT->pix_icon('i/invalid', get_string('visibleforstudents_no', 'publication'));
 
                 foreach ($ausers as $auser) {
                     if ($currentposition >= $offset && $currentposition < $endposition) {
@@ -618,9 +607,9 @@ class publication{
                             }
 
                             if ($this->has_filepermission($file->get_id())) {
-                                $visibleforuserstable->data[] = array($visibleforstundetsyes);
+                                $visibleforuserstable->data[] = array($studvisibleyes);
                             } else {
-                                $visibleforuserstable->data[] = array($visibleforstundetsno);
+                                $visibleforuserstable->data[] = array($studvisibleno);
                             }
 
                             if ($showfile) {
@@ -905,9 +894,6 @@ class publication{
         }
 
         if ($allowed) {
-            $sid = $record->userid;
-            $filearea = 'attachment';
-
             $fs = get_file_storage();
             $file = $fs->get_file_by_id($fileid);
             send_file($file, $file->get_filename(), 'default' , 0, false, true, $file->get_mimetype(), false);
@@ -934,7 +920,6 @@ class publication{
 
         $filesforzipping = array();
         $fs = get_file_storage();
-        $filearea = 'attachment';
 
         // Get group name for filename.
         $groupname = '';
@@ -960,7 +945,6 @@ class publication{
             $conditions['userid'] = $uploader;
             $records = $DB->get_records('publication_file', $conditions);
 
-            $aassignid = $auserid; // Get name of this assignment for use in the file names.
             // Get user firstname/lastname.
             $auser = $DB->get_record('user', array('id' => $auserid), $userfields);
 
@@ -1088,7 +1072,7 @@ class publication{
                                 $dataobject->contenthash = "666";
                                 $dataobject->type = PUBLICATION_MODE_IMPORT;
 
-                                $newid = $DB->insert_record('publication_file', $dataobject);
+                                $DB->insert_record('publication_file', $dataobject);
                             } catch (Exception $e) {
                                 // File could not be copied, maybe it does allready exist.
                                 // Should not happen.

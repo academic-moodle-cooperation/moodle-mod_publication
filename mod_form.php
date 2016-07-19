@@ -48,11 +48,9 @@ class mod_publication_mod_form extends moodleform_mod{
      * Define this form - called by the parent constructor
      */
     public function definition() {
-        global $DB, $CFG, $COURSE, $PAGE, $OUTPUT;
+        global $DB, $CFG, $COURSE, $PAGE;
 
         $PAGE->requires->js_call_amd('mod_publication/modform', 'initializer', array());
-
-        $config = get_config('publication');
 
         $mform = $this->_form;
         $mform->addElement('header', 'general', get_string('general', 'form'));

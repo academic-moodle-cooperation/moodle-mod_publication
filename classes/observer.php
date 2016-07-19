@@ -51,7 +51,7 @@ class observer {
         global $DB, $CFG, $OUTPUT;
 
         // Keep other page calls slimed down!
-        require_once $CFG->dirroot .'/mod/publication/locallib.php';
+        require_once($CFG->dirroot .'/mod/publication/locallib.php');
 
         // We have the submission ID, so first we fetch the corresponding submission, assign, etc.!
         $assign = $e->get_assign();
@@ -89,8 +89,6 @@ class observer {
                                                  $record->submission,
                                                  "id",
                                                  false);
-
-
 
                     foreach ($files as $file) {
                         $assignfiles[$file->get_id()] = $file;
@@ -158,7 +156,7 @@ class observer {
                         $dataobject->contenthash = "666";
                         $dataobject->type = \PUBLICATION_MODE_IMPORT;
 
-                        $newid = $DB->insert_record('publication_file', $dataobject);
+                        $DB->insert_record('publication_file', $dataobject);
                     } catch (Exception $e) {
                         // File could not be copied, maybe it does allready exist.
                         // Should not happen.

@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  * @param mform $mform
  */
 function publication_add_instance($publication, $mform = null) {
-    global $CFG, $DB;
+    global $DB, $OUTPUT;
 
     $cmid       = $publication->coursemodule;
     $courseid   = $publication->course;
@@ -43,7 +43,7 @@ function publication_add_instance($publication, $mform = null) {
     try {
         $id = $DB->insert_record('publication', $publication);
     } catch (Exception $e) {
-        var_dump($e);
+        echo $OUTPUT->notification($e->message, 'error');
     }
 
     $DB->set_field('course_modules', 'instance', $id, array('id' => $cmid));
@@ -106,7 +106,7 @@ function publication_supports($feature) {
  * @param mform $mform
  */
 function publication_update_instance($publication, $mform = null) {
-    global $CFG, $DB;
+    global $DB;
 
     $publication->id = $publication->instance;
 
@@ -135,15 +135,13 @@ function publication_update_instance($publication, $mform = null) {
  * @return boolean
  */
 function publication_delete_instance($id) {
-    global $CFG, $DB;
+    global $DB;
 
     if (! $publication = $DB->get_record('publication', array('id' => $id))) {
         return false;
     }
 
     $DB->delete_records('publication_extduedates', array('publication' => $publication->id));
-
-    $filerecords = $DB->get_records('publication_file', array('publication' => $publication->id));
 
     $fs = get_file_storage();
 
@@ -166,7 +164,7 @@ function publication_delete_instance($id) {
  *                        will know about (most noticeably, an icon).
  */
 function publication_get_coursemodule_info($coursemodule) {
-    global $CFG, $DB;
+    global $DB;
 
     $dbparams = array('id' => $coursemodule->instance);
     $fields = 'id, name, alwaysshowdescription, allowsubmissionsfromdate, intro, introformat';

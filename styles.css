@@ -28,59 +28,58 @@
 
 /* General Styles */
 
-#page-mod-publication-view div.availability{
-    margin-bottom:10px;
-    margin-left:10px;
+#page-mod-publication-view div.availability {
+    margin-bottom: 10px;
+    margin-left: 10px;
 }
 
-#page-mod-publication-view div.availability div{
-    clear:both;
+#page-mod-publication-view div.availability div {
+    clear: both;
 }
 
-#page-mod-publication-view div.availability span{
-
-    min-width:170px;
-    display:block;
-    float:left;
+#page-mod-publication-view div.availability span {
+    display: block;
+    float: left;
+    min-width: 170px;
 }
 
-#page-mod-publication-view div.assignurl{
-    margin-left:10px;
-    margin-bottom:10px;
+#page-mod-publication-view div.assignurl {
+    margin-bottom: 10px;
+    margin-left: 10px;
 }
 
 #page-mod-publication-view div.assignurl div.singlebutton,
 #page-mod-publication-view div.assignurl div.singlebutton form,
-#page-mod-publication-view div.assignurl div.singlebutton form div{
-    display:inline;
+#page-mod-publication-view div.assignurl div.singlebutton form div {
+    display: inline;
 }
 
-#page-mod-publication-view div.assignurl div.singlebutton form div{
-    padding-left:10px;
+#page-mod-publication-view div.assignurl div.singlebutton form div {
+    padding-left: 10px;
 }
 
-#page-mod-publication-view fieldset#id_myfiles table{
-    margin-left:8px;
+#page-mod-publication-view fieldset#id_myfiles table {
+    margin-left: 8px;
 }
 
-#page-mod-publication-view fieldset#id_myfiles table td{
-    padding:1px;
-    padding-right:3px;
+#page-mod-publication-view fieldset#id_myfiles table td {
+    padding: 1px;
+    padding-right: 3px;
 }
 
 /* scroll table if page is too small */
-#page-mod-publication-view div#id_allfiles{
+#page-mod-publication-view div#id_allfiles {
     border: 1px solid #D0D3CA;
-    padding: 10px;
     margin: 10px;
+    padding: 10px;
 }
 
-#page-mod-publication-view div#id_allfiles div.legend{
-    font-weight: bold;
+#page-mod-publication-view div#id_allfiles div.legend {
     background-color: #fff;
-    position: absolute;
-    padding: 2px 5px;
+    font-weight: bold;
     margin-top: -20px;
+    padding: 2px 5px;
+    position: absolute;
 }
 
  /* .. ie */
@@ -91,31 +90,31 @@
 /* end scroll */
 
 #page-mod-publication-view fieldset#id_allfiles div div.no-overflow {
-    margin-bottom:1em;
-    padding-bottom:0px;
+    margin-bottom: 1em;
+    padding-bottom: 0;
 }
 
 
 #page-mod-publication-view fieldset#id_allfiles table#attempts {
-    margin-bottom:0;
+    margin-bottom: 0;
 }
 
-#page-mod-publication-view fieldset#id_allfiles table#attempts span.timemodified{
-    font-style:italic;
-    font-size:0.9em;
+#page-mod-publication-view fieldset#id_allfiles table#attempts span.timemodified {
+    font-size: 0.9em;
+    font-style: italic;
 }
 
-#page-mod-publication-view fieldset#id_allfiles{
-    padding-top:4px;
+#page-mod-publication-view fieldset#id_allfiles {
+    padding-top: 4px;
 }
 
-#page-mod-publication-view div.mod-publication-download-link{
-    text-align:right;
+#page-mod-publication-view div.mod-publication-download-link {
+    text-align: right;
 }
 
 #page-mod-publication-view div#id_allfiles table#attempts th.c0,
-#page-mod-publication-view div#id_allfiles table#attempts td.c0{
-    text-align:center;
+#page-mod-publication-view div#id_allfiles table#attempts td.c0 {
+    text-align: center;
 }
 
 #page-mod-publication-view table.filetable,
@@ -126,73 +125,73 @@
 #page-mod-publication-view table.statustable tr,
 #page-mod-publication-view table.permissionstable,
 #page-mod-publication-view table.permissionstable td,
-#page-mod-publication-view table.permissionstable tr{
-    padding:1px;
-    padding-right:3px;
-    border-width:0px !important;
+#page-mod-publication-view table.permissionstable tr {
+    border-width: 0 !important;
+    padding: 1px;
+    padding-right: 3px;
 }
 
 #page-mod-publication-view table.statustable tbody td,
 #page-mod-publication-view table.permissionstable tbody td,
-#page-mod-publication-view table.filetable tbody td{
-    background-color:transparent;
+#page-mod-publication-view table.filetable tbody td {
+    background-color: transparent;
 }
 
 #page-mod-publication-view table.statustable td,
-#page-mod-publication-view table.filetable td{
-      height:30px;
+#page-mod-publication-view table.filetable td {
+      height: 30px;
 }
 
 #page-mod-publication-view table.statustable,
-#page-mod-publication-view table.permissionstable{
-width:100%;
-text-align:center;
+#page-mod-publication-view table.permissionstable {
+    text-align: center;
+    width: 100%;
 }
 
-#page-mod-publication-view table.permissionstable select{
-    margin-bottom:0;
+#page-mod-publication-view table.permissionstable select {
+    margin-bottom: 0;
 }
 
-#page-mod-publication-view div.withselection{
-    text-align:center;
+#page-mod-publication-view div.withselection {
+    text-align: center;
 }
 
-#page-mod-publication-view div.withselection{
+#page-mod-publication-view div.withselection {
     text-align:center;
 }
 #page-mod-publication-view div.withselection select{
-    margin-left:4px;
-    margin-right:4px;
+    margin-left: 4px;
+    margin-right: 4px;
 }
 
-#page-mod-publication-view .visibilitysaver{
-    float:right;
+#page-mod-publication-view .visibilitysaver {
+    float: right;
 }
 
-#page-mod-publication-view #dates{
-    border-width:0;
+#page-mod-publication-view #dates {
+    border-width: 0;
 }
 
 #page-mod-publication-view #dates .c0 {
     text-align: left;
 }
 
-#page-mod-publication-view #dates td{
-    padding-top:0;
-    padding-bottom:0;
+#page-mod-publication-view #dates td {
+    padding-bottom: 0;
+    padding-top: 0;
 }
 
 #page-mod-publication-upload .fstatic,
-#page-mod-publication-upload .fstaticlabel{
-    font-style:italic;
+#page-mod-publication-upload .fstaticlabel {
+    font-style: italic;
 }
 
-#page-mod-publication-view fieldset#id_myfiles .notice{
-    padding:8px;
-    margin-bottom:6px;
-    font-style:italic;
+#page-mod-publication-view fieldset#id_myfiles .notice {
+    font-style: italic;
+    margin-bottom: 6px;
+    padding: 8px;
 }
 
 #page-mod-publication-mod select[name=importfrom] option[disabled] {
-    color:#999;
+    color: #999;
 }
