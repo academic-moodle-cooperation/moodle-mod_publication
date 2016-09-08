@@ -130,5 +130,8 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016062201, 'publication');
     }
 
+    // Moodle v3.2.0 release upgrade line.
+    // Put any upgrade step following this!
+
     return true;
 }
