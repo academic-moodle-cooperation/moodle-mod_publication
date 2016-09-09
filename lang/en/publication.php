@@ -39,6 +39,8 @@ $string['publication:view'] = 'View student folder';
 $string['publication:upload'] = 'Upload files to a student folder';
 $string['publication:approve'] = 'Decide if files should be visible for every student';
 $string['publication:grantextension'] = 'Grant extension';
+$string['search:activity'] = 'Publication - activity information';
+
 $string['name'] = 'Student folder name';
 $string['obtainstudentapproval'] = 'Obtain approval';
 $string['saveapproval'] = 'save approval';

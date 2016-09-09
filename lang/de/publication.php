@@ -39,6 +39,7 @@ $string['publication:view'] = 'Studierendenordner anzeigen';
 $string['publication:upload'] = 'Dateien in den Studierendenordner hochladen';
 $string['publication:approve'] = 'Entscheiden ob Dateien für alle Teilnehmer/innen sichtbar sein sollen';
 $string['publication:grantextension'] = 'Erweiterung zulassen';
+$string['search:activity'] = 'Studierendenordner - Aktivitätsinformation';
 
 $string['name'] = 'Name des Studierendenordners';
 $string['obtainstudentapproval'] = 'Einverständnis einholen';
