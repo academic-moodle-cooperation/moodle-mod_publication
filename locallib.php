@@ -1028,11 +1028,15 @@ class publication{
      * @param object $assigncontext Assignment context object
      */
     protected function import_assign_files($assigncm, $assigncontext) {
-        global $DB;
+        global $DB, $CFG;
 
         $records = $DB->get_records('assignsubmission_file', array('assignment' => $this->get_instance()->importfrom));
 
         $fs = get_file_storage();
+
+        require_once($CFG->dirroot . '/mod/assign/locallib.php');
+        $assigncourse = $DB->get_record('course', array('id' => $assigncm->course));
+        $assignment = new assign($assigncontext, $assigncm, $assigncourse);
 
         foreach ($records as $record) {
 
@@ -1055,7 +1059,11 @@ class publication{
 
             $conditions = array();
             $conditions['publication'] = $this->get_instance()->id;
-            $conditions['userid'] = $submission->userid;
+            if (empty($assignment->get_instance()->teamsubmission)) {
+                $conditions['userid'] = $submission->userid;
+            } else {
+                $conditions['userid'] = $submission->groupid;
+            }
             // We look for regular imported files here!
             $conditions['type'] = PUBLICATION_MODE_IMPORT;
 
@@ -1085,14 +1093,22 @@ class publication{
                 $newfilerecord->contextid = $this->get_context()->id;
                 $newfilerecord->component = 'mod_publication';
                 $newfilerecord->filearea = 'attachment';
-                $newfilerecord->itemid = $submission->userid;
+                if (empty($assignment->get_instance()->teamsubmission)) {
+                    $newfilerecord->itemid = $submission->userid;
+                } else {
+                    $newfilerecord->itemid = $submission->groupid;
+                }
 
                 try {
                     $newfile = $fs->create_file_from_storedfile($newfilerecord, $assignfiles[$assignfileid]);
 
                     $dataobject = new stdClass();
                     $dataobject->publication = $this->get_instance()->id;
-                    $dataobject->userid = $submission->userid;
+                    if (empty($assignment->get_instance()->teamsubmission)) {
+                        $dataobject->userid = $submission->userid;
+                    } else {
+                        $dataobject->userid = $submission->groupid;
+                    }
                     $dataobject->timecreated = time();
                     $dataobject->fileid = $newfile->get_id();
                     $dataobject->filesourceid = $assignfileid;
@@ -1148,7 +1164,11 @@ class publication{
                 $filerecord->contextid = $contextid;
                 $filerecord->component = 'mod_publication';
                 $filerecord->filearea = 'attachment';
-                $filerecord->itemid = $submission->userid;
+                if (empty($assignment->get_instance()->teamsubmission)) {
+                    $filerecord->itemid = $submission->userid;
+                } else {
+                    $filerecord->itemid = $submission->groupid;
+                }
                 $filerecord->filepath = '/ressources/';
                 $filerecord->filename = $file->get_filename();
                 $pathnamehash = $fs->get_pathname_hash($filerecord->contextid, $filerecord->component, $filerecord->filearea,
@@ -1196,10 +1216,10 @@ class publication{
             $filename = get_string('onlinetextfilename', 'assignsubmission_onlinetext');
 
             // Does the file exist... let's check it!
-            $pathhash = $fs->get_pathname_hash($contextid, 'mod_publication', 'attachment', $submission->userid, '/', $filename);
+            $pathhash = $fs->get_pathname_hash($contextid, 'mod_publication', 'attachment', $itemid, '/', $filename);
 
             $conditions = array('publication' => $this->get_instance()->id,
-                                'userid'      => $submission->userid,
+                                'userid'      => $itemid,
                                 'type'        => PUBLICATION_MODE_ONLINETEXT);
             $pubfile = $DB->get_record('publication_file', $conditions, '*', IGNORE_MISSING);
 
@@ -1235,13 +1255,21 @@ class publication{
                 $newfilerecord->contextid = $this->get_context()->id;
                 $newfilerecord->component = 'mod_publication';
                 $newfilerecord->filearea = 'attachment';
-                $newfilerecord->itemid = $submission->userid;
+                if (empty($assignment->get_instance()->teamsubmission)) {
+                    $newfilerecord->itemid = $submission->userid;
+                } else {
+                    $newfilerecord->itemid = $submission->groupid;
+                }
                 $newfilerecord->filename = $filename;
                 $newfilerecord->filepath = '/';
                 $newfile = $fs->create_file_from_string($newfilerecord, $submissioncontent);
                 if (!$pubfile) {
                     $pubfile = new stdClass();
-                    $pubfile->userid = $submission->userid;
+                    if (empty($assignment->get_instance()->teamsubmission)) {
+                        $pubfile->userid = $submission->userid;
+                    } else {
+                        $pubfile->userid = $submission->groupid;
+                    }
                     $pubfile->type = PUBLICATION_MODE_ONLINETEXT;
                     $pubfile->publication = $this->get_instance()->id;
                 }
