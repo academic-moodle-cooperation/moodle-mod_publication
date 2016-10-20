@@ -1151,7 +1151,7 @@ class publication{
         foreach ($records as $record) {
             $submission = $DB->get_record('assign_submission', array('id' => $record->submission));
 
-            // First we fetch the ressource files (embedded files in text!)
+            // First we fetch the resource files (embedded files in text!)
             $fsfiles = $fs->get_area_files($assigncontext->id,
                                            'assignsubmission_onlinetext',
                                            ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
@@ -1169,7 +1169,7 @@ class publication{
                 } else {
                     $filerecord->itemid = $submission->groupid;
                 }
-                $filerecord->filepath = '/ressources/';
+                $filerecord->filepath = '/resources/';
                 $filerecord->filename = $file->get_filename();
                 $pathnamehash = $fs->get_pathname_hash($filerecord->contextid, $filerecord->component, $filerecord->filearea,
                                                        $filerecord->itemid, $filerecord->filepath, $filerecord->filename);
@@ -1187,27 +1187,27 @@ class publication{
                 }
             }
 
-            // Now we delete old ressource-files, which are no longer present!
+            // Now we delete old resource-files, which are no longer present!
             $itemid = empty($assignment->get_instance()->teamsubmission) ? $submission->userid : $submission->groupid;
-            $ressources = $fs->get_directory_files($contextid,
+            $resources = $fs->get_directory_files($contextid,
                                                    'mod_publication',
                                                    'attachment',
                                                    $itemid,
-                                                   '/ressources/',
+                                                   '/resources/',
                                                    true,
                                                    false);
-            foreach ($ressources as $ressource) {
+            foreach ($resources as $resource) {
                 $pathnamehash = $fs->get_pathname_hash($assignment->get_context()->id, 'assignsubmission_onlinetext',
                                                        ASSIGNSUBMISSION_ONLINETEXT_FILEAREA, $submission->id, '/',
-                                                       $ressource->get_filename());
+                                                       $resource->get_filename());
                 if (!$fs->file_exists_by_hash($pathnamehash)) {
-                    $ressource->delete();
+                    $resource->delete();
                 }
             }
 
             /* Here we convert the pluginfile urls to relative urls for the exported html-file
-             * (the ressources have to be included in the download!) */
-            $formattedtext = str_replace('@@PLUGINFILE@@/', './ressources/', $record->onlinetext);
+             * (the resources have to be included in the download!) */
+            $formattedtext = str_replace('@@PLUGINFILE@@/', './resources/', $record->onlinetext);
             $formattedtext = format_text($formattedtext, $record->onlineformat, array('context' => $assigncontext));
 
             $head = '<head><meta charset="UTF-8"></head>';
