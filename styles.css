@@ -84,7 +84,7 @@
 
  /* .. ie */
 .ie#page-mod-publication-view fieldset#id_allfiles {
-    display: block !important;
+    display: block;
 }
 
 /* end scroll */
@@ -126,7 +126,7 @@
 #page-mod-publication-view table.permissionstable,
 #page-mod-publication-view table.permissionstable td,
 #page-mod-publication-view table.permissionstable tr {
-    border-width: 0 !important;
+    border-width: 0;
     padding: 1px;
     padding-right: 3px;
 }

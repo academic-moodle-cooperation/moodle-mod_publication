@@ -32,9 +32,8 @@ defined('MOODLE_INTERNAL') || die();
  * Adds a new publication instance
  *
  * @param publication $publication
- * @param mform $mform
  */
-function publication_add_instance($publication, $mform = null) {
+function publication_add_instance($publication) {
     global $DB, $OUTPUT;
 
     $cmid       = $publication->coursemodule;
@@ -103,9 +102,8 @@ function publication_supports($feature) {
  * updates an existing publication instance
  *
  * @param publication $publication
- * @param mform $mform
  */
-function publication_update_instance($publication, $mform = null) {
+function publication_update_instance($publication) {
     global $DB;
 
     $publication->id = $publication->instance;

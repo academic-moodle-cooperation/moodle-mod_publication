@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 define('PUBLICATION_MODE_UPLOAD', 0);
 define('PUBLICATION_MODE_IMPORT', 1);
-// Used in DB to mark online-text-files
+// Used in DB to mark online-text-files!
 define('PUBLICATION_MODE_ONLINETEXT', 2);
 
 /**
@@ -887,7 +887,6 @@ class publication{
         $conditions = array();
         $conditions['publication'] = $this->get_instance()->id;
         $conditions['fileid'] = $fileid;
-        $record = $DB->get_record('publication_file', $conditions);
 
         $allowed = false;
 
@@ -918,7 +917,6 @@ class publication{
         global $CFG, $DB;
         require_once($CFG->libdir.'/filelib.php');
 
-        $context = $this->get_context();
         $cm = $this->get_coursemodule();
 
         $conditions = array();
@@ -998,7 +996,7 @@ class publication{
      * Updates files from connected assignment
      */
     public function importfiles() {
-        global $DB, $OUTPUT;
+        global $DB;
 
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
             $assign = $DB->get_record('assign', array('id' => $this->instance->importfrom));
@@ -1214,7 +1212,6 @@ class publication{
                     /* If the submission has been modified after the file,             *
                      * we check for different content-hashes to see if it was changed! */
                     $createnew = true;
-                    $oldid = $file->get_id();
                     if ($file->get_id() == $pubfile->fileid) {
                         // Everything's alright, we can delete the old file!
                         $file->delete();

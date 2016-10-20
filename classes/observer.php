@@ -239,7 +239,8 @@ class observer {
                 $filename = get_string('onlinetextfilename', 'assignsubmission_onlinetext');
 
                 // Does the file exist... let's check it!
-                $pathhash = $fs->get_pathname_hash($context->id, 'mod_publication', 'attachment', $submission->userid, '/', $filename);
+                $pathhash = $fs->get_pathname_hash($context->id, 'mod_publication', 'attachment', $submission->userid, '/',
+                                                   $filename);
 
                 $conditions = array('publication' => $curpub->id,
                                     'userid'      => $submission->userid,
@@ -263,8 +264,8 @@ class observer {
                             $file->delete();
                         } else {
                             // Something unexcpected happened!
-                            throw new \coding_exception('Mismatching fileids (pubfile with id '.$pubfile->fileid.' and stored file '.
-                                                       $file->get_id().'!');
+                            throw new \coding_exception('Mismatching fileids (pubfile with id '.$pubfile->fileid.
+                                                        ' and stored file '.$file->get_id().'!');
                         }
                     }
                 } else if (!empty($formattedtext)) {

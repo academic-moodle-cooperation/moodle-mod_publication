@@ -105,4 +105,4 @@ script:
 # it is highly recommended that you keep this step.
   - moodle-plugin-ci behat
 # Now we view the coverage file!
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then echo "Show PHPUnit code coverage:"; cat coverage.xml; fi
+  - if [ -e "coverage.xml" ]; then echo "Show PHPUnit code coverage:"; cat coverage.xml; fi
