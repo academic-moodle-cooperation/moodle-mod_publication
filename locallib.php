@@ -30,6 +30,8 @@ defined('MOODLE_INTERNAL') || die();
 
 define('PUBLICATION_MODE_UPLOAD', 0);
 define('PUBLICATION_MODE_IMPORT', 1);
+// Used in DB to mark online-text-files
+define('PUBLICATION_MODE_ONLINETEXT', 2);
 
 /**
  * publication class contains much logic used in mod_publication
@@ -167,9 +169,13 @@ class publication{
 
                 $assignmoduleid = $DB->get_field('modules', 'id', array('name' => 'assign'));
 
-                $assigncm = $DB->get_record('course_modules',
-                        array('course' => $assign->course, 'module' => $assignmoduleid, 'instance' => $assign->id));
-
+                if ($assign) {
+                    $assigncm = $DB->get_record('course_modules', array('course' => $assign->course,
+                                                                        'module' => $assignmoduleid,
+                                                                        'instance' => $assign->id));
+                } else {
+                    $assigncm = false;
+                }
                 if ($assign && $assigncm) {
                     $assignurl = new moodle_url('/mod/assign/view.php', array('id' => $assigncm->id));
                     echo get_string('assignment', 'publication') . ': ' . html_writer::link($assignurl, $assign->name);
@@ -997,95 +1003,261 @@ class publication{
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
             $assign = $DB->get_record('assign', array('id' => $this->instance->importfrom));
             $assignmoduleid = $DB->get_field('modules', 'id', array('name' => 'assign'));
-            $assigncm = $DB->get_record('course_modules',
-                    array('course' => $assign->course, 'module' => $assignmoduleid, 'instance' => $assign->id));
+            $assigncm = $DB->get_record('course_modules', array('course'   => $assign->course,
+                                                                'module'   => $assignmoduleid,
+                                                                'instance' => $assign->id));
 
             $assigncontext = context_module::instance($assigncm->id);
 
-            if ($assign && $assigncm) {
-                if (has_capability('mod/publication:addinstance', $this->context)) {
-                    $records = $DB->get_records('assignsubmission_file', array('assignment' => $this->get_instance()->importfrom));
+            if ($assigncm && has_capability('mod/publication:addinstance', $this->context)) {
+                $this->import_assign_files($assigncm, $assigncontext);
+                $this->import_assign_onlinetexts($assigncm, $assigncontext);
 
-                    foreach ($records as $record) {
-
-                        $fs = get_file_storage();
-                        $files = $fs->get_area_files($assigncontext->id,
-                                "assignsubmission_file",
-                                "submission_files",
-                                $record->submission,
-                                "id",
-                                false);
-
-                        $submission = $DB->get_record('assign_submission', array('id' => $record->submission));
-
-                        $assignfileids = array();
-
-                        $assignfiles = array();
-
-                        foreach ($files as $file) {
-                            $assignfiles[$file->get_id()] = $file;
-                            $assignfileids[$file->get_id()] = $file->get_id();
-                        }
-
-                        $conditions = array();
-                        $conditions['publication'] = $this->get_instance()->id;
-                        $conditions['userid'] = $submission->userid;
-
-                        $oldpubfiles = $DB->get_records('publication_file', $conditions);
-
-                        foreach ($oldpubfiles as $oldpubfile) {
-
-                            if (in_array($oldpubfile->filesourceid, $assignfileids)) {
-                                // File was in assign and is still there.
-                                unset($assignfileids[$oldpubfile->filesourceid]);
-
-                            } else {
-                                // File has been removed from assign.
-                                // Remove from publication (file and db entry).
-                                $file = $fs->get_file_by_id($oldpubfile->fileid);
-                                $file->delete();
-
-                                $conditions['id'] = $oldpubfile->id;
-
-                                $DB->delete_records('publication_file', $conditions);
-                            }
-                        }
-
-                        // Add new files to publication.
-                        foreach ($assignfileids as $assignfileid) {
-                            $newfilerecord = new stdClass();
-                            $newfilerecord->contextid = $this->get_context()->id;
-                            $newfilerecord->component = 'mod_publication';
-                            $newfilerecord->filearea = 'attachment';
-                            $newfilerecord->itemid = $submission->userid;
-
-                            try {
-                                $newfile = $fs->create_file_from_storedfile($newfilerecord, $assignfiles[$assignfileid]);
-
-                                $dataobject = new stdClass();
-                                $dataobject->publication = $this->get_instance()->id;
-                                $dataobject->userid = $submission->userid;
-                                $dataobject->timecreated = time();
-                                $dataobject->fileid = $newfile->get_id();
-                                $dataobject->filesourceid = $assignfileid;
-                                $dataobject->filename = $newfile->get_filename();
-                                $dataobject->contenthash = "666";
-                                $dataobject->type = PUBLICATION_MODE_IMPORT;
-
-                                $DB->insert_record('publication_file', $dataobject);
-                            } catch (Exception $e) {
-                                // File could not be copied, maybe it does allready exist.
-                                // Should not happen.
-                                echo $OUTPUT->box($OUTPUT->notification($e->message, 'notifyproblem'), 'generalbox');
-                            }
-                        }
-                    }
-
-                    return true;
-                }
+                return true;
             }
         }
 
         return false;
     }
+
+    /**
+     * Import assignment's submission files!
+     *
+     * @param object $assigncm Assignment coursemodule object
+     * @param object $assigncontext Assignment context object
+     */
+    protected function import_assign_files($assigncm, $assigncontext) {
+        global $DB;
+
+        $records = $DB->get_records('assignsubmission_file', array('assignment' => $this->get_instance()->importfrom));
+
+        $fs = get_file_storage();
+
+        foreach ($records as $record) {
+
+            $files = $fs->get_area_files($assigncontext->id,
+                    "assignsubmission_file",
+                    "submission_files",
+                    $record->submission,
+                    "id",
+                    false);
+            $submission = $DB->get_record('assign_submission', array('id' => $record->submission));
+
+            $assignfileids = array();
+
+            $assignfiles = array();
+
+            foreach ($files as $file) {
+                $assignfiles[$file->get_id()] = $file;
+                $assignfileids[$file->get_id()] = $file->get_id();
+            }
+
+            $conditions = array();
+            $conditions['publication'] = $this->get_instance()->id;
+            $conditions['userid'] = $submission->userid;
+            // We look for regular imported files here!
+            $conditions['type'] = PUBLICATION_MODE_IMPORT;
+
+            $oldpubfiles = $DB->get_records('publication_file', $conditions);
+
+            foreach ($oldpubfiles as $oldpubfile) {
+
+                if (in_array($oldpubfile->filesourceid, $assignfileids)) {
+                    // File was in assign and is still there.
+                    unset($assignfileids[$oldpubfile->filesourceid]);
+
+                } else {
+                    // File has been removed from assign.
+                    // Remove from publication (file and db entry).
+                    $file = $fs->get_file_by_id($oldpubfile->fileid);
+                    $file->delete();
+
+                    $conditions['id'] = $oldpubfile->id;
+
+                    $DB->delete_records('publication_file', $conditions);
+                }
+            }
+
+            // Add new files to publication.
+            foreach ($assignfileids as $assignfileid) {
+                $newfilerecord = new stdClass();
+                $newfilerecord->contextid = $this->get_context()->id;
+                $newfilerecord->component = 'mod_publication';
+                $newfilerecord->filearea = 'attachment';
+                $newfilerecord->itemid = $submission->userid;
+
+                try {
+                    $newfile = $fs->create_file_from_storedfile($newfilerecord, $assignfiles[$assignfileid]);
+
+                    $dataobject = new stdClass();
+                    $dataobject->publication = $this->get_instance()->id;
+                    $dataobject->userid = $submission->userid;
+                    $dataobject->timecreated = time();
+                    $dataobject->fileid = $newfile->get_id();
+                    $dataobject->filesourceid = $assignfileid;
+                    $dataobject->filename = $newfile->get_filename();
+                    $dataobject->contenthash = "666";
+                    $dataobject->type = PUBLICATION_MODE_IMPORT;
+
+                    $DB->insert_record('publication_file', $dataobject);
+                } catch (Exception $e) {
+                    // File could not be copied, maybe it does allready exist.
+                    // Should not happen.
+                    echo $OUTPUT->box($OUTPUT->notification($e->message, 'notifyproblem'), 'generalbox');
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Import assignment's onlinetext submissions!
+     *
+     * @param object $assigncm Assignment coursemodule object
+     * @param object $assigncontext Assignment context object
+     */
+    protected function import_assign_onlinetexts($assigncm, $assigncontext) {
+        global $DB, $CFG;
+
+        if ($this->get_instance()->mode != PUBLICATION_MODE_IMPORT) {
+            return;
+        }
+
+        $fs = get_file_storage();
+
+        require_once($CFG->dirroot . '/mod/assign/locallib.php');
+        $assigncourse = $DB->get_record('course', array('id' => $assigncm->course));
+        $assignment = new assign($assigncontext, $assigncm, $assigncourse);
+
+        $records = $DB->get_records('assignsubmission_onlinetext', array('assignment' => $assigncm->instance));
+        $contextid = $this->get_context()->id;
+        foreach ($records as $record) {
+            $submission = $DB->get_record('assign_submission', array('id' => $record->submission));
+
+            // First we fetch the ressource files (embedded files in text!)
+            $fsfiles = $fs->get_area_files($assigncontext->id,
+                                           'assignsubmission_onlinetext',
+                                           ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
+                                           $submission->id,
+                                           'timemodified',
+                                           false);
+            $assignfiles = array();
+            foreach ($fsfiles as $file) {
+                $filerecord = new \stdClass();
+                $filerecord->contextid = $contextid;
+                $filerecord->component = 'mod_publication';
+                $filerecord->filearea = 'attachment';
+                $filerecord->itemid = $submission->userid;
+                $filerecord->filepath = '/ressources/';
+                $filerecord->filename = $file->get_filename();
+                $pathnamehash = $fs->get_pathname_hash($filerecord->contextid, $filerecord->component, $filerecord->filearea,
+                                                       $filerecord->itemid, $filerecord->filepath, $filerecord->filename);
+
+                if ($fs->file_exists_by_hash($pathnamehash)) {
+                    $otherfile = $fs->get_file_by_hash($pathnamehash);
+                    if ($file->get_contenthash() != $otherfile->get_contenthash()) {
+                        // We have to update the file!
+                        $otherfile->delete();
+                        $fs->create_file_from_storedfile($filerecord, $file);
+                    }
+                } else {
+                    // We have to add the file!
+                    $fs->create_file_from_storedfile($filerecord, $file);
+                }
+            }
+
+            // Now we delete old ressource-files, which are no longer present!
+            $itemid = empty($assignment->get_instance()->teamsubmission) ? $submission->userid : $submission->groupid;
+            $ressources = $fs->get_directory_files($contextid,
+                                                   'mod_publication',
+                                                   'attachment',
+                                                   $itemid,
+                                                   '/ressources/',
+                                                   true,
+                                                   false);
+            foreach ($ressources as $ressource) {
+                $pathnamehash = $fs->get_pathname_hash($assignment->get_context()->id, 'assignsubmission_onlinetext',
+                                                       ASSIGNSUBMISSION_ONLINETEXT_FILEAREA, $submission->id, '/',
+                                                       $ressource->get_filename());
+                if (!$fs->file_exists_by_hash($pathnamehash)) {
+                    $ressource->delete();
+                }
+            }
+
+            /* Here we convert the pluginfile urls to relative urls for the exported html-file
+             * (the ressources have to be included in the download!) */
+            $formattedtext = str_replace('@@PLUGINFILE@@/', './ressources/', $record->onlinetext);
+            $formattedtext = format_text($formattedtext, $record->onlineformat, array('context' => $assigncontext));
+
+            $head = '<head><meta charset="UTF-8"></head>';
+            $submissioncontent = '<!DOCTYPE html><html>' . $head . '<body>'. $formattedtext . '</body></html>';
+
+            $filename = get_string('onlinetextfilename', 'assignsubmission_onlinetext');
+
+            // Does the file exist... let's check it!
+            $pathhash = $fs->get_pathname_hash($contextid, 'mod_publication', 'attachment', $submission->userid, '/', $filename);
+
+            $conditions = array('publication' => $this->get_instance()->id,
+                                'userid'      => $submission->userid,
+                                'type'        => PUBLICATION_MODE_ONLINETEXT);
+            $pubfile = $DB->get_record('publication_file', $conditions, '*', IGNORE_MISSING);
+
+            $createnew = false;
+            if ($fs->file_exists_by_hash($pathhash)) {
+                $file = $fs->get_file_by_hash($pathhash);
+                if (empty($formattedtext)) {
+                    // The onlinetext was empty, delete the file!
+                    $DB->delete_records('publication_file', $conditions);
+                    $file->delete();
+                } else if (($file->get_timemodified() < $submission->timemodified)
+                        && ($file->get_contenthash() != sha1($submissioncontent))) {
+                    /* If the submission has been modified after the file,             *
+                     * we check for different content-hashes to see if it was changed! */
+                    $createnew = true;
+                    $oldid = $file->get_id();
+                    if ($file->get_id() == $pubfile->fileid) {
+                        // Everything's alright, we can delete the old file!
+                        $file->delete();
+                    } else {
+                        // Something unexcpected happened!
+                        throw new coding_exception('Mismatching fileids (pubfile with id '.$pubfile->fileid.' and stored file '.
+                                                   $file->get_id().'!');
+                    }
+                }
+            } else if (!empty($formattedtext)) {
+                // There exists no such file, so we create one!
+                $createnew = true;
+            }
+
+            if ($createnew === true) {
+                // We gotta create a new one!
+                $newfilerecord = new stdClass();
+                $newfilerecord->contextid = $this->get_context()->id;
+                $newfilerecord->component = 'mod_publication';
+                $newfilerecord->filearea = 'attachment';
+                $newfilerecord->itemid = $submission->userid;
+                $newfilerecord->filename = $filename;
+                $newfilerecord->filepath = '/';
+                $newfile = $fs->create_file_from_string($newfilerecord, $submissioncontent);
+                if (!$pubfile) {
+                    $pubfile = new stdClass();
+                    $pubfile->userid = $submission->userid;
+                    $pubfile->type = PUBLICATION_MODE_ONLINETEXT;
+                    $pubfile->publication = $this->get_instance()->id;
+                }
+                // The file has been updated, so we set the new time.
+                $pubfile->timecreated = time();
+                $pubfile->fileid = $newfile->get_id();
+                $pubfile->filename = $filename;
+                $pubfile->contenthash = $newfile->get_contenthash();
+                if (!empty($pubfile->id)) {
+                    $DB->update_record('publication_file', $pubfile);
+                } else {
+                    $DB->insert_record('publication_file', $pubfile);
+                }
+            }
+        }
+
+    }
+
 }
