@@ -33,6 +33,9 @@ define('PUBLICATION_MODE_IMPORT', 1);
 // Used in DB to mark online-text-files!
 define('PUBLICATION_MODE_ONLINETEXT', 2);
 
+define('PUBLICATION_APPROVAL_ALL', 0);
+define('PUBLICATION_APPROVAL_SINGLE', 1);
+
 /**
  * publication class contains much logic used in mod_publication
  *

@@ -34,45 +34,39 @@ define(['jquery', 'core/log'], function($, log) {
      * @alias module:mod_publication/modform
      */
     var Modform = function() {
-        this.importfrom = $(".path-mod-publication #fitem_id_importfrom");
-        this.optainstudentapproval = $(".path-mod-publication #fitem_id_obtainstudentapproval");
-        this.autoimport = $(".path-mod-publication #fitem_id_autoimport");
+        this.importelements = $(".path-mod-publication #fitem_id_importfrom, " +
+                                ".path-mod-publication #fitem_id_obtainstudentapproval, " +
+                                ".path-mod-publication #fitem_id_autoimport, " +
+                                ".path-mod-publication #fgroup_id_groupapprovalarray");
 
-        this.maxfiles = $(".path-mod-publication #fitem_id_maxfiles");
-        this.maxbytes = $(".path-mod-publication #fitem_id_maxbytes");
-        this.allowedfiletypes = $(".path-mod-publication #fitem_id_allowedfiletypes");
-        this.optainteacherapproval = $(".path-mod-publication #fitem_id_obtainteacherapproval");
+        this.uploadelements = $(".path-mod-publication #fitem_id_maxfiles, " +
+                                ".path-mod-publication #fitem_id_maxbytes, " +
+                                ".path-mod-publication #fitem_id_allowedfiletypes, " +
+                                ".path-mod-publication #fitem_id_obtainteacherapproval");
         // More than 1 input (selection of radio buttons)!
         this.mode = $(".path-mod-publication #fgroup_id_modegrp input[name=mode]");
     };
 
     Modform.prototype.toggle_available_options = function(e) {
+        if (e.stopPropagation !== undefined) {
+            e.stopPropagation();
+        }
         var mode = parseInt($(".path-mod-publication #fgroup_id_modegrp input[name=mode]:checked").val());
 
         if (mode === 0) { // Uploads by students!
-            e.data.importfrom.fadeOut(600);
-            e.data.optainstudentapproval.fadeOut(600);
-            e.data.autoimport.fadeOut(600);
-
-            // We make sure they appear after the fadeout!
-            window.setTimeout(function() {
-                e.data.maxfiles.fadeIn(600);
-                e.data.maxbytes.fadeIn(600);
-                e.data.allowedfiletypes.fadeIn(600);
-                e.data.optainteacherapproval.fadeIn(600);
-            }, 600);
+            e.data.importelements.fadeOut(600).promise().done(function() {
+                e.data.importelements.prop("disabled", true);
+                e.data.uploadelements.fadeIn(600).promise().done(function() {
+                    e.data.uploadelements.prop("disabled", false);
+                });
+            });
         } else if (mode === 1) { // Files from assignment!
-            e.data.maxfiles.fadeOut(600);
-            e.data.maxbytes.fadeOut(600);
-            e.data.allowedfiletypes.fadeOut(600);
-            e.data.optainteacherapproval.fadeOut(600);
-
-            // We make sure they appear after the fadeout!
-            window.setTimeout(function() {
-                e.data.importfrom.fadeIn(600);
-                e.data.optainstudentapproval.fadeIn(600);
-                e.data.autoimport.fadeIn(600);
-            }, 600);
+            e.data.uploadelements.fadeOut(600).promise().done(function() {
+                e.data.uploadelements.prop("disabled", true);
+                e.data.importelements.fadeIn(600).promise().done(function() {
+                    e.data.importelements.prop("disabled", false);
+                });
+            });
         } else {
             log.error("Incorrect comparison of mode (Type: " + typeof(mode) + "; Value: " + mode + ")", "publication");
         }
@@ -84,6 +78,7 @@ define(['jquery', 'core/log'], function($, log) {
 
         instance.mode.change(instance, instance.toggle_available_options);
 
+        log.info("Toggle available options once to begin!");
         instance.toggle_available_options({data: instance});
     };
 

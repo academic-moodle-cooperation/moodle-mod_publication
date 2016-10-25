@@ -79,5 +79,23 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016051200, 'publication');
     }
 
+    if ($oldversion < 2016062201) {
+
+        // Define field groupapproval to be added to publication.
+        $table = new xmldb_table('publication');
+        $field = new xmldb_field('groupapproval', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'autoimport');
+
+        // Conditionally launch add field groupapproval.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2016062201, 'publication');
+    }
+
+    // Moodle v3.2.0 release upgrade line.
+    // Put any upgrade step following this!
+
     return true;
 }

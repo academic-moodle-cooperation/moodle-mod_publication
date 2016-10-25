@@ -96,6 +96,11 @@ $string['obtainstudentapproval_help'] = 'Hier legen Sie fest, ob Sie das Einvers
 $string['choose'] = 'bitte auswählen ...';
 $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie importieren möchten.';
 
+$string['groupapprovalmode'] = 'Modus Gruppenzustimmung';
+$string['groupapprovalmode_help'] = 'Hier legen Sie fest, ob Sie das Einverständnis aller Gruppenmitglieder oder eines einzelnen Gruppenmitglied einholen.<br />Erst nach Einverständnis aller Gruppenmitglieder oder eines einzelnen Gruppenmitglied sind die Dateien auch wirklich für alle sichtbar.';
+$string['groupapprovalmode_all'] = '<strong>ALLE</strong> Mitglieder der Gruppe müssen zustimmen';
+$string['groupapprovalmode_single'] = 'mindestens <strong>EIN</strong> Mitglied muss zustimmen';
+
 $string['warning_changefromobtainteacherapproval'] = 'Wenn Sie diese Änderung durchführen werden hochgeladene Dateien sofort für andere Teilnehmer/innen sichtbar. Alle bis jetzt hochgeladenen Dateien werden mit diesen Schritt ebenfalls auf sichtbar gesetzt. Sie haben jedoch das Recht Teilnehmer/innen die Sichtbarkeit aktiv zu entziehen.';
 $string['warning_changetoobtainteacherapproval'] = 'Wenn Sie diese Änderung durchführen werden hochgeladene Dateien nicht sofort für andere Teilnehmer/innen sichtbar. Sie müssen dann aktiv Dateien von Teilnehmer/innen sichtbar schalten. Alle bis jetzt hochgeladenen Dateien werden mit diesem Schritt ebenfalls auf nicht sichtbar gesetzt.';
 
