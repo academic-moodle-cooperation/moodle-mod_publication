@@ -44,12 +44,6 @@ class group extends base {
         /** @var protected totalfiles amount of files in table, get's counted during formating of the rows! */
     protected $totalfiles = null;
 
-    protected function get_groups() {
-        $groups = groups_get_all_groups($this->publication->get_instance()->course, 0, $this->groupingid);
-
-        return array_keys($groups);
-    }
-
     protected function init_sql() {
         global $DB;
 
@@ -58,7 +52,7 @@ class group extends base {
         $fields = "g.id, g.name AS groupname, NULL AS groupmembers, COUNT(*) AS filecount, SUM(files.studentapproval) AS studentapproval,
                    NULL AS teacherapproval, MAX(files.timecreated) AS timemodified ";
 
-        $groups = $this->get_groups();
+        $groups = $this->publication->get_groups($this->groupingid);
         list($sqlgroupids, $groupparams) = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED, 'group');
         $params = $params + $groupparams + array('publication' => $this->cm->instance);
 

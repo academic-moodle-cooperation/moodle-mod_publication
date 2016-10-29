@@ -301,6 +301,17 @@ class publication {
         return $this->coursemodule;
     }
 
+    public function get_groups($groupingid = 0, $selgroups = array()) {
+        $groups = groups_get_all_groups($this->get_instance()->course, 0, $groupingid);
+        $groups = array_keys($groups);
+
+        if (is_array($selgroups) && count($selgroups) > 0) {
+            $groups = array_intersect($groups, $selgroups);
+        }
+
+        return $groups;
+    }
+
     /**
      * Get userids to fetch files for, when displaying all submitted files or downloading them as ZIP
      *
@@ -545,8 +556,12 @@ class publication {
         if ($filepermissions) {
 
             if ($userid != 0) {
-                if ($filepermissions->userid == $userid) {
-                    // Everyone is allowed to view their own files.
+                if ($this->get_instance()->importfrom == - 1) {
+                    if ($filepermissions->userid == $userid) {
+                        // Everyone is allowed to view their own files.
+                        $haspermission = true;
+                    }
+                } else if (groups_is_member($filepermissions->userid, $userid)) {
                     $haspermission = true;
                 }
             }
@@ -711,6 +726,7 @@ class publication {
         $conditions = array();
         $conditions['publication'] = $this->get_instance()->id;
         $conditions['fileid'] = $fileid;
+        $record = $DB->get_record('publication_file', $conditions);
 
         $allowed = false;
 
@@ -725,7 +741,25 @@ class publication {
         if ($allowed) {
             $fs = get_file_storage();
             $file = $fs->get_file_by_id($fileid);
-            send_file($file, $file->get_filename(), 'default' , 0, false, true, $file->get_mimetype(), false);
+            if ($record->type == PUBLICATION_MODE_ONLINETEXT) {
+                global $CFG;
+                // Create path for new zip file.
+                $zipfile = tempnam($CFG->dataroot.'/temp/', 'publication_');
+                // Zip files.
+                $zipname = str_replace('.html', '.zip', $file->get_filename());
+                $zipper = new zip_packer();
+                $filesforzipping = array();
+
+                $this->add_onlinetext_to_zipfiles($filesforzipping, $file, $record, '', $file->get_filename(), $fs);
+                if (count($filesforzipping) == 1) {
+                    // We can send the file directly, if it has no resources!
+                    send_file($file, $file->get_filename(), 'default', 0, false, true, $file->get_mimetype(), false);
+                } else if ($zipper->archive_to_pathname($filesforzipping, $zipfile)) {
+                    send_temp_file($zipfile, $zipname); // Send file and delete after sending.
+                }
+            } else {
+                send_file($file, $file->get_filename(), 'default' , 0, false, true, $file->get_mimetype(), false);
+            }
             die();
         } else {
             print_error('You are not allowed to see this file'); // TODO ge_string().
@@ -735,13 +769,20 @@ class publication {
     /**
      * Creates a zip of all uploaded files and sends a zip to the browser
      *
-     * @param unknown $users false => empty zip, true all users, array files from users in array
+     * @param unknown $uploaders false => empty zip, true all users, array files from uploaders (users/groups) in array
      */
-    public function download_zip($users = array()) {
-        global $CFG, $DB;
+    public function download_zip($uploaders = array()) {
+        global $CFG, $DB, $USER;
         require_once($CFG->libdir.'/filelib.php');
 
         $cm = $this->get_coursemodule();
+
+        $canapprove = has_capability('mod/publication:approve', $this->get_context());
+        if ($this->get_instance()->importfrom == - 1) {
+            $teamsubmission = false;
+        } else {
+            $teamsubmission = $DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom));
+        }
 
         $conditions = array();
         $conditions['publication'] = $this->get_instance()->id;
@@ -756,7 +797,11 @@ class publication {
             $groupname = $DB->get_field('groups', 'name', array('id' => $currentgroup)).'-';
         }
 
-        $users = $this->get_users($users);
+        if (!$teamsubmission) {
+            $uploaders = $this->get_users($uploaders);
+        } else {
+            $uploaders = $this->get_groups(0, $uploaders);
+        }
 
         $filename = str_replace(' ', '_', clean_filename($this->course->shortname.'-'.
                 $this->get_instance()->name.'-'.$groupname.$this->get_instance()->id.'.zip')); // Name of new zip file.
@@ -766,19 +811,23 @@ class publication {
         $userfields['username'] = 'username';
         $userfields = implode(', ', $userfields);
 
-        // Get all files from each user.
-        foreach ($users as $uploader) {
-            $auserid = $uploader;
-
+        // Get all files from each user/group.
+        foreach ($uploaders as $uploader) {
             $conditions['userid'] = $uploader;
             $records = $DB->get_records('publication_file', $conditions);
 
-            // Get user firstname/lastname.
-            $auser = $DB->get_record('user', array('id' => $auserid), $userfields);
+            if (!$teamsubmission) {
+                // Get user firstname/lastname.
+                $auser = $DB->get_record('user', array('id' => $uploader), $userfields);
+                $itemname = fullname($auser);
+                $itemunique = $uploader;
+            } else {
+                $itemname = $DB->get_field('groups', 'name', array('id' => $uploader));
+                $itemunique = '';
+            }
 
             foreach ($records as $record) {
-                if (has_capability('mod/publication:approve', $this->get_context()) ||
-                    $this->has_filepermission($record->fileid)) {
+                if ($canapprove || $this->has_filepermission($record->fileid, $USER->id)) {
                     // Is teacher or file is public.
 
                     $file = $fs->get_file_by_id($record->fileid);
@@ -786,9 +835,16 @@ class publication {
                     // Get files new name.
                     $fileext = strstr($file->get_filename(), '.');
                     $fileoriginal = str_replace($fileext, '', $file->get_filename());
-                    $fileforzipname = clean_filename(fullname($auser).'_'.$fileoriginal.'_'.$auserid.$fileext);
-                    // Save file name to array for zipping.
-                    $filesforzipping[$fileforzipname] = $file;
+                    $fileforzipname = clean_filename($itemname.'_'.$fileoriginal.'_'.$itemunique.$fileext);
+                    if (key_exists($fileforzipname, $filesforzipping)) {
+                        throw new coding_exception('Can\'t overwrite '.$fileforzipname.'!');
+                    }
+                    if ($record->type == PUBLICATION_MODE_ONLINETEXT) {
+                        $this->add_onlinetext_to_zipfiles($filesforzipping, $file, $record, $itemname, $fileforzipname, $fs, $itemunique);
+                    } else {
+                        // Save file name to array for zipping.
+                        $filesforzipping[$fileforzipname] = $file;
+                    }
                 }
             }
         } // End of foreach.
@@ -814,6 +870,48 @@ class publication {
             return $tempzip;
         }
         return false;
+    }
+
+    /**
+     * Adds onlinetext-file to zipping-files including all ressources!
+     *
+     *
+     */
+    protected function add_onlinetext_to_zipfiles(array &$filesforzipping, stored_file $file, stdClass $pubfile, $itemname,
+                                                  $fileforzipname, $fs = null, $itemunique = '') {
+
+        if (empty($fs)) {
+            $fs = get_file_storage();
+        }
+
+        // First we get all ressources!
+        $resources = $fs->get_directory_files($this->get_context()->id,
+                                              'mod_publication',
+                                              'attachment',
+                                              $file->get_itemid(),
+                                              '/resources/',
+                                              true,
+                                              false);
+        if (count($resources) > 0) {
+            // If it's an online-Text with resources, we have to add altered content and all the ressources for it!
+            $content = $file->get_content();
+            // We grabbed the resources already above!
+            // Then we change every occurence of the ressource-name from ./resourcename to ./ITEMNAME/resourcename!
+            $folder = clean_filename((!empty($itemname) ? $itemname.'_' : '').
+                                     (($itemunique != '') ? $itemunique.'_' : '').
+                                     'resources');
+            foreach ($resources as $resource) {
+                $search = './resources/'.$resource->get_filename();
+                $replace = $folder.'/'.$resource->get_filename();
+                $content = str_replace($search, './'.$replace, $content);
+                $filesforzipping[$replace] = $resource;
+            }
+            /* We add the altered filecontent instead of the stored one        *
+             * (needs an array to differentiate between content and filepath)! */
+            $filesforzipping[$fileforzipname] = array($content);
+        } else {
+            $filesforzipping[$fileforzipname] = $file;
+        }
     }
 
     /**
