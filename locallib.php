@@ -486,19 +486,19 @@ class publication {
                 echo html_writer::empty_tag('input', array('type' => 'reset',
                                                            'name' => 'resetvisibility',
                                                            'value' => get_string('reset', 'publication'),
-                                                           'class' => 'visibilitysaver'));
+                                                           'class' => 'visibilitysaver btn btn-secondary'));
 
                 if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
                         $this->get_instance()->obtainstudentapproval) {
                     echo html_writer::empty_tag('input', array('type' => 'submit',
                                                                'name' => 'savevisibility',
                                                                'value' => get_string('saveapproval', 'publication'),
-                                                               'class' => 'visibilitysaver'));
+                                                               'class' => 'visibilitysaver btn btn-primary'));
                 } else {
                     echo html_writer::empty_tag('input', array('type' => 'submit',
                                                                'name' => 'savevisibility',
                                                                'value' => get_string('saveteacherapproval', 'publication'),
-                                                               'class' => 'visibilitysaver'));
+                                                               'class' => 'visibilitysaver btn btn-primary'));
                 }
             }
 
@@ -507,7 +507,8 @@ class publication {
                  html_writer::select($options, 'action').
                  html_writer::empty_tag('input', array('type' => 'submit',
                                                        'name' => 'submitgo',
-                                                       'value' => get_string('go', 'publication'))).
+                                                       'value' => get_string('go', 'publication'),
+                                                       'class' => 'btn btn-primary')).
                  html_writer::end_div();
         }
 
