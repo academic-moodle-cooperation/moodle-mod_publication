@@ -69,7 +69,7 @@
 
 /* scroll table if page is too small */
 #page-mod-publication-view div#id_allfiles {
-    border: 1px solid #D0D3CA;
+    border: 1px solid #d0d3ca;
     margin: 10px;
     padding: 10px;
 }
@@ -82,7 +82,7 @@
     position: absolute;
 }
 
- /* .. ie */
+/* .. ie */
 .ie#page-mod-publication-view fieldset#id_allfiles {
     display: block;
 }
@@ -139,7 +139,7 @@
 
 #page-mod-publication-view table.statustable td,
 #page-mod-publication-view table.filetable td {
-      height: 30px;
+    height: 30px;
 }
 
 #page-mod-publication-view table.statustable,
@@ -157,9 +157,9 @@
 }
 
 #page-mod-publication-view div.withselection {
-    text-align:center;
+    text-align: center;
 }
-#page-mod-publication-view div.withselection select{
+#page-mod-publication-view div.withselection select {
     margin-left: 4px;
     margin-right: 4px;
 }

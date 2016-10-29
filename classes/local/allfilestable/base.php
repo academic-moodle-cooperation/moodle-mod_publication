@@ -249,7 +249,6 @@ class base extends \table_sql {
         if (empty($conditions)) {
             static $conditions = array();
             $conditions['publication'] = $this->publication->get_instance()->id;
-            $conditions['userid'] = $USER->id;
         }
         $conditions['fileid'] = $file->get_id();
 
@@ -510,7 +509,7 @@ class base extends \table_sql {
                 // TODO change that conversions and queue the real values! Everywhere!
                 $checked = ($checked === false || $checked === null) ? "" : $checked + 1;
 
-                $sel = \html_writer::select($this->options, 'files[' . $file->get_id() . ']', $checked);
+                $sel = \html_writer::select($this->options, 'files[' . $file->get_id() . ']', (string)$checked);
                 $table->data[] = array($sel);
             }
         }
