@@ -61,8 +61,6 @@ class base extends \html_table {
     }
 
     public function init() {
-        global $DB;
-
         $files = $this->get_files();
 
         if (count($files) == 0 && has_capability('mod/publication:upload', $this->publication->get_context())) {
@@ -126,37 +124,6 @@ class base extends \html_table {
         }
 
         return $this->files;
-    }
-
-    public function teacher_approval(\stored_file $file) {
-        global $DB;
-
-        if (empty($conditions)) {
-            static $conditions = array();
-            $conditions['publication'] = $this->publication->get_instance()->id;
-        }
-        $conditions['fileid'] = $file->get_id();
-
-        $teacherapproval = $DB->get_field('publication_file', 'teacherapproval', $conditions);
-
-        return $teacherapproval;
-    }
-
-    public function student_approval(\stored_file $file) {
-        global $DB;
-
-        if (empty($conditions)) {
-            static $conditions = array();
-            $conditions['publication'] = $this->publication->get_instance()->id;
-            $conditions['userid'] = $USER->id;
-        }
-        $conditions['fileid'] = $file->get_id();
-
-        $studentapproval = $DB->get_field('publication_file', 'studentapproval', $conditions);
-
-        $studentapproval = (!is_null($studentapproval)) ? $studentapproval + 1 : null;
-
-        return $studentapproval;
     }
 
     public function changepossible() {

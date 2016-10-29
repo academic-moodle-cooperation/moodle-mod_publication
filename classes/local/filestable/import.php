@@ -44,12 +44,12 @@ class import extends base {
         $data = parent::add_file($file);
 
         // Now add the specific data to the table!
-        $teacherapproval = $this->teacher_approval($file);
+        $teacherapproval = $this->publication->teacher_approval($file);
         if ($teacherapproval && $this->publication->get_instance()->obtainstudentapproval) {
-            $studentapproval = $this->student_approval($file);
-            if ($publication->is_open() && $studentapproval == 0) {
+            $studentapproval = $this->publication->student_approval($file);
+            if ($this->publication->is_open() && $studentapproval == 0) {
                 $this->changepossible = true;
-                $data[] = \html_writer::select($options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
+                $data[] = \html_writer::select($this->options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
             } else {
                 switch($studentapproval) {
                     case 2:

@@ -178,11 +178,6 @@ class observer {
 
             }
 
-            if (!empty($onlinetexts)) {
-                require_once($CFG->dirroot . '/mod/assign/locallib.php');
-                $assignment = new \assign($assigncontext, $assigncm, $assign->get_course());
-                $onlinetext = $assignment->get_submission_plugin_by_type('onlinetext');
-            }
             // And now the same for online texts!
             foreach ($onlinetexts as $record) {
 

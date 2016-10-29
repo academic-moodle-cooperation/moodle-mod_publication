@@ -387,11 +387,10 @@ class publication {
      * Display form with table containing all files
      */
     public function display_allfilesform() {
-        global $CFG, $OUTPUT, $DB;
+        global $CFG, $DB;
 
         $cm = $this->coursemodule;
         $context = $this->context;
-        $course = $this->course;
 
         $updatepref = optional_param('updatepref', 0, PARAM_BOOL);
         if ($updatepref) {
@@ -426,11 +425,6 @@ class publication {
         $title = (has_capability('mod/publication:approve', $context)) ? $allfiles : $publicfiles;
         echo html_writer::tag('div', $title, array('class'  => 'legend'));
         echo html_writer::start_div('fcontainer clearfix');
-
-        // Check to see if groups are being used in this assignment.
-
-        // Find out current groups mode.
-        $currentgroup = groups_get_activity_group($cm, true);
 
         echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
 
@@ -681,6 +675,36 @@ class publication {
         return $approval;
     }
 
+    public function teacher_approval(\stored_file $file) {
+        global $DB;
+
+        if (empty($conditions)) {
+            static $conditions = array();
+            $conditions['publication'] = $this->get_instance()->id;
+        }
+        $conditions['fileid'] = $file->get_id();
+
+        $teacherapproval = $DB->get_field('publication_file', 'teacherapproval', $conditions);
+
+        return $teacherapproval;
+    }
+
+    public function student_approval(\stored_file $file) {
+        global $DB;
+
+        if (empty($conditions)) {
+            static $conditions = array();
+            $conditions['publication'] = $this->get_instance()->id;
+        }
+        $conditions['fileid'] = $file->get_id();
+
+        $studentapproval = $DB->get_field('publication_file', 'studentapproval', $conditions);
+
+        $studentapproval = (!is_null($studentapproval)) ? $studentapproval + 1 : null;
+
+        return $studentapproval;
+    }
+
     /**
      * Gets group approval for the specified file!
      *
@@ -750,7 +774,7 @@ class publication {
                 $zipper = new zip_packer();
                 $filesforzipping = array();
 
-                $this->add_onlinetext_to_zipfiles($filesforzipping, $file, $record, '', $file->get_filename(), $fs);
+                $this->add_onlinetext_to_zipfiles($filesforzipping, $file, '', $file->get_filename(), $fs);
                 if (count($filesforzipping) == 1) {
                     // We can send the file directly, if it has no resources!
                     send_file($file, $file->get_filename(), 'default', 0, false, true, $file->get_mimetype(), false);
@@ -840,7 +864,7 @@ class publication {
                         throw new coding_exception('Can\'t overwrite '.$fileforzipname.'!');
                     }
                     if ($record->type == PUBLICATION_MODE_ONLINETEXT) {
-                        $this->add_onlinetext_to_zipfiles($filesforzipping, $file, $record, $itemname, $fileforzipname, $fs, $itemunique);
+                        $this->add_onlinetext_to_zipfiles($filesforzipping, $file, $itemname, $fileforzipname, $fs, $itemunique);
                     } else {
                         // Save file name to array for zipping.
                         $filesforzipping[$fileforzipname] = $file;
@@ -877,8 +901,8 @@ class publication {
      *
      *
      */
-    protected function add_onlinetext_to_zipfiles(array &$filesforzipping, stored_file $file, stdClass $pubfile, $itemname,
-                                                  $fileforzipname, $fs = null, $itemunique = '') {
+    protected function add_onlinetext_to_zipfiles(array &$filesforzipping, stored_file $file, $itemname, $fileforzipname,
+                                                  $fs = null, $itemunique = '') {
 
         if (empty($fs)) {
             $fs = get_file_storage();
@@ -1077,7 +1101,6 @@ class publication {
                                            $submission->id,
                                            'timemodified',
                                            false);
-            $assignfiles = array();
             foreach ($fsfiles as $file) {
                 $filerecord = new \stdClass();
                 $filerecord->contextid = $contextid;

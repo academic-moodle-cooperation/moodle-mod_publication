@@ -50,7 +50,6 @@ class mod_publication_upload_form extends moodleform {
 
         $currententry       = $this->_customdata['current'];
         $publication        = $this->_customdata['publication'];
-        $cm                = $this->_customdata['cm'];
         $attachmentoptions = $this->_customdata['attachmentoptions'];
 
         if ($publication->get_instance()->obtainteacherapproval) {

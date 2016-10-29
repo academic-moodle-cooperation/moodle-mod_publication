@@ -158,7 +158,6 @@ class base extends \table_sql {
         $params = array();
         $ufields = \user_picture::fields('u');
         $useridentityfields = get_extra_user_fields_sql($this->context, 'u');
-        $totalfiles = 0;
 
         if ($this->groupmode != NOGROUPS) {
             $getgroupsql = "SELECT MAX(grps.courseid), MIN(grps.name)";
@@ -184,7 +183,6 @@ class base extends \table_sql {
             $fields .= ", groups";
         }
 
-        //$users = $this->get_userids($filter);
         $users = $this->publication->get_users();
         list($sqluserids, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
         $params = $params + $userparams + array('publication' => $this->cm->instance);
@@ -243,36 +241,6 @@ class base extends \table_sql {
         return array($this->itemid, $this->files, $this->resources);
     }
 
-    public function teacher_approval(\stored_file $file) {
-        global $DB, $USER;
-
-        if (empty($conditions)) {
-            static $conditions = array();
-            $conditions['publication'] = $this->publication->get_instance()->id;
-        }
-        $conditions['fileid'] = $file->get_id();
-
-        $teacherapproval = $DB->get_field('publication_file', 'teacherapproval', $conditions);
-
-        return $teacherapproval;
-    }
-
-    public function student_approval(\stored_file $file) {
-        global $DB, $USER;
-
-        if (empty($conditions)) {
-            static $conditions = array();
-            $conditions['publication'] = $this->publication->get_instance()->id;
-        }
-        $conditions['fileid'] = $file->get_id();
-
-        $studentapproval = $DB->get_field('publication_file', 'studentapproval', $conditions);
-
-        $studentapproval = (!is_null($studentapproval)) ? $studentapproval + 1 : null;
-
-        return $studentapproval;
-    }
-
     /**
      * Returns the amount of files displayed in this table!
      */
@@ -291,7 +259,7 @@ class base extends \table_sql {
      * @param string $symbol string/html-snippet to wrap element around
      * @param \stored_file $file file to fetch details for
      */
-    protected function add_details_tooltip(string &$symbol, \stored_file $file) {
+    protected function add_details_tooltip(&$symbol, \stored_file $file) {
         // This method does nothing here!
     }
 
@@ -411,7 +379,7 @@ class base extends \table_sql {
     public function col_timemodified($values) {
         global $OUTPUT;
 
-        list($itemid, $files, $resources) = $this->get_files($values->id);
+        list(, $files, ) = $this->get_files($values->id);
 
         $filetable = new \html_table();
         $filetable->attributes = array('class' => 'filetable');
@@ -453,9 +421,7 @@ class base extends \table_sql {
      * @return $string Return user time of submission.
      */
     public function col_studentapproval($values) {
-        global $OUTPUT;
-
-        list($itemid, $files, $resources) = $this->get_files($values->id);
+        list(, $files, ) = $this->get_files($values->id);
 
         $table = new \html_table();
         $table->attributes = array('class' => 'statustable');
@@ -463,7 +429,7 @@ class base extends \table_sql {
         foreach ($files as $file) {
             if (has_capability('mod/publication:approve', $this->context)
                     || $this->publication->has_filepermission($file->get_id())) {
-                switch ($this->student_approval($file)) {
+                switch ($this->publication->student_approval($file)) {
                     case 2:
                         $symbol = $this->valid;
                         break;
@@ -493,9 +459,8 @@ class base extends \table_sql {
      * @return $string Return user time of submission.
      */
     public function col_teacherapproval($values) {
-        global $OUTPUT;
 
-        list($itemid, $files, $resources) = $this->get_files($values->id);
+        list(, $files, ) = $this->get_files($values->id);
 
         $table = new \html_table();
         $table->attributes = array('class' => 'permissionstable');
@@ -504,7 +469,7 @@ class base extends \table_sql {
             if ($this->publication->has_filepermission($file->get_id())
                     || has_capability('mod/publication:approve', $this->context)) {
 
-                $checked = $this->teacher_approval($file);
+                $checked = $this->publication->teacher_approval($file);
                 // Null if none found, 1 if DB-entry is 0 (= no) and 2 if DB entry is 1 (= yes)!
                 // TODO change that conversions and queue the real values! Everywhere!
                 $checked = ($checked === false || $checked === null) ? "" : $checked + 1;
@@ -529,9 +494,7 @@ class base extends \table_sql {
      * @return $string Return user time of submission.
      */
     public function col_visibleforstudents($values) {
-        global $OUTPUT;
-
-        list($itemid, $files, $resources) = $this->get_files($values->id);
+        list(, $files, ) = $this->get_files($values->id);
 
         $table = new \html_table();
         $table->attributes = array('class' => 'statustable');

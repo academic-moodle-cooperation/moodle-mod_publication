@@ -50,7 +50,7 @@ class group extends base {
 
         // Now add the specific data to the table!
         // TODO: copied from import class, adapt to multiple students being involved!
-        $teacherapproval = $this->teacher_approval($file);
+        $teacherapproval = $this->publication->teacher_approval($file);
         if ($teacherapproval && $this->publication->get_instance()->obtainstudentapproval) {
             $pubfileid = $DB->get_field('publication_file', 'id', array('publication' => $this->publication->get_instance()->id,
                                                                         'fileid'      => $file->get_id()));
@@ -116,9 +116,6 @@ class group extends base {
 
         $contextid = $this->publication->get_context()->id;
         $filearea = 'attachment';
-
-        // Get the current users subission group id(s)!
-        $groupingid = 0;
 
         /* OK, assign is a little bit inconsistent with implementation and doc-comments, it states it will return false for user's
          * group if there's no group or multiple groups, instead it uses just the first group it finds for the user!

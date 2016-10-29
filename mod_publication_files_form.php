@@ -47,11 +47,9 @@ class mod_publication_files_form extends moodleform {
      * Form definition method_exists
      */
     public function definition() {
-        global $CFG, $OUTPUT, $DB, $USER, $PAGE;
+        global $DB, $PAGE;
 
         $publication = &$this->_customdata['publication'];
-        $sid = &$this->_customdata['sid'];
-        $filearea = &$this->_customdata['filearea'];
 
         $mform = $this->_form;
         if (has_capability('mod/publication:upload', $publication->get_context())) {

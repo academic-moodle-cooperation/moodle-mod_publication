@@ -34,7 +34,6 @@ define(['jquery', 'core/yui', 'core/str', 'core/templates', 'core/log'], functio
      * @alias module:mod_publication/groupapprovalstatus
      */
     var Groupapprovalstatus = function() {
-        // table id!
         this.id = '';
 
         this.contextid = 0;

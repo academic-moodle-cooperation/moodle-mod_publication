@@ -44,7 +44,7 @@ class upload extends base {
         $data = parent::add_file($file);
 
         // Now add the specific data to the table!
-        $teacherapproval = $this->teacher_approval($file);
+        $teacherapproval = $this->publication->teacher_approval($file);
         if ($this->publication->get_instance()->obtainteacherapproval) {
             // Teacher has to approve: show all status.
             if (is_null($teacherapproval)) {

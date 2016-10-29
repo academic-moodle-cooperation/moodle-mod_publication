@@ -49,8 +49,8 @@ class group extends base {
 
         $params = array();
 
-        $fields = "g.id, g.name AS groupname, NULL AS groupmembers, COUNT(*) AS filecount, SUM(files.studentapproval) AS studentapproval,
-                   NULL AS teacherapproval, MAX(files.timecreated) AS timemodified ";
+        $fields = "g.id, g.name AS groupname, NULL AS groupmembers, COUNT(*) AS filecount,
+                   SUM(files.studentapproval) AS studentapproval, NULL AS teacherapproval, MAX(files.timecreated) AS timemodified ";
 
         $groups = $this->publication->get_groups($this->groupingid);
         list($sqlgroupids, $groupparams) = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED, 'group');
@@ -130,8 +130,6 @@ class group extends base {
      * @return $string Return groups members.
      */
     public function col_groupmembers($values) {
-        global $OUTPUT;
-
         $groupmembers = groups_get_members($values->id);
         $cell = '';
 
@@ -162,7 +160,7 @@ class group extends base {
         $approved = array();
         $rejected = array();
         $pending = array();
-        foreach ($approvaldetails as $uid => $cur) {
+        foreach ($approvaldetails as $cur) {
             if (empty($cur->approvaltime)) {
                 $cur->approvaltime = '-';
             } else {

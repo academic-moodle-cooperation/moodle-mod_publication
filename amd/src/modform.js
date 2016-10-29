@@ -34,15 +34,13 @@ define(['jquery', 'core/log'], function($, log) {
      * @alias module:mod_publication/modform
      */
     var Modform = function() {
-        this.importelements = $(".path-mod-publication #fitem_id_importfrom, " +
-                                ".path-mod-publication #fitem_id_obtainstudentapproval, " +
-                                ".path-mod-publication #fitem_id_autoimport, " +
-                                ".path-mod-publication #fgroup_id_groupapprovalarray");
+        var importsel = ".path-mod-publication #fitem_id_importfrom, .path-mod-publication #fitem_id_obtainstudentapproval, ";
+        importsel += ".path-mod-publication #fitem_id_autoimport, .path-mod-publication #fgroup_id_groupapprovalarray";
+        this.importelements = $(importsel);
 
-        this.uploadelements = $(".path-mod-publication #fitem_id_maxfiles, " +
-                                ".path-mod-publication #fitem_id_maxbytes, " +
-                                ".path-mod-publication #fitem_id_allowedfiletypes, " +
-                                ".path-mod-publication #fitem_id_obtainteacherapproval");
+        var uploadsel = ".path-mod-publication #fitem_id_maxfiles, .path-mod-publication #fitem_id_maxbytes, ";
+        uploadsel += ".path-mod-publication #fitem_id_allowedfiletypes, .path-mod-publication #fitem_id_obtainteacherapproval";
+        this.uploadelements = $(uploadsel);
         // More than 1 input (selection of radio buttons)!
         this.mode = $(".path-mod-publication #fgroup_id_modegrp input[name=mode]");
     };
