@@ -55,24 +55,41 @@ class mod_publication_files_form extends moodleform {
 
         $mform = $this->_form;
         if (has_capability('mod/publication:upload', $publication->get_context())) {
-            $mform->addElement('header', 'myfiles', get_string('myfiles', 'publication'));
-            $mform->setExpanded('myfiles');
-
-            $PAGE->requires->js_call_amd('mod_publication/filesform', 'initializer', array());
 
             if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
+                $table = new \mod_publication\local\filestable\upload($publication);
+                $headertext = get_string('myfiles', 'publication');
                 if ($publication->get_instance()->obtainteacherapproval) {
                     $notice = get_string('notice_uploadrequireapproval', 'publication');
                 } else {
                     $notice = get_string('notice_uploadnoapproval', 'publication');
                 }
+            } else if ($DB->get_field('assign', 'teamsubmission', array('id' => $publication->get_instance()->importfrom))) {
+                $table = new \mod_publication\local\filestable\group($publication);
+                $headertext = get_string('mygroupfiles', 'publication');
+                if ($publication->get_instance()->obtainstudentapproval) {
+                    if ($publication->get_instance()->groupapproval == PUBLICATION_APPROVAL_ALL) {
+                        $notice = get_string('notice_groupimportrequireallapproval', 'publication');
+                    } else {
+                        $notice = get_string('notice_groupimportrequireoneapproval', 'publication');
+                    }
+                } else {
+                    $notice = get_string('notice_groupimportnoapproval', 'publication');
+                }
             } else {
+                $table = new \mod_publication\local\filestable\import($publication);
+                $headertext = get_string('myfiles', 'publication');
                 if ($publication->get_instance()->obtainstudentapproval) {
                     $notice = get_string('notice_importrequireapproval', 'publication');
                 } else {
                     $notice = get_string('notice_importnoapproval', 'publication');
                 }
             }
+
+            $mform->addElement('header', 'myfiles', $headertext);
+            $mform->setExpanded('myfiles');
+
+            $PAGE->requires->js_call_amd('mod_publication/filesform', 'initializer', array());
 
             $noticehtml = html_writer::start_tag('div', array('class' => 'notice'));
             $noticehtml .= get_string('notice', 'publication') . ' ' . $notice;
@@ -81,119 +98,15 @@ class mod_publication_files_form extends moodleform {
             $mform->addElement('html', $noticehtml);
         }
 
-        require_once($CFG->libdir.'/tablelib.php');
-        $table = new html_table();
-
-        $tablecolumns = array();
-
-        $tablecolumns[] = 'id';
-
-        $fs = get_file_storage();
-        $this->dir = $fs->get_area_tree($publication->get_context()->id, 'mod_publication', $filearea, $sid);
-
-        $files = $fs->get_area_files($publication->get_context()->id,
-                'mod_publication',
-                $filearea,
-                $sid,
-                'timemodified',
-                false);
-
-        if (!isset($table->attributes)) {
-            $table->attributes = array('class' => 'coloredrows');
-        } else if (!isset($table->attributes['class'])) {
-            $table->attributes['class'] = 'coloredrows';
+        // Now we do all the table work and return 0 if there's no files to show!
+        if ($table->init()) {
+            $mform->addElement('html', \html_writer::table($table));
         } else {
-            $table->attributes['class'] .= ' coloredrows';
-        }
-
-        $options = array();
-        $options[2] = get_string('student_approve', 'publication');
-        $options[1] = get_string('student_reject', 'publication');
-
-        $conditions = array();
-        $conditions['publication'] = $publication->get_instance()->id;
-        $conditions['userid'] = $USER->id;
-
-        $changepossible = false;
-
-        foreach ($files as $file) {
-            $conditions['fileid'] = $file->get_id();
-            $studentapproval = $DB->get_field('publication_file', 'studentapproval', $conditions);
-            $teacherapproval = $DB->get_field('publication_file', 'teacherapproval', $conditions);
-
-            $studentapproval = (!is_null($studentapproval)) ? $studentapproval + 1 : null;
-
-            $data = array();
-            $data[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
-
-            $dlurl = new moodle_url('/mod/publication/view.php',
-                    array('id' => $publication->get_coursemodule()->id, 'download' => $file->get_id()));
-            $data[] = html_writer::link($dlurl, $file->get_filename());
-
-            if ($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT) {
-                if ($teacherapproval && $publication->get_instance()->obtainstudentapproval) {
-                    if ($publication->is_open() && $studentapproval == 0) {
-                        $changepossible = true;
-                        $data[] = html_writer::select($options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
-                    } else {
-                        switch($studentapproval) {
-                            case 2:
-                                $data[] = get_string('student_approved', 'publication');
-                                break;
-                            case 1:
-                                $data[] = get_string('student_rejected', 'publication');
-                                break;
-                            default:
-                                $data[] = get_string('student_pending', 'publication');
-                        }
-                    }
-                } else {
-                    switch($teacherapproval) {
-                        case 1:
-                            $data[] = get_string('teacher_approved', 'publication');
-                            break;
-                        default:
-                            $data[] = get_string('student_pending', 'publication');
-                    }
-                }
-            }
-
-            if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
-
-                if ($publication->get_instance()->obtainteacherapproval) {
-                    // Teacher has to approve: show all status.
-                    if (is_null($teacherapproval)) {
-                        $data[] = get_string('hidden', 'publication') .' ('. get_string('teacher_pending', 'publication') . ')';
-                    } else if ($teacherapproval == 1) {
-                        $data[] = get_string('visible', 'publication');
-                    } else {
-                        $data[] = get_string('hidden', 'publication') .' ('. get_string('teacher_rejected', 'publication') . ')';
-                    }
-                } else {
-                    // Teacher doenst have to approve: only show when rejected.
-                    if (is_null($teacherapproval)) {
-                        $data[] = get_string('visible', 'publication');
-                    } else if ($teacherapproval == 1) {
-                        $data[] = get_string('visible', 'publication');
-                    } else {
-                        $data[] = get_string('hidden', 'publication') .' ('. get_string('teacher_rejected', 'publication') .')';
-                    }
-                }
-            }
-
-            $table->data[] = $data;
-        }
-
-        if (count($files) == 0 && has_capability('mod/publication:upload', $publication->get_context())) {
             $mform->addElement('static', 'nofiles', '', get_string('nofiles', 'publication'));
         }
 
-        $tablehtml = html_writer::table($table);
-
-        $mform->addElement('html', $tablehtml);
-
         // Display submit buttons if necessary.
-        if ($changepossible) {
+        if (!empty($table) && $table->changepossible()) {
             if ($publication->is_open()) {
                 $buttonarray = array();
 
@@ -214,10 +127,10 @@ class mod_publication_files_form extends moodleform {
             if ($publication->is_open()) {
                 $buttonarray = array();
 
-                $label = get_string('edit_uploads', 'publication');
-
-                if (count($files) == 0) {
+                if (empty($table)) { // This means, there are no files shown!
                     $label = get_string('add_uploads', 'publication');
+                } else {
+                    $label = get_string('edit_uploads', 'publication');
                 }
 
                 $buttonarray[] = &$mform->createElement('submit', 'gotoupload', $label);
