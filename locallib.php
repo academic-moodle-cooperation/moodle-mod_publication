@@ -47,7 +47,7 @@ define('PUBLICATION_APPROVAL_SINGLE', 1);
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class publication{
+class publication {
     /** @var object instance */
     private $instance;
     /** @var object context */
@@ -365,6 +365,10 @@ class publication{
 
         $users = $DB->get_fieldset_sql($sql, $params);
 
+        if (empty($users)) {
+            return array(-1);
+        }
+
         return $users;
     }
 
@@ -398,13 +402,12 @@ class publication{
         $formattrs['method'] = 'post';
         $formattrs['class'] = 'mform';
 
-        $html = '';
-        $html .= html_writer::start_tag('form', $formattrs);
-        $html .= html_writer::empty_tag('input', array('type' => 'hidden',
-                'name' => 'id', 'value' => $this->get_coursemodule()->id));
-        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'page',    'value' => $page));
-        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
-        echo $html;
+        echo html_writer::start_tag('form', $formattrs).
+             html_writer::empty_tag('input', array('type' => 'hidden',
+                                                   'name' => 'id',
+                                                   'value' => $this->get_coursemodule()->id)).
+             html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'page',    'value' => $page)).
+             html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
 
         echo html_writer::start_tag('div', array('id' => 'id_allfiles', 'class' => 'clearfix', 'aria-live' => 'polite'));
         $allfiles = get_string('allfiles', 'publication');
@@ -420,388 +423,91 @@ class publication{
 
         echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
 
-        $html = '';
-
-        $users = $this->get_users();
-
-        $selectallnone = html_writer::checkbox('selectallnone', false, false, '', array('id'      => 'selectallnone',
-                                                                                        'onClick' => 'toggle_userselection()'));
-
-        $tablecolumns = array('selection', 'fullname');
-        $tableheaders = array($selectallnone, get_string('fullnameuser'));
-
-        $useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
-
-        foreach ($useridentity as $cur) {
-            if (!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" &&
-                    !has_capability('mod/publication:approve', $context))
-                && !($cur != "idnumber" && !has_capability('mod/publication:approve', $context))) {
-                $tablecolumns[] = $cur;
-                $tableheaders[] = ($cur == 'phone1') ? get_string('phone') : get_string($cur);
-            }
-        }
-
-        $tableheaders[] = get_string('lastmodified');
-        $tablecolumns[] = 'timemodified';
-
-        if (has_capability('mod/publication:approve', $context)) {
-            // Not necessary in upload mode without studentapproval.
-            if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
-                $this->get_instance()->obtainstudentapproval) {
-                $tablecolumns[] = 'studentapproval';
-                $tableheaders[] = get_string('studentapproval', 'publication') .' '.
-                    $OUTPUT->help_icon('studentapproval', 'publication');
-            }
-
-            $tablecolumns[] = 'teacherapproval';
-            if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT && $this->get_instance()->obtainstudentapproval) {
-                $tableheaders[] = get_string('obtainstudentapproval', 'publication');
-            } else {
-                $tableheaders[] = get_string('teacherapproval', 'publication');
-            }
-
-            $tablecolumns[] = 'visibleforstudents';
-            $tableheaders[] = get_string('visibleforstudents', 'publication');
-        }
-        require_once($CFG->libdir.'/tablelib.php');
-        $table = new flexible_table('mod-publication-allfiles');
-
-        $table->define_columns($tablecolumns);
-        $table->define_headers($tableheaders);
-        $table->define_baseurl($CFG->wwwroot.'/mod/publication/view.php?id='.$cm->id.'&amp;currentgroup='.$currentgroup);
-
-        $table->sortable(true, 'lastname'); // Sorted by lastname by default.
-        $table->collapsible(false);
-        $table->initialbars(true);
-
-        $table->column_class('fullname', 'fullname');
-        $table->column_class('timemodified', 'timemodified');
-
-        $table->set_attribute('cellspacing', '0');
-        $table->set_attribute('id', 'attempts');
-        $table->set_attribute('class', 'publications');
-        $table->set_attribute('width', '100%');
-
-        $table->no_sorting('studentapproval');
-        $table->no_sorting('selection');
-        $table->no_sorting('teacherapproval');
-        $table->no_sorting('visibleforstudents');
-        // Start working -- this is necessary as soon as the niceties are over.
-        $table->setup();
-
-        // Construct the SQL.
-        list($where, $params) = $table->get_sql_where();
-        if ($where) {
-            $where .= ' AND ';
-        }
-
-        if ($sort = $table->get_sql_sort()) {
-            $sort = ' ORDER BY '.$sort;
-        }
-
-        $ufields = user_picture::fields('u');
-        $useridentityfields = $CFG->showuseridentity != '' ? 'u.'.str_replace(', ', ', u.', $CFG->showuseridentity) . ', ' : '';
-        $totalfiles = 0;
-
-        if (!empty($users)) {
-            list($usersql, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED);
-            $select = 'SELECT '.$ufields.', '.$useridentityfields.' username,
-                                COUNT(*) filecount,
-                                SUM(files.studentapproval) as status,
-                                MAX(files.timecreated) timemodified ';
-            $sql = 'FROM {user} u '.
-                    'LEFT JOIN {publication_file} files ON u.id = files.userid
-                            AND files.publication = '.$this->get_instance()->id.' '.
-                                'WHERE '.$where.'u.id '.$usersql.' '.
-                                'GROUP BY '.$ufields.', '.$useridentityfields.' username ';
-            $params = array_merge($params, $userparams);
-
-            $ausers = $DB->get_records_sql($select.$sql.$sort, $params, $table->get_page_start(), $table->get_page_size());
-            $table->pagesize($perpage, count($users));
-
-            // Offset used to calculate index of student in that particular query, needed for the pop up to know who's next.
-            $offset = $page * $perpage;
-
-            if ($ausers !== false) {
-                $endposition = $offset + $perpage;
-                $currentposition = 0;
-
-                $valid = $OUTPUT->pix_icon('i/valid', get_string('student_approved', 'publication'));
-                $questionmark = $OUTPUT->pix_icon('questionmark', get_string('student_pending', 'publication'), 'mod_publication');
-                $invalid = $OUTPUT->pix_icon('i/invalid', get_string('student_rejected', 'publication'));
-
-                $studvisibleyes = $OUTPUT->pix_icon('i/valid', get_string('visibleforstudents_yes', 'publication'));
-
-                $studvisibleno = $OUTPUT->pix_icon('i/invalid', get_string('visibleforstudents_no', 'publication'));
-
-                foreach ($ausers as $auser) {
-                    if ($currentposition >= $offset && $currentposition < $endposition) {
-                        // Calculate user status.
-                        $selecteduser = html_writer::checkbox('selectedeuser['.$auser->id .']', 'selected', false,
-                                null, array('class' => 'userselection'));
-
-                        $useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
-                        foreach ($useridentity as $cur) {
-                            if (!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" &&
-                                    !has_capability('mod/publication:approve', $context))
-                                && !($cur != "idnumber" && !has_capability('mod/publication:approve', $context))) {
-                                if (!empty($auser->$cur)) {
-                                    $$cur = html_writer::tag('div', $auser->$cur,
-                                            array('id' => 'u'.$cur.$auser->id));
-                                } else {
-                                    $$cur = html_writer::tag('div', '-', array('id' => 'u'.$cur.$auser->id));
-                                }
-                            }
-                        }
-
-                        $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $auser->id .
-                        '&amp;course=' . $course->id . '">' . fullname($auser) . '</a>';
-
-                        $extension = $this->user_extensionduedate($auser->id);
-
-                        if ($extension) {
-                            if (has_capability('mod/publication:grantextension', $context) ||
-                                has_capability('mod/publication:approve', $context)) {
-                                $userlink .= '<br/>' . get_string('extensionto', 'publication') . ': ' . userdate($extension);
-                            }
-                        }
-
-                        $row = array($selecteduser, $userlink);
-
-                        $useridentity = $CFG->showuseridentity != '' ? explode(',', $CFG->showuseridentity) : array();
-                        foreach ($useridentity as $cur) {
-                            if (!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" &&
-                                    !has_capability('mod/publication:approve', $context))
-                                && !($cur != "idnumber" && !has_capability('mod/publication:approve', $context))) {
-                                $row[] = $$cur;
-                            }
-                        }
-
-                        $filearea = 'attachment';
-                        $sid = $auser->id;
-                        $fs = get_file_storage();
-
-                        $files = $fs->get_area_files($this->get_context()->id,
-                                'mod_publication',
-                                $filearea,
-                                $sid,
-                                'timemodified',
-                                false);
-
-                        $filetable = new html_table();
-                        $filetable->attributes = array('class' => 'filetable');
-
-                        $statustable = new html_table();
-                        $statustable->attributes = array('class' => 'statustable');
-
-                        $permissiontable = new html_table();
-                        $permissiontable->attributes = array('class' => 'permissionstable');
-
-                        $visibleforuserstable = new html_table();
-                        $visibleforuserstable->attributes = array('class' => 'statustable');
-
-                        $conditions = array();
-                        $conditions['publication'] = $this->get_instance()->id;
-                        $conditions['userid'] = $auser->id;
-                        foreach ($files as $file) {
-                            $conditions['fileid'] = $file->get_id();
-                            $filepermissions = $DB->get_record('publication_file', $conditions);
-
-                            $showfile = false;
-
-                            if (has_capability('mod/publication:approve', $context)) {
-                                $showfile = true;
-                            } else if ($this->has_filepermission($file->get_id())) {
-                                $showfile = true;
-                            }
-
-                            if ($this->has_filepermission($file->get_id())) {
-                                $visibleforuserstable->data[] = array($studvisibleyes);
-                            } else {
-                                $visibleforuserstable->data[] = array($studvisibleno);
-                            }
-
-                            if ($showfile) {
-
-                                $filerow = array();
-                                $filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
-
-                                $url = new moodle_url('/mod/publication/view.php',
-                                        array('id' => $cm->id, 'download' => $file->get_id()));
-                                $filerow[] = html_writer::link($url, $file->get_filename());
-                                if (has_capability('mod/publication:approve', $context)) {
-                                    if ($filepermissions !== false) {
-                                        $checked = $filepermissions->teacherapproval;
-                                    } else {
-                                        $checked = null;
-                                    }
-
-                                    if (is_null($checked)) {
-                                        $checked = "";
-                                    } else {
-                                        $checked = $checked + 1;
-                                    }
-
-                                    $permissionrow = array();
-
-                                    $options = array();
-                                    $options['2'] = get_string('yes');
-                                    $options['1'] = get_string('no');
-
-                                    $permissionrow[] = html_writer::select($options, 'files[' . $file->get_id() . ']', $checked);
-
-                                    $statusrow = array();
-
-                                    if (($filepermissions === false) || is_null($filepermissions->studentapproval)) {
-                                        $statusrow[] = $questionmark;
-                                    } else if ($filepermissions->studentapproval) {
-                                        $statusrow[] = $valid;
-                                    } else {
-                                        $statusrow[] = $invalid;
-                                    }
-                                    $statustable->data[] = $statusrow;
-                                    $permissiontable->data[] = $permissionrow;
-                                }
-                                $filetable->data[] = $filerow;
-                                $totalfiles++;
-                            }
-                        }
-
-                        $lastmodified = "";
-                        if (count($filetable->data) > 0) {
-                            $lastmodified = html_writer::table($filetable);
-                            $lastmodified .= html_writer::span(userdate($auser->timemodified), "timemodified");
-                        } else {
-                            $lastmodified = get_string('nofiles', 'publication');
-                        }
-
-                        $row[] = $lastmodified;
-
-                        if (has_capability('mod/publication:approve', $context)) {
-                            // Not necessary in upload mode without studentapproval.
-                            if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
-                                $this->get_instance()->obtainstudentapproval) {
-                                if (count($statustable->data) > 0) {
-                                    $status = html_writer::table($statustable);
-                                } else {
-                                    $status = '';
-                                }
-                                $row[] = $status;
-                            }
-                            if (count($permissiontable->data) > 0) {
-                                $permissions = html_writer::table($permissiontable);
-                            } else {
-                                $permissions = '';
-                            }
-                            $row[] = $permissions;
-
-                            $row[] = html_writer::table($visibleforuserstable);
-                        }
-
-                        $table->add_data($row);
-                    }
-                    $currentposition++;
-                }
-
-                if (/*$totalfiles > 0*/true) { // Always display download option.
-                    $html .= html_writer::start_tag('div', array('class' => 'mod-publication-download-link'));
-                    $html .= html_writer::link(new moodle_url('/mod/publication/view.php',
-                            array('id' => $this->coursemodule->id, 'action' => 'zip')), get_string('downloadall', 'publication'));
-                    $html .= html_writer::end_tag('div');
-                }
-
-                echo $html;
-                $html = "";
-
-                $table->print_html();  // Print the whole table.
-
-                $options = array();
-                if (/*$totalfiles > 0*/true) { // Always display download option.
-                    $options['zipusers'] = get_string('zipusers', 'publication');
-
-                }
-
-                if ($totalfiles > 0) {
-                    if (has_capability('mod/publication:approve', $context)) {
-                        $options['approveusers'] = get_string('approveusers', 'publication');
-                        $options['rejectusers'] = get_string('rejectusers', 'publication');
-
-                        if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
-                                $this->get_instance()->obtainstudentapproval) {
-                            $options['resetstudentapproval'] = get_string('resetstudentapproval', 'publication');
-                        }
-                    }
-                }
-                if (has_capability('mod/publication:grantextension', $this->get_context())) {
-                    $options['grantextension'] = get_string('grantextension', 'publication');
-                }
-
-                if (count($options) > 0) {
-                    if (has_capability('mod/publication:approve', $context)) {
-                        $html .= html_writer::empty_tag('input', array('type' => 'reset', 'name' => 'resetvisibility',
-                                'value' => get_string('reset', 'publication'),
-                                'class' => 'visibilitysaver'
-                        ));
-
-                        if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
-                                $this->get_instance()->obtainstudentapproval) {
-                            $html .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'savevisibility',
-                                    'value' => get_string('saveapproval', 'publication'),
-                                    'class' => 'visibilitysaver'
-                            ));
-                        } else {
-                            $html .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'savevisibility',
-                                    'value' => get_string('saveteacherapproval', 'publication'),
-                                    'class' => 'visibilitysaver'
-                            ));
-                        }
-                    }
-
-                    $html .= html_writer::start_div('withselection');
-                    $html .= html_writer::span(get_string('withselected', 'publication'));
-                    $html .= html_writer::select($options, 'action');
-                    $html .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'submitgo',
-                            'value' => get_string('go', 'publication')));
-
-                    $html .= html_writer::end_div();
-                }
-            } else {
-                $html .= html_writer::tag('div', get_string('nothingtodisplay', 'publication'),
-                        array('class' => 'nosubmisson'));
-            }
+        if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
+            $table = new \mod_publication\local\allfilestable\upload('mod-publication-allfiles', $this);
         } else {
-            $html .= html_writer::tag('div', get_string('nothingtodisplay', 'publication'),
-                    array('class' => 'nosubmisson'));
+            if ($DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom))) {
+                $table = new \mod_publication\local\allfilestable\group('mod-publication-allgroupfiles', $this);
+            } else {
+                $table = new \mod_publication\local\allfilestable\import('mod-publication-allfiles', $this);
+            }
+        }
+
+        $link = html_writer::link(new moodle_url('/mod/publication/view.php', array('id' => $this->coursemodule->id,
+                                                                                    'action' => 'zip')),
+                                  get_string('downloadall', 'publication'));
+        echo html_writer::tag('div', $link, array('class' => 'mod-publication-download-link'));
+
+        $table->out($perpage, true); // Print the whole table.
+
+        $options = array();
+        $options['zipusers'] = get_string('zipusers', 'publication');
+
+        if (has_capability('mod/publication:approve', $context) && $table->totalfiles() > 0) {
+            $options['approveusers'] = get_string('approveusers', 'publication');
+            $options['rejectusers'] = get_string('rejectusers', 'publication');
+
+            if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
+                    $this->get_instance()->obtainstudentapproval) {
+                $options['resetstudentapproval'] = get_string('resetstudentapproval', 'publication');
+            }
+        }
+        if (has_capability('mod/publication:grantextension', $this->get_context())) {
+            $options['grantextension'] = get_string('grantextension', 'publication');
+        }
+
+        if (count($options) > 0) {
+            if (has_capability('mod/publication:approve', $context)) {
+                echo html_writer::empty_tag('input', array('type' => 'reset',
+                                                           'name' => 'resetvisibility',
+                                                           'value' => get_string('reset', 'publication'),
+                                                           'class' => 'visibilitysaver'));
+
+                if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
+                        $this->get_instance()->obtainstudentapproval) {
+                    echo html_writer::empty_tag('input', array('type' => 'submit',
+                                                               'name' => 'savevisibility',
+                                                               'value' => get_string('saveapproval', 'publication'),
+                                                               'class' => 'visibilitysaver'));
+                } else {
+                    echo html_writer::empty_tag('input', array('type' => 'submit',
+                                                               'name' => 'savevisibility',
+                                                               'value' => get_string('saveteacherapproval', 'publication'),
+                                                               'class' => 'visibilitysaver'));
+                }
+            }
+
+            echo html_writer::start_div('withselection').
+                 html_writer::span(get_string('withselected', 'publication')).
+                 html_writer::select($options, 'action').
+                 html_writer::empty_tag('input', array('type' => 'submit',
+                                                       'name' => 'submitgo',
+                                                       'value' => get_string('go', 'publication'))).
+                 html_writer::end_div();
         }
 
         // Select all/none.
-        $html .= html_writer::start_tag('div', array('class' => 'checkboxcontroller'));
-        $html .= "<script type=\"text/javascript\">
-                                        function toggle_userselection() {
-                                        var checkboxes = document.getElementsByClassName('userselection');
-                                        var sel = document.getElementById('selectallnone');
+        echo html_writer::start_tag('div', array('class' => 'checkboxcontroller'))."
+            <script type=\"text/javascript\">
+                function toggle_userselection() {
+                    var checkboxes = document.getElementsByClassName('userselection');
+                    var sel = document.getElementById('selectallnone');
 
-                                        if (checkboxes.length > 0) {
-                                        checkboxes[0].checked = sel.checked;
+                    if (checkboxes.length > 0) {
+                        checkboxes[0].checked = sel.checked;
 
-                                        for(var i = 1; i < checkboxes.length;i++) {
-                                        checkboxes[i].checked = checkboxes[0].checked;
-    }
-    }
-    }
-                                        </script>";
-
-        $html .= html_writer::end_div();
-        $html .= html_writer::end_div();
-        $html .= html_writer::end_div();
-
-        echo $html;
-
-        echo html_writer::end_tag('form');
+                        for(var i = 1; i < checkboxes.length;i++) {
+                            checkboxes[i].checked = checkboxes[0].checked;
+                        }
+                    }
+                }
+            </script>".
+             html_writer::end_div().
+             html_writer::end_div().
+             html_writer::end_div().
+             html_writer::end_tag('form');
 
         // Mini form for setting user preference.
-        $html = '';
-
         $formaction = new moodle_url('/mod/publication/view.php', array('id' => $this->coursemodule->id));
         $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', array('class' => 'optionspref'));
 
@@ -816,8 +522,6 @@ class publication{
         $mform->addElement('submit', 'savepreferences', get_string('savepreferences'));
 
         $mform->display();
-
-        return $html;
     }
 
     /**

@@ -74,7 +74,7 @@ class mod_publication_files_form extends moodleform {
                         $notice = get_string('notice_groupimportrequireoneapproval', 'publication');
                     }
                 } else {
-                    $notice = get_string('notice_groupimportnoapproval', 'publication');
+                    $notice = get_string('notice_importnoapproval', 'publication');
                 }
             } else {
                 $table = new \mod_publication\local\filestable\import($publication);
