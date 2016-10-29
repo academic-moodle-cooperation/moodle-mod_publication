@@ -17,12 +17,10 @@
 /**
  * Search area for mod_publication activities.
  *
- * @package    mod_publication
- * @author     Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author     Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author     Philipp Hager
- * @copyright  2016 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package       mod_publication
+ * @author        Philipp Hager
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace mod_publication\search;
@@ -32,9 +30,10 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Search area for mod_publication activities.
  *
- * @package    mod_publication
- * @copyright  2016 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package       mod_publication
+ * @author        Philipp Hager
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class activity extends \core_search\base_activity {
     /**
