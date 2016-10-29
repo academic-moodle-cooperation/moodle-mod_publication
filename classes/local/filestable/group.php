@@ -49,7 +49,6 @@ class group extends base {
         $data = parent::add_file($file);
 
         // Now add the specific data to the table!
-        // TODO: copied from import class, adapt to multiple students being involved!
         $teacherapproval = $this->publication->teacher_approval($file);
         if ($teacherapproval && $this->publication->get_instance()->obtainstudentapproval) {
             $pubfileid = $DB->get_field('publication_file', 'id', array('publication' => $this->publication->get_instance()->id,
