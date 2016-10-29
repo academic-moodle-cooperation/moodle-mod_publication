@@ -1,0 +1,77 @@
+CHANGELOG
+=========
+
+3.2.0 (201?-??-??)
+------------------
+
+* Moodle 3.2 compatible version
+
+
+3.1.1 (2016-12-05)
+------------------
+
+* [FEATURE] #3589 Make name and description searchable
+* [FEATURE] #3302 add support for importing online-text-submissions (incl. embeded files)
+* [FEATURE] #3856 add support for importing team-submissions (incl. online-text- and file-submissions)
+
+
+3.1.0 (2016-06-22)
+------------------
+
+* Moodle 3.1 compatible version
+* [FEATURE] #3237 Sync Assignment-Submissions automatically
+
+
+3.0.1 (2016-06-30)
+------------------
+
+* [FIXED] #3315 Typo causing warning about undefined variable
+
+
+3.0.0 (2016-05-11)
+------------------
+
+* Moodle 3.0 compatible version
+* [CHANGED] PHP 7 compatibility
+* [CHANGED] #3134 Reformatted parts of code (code checker issues)
+* [FIXED] #3171 Fix files not being restored correctly
+
+
+2.9.2 (2016-05-12)
+------------------
+
+* [FIXED] #3171 Problems with restored files not being shown
+
+
+2.9.1 (2016-03-04)
+------------------
+
+* [FIXED] #3107 German lang strings
+
+
+2.9.0 (2016-01-20)
+------------------
+
+* Moodle 2.9 compatible version
+* [CHANGED] #2495 Replace javascript with AMD modules based on JQuery instead of YUI
+* [FIXED] Language strings (fix typos, termini, etc.)
+* [FIXED] #2737 Capability publication:upload for submit button
+* [FIXED] #2777 Uninitialized variable corrupting ZIP files with debugging enabled
+* [FIXED] #2886 Disable assignments with teamsubmissions enabled in publication until
+  team submissions are supported
+* [FIXED] #2875 Usage of fullname function (don't override fullname format anymore)
+* [REMOVED] #2495 Unused settings and deprecate unused lang strings
+* [REMOVED] Unused cron setting from version.php
+* [REMOVED] Unused code
+
+
+2.8.0 (2015-06-24)
+------------------
+
+* Moodle 2.8 compatible version
+
+
+2.7 (2014-11-30)
+----------------
+
+* First release for Moodle 2.7
