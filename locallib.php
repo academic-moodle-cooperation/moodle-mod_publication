@@ -584,6 +584,123 @@ class publication {
     }
 
     /**
+     * Sets group approval for the specified user and returns current cumulated group approval!
+     *
+     * @param null|int $approval 0 if rejected, 1 if approved and 'null' if not set!
+     * @param int $pubfileid ID of publication file entry in DB
+     * @param int $userid ID of user to set approval/rejection for
+     * @return null|int cumulated approval for specified file
+     */
+    public function set_group_approval($approval, $pubfileid, $userid) {
+        global $DB;
+
+        // Normalize approval value!
+        if ($approval !== null) {
+            $approval = empty($approval) ? 0 : 1;
+        }
+
+        $record = $DB->get_record('publication_groupapproval', array('fileid' => $pubfileid, 'userid' => $userid));
+        $filerec = $DB->get_record('publication_file', array('id' => $pubfileid));
+        if (!empty($record)) {
+            if ($record->approval === $approval) {
+                // Nothing changed, return!
+                return $filerec->studentapproval;
+            }
+            $record->approval = $approval;
+            $record->timemodified = time();
+            $DB->update_record('publication_groupapproval', $record);
+        } else {
+            $record = new stdClass();
+            $record->fileid = $pubfileid;
+            $record->userid = $userid;
+            $record->approval = $approval;
+            $record->timecreated = time();
+            $record->timemodified = $record->timecreated;
+            $record->id = $DB->insert_record('publication_groupapproval', $record);
+        }
+
+        // Calculate new cumulated studentapproval for caching in file table!
+
+        // Get group members!
+        $groupmembers = groups_get_members($filerec->userid);
+        if (!empty($groupmembers)) {
+            list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
+            $select = "fileid = :fileid AND approval = :approval AND userid ".$usersql;
+            $params = array('fileid' => $pubfileid, 'approval' => 0) + $userparams;
+            if ($DB->record_exists_select('publication_groupapproval', $select, $params)) {
+                // If anyone rejected it's rejected, no matter what!
+                $approval = 0;
+            } else {
+                if ($this->get_instance()->groupapproval == PUBLICATION_APPROVAL_SINGLE) {
+                    // If only one has to approve, we check for that!
+                    $params['approval'] = 1;
+                    if ($DB->record_exists_select('publication_groupapproval', $select, $params)) {
+                        $approval = 1;
+                    } else {
+                        $approval = 0;
+                    }
+                } else {
+                    // All group members have to approve!
+                    $select = "fileid = :fileid AND approval IS NULL AND userid ".$usersql;
+                    $params = array('fileid' => $pubfileid) + $userparams;
+                    $approving = $DB->count_records_sql("SELECT count(DISTINCT userid)
+                                                           FROM {publication_groupapproval}
+                                                          WHERE fileid = :fileid AND approval = 1 AND userid ".$usersql, $params);
+                    if ($approving < count($userparams)) {
+                        // Rejected if not every group member has approved the file!
+                        $approval = null;
+                    } else {
+                        $approval = 1;
+                    }
+                }
+            }
+        } else {
+            // Group without members, so no one could approve! (Should never happen, never ever!)
+            $approval = 0;
+        }
+
+        // Update approval value and return it!
+        $filerec->studentapproval = $approval;
+        $DB->update_record('publication_file', $filerec);
+
+        return $approval;
+    }
+
+    /**
+     * Gets group approval for the specified file!
+     *
+     * @param int $pubfileid ID of publication file entry in DB
+     * @return array cumulated approval for specified file and array with approval details
+     */
+    public function group_approval($pubfileid) {
+        global $DB;
+
+        if (($this->get_instance()->mode != PUBLICATION_MODE_IMPORT)
+                || !$DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom))) {
+            throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
+        }
+
+        $filerec = $DB->get_record('publication_file', array('id' => $pubfileid));
+
+        // Get group members!
+        $groupmembers = groups_get_members($filerec->userid);
+
+        if (!empty($groupmembers)) {
+            list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
+            $sql = "SELECT u.*, ga.approval, ga.timemodified AS approvaltime
+                      FROM {user} u
+                 LEFT JOIN {publication_groupapproval} ga ON u.id = ga.userid AND ga.fileid = :fileid
+                     WHERE u.id ".$usersql;
+            $params = array('fileid' => $filerec->id) + $userparams;
+            $groupdata = $DB->get_records_sql($sql, $params);
+        } else {
+            $groupdata = array();
+        }
+
+        return array($filerec->studentapproval, $groupdata);
+    }
+
+    /**
      * Download a single file, returns file content and terminated script.
      *
      * @param int $fileid ID of the submitted file in filespace

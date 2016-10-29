@@ -74,7 +74,7 @@ class group extends base {
     }
 
     public function __construct($uniqueid, \publication $publication) {
-        global $DB;
+        global $DB, $PAGE;
 
         $assignid = $publication->get_instance()->importfrom;
         $this->groupingid = $DB->get_field('assign', 'teamsubmissiongroupingid', array('id' => $assignid));
@@ -82,6 +82,20 @@ class group extends base {
         parent::__construct($uniqueid, $publication);
 
         $this->sortable(true, 'groupname'); // Sorted by group by default.
+
+        // Init JS!
+        $params = new \stdClass();
+        $params->id = $uniqueid;
+        switch($publication->get_instance()->groupapproval) {
+            case PUBLICATION_APPROVAL_ALL;
+                $params->mode = get_string('groupapprovalmode_all', 'mod_publication');
+                break;
+            case PUBLICATION_APPROVAL_SINGLE:
+                $params->mode = get_string('groupapprovalmode_single', 'mod_publication');
+                break;
+        }
+
+        $PAGE->requires->js_call_amd('mod_publication/groupapprovalstatus', 'initializer', array($params));
     }
 
     protected function get_columns() {
@@ -136,5 +150,63 @@ class group extends base {
         }
 
         return $cell;
+    }
+
+    /**
+     * Method wraps string with span-element including data attributes containing detailed group approval data!
+     *
+     * @param string $symbol string/html-snippet to wrap element around
+     * @param \stored_file $file file to fetch details for
+     */
+    protected function add_details_tooltip(&$symbol, \stored_file $file) {
+        global $DB, $OUTPUT;
+
+        $pubfileid = $DB->get_field('publication_file', 'id', array('publication' => $this->publication->get_instance()->id,
+                                                                    'fileid'      => $file->get_id()));
+        list(, $approvaldetails) = $this->publication->group_approval($pubfileid);
+
+        $approved = array();
+        $rejected = array();
+        $pending = array();
+        foreach ($approvaldetails as $uid => $cur) {
+            if (empty($cur->approvaltime)) {
+                $cur->approvaltime = '-';
+            } else {
+                $cur->approvaltime = userdate($cur->approvaltime, get_string('strftimedatetime'));
+            }
+            if ($cur->approval === null) {
+                $pending[] = array('name' => fullname($cur), 'time' => '-');;
+            } else if ($cur->approval == 0) {
+                $rejected[] = array('name' => fullname($cur), 'time' => $cur->approvaltime);
+            } else if ($cur->approval == 1) {
+                $approved[] = array('name' => fullname($cur), 'time' => $cur->approvaltime);
+            }
+        }
+
+        $status = new \stdClass();
+        $status->approved = false;
+        $status->rejected = false;
+        $status->pending = false;
+        switch ($this->publication->student_approval($file)) {
+            case 2:
+                $status->approved = true;
+                break;
+            case 1:
+                $status->rejected = true;
+                break;
+            default:
+                $status->pending = true;
+        }
+
+        $detailsattr = array('class'         => 'approvaldetails',
+                             'data-pending'  => json_encode($pending),
+                             'data-approved' => json_encode($approved),
+                             'data-rejected' => json_encode($rejected),
+                             'data-filename' => $file->get_filename(),
+                             'data-status'   => json_encode($status));
+
+        $symbol = $symbol.\html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('show_details', 'publication')),
+                                            $detailsattr);
+
     }
 }

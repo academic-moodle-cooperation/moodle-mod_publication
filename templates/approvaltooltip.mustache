@@ -1,0 +1,95 @@
+{{!
+    This file is part of mod_publication for Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_publication/approvaltooltip
+
+    Publication's approvaltooltip template.
+
+    The purpose of this template is to the contents of the approval tool-tip for group approval.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * id ID of related element
+    * approval Array with name & time pairs.
+    * rejected Array with name & time paris.
+    * pending Array with name & time pairs.
+
+    Example context (json):
+    {
+        "id": elementid,
+        "status": { "approved": false,
+                    "rejected": true,
+                    "pending": false },
+        "mode": approvalmodetxt,
+        "approval": [
+            { "name": "John Doe", "time": "04.11.2016 15:37" },
+            { "name": "Jane Doe", "time": "01.11.2016 09:42" },
+        ],
+        "rejected": [
+            { "name": "Jessica Jones", "time": "07.10.2016 10:46" },
+            { "name": "Luke Cage", "time": "13.10.2016 09:42" },
+        ],
+        "pending": [
+            { "name": "Barry Allen", "time": "-" },
+            { "name": "Bruce Banner", "time": "-" },
+        ]
+    }
+
+}}
+<div class="publicationoverlay" role="tooltip" aria-describedby="{{id}}">
+    {{#status}}
+    <div><strong>{{# str }} status, mod_publication {{/ str }}&nbsp;&mdash;&nbsp;{{# str }} total, mod_publication {{/ str }}:</strong>
+        {{#approved}}{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}({{# str }} approved, mod_publication {{/ str }}){{/approved}}
+        {{#rejected}}{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}({{# str }} rejected, mod_publication {{/ str }}){{/rejected}}
+        {{#pending}}{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}({{# str }} pending, mod_publication {{/ str }}){{/pending}}
+    </div>
+    {{/status}}
+    <div>
+        <div><strong>{{# str }} status, mod_publication {{/ str }}&nbsp;&mdash;&nbsp;{{# str }} details, mod_publication {{/ str }}:</strong></div>
+        <table>
+            {{#approved}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}({{# str }} approved, mod_publication {{/ str }})</td>
+                <td class="time">{{time}}</td>
+            </tr>
+            {{/approved}}
+            {{#rejected}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}({{# str }} rejected, mod_publication {{/ str }})</td>
+                <td class="time">{{time}}</td>
+            </tr>
+            {{/rejected}}
+            {{#pending}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}({{# str }} pending, mod_publication {{/ str }})</th>
+                <td class="time">{{time}}</td>
+            </tr>
+            {{/pending}}
+        </table>
+    </div>
+    {{#mode}}
+    <div><strong>{{# str }} mode, mod_publication {{/ str }}:</strong> {{{mode}}}</div>
+    {{/mode}}
+</div>

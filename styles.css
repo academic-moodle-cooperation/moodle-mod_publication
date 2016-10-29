@@ -195,3 +195,38 @@
 #page-mod-publication-mod select[name=importfrom] option[disabled] {
     color: #999;
 }
+
+.path-mod-publication .publications table tr:nth-of-type(2n+1),
+.path-mod-publication .publications table tr:hover {
+    background-color: transparent;
+}
+
+.path-mod-publication .statustable .approvaldetails {
+    display: none;
+}
+
+.path-mod-publication .statustable .approvaldetails img {
+    cursor: pointer;
+}
+
+.path-mod-publication .publicationoverlay {
+    max-height: 90%;
+    overflow-y: scroll;
+}
+
+.path-mod-publication .publicationoverlay table {
+    margin-left: auto;
+    margin-right: auto;
+}
+.path-mod-publication .publicationoverlay table td,
+.path-mod-publication .publicationoverlay table th {
+    padding: 5px;
+}
+
+.path-mod-publication .publicationoverlay table td.noentries {
+    text-align: center;
+}
+
+.path-mod-publication .publicationoverlay table td.time {
+    text-align: right;
+}

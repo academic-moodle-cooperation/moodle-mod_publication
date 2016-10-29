@@ -123,6 +123,7 @@ $string['duedate_import'] = 'Einverständniserklärung bis';
 $string['cutoffdate_upload'] = 'Letzte Uploadmöglichkeit bis';
 $string['cutoffdate_import'] = 'Letzte Einverständniserklärung bis';
 $string['extensionto'] = 'Erweiterung bis';
+$string['filedetails'] = 'Details';
 $string['assignment_notfound'] = 'Die Aufgabe von der importiert wird konnte nicht mehr gefunden werden.';
 $string['assignment_notset'] = 'Es wurde noch keine Aufgabe ausgewählt.';
 $string['updatefiles'] = 'Dateien aktualisieren';
@@ -133,6 +134,7 @@ $string['add_uploads'] = 'Datei hochladen';
 $string['edit_uploads'] = 'Dateien bearbeiten/hochladen';
 $string['edit_timeover'] = 'Dateien können nur während des Änderungszeitraumes geändert werden.';
 $string['approval_timeover'] = 'Sie können ihre Zustimmung nur während des Änderungszeitraumes ändern.';
+$string['noentries'] = 'Keine Einträge';
 $string['nofiles'] = 'Keine Dateien vorhanden';
 $string['notice'] = 'Hinweis:';
 $string['notice_uploadrequireapproval'] = 'Alle Dateien, die Sie hier hochladen, werden erst nach Überprüfung durch die Trainer/innen für alle sichtbar.';
@@ -144,11 +146,15 @@ $string['notice_importnoapproval'] = 'Folgende Dateien wurden für alle sichtbar
 $string['teacher_pending'] = 'Bestätigung ausstehend';
 $string['teacher_approved'] = 'sichtbar (freigegeben)';
 $string['teacher_rejected'] = 'abgelehnt';
+$string['approved'] = 'Zugestimmt';
+$string['show_details'] = 'Details anzeigen';
 $string['student_approve'] = 'zustimmen';
 $string['student_approved'] = 'Zugestimmt';
 $string['student_pending'] = 'verborgen (nicht freigegeben)';
+$string['pending'] = 'Ausstehend';
 $string['student_reject'] = 'ablehnen';
 $string['student_rejected'] = 'Abgelehnt';
+$string['rejected'] = 'Abgelehnt';
 $string['visible'] = 'sichtbar';
 $string['hidden'] = 'verborgen';
 
@@ -188,6 +194,10 @@ $string['guideline'] = 'sichtbar für alle:';
 $string['published_immediately'] = 'ja sofort, ohne Prüfung durch die Trainer/innen';
 $string['published_aftercheck'] = 'nein, erst nach Prüfung durch die Trainer/innen';
 $string['save_changes'] = 'Änderungen speichern';
+
+// Strings for JS
+$string['total'] = 'Gesamt';
+$string['details'] = 'Details';
 
 // Deprecated since Moodle 2.9!
 $string['requiremodintro'] = 'Beschreibung notwendig';

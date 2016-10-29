@@ -77,9 +77,9 @@ class base extends \html_table {
             $this->attributes['class'] .= ' coloredrows';
         }
 
-        $options = array();
-        $options[2] = get_string('student_approve', 'publication');
-        $options[1] = get_string('student_reject', 'publication');
+        $this->options = array();
+        $this->options[2] = get_string('student_approve', 'publication');
+        $this->options[1] = get_string('student_reject', 'publication');
 
         foreach ($files as $file) {
             $this->data[] = $this->add_file($file);
@@ -129,12 +129,11 @@ class base extends \html_table {
     }
 
     public function teacher_approval(\stored_file $file) {
-        global $DB, $USER;
+        global $DB;
 
         if (empty($conditions)) {
             static $conditions = array();
             $conditions['publication'] = $this->publication->get_instance()->id;
-            $conditions['userid'] = $USER->id;
         }
         $conditions['fileid'] = $file->get_id();
 

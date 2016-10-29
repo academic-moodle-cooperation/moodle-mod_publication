@@ -285,6 +285,17 @@ class base extends \table_sql {
         }
     }
 
+    /**
+     * Method wraps string with span-element including data attributes containing detailed group approval data!
+     * Is implemented/overwritten where needed!
+     *
+     * @param string $symbol string/html-snippet to wrap element around
+     * @param \stored_file $file file to fetch details for
+     */
+    protected function add_details_tooltip(string &$symbol, \stored_file $file) {
+        // This method does nothing here!
+    }
+
     /***************************************************************
      *** COLUMN OUTPUT METHODS *************************************
      **************************************************************/
@@ -463,6 +474,7 @@ class base extends \table_sql {
                     default:
                         $symbol = $this->questionmark;
                 }
+                $this->add_details_tooltip($symbol, $file);
                 $table->data[] = array($symbol);
             }
         }

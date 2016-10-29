@@ -124,6 +124,7 @@ $string['duedate_import'] = 'Approval to';
 $string['cutoffdate_upload'] = 'Last upload posssibility to';
 $string['cutoffdate_import'] = 'Last approval to';
 $string['extensionto'] = 'Extension to';
+$string['filedetails'] = 'Details';
 $string['assignment_notfound'] = 'The assignment used to import from, couldnt be found.';
 $string['assignment_notset'] = 'No assignment has been chosen.';
 $string['updatefiles'] = 'Update files';
@@ -134,6 +135,7 @@ $string['add_uploads'] = 'Add files';
 $string['edit_uploads'] = 'edit/upload files';
 $string['edit_timeover'] = 'Files can only be edited during the changeperiod.';
 $string['approval_timeover'] = 'You can only change your approval during the changeperiod.';
+$string['noentries'] = 'No entries';
 $string['nofiles'] = 'No files available';
 $string['notice'] = 'Notice:';
 $string['notice_uploadrequireapproval'] = 'All uploaded files will be made visible only after the teacher’s review';
@@ -145,11 +147,15 @@ $string['notice_importnoapproval'] = 'The following files are visible to all.';
 $string['teacher_pending'] = 'confirmation pending';
 $string['teacher_approved'] = 'visible (approved)';
 $string['teacher_rejected'] = 'declined';
+$string['approved'] = 'Approved';
+$string['show_details'] = 'Show details';
 $string['student_approve'] = 'approve';
 $string['student_approved'] = 'approved';
 $string['student_pending'] = 'not visible (not approved)';
+$string['pending'] = 'Pending';
 $string['student_reject'] = 'reject';
 $string['student_rejected'] = 'rejected';
+$string['rejected'] = 'Rejected';
 $string['visible'] = 'visible';
 $string['hidden'] = 'hidden';
 
@@ -189,6 +195,10 @@ $string['guideline'] = 'visible for everybody:';
 $string['published_immediately'] = 'yes immediately, without approval by a teacher';
 $string['published_aftercheck'] = 'no, only after approval by a teacher';
 $string['save_changes'] = 'Save changes';
+
+// Strings for JS
+$string['total'] = 'total';
+$string['details'] = 'Details';
 
 // Deprecated since Moodle 2.9!
 $string['requiremodintro'] = 'Require activity description';

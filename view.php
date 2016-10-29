@@ -129,14 +129,12 @@ if ($savevisibility) {
 
     if (count($users) > 0) {
 
-        $sql = 'UPDATE {publication_file} SET teacherapproval=:approval';
-        $sql .= ' WHERE publication=:pubid AND userid  IN (' . implode(',', $users) . ')';
-
-        $params = array();
-        $params['approval'] = ($action == "approveusers") ? 1 : 0;
+        list($usersql, $params) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
+        $approval = ($action == "approveusers") ? 1 : 0;
         $params['pubid'] = $publication->get_instance()->id;
+        $select = ' publication=:pubid AND userid '.$usersql;
 
-        $DB->execute($sql, $params);
+        $DB->set_field_select('publication_file', 'teacherapproval', $approval, $select, $params);
     }
 } else if ($action == "resetstudentapproval") {
     require_capability('mod/publication:approve', $context);
@@ -146,13 +144,33 @@ if ($savevisibility) {
 
     if (count($users) > 0) {
 
-        $sql = 'UPDATE {publication_file} SET studentapproval=NULL';
-        $sql .= ' WHERE publication=:pubid AND userid  IN (' . implode(',', $users) . ')';
-
-        $params = array();
+        list($usersql, $params) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
+        $select = ' publication=:pubid AND userid '.$usersql;
         $params['pubid'] = $publication->get_instance()->id;
 
-        $DB->execute($sql, $params);
+        $DB->set_field_select('publication_file', 'studentapproval', null, $select, $params);
+
+        if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
+                && $DB->get_field('assign', 'teamsubmission', array('id' => $publication->get_instance()->importfrom))) {
+            $fileids = $DB->get_fieldset_select('publication_file', 'id', $select, $params);
+            if (count($fileids) == 0) {
+                $fileids = array(-1);
+            }
+
+            $groups = $users;
+            $users = array();
+            foreach ($groups as $cur) {
+                $members = $publication->get_submissionmembers($cur);
+                $users = array_merge($users, array_keys($members));
+            }
+            if (count($users) > 0) { // Attention, now we have real users! Above they may be groups!
+                list($usersql, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
+                list($filesql, $fileparams) = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
+                $select = ' fileid '.$filesql.' AND userid '.$usersql;
+                $params = $fileparams + $userparams;
+                $DB->set_field_select('publication_groupapproval', 'approval', null, $select, $params);
+            }
+        }
     }
 }
 
@@ -175,13 +193,24 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
     $conditions['publication'] = $publication->get_instance()->id;
     $conditions['userid'] = $USER->id;
 
+    $pubfileids = $DB->get_records_menu('publication_file', array('publication' => $publication->get_instance()->id),
+                                        'id ASC', 'fileid, id');
+                                        var_dump($pubfileids);
+
     // Update records.
     foreach ($studentapproval as $idx => $approval) {
         $conditions['fileid'] = $idx;
 
         $approval = ($approval >= 1) ? $approval - 1 : null;
 
-        $DB->set_field('publication_file', 'studentapproval', $approval, $conditions);
+        if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
+                && $DB->get_field('assign', 'teamsubmission', array('id' => $publication->get_instance()->importfrom))) {
+            /* We have to deal with group approval! The method sets group approval for the specified user
+             * and returns current cumulated group approval (and it also sets it in publication_file table)! */
+            $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
+        } else {
+            $DB->set_field('publication_file', 'studentapproval', $approval, $conditions);
+        }
     }
 }
 

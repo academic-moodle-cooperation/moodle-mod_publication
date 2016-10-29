@@ -43,6 +43,8 @@ class group extends base {
     protected $groupingid = 0;
 
     public function add_file(\stored_file $file) {
+        global $USER, $DB;
+
         // The common columns!
         $data = parent::add_file($file);
 
@@ -50,20 +52,46 @@ class group extends base {
         // TODO: copied from import class, adapt to multiple students being involved!
         $teacherapproval = $this->teacher_approval($file);
         if ($teacherapproval && $this->publication->get_instance()->obtainstudentapproval) {
-            $studentapproval = $this->student_approval($file);
-            if ($publication->is_open() && $studentapproval == 0) {
+            $pubfileid = $DB->get_field('publication_file', 'id', array('publication' => $this->publication->get_instance()->id,
+                                                                        'fileid'      => $file->get_id()));
+            list($studentapproval, $approvaldetails) = $this->publication->group_approval($pubfileid);
+            if ($this->publication->is_open()
+                    && (!key_exists($USER->id, $approvaldetails) || ($approvaldetails[$USER->id]->approval === null))) {
                 $this->changepossible = true;
-                $data[] = \html_writer::select($options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
+                if (!key_exists($USER->id, $approvaldetails)) {
+                    $checked = 0;
+                } else {
+                    $checked = $approvaldetails[$USER->id]->approval === null ? 0 : $approvaldetails[$USER->id]->approval + 1;
+                }
+                $data[] = \html_writer::select($this->options, 'studentapproval['.$file->get_id().']', $checked);
             } else {
-                switch($studentapproval) {
-                    case 2:
-                        $data[] = get_string('student_approved', 'publication');
-                        break;
-                    case 1:
-                        $data[] = get_string('student_rejected', 'publication');
-                        break;
-                    default:
-                        $data[] = get_string('student_pending', 'publication');
+                if ($studentapproval === null) {
+                    $data[] = get_string('student_pending', 'publication');
+                } else if ($studentapproval) {
+                    $data[] = get_string('student_approved', 'publication');
+                } else {
+                    $rejected = array();
+                    $pending = array();
+                    foreach ($approvaldetails as $cur) {
+                        if ($cur->approval === 0) {
+                            $rejected[] = fullname($cur);
+                        } else if ($cur->approval === null) {
+                            $pending[] = fullname($cur);
+                        }
+                    }
+                    if (count($rejected) > 0) {
+                        $rejected = get_string('rejected', 'publication').': '.implode(', ', $rejected);
+                    } else if ($this->publication->get_instance()->groupapproval == PUBLICATION_APPROVAL_ALL) {
+                        if (count($pending) > 0) {
+                            $rejected = get_string('pending', 'publication').': '.implode(', ', $pending);
+                        } else {
+                            $rejected = '';
+                        }
+                    } else {
+                        $rejected = '';
+                    }
+                    $data[] = \html_writer::tag('span', get_string('student_rejected', 'publication'),
+                                                array('title' => $rejected));
                 }
             }
         } else {
