@@ -215,6 +215,59 @@ class base extends \table_sql {
         $this->sql->groupby = $groupby;
     }
 
+    /**
+     * Query the db. Store results in the table object for use by build_table. We had to override, due to group by clause!
+     *
+     * @param int $pagesize size of page for paginated displayed table.
+     * @param bool $useinitialsbar do you want to use the initials bar. Bar
+     * will only be used if there is a fullname column defined for the table.
+     */
+    public function query_db($pagesize, $useinitialsbar=true) {
+        global $DB;
+        if (!$this->is_downloading()) {
+            if ($this->countsql === null) {
+                $this->countsql = 'SELECT COUNT(1) FROM '.$this->sql->from.' WHERE '.$this->sql->where;
+                $this->countparams = $this->sql->params;
+            }
+            $grandtotal = $DB->count_records_sql($this->countsql, $this->countparams);
+            if ($useinitialsbar && !$this->is_downloading()) {
+                $this->initialbars($grandtotal > $pagesize);
+            }
+
+            list($wsql, $wparams) = $this->get_sql_where();
+            if ($wsql) {
+                $this->countsql .= ' AND '.$wsql;
+                $this->countparams = array_merge($this->countparams, $wparams);
+
+                $this->sql->where .= ' AND '.$wsql;
+                $this->sql->params = array_merge($this->sql->params, $wparams);
+
+                $total  = $DB->count_records_sql($this->countsql, $this->countparams);
+            } else {
+                $total = $grandtotal;
+            }
+
+            $this->pagesize($pagesize, $total);
+        }
+
+        // Fetch the attempts!
+        $sort = $this->get_sql_sort();
+        if ($sort) {
+            $sort = "ORDER BY $sort";
+        }
+        $sql = "SELECT
+                {$this->sql->fields}
+                FROM {$this->sql->from}
+                WHERE {$this->sql->where}
+                ".($this->sql->groupby ? "GROUP BY {$this->sql->groupby}" : "")."
+                {$sort}";
+        if (!$this->is_downloading()) {
+            $this->rawdata = $DB->get_records_sql($sql, $this->sql->params, $this->get_page_start(), $this->get_page_size());
+        } else {
+            $this->rawdata = $DB->get_records_sql($sql, $this->sql->params);
+        }
+    }
+
     public function get_files($itemid) {
         if (($itemid === $this->itemid) && (($this->files !== null) || ($this->resources !== null))) {
             // We cache just the current files, to use less memory!

@@ -41,7 +41,13 @@ defined('MOODLE_INTERNAL') || die();
 class group extends base {
     /** @var groupingid grouping id for assign's team submissions */
     protected $groupingid = 0;
-        /** @var protected totalfiles amount of files in table, get's counted during formating of the rows! */
+    /** @var requiregroup if a group membership is required by assign's team submission */
+    protected $requiregroup = 0;
+    /** @var assigncm course module object of assign to import from */
+    protected $assigncm = null;
+    /** @var assigncontext context instance of assign to import from */
+    protected $assigncontext = null;
+    /** @var protected totalfiles amount of files in table, get's counted during formating of the rows! */
     protected $totalfiles = null;
 
     protected function init_sql() {
@@ -53,14 +59,29 @@ class group extends base {
                    SUM(files.studentapproval) AS studentapproval, NULL AS teacherapproval, MAX(files.timecreated) AS timemodified ";
 
         $groups = $this->publication->get_groups($this->groupingid);
-        list($sqlgroupids, $groupparams) = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED, 'group');
-        $params = $params + $groupparams + array('publication' => $this->cm->instance);
+        if (count($groups) > 0) {
+            list($sqlgroupids, $groupparams) = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED, 'group');
+            $params = $params + $groupparams + array('publication' => $this->cm->instance);
+        } else {
+            $sqlgroupids = " = :group ";
+            $params['group'] = -1;
+        }
 
-        $from = '{groups} g '.
-           'LEFT JOIN {publication_file} files ON g.id = files.userid AND files.publication = :publication ';
+        if ($this->requiregroup || !count($this->publication->get_submissionmembers(0))) {
+            $grouptable = '{groups} g ';
+        } else {
+            // If no group is required by assign to submit, we have to include all users without group as group 0 - standard group!
+            $grouptable = " ( SELECT 0 AS id, :stdname AS name
+                           UNION ALL
+                              SELECT {groups}.id, {groups}.name AS name
+                                FROM {groups}) AS g ";
+            $params['stdname'] = get_string('defaultteam', 'assign');
+        }
+
+        $from = $grouptable." LEFT JOIN {publication_file} files ON g.id = files.userid AND files.publication = :publication ";
 
         $where = "g.id ".$sqlgroupids;
-        $groupby = ' g.id ';
+        $groupby = " g.id ";
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
         $this->set_count_sql("SELECT COUNT(g.id) FROM ".$from." WHERE ".$where, $params);
@@ -72,6 +93,9 @@ class group extends base {
 
         $assignid = $publication->get_instance()->importfrom;
         $this->groupingid = $DB->get_field('assign', 'teamsubmissiongroupingid', array('id' => $assignid));
+        $this->requiregroup = $publication->requiregroup();
+        $this->assigncm = get_coursemodule_from_instance('assign', $assignid, $publication->get_instance()->course);
+        $this->assigncontext = \context_module::instance($this->assigncm->id);
 
         parent::__construct($uniqueid, $publication);
 
@@ -130,8 +154,9 @@ class group extends base {
      * @return $string Return groups members.
      */
     public function col_groupmembers($values) {
-        $groupmembers = groups_get_members($values->id);
         $cell = '';
+
+        $groupmembers = $this->publication->get_submissionmembers($values->id);
 
         if (!count($groupmembers)) {
             return $cell;

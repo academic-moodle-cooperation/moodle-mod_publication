@@ -56,6 +56,8 @@ class publication {
     private $course;
     /** @var object coursemodule */
     private $coursemodule;
+    /** @var bool requiregroup if mode = import and group membership is required for submission in assign to import from */
+    private $requiregroup = 0;
 
     /**
      * Constructor
@@ -84,6 +86,11 @@ class publication {
         $this->instance = $DB->get_record("publication", array("id" => $cm->instance));
 
         $this->instance->obtainteacherapproval = !$this->instance->obtainteacherapproval;
+
+        if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
+            $cond = array('id' => $this->instance->importfrom);
+            $this->requiregroup = $DB->get_field('assign', 'preventsubmissionnotingroup', $cond);
+        }
     }
 
     /**
@@ -301,9 +308,22 @@ class publication {
         return $this->coursemodule;
     }
 
+    /**
+     * Whether or not the assign to import from requires group membership for submissions!
+     *
+     * @return bool true if group membership is required, false if not or type = upload
+     */
+    public function requiregroup() {
+        return $this->requiregroup;
+    }
+
     public function get_groups($groupingid = 0, $selgroups = array()) {
         $groups = groups_get_all_groups($this->get_instance()->course, 0, $groupingid);
         $groups = array_keys($groups);
+
+        if (empty($groupingid) && !$this->requiregroup()) {
+            $groups[] = 0;
+        }
 
         if (is_array($selgroups) && count($selgroups) > 0) {
             $groups = array_intersect($groups, $selgroups);
@@ -631,7 +651,7 @@ class publication {
         // Calculate new cumulated studentapproval for caching in file table!
 
         // Get group members!
-        $groupmembers = groups_get_members($filerec->userid);
+        $groupmembers = $this->get_submissionmembers($filerec->userid);
         if (!empty($groupmembers)) {
             list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
             $select = "fileid = :fileid AND approval = :approval AND userid ".$usersql;
@@ -706,6 +726,43 @@ class publication {
     }
 
     /**
+     * Gets the group members for the specified group. Or users without membership if groupid is 0!
+     *
+     * @param int $groupid
+     * @return stdClass[] Group member's user records.
+     */
+    public function get_submissionmembers($groupid) {
+        global $DB;
+
+        if (($this->get_instance()->mode != PUBLICATION_MODE_IMPORT)
+                || !$DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom))) {
+            throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
+        }
+
+        if (!empty($groupid)) {
+            $groupmembers = groups_get_members($groupid);
+        } else if (!$DB->get_field('assign', 'preventsubmissionnotingroup', array('id' => $this->get_instance()->importfrom))) {
+            // If groupid == 0, we get all users without group!
+            $groupmembers = array();
+            $assigncm = get_coursemodule_from_instance('assign', $this->instance->importfrom);
+            $context = context_module::instance($assigncm->id);
+            $users = get_enrolled_users($context, "mod/assign:submit", 0);
+            if (!empty($users)) {
+                foreach ($users as $user) {
+                    $ugrps = groups_get_user_groups($this->instance->course, $user->id);
+                    if ( !count($ugrps[0]) ) {
+                        $groupmembers[$user->id] = $user;
+                    }
+                }
+            }
+        } else {
+            $groupmembers = array();
+        }
+
+        return $groupmembers;
+    }
+
+    /**
      * Gets group approval for the specified file!
      *
      * @param int $pubfileid ID of publication file entry in DB
@@ -722,7 +779,7 @@ class publication {
         $filerec = $DB->get_record('publication_file', array('id' => $pubfileid));
 
         // Get group members!
-        $groupmembers = groups_get_members($filerec->userid);
+        $groupmembers = $this->get_submissionmembers($filerec->userid);
 
         if (!empty($groupmembers)) {
             list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
@@ -846,7 +903,11 @@ class publication {
                 $itemname = fullname($auser);
                 $itemunique = $uploader;
             } else {
-                $itemname = $DB->get_field('groups', 'name', array('id' => $uploader));
+                if (empty($uploader)) {
+                    $itemname = get_string('defaultteam', 'assign');
+                } else {
+                    $itemname = $DB->get_field('groups', 'name', array('id' => $uploader));
+                }
                 $itemunique = '';
             }
 

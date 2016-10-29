@@ -125,7 +125,9 @@ class group extends base {
         $groups = groups_get_all_groups($this->publication->get_instance()->course, $USER->id, $this->groupingid);
         if (empty($groups)) {
             // Users without group membership get assigned group id 0!
-            $groups = array(0);
+            $groups = array();
+            $groups[0] = new \stdClass();
+            $groups[0]->id = 0;
         }
 
         foreach ($groups as $group) {

@@ -195,7 +195,6 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
 
     $pubfileids = $DB->get_records_menu('publication_file', array('publication' => $publication->get_instance()->id),
                                         'id ASC', 'fileid, id');
-                                        var_dump($pubfileids);
 
     // Update records.
     foreach ($studentapproval as $idx => $approval) {
