@@ -34,22 +34,27 @@ define(['jquery', 'core/log'], function($, log) {
      * @alias module:mod_publication/modform
      */
     var Modform = function() {
-        var importsel = ".path-mod-publication #fitem_id_importfrom, .path-mod-publication #fitem_id_obtainstudentapproval, ";
-        importsel += ".path-mod-publication #fitem_id_autoimport, .path-mod-publication #fgroup_id_groupapprovalarray";
-        this.importelements = $(importsel);
+        var importsel = ".path-mod-publication [name=importfrom], .path-mod-publication [name=obtainstudentapproval], ";
+        importsel += ".path-mod-publication [name=autoimport], .path-mod-publication [name=groupapproval]";
+        this.importelements = $(importsel).parents(".fitem");
 
-        var uploadsel = ".path-mod-publication #fitem_id_maxfiles, .path-mod-publication #fitem_id_maxbytes, ";
-        uploadsel += ".path-mod-publication #fitem_id_allowedfiletypes, .path-mod-publication #fitem_id_obtainteacherapproval";
-        this.uploadelements = $(uploadsel);
+        this.importfrom = $(".path-mod-publication [name=importfrom]");
+
+        var uploadsel = ".path-mod-publication [name=maxfiles], .path-mod-publication [name=maxbytes], ";
+        uploadsel += ".path-mod-publication [name=allowedfiletypes], .path-mod-publication [name=obtainteacherapproval]";
+        this.uploadelements = $(uploadsel).parents(".fitem");
+
         // More than 1 input (selection of radio buttons)!
-        this.mode = $(".path-mod-publication #fgroup_id_modegrp input[name=mode]");
+        this.mode = $(".path-mod-publication input[name=mode]");
+
+        this.getapproval = $(".path-mod-publication [name=obtainstudentapproval]");
     };
 
     Modform.prototype.toggle_available_options = function(e) {
         if (e.stopPropagation !== undefined) {
             e.stopPropagation();
         }
-        var mode = parseInt($(".path-mod-publication #fgroup_id_modegrp input[name=mode]:checked").val());
+        var mode = parseInt($(".path-mod-publication input[name=mode]:checked").val());
 
         if (mode === 0) { // Uploads by students!
             e.data.importelements.fadeOut(600).promise().done(function() {
@@ -66,7 +71,35 @@ define(['jquery', 'core/log'], function($, log) {
                 });
             });
         } else {
+            e.data.importelements.fadeOut(600).promise().done(function() {
+                e.data.importelements.prop("disabled", true);
+            });
+            e.data.uploadelements.fadeOut(600).promise().done(function() {
+                e.data.uploadelements.prop("disabled", true);
+            });
             log.error("Incorrect comparison of mode (Type: " + typeof(mode) + "; Value: " + mode + ")", "publication");
+        }
+
+        e.data.toogle_groupapproval_disabled(e);
+    };
+
+    Modform.prototype.toogle_groupapproval_disabled = function(e) {
+        if (e.stopPropagation !== undefined) {
+            e.stopPropagation();
+        }
+
+        var mode = parseInt($(".path-mod-publication input[name=mode]:checked").val());
+        var importfrom = e.data.importfrom.find(":checked");
+        var teamsubmission = 0;
+        if (importfrom) {
+            teamsubmission = importfrom.data("teamsubmission");
+        }
+
+        if ((mode === 0) || (teamsubmission !== 1) || (parseInt(e.data.getapproval.val()) === 0)) {
+            // Disabled if mode=upload or no teamsubmission-assignment is selected!
+            $(".path-mod-publication [name=groupapproval]").prop("disabled", true);
+        } else {
+            $(".path-mod-publication [name=groupapproval]").prop("disabled", false);
         }
     };
 
@@ -75,6 +108,8 @@ define(['jquery', 'core/log'], function($, log) {
     instance.initializer = function() {
 
         instance.mode.change(instance, instance.toggle_available_options);
+        instance.importfrom.change(instance, instance.toogle_groupapproval_disabled);
+        instance.getapproval.change(instance, instance.toogle_groupapproval_disabled);
 
         log.info("Toggle available options once to begin!");
         instance.toggle_available_options({data: instance});

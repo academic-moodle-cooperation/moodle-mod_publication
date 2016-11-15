@@ -50,8 +50,6 @@ class mod_publication_mod_form extends moodleform_mod{
     public function definition() {
         global $DB, $CFG, $COURSE, $PAGE;
 
-        $PAGE->requires->js_call_amd('mod_publication/modform', 'initializer', array());
-
         $mform = $this->_form;
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
@@ -100,10 +98,8 @@ class mod_publication_mod_form extends moodleform_mod{
         $select = $mform->createElement('select', 'importfrom', get_string('assignment', 'publication'), $choices, $disabled);
         $noteamassignments = array(-1);
         foreach ($assigninstances as $assigninstance) {
-            if (empty($assigninstance->teamsubmission)) {
-                $noteamassignments[] = $assigninstance->id;
-            }
-            $select->addOption($assigninstance->name, $assigninstance->id);
+            $attributes = array('data-teamsubmission' => $assigninstance->teamsubmission);
+            $select->addOption($assigninstance->name, $assigninstance->id, $attributes);
         }
         $mform->addElement($select);
         $mform->addHelpButton('importfrom', 'assignment', 'publication');
@@ -140,11 +136,6 @@ class mod_publication_mod_form extends moodleform_mod{
                          array(html_writer::empty_tag('br')), false);
         $mform->addHelpButton('groupapprovalarray', 'groupapprovalmode', 'publication');
         $mform->setDefault('groupapproval', PUBLICATION_APPROVAL_ALL);
-        // Add disabledIfs for all not-group-assignments!
-        foreach ($noteamassignments as $cur) {
-            $mform->disabledIf('groupapprovalarray', 'importfrom', 'eq', $cur);
-        }
-        $mform->disabledIf('groupapprovalarray', 'obtainstudentapproval', 'neq', 1);
 
         // Publication mode upload specific elements.
         $maxfiles = array();
@@ -211,6 +202,8 @@ class mod_publication_mod_form extends moodleform_mod{
 
         // Buttons.
         $this->add_action_buttons();
+
+        $PAGE->requires->js_call_amd('mod_publication/modform', 'initializer', array());
     }
 
     /**
