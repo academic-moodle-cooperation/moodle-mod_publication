@@ -67,9 +67,11 @@ INSTALLATION
 
 CHANGELOG
 ================================================================================
-v 2016090700
+v 2016062201
 -------------------------
-*) Make name and description searchable
+*) New Feature: Made name and description searchable
+*) New Feature: Add support to import online-texts
+*) New Feature: Add support for assign's teamsubmissions
 
 v 2016062200
 -------------------------
