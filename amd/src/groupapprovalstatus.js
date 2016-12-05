@@ -27,7 +27,7 @@
  /**
   * @module mod_publication/groupapprovalstatus
   */
-define(['jquery', 'core/yui', 'core/str', 'core/templates', 'core/log'], function($, Y, str, templates, log) {
+define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'], function($, ModalFactory, str, templates, log) {
 
     /**
      * @constructor
@@ -35,10 +35,6 @@ define(['jquery', 'core/yui', 'core/str', 'core/templates', 'core/log'], functio
      */
     var Groupapprovalstatus = function() {
         this.id = '';
-
-        this.contextid = 0;
-
-        this.panel = null;
     };
 
     var instance = new Groupapprovalstatus();
@@ -55,107 +51,87 @@ define(['jquery', 'core/yui', 'core/str', 'core/templates', 'core/log'], functio
 
         log.info('Initialize groupapprovalstatus JS!', 'mod_publication');
 
+        // Prepare modal object!
+        if (!instance.modal) {
+            instance.modalpromise = ModalFactory.create({
+                type: ModalFactory.types.DEFAULT,
+                body: '...'
+            });
+        }
+
         str.get_string('filedetails', 'mod_publication').done(function(s) {
             log.info('Done loading strings...', 'mod_publication');
+            instance.modalpromise.done(function(modal) {
+                log.info('Done preparing modal', 'mod_publication');
+                instance.modal = modal;
+                $( ".path-mod-publication .statustable .approvaldetails *").click(function(e) {
+                    e.stopPropagation();
+                    var element = $( e.target );
 
-            // Get group id!
-            /*
-             * In the next stable moodle version we will use a moodle AMD module
-             * allowing us to call the popup without YUI in a standard way.
-             *
-             * Until then we're wrapping some YUI and start transitioning
-             * Moodle-style (see also lib/amd/notification.js)
-             */
-            // Here we are wrapping YUI. This allows us to start transitioning, but
-            // wait for a good alternative without having inconsistent dialogues.
+                    var dataelement = element.parent();
 
-            $( ".path-mod-publication .statustable .approvaldetails *").click(function(e) {
-                e.stopPropagation();
-                var element = $( e.target );
+                    var approved;
+                    try {
+                        approved = dataelement.data('approved');
+                    } catch (ex) {
+                        approved = [];
+                    }
 
-                var dataelement = element.parent();
+                    var rejected;
+                    try {
+                        rejected = dataelement.data('rejected');
+                    } catch (ex) {
+                        rejected = [];
+                    }
 
-                var approved;
-                try {
-                    approved = dataelement.data('approved');
-                } catch (ex) {
-                    approved = [];
-                }
+                    var pending;
+                    try {
+                        pending = dataelement.data('pending');
+                    } catch (ex) {
+                        pending = [];
+                    }
 
-                var rejected;
-                try {
-                    rejected = dataelement.data('rejected');
-                } catch (ex) {
-                    rejected = [];
-                }
+                    var filename;
+                    try {
+                        filename = s + ' ' + dataelement.data('filename');
+                    } catch (ex) {
+                        filename = s;
+                    }
 
-                var pending;
-                try {
-                    pending = dataelement.data('pending');
-                } catch (ex) {
-                    pending = [];
-                }
+                    var stat;
+                    try {
+                        stat = dataelement.data('status');
+                    } catch (ex) {
+                        stat = { approved: false, rejected: false, pending: false };
+                    }
 
-                var filename;
-                try {
-                    filename = s + ' ' + dataelement.data('filename');
-                } catch (ex) {
-                    filename = s;
-                }
+                    var context = {
+                        id: instance.id,
+                        mode: instance.mode,
+                        status: stat,
+                        approved: approved,
+                        rejected: rejected,
+                        pending: pending
+                    };
 
-                var stat;
-                try {
-                    stat = dataelement.data('status');
-                } catch (ex) {
-                    stat = { approved: false, rejected: false, pending: false };
-                }
+                    // This will call the function to load and render our template.
+                    var promise = templates.render('mod_publication/approvaltooltip', context);
 
-                var context = {
-                    id: instance.id,
-                    mode: instance.mode,
-                    status: stat,
-                    approved: approved,
-                    rejected: rejected,
-                    pending: pending
-                };
-
-                // This will call the function to load and render our template.
-                var promise = templates.render('mod_publication/approvaltooltip', context);
-
-                // How we deal with promise objects is by adding callbacks.
-                promise.done(function(source) {
-                    if (!instance.panel) {
-                        Y.use('moodle-core-info', function () {
-                            instance.panel = new M.core.notification.info({});
-                            // Here eventually I have my compiled template, and any javascript that it generated.
-                            instance.panel.setStdModContent('header', filename);
-                            instance.panel.setStdModContent('body', source);
-                            instance.panel.show();
-                        });
-                    } else {
+                    // How we deal with promise objects is by adding callbacks.
+                    promise.done(function(source) {
                         // Here eventually I have my compiled template, and any javascript that it generated.
-                        instance.panel.setStdModContent('header', filename);
-                        instance.panel.setStdModContent('body', source);
-                        instance.panel.show();
-                    }
-
-                }).fail(function(ex) {
-                    if (!instance.panel) {
-                        Y.use('moodle-core-info', function () {
-                            instance.panel = new M.core.notification.info({});
-                            // Deal with this exception (I recommend core/notify exception function for this).
-                            instance.panel.setStdModContent('body', ex.message);
-                            instance.panel.show();
-                        });
-                    } else {
+                        instance.modal.setTitle(filename);
+                        instance.modal.setBody(source);
+                        instance.modal.show();
+                    }).fail(function(ex) {
                         // Deal with this exception (I recommend core/notify exception function for this).
-                        instance.panel.setStdModContent('body', ex.message);
-                        instance.panel.show();
-                    }
+                        instance.modal.setBody(ex.message);
+                        instance.modal.show();
+                    });
                 });
+                // Everything is prepared, fade the symbols in!
+                $( ".path-mod-publication .statustable .approvaldetails").fadeIn('slow');
             });
-            // Everything is prepared, fade the symbols in!
-            $( ".path-mod-publication .statustable .approvaldetails").fadeIn('slow');
         }).fail(function(ex) {
             log.error("Error getting strings: " + ex, "mod_publication");
         });
