@@ -219,8 +219,9 @@ function publication_reset_userdata($data) {
 
             $fs = get_file_storage();
             foreach ($filerecords as $filerecord) {
-                $file = $fs->get_file_by_id($filerecord->fileid);
-                $file->delete();
+                if ($file = $fs->get_file_by_id($filerecord->fileid)) {
+                    $file->delete();
+                }
             }
 
             $DB->delete_records('publication_file', array('publication' => $publication->id));

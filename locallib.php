@@ -1082,8 +1082,9 @@ class publication {
                 } else {
                     // File has been removed from assign.
                     // Remove from publication (file and db entry).
-                    $file = $fs->get_file_by_id($oldpubfile->fileid);
-                    $file->delete();
+                    if ($file = $fs->get_file_by_id($oldpubfile->fileid)) {
+                        $file->delete();
+                    }
 
                     $conditions['id'] = $oldpubfile->id;
 
