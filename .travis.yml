@@ -43,9 +43,9 @@ notifications:
     # This is the value "[Slack-Organisation]:[API-Key]#[channel]" just encrypted!
     rooms:
         #travisci channel
-      - secure: "nVBOi2yyNpIU7ICnuuP++/KnlxQKftHLZiumfuLO917V+w6Taep4eeN0shlcLcNz3/AigB/fgMhNfrXooOV9pQGckz/zccJM9ttlQQaGjnp2TQdU72QicjiJuNScQiLRvWbzogO6K3vlmihStMzpwhf4SO0ZTy4VSSEzhpryzLGtPNOpWQnITG22GIoa0KJ8MxS02wR6jlBLe73ekY+B1PQ4jab+VP+9SbTeu+NrmwCtnBKCb9RnKx5jxSld1qUhLNgwuEwcSeGAmSirEEhlWmJSe7SpkTCmlL37jjYrTWfa6G/be2FAxgIwyn37dPVhQJotEYFeyoJnLSdSKauchOalOrl/gwG2nKbdlFlWFUMpivMHoDZXOHyK85VUnfZ3sXrIGnIK7tnhTNp5r3qGU0ub/0hDPB49mGVnEYAk84nE41q8l5fOZIOKulCw1QJE37K9f5paniHZQD+nuZTPwfr9rqxgJuL4bsVzUNLVkPsJKzB+fc2FUzQMpJHNFPbV+9lO85U3QiFlAzLDX14yLC0pJsKfSRYS9GHdftz2KDtnDCnd4Ea7mgxg2Fr+Aj6zruLkXsmYKP5Cv4ESGir+SROc3bNxvxs+MN9wkIC6Pq6hS71dv4t3+7+yzS64ic3LeFGe6OwV4SElTC4t1yH/DKEdi7Fh1AK2VMXvlUQY78s="
+      - secure: "coDXwX1Gf9VTFJyjlCDFm1F0KfSRkz2DbJizD237Fla6B7ssYD/5uYKDBPHMHxHIBZ7oVGzOzuzNZdN18B/8B+6pAQeaJiVhnZGDIQh9QWAfS/6GMwhRF6wSHkXbLt8E7+pdJe0uXRatVFz3VCAwL2zghkmoTDROAMVio9RlwVf/rvAP6W0hhYIOeFU3q0IQeGIShvYYcrXl1SzeXT2zoG/GI/bRW7ZJ7AWNcfL6oN44IdszSSA3T453uBv1w4lwxGI+JLeNbr09YYfJ9QaPZpAHv7qc9rXMR2BicNwlMd/Ll8OwulnxYabqJizoINPVba6OkAxWh95AcenYSWGNR2c5vxCOC0agU7TF50w4P3UVZr3HaygQg4ECIr7q+2pdvDEx7iYEE0VLUKj+H+1ofH8qVa6q+Xo318xxcO530fTjq7vFKdpI+ZBXg/a/jNIzKRmlIanNf5yYlWYcfEQ9CEQQJENSe6LX+2unAzie2Dh7/24s+IdZDNbxQiqtz2NJurtAml2uptmgNbOMXsTusDArC2Qk2b+aVTvsK9zkhDzpGqunJi5VG3jaBjjILKmZvBgHx4yhX1kCCKfArpB4wXvcaXuxu+pfQLNrwk1Y53n2hoOpW4umnUOyIJUPZfHcKvigvEcoIr+m2i2NPTvF38ctJ2KD/bagRtoBV0pc+90="
         #mod_publication channel
-      - secure: "cG77lj7C5PUGHJEY79nRLwe39hmu4iAKqw1gED9N8xeZ1MI9SB4ElhYUYYB3CBTaz6fNHtNFgLucFhRf3I4RxIG9o1Gu4usu884HFgw4ztPih7ryUCs0BrpsK72RR6ho7SKjr7dlnjKLH2/M8P8QkweewqYRrMpvxsPuu7RQOFxKcP3y4tBUEGlB4KS23eo9fxVHy/R4c9b3wwLj22NXwrlLwBwlu7F2qpqgMOPwtOFdd/vT+fYzmbbgwrUmWLblfhEdVS4b7c68u24rxgtTKrqnguDs2W3Qvv+wh2V37+BNSFNIjRDWbxImQMmiWObk7Gk1TbOTuuOnNOtKESaw2IVvSjncNFOi2ibSNQ0kU8AWuks8ybtvowoTFGYRkJJ84mUpBLb5m6YYU+ruq86LzJykN2i7hW2t8oAXDUgXKTWp/awS3wgZpPvbEDDqZ+QzggyQO11Z2ZO76sZeO0LASmPj0fHNDD8kgjh30qQZ29+a12qbDGVJI2LcmBCGTpKXEFqVkXhul5wPgFU5uaBD3jXqWZPn4OCrZXEgPOhw3yJYkrQo05z2DNY/Y6zvN8XnYZnsFrpmKhTO9IojgOnagBH/Jh7Cafam2c4wJMIZHGuVh26xDxzErK/pZvSvdxn72jAiw7MSGbRT6dDNNMDax9NKqCYddXq0Nm8TfLWY5ss="
+      - secure: "J3CsGwgfUqu8UOrQj4Iz9Qm27U0GjgQX2zh31qIdrE8EKeBkOWJ492SJUZ+Huhkh965yM/NU2BKDHqDraIpyZX2syTUu8fj1WGQFUH9Wqhp6N6d9kgwAtSXgRF16RR2LEiKmeBfm0rvRHjICG3MIST0/pgVoAWL7mKYpvQeBx+O3n97Ixkl0e+YkBKmhYAPdsyXU2NLWhz8fMR/MXOqVLybmWYNbjlANK4MqSwRPOIrehYkbYoNj326iSsMLff6csa9OlhZqaZcADsFOLnkDgz299Zzmzvw/MvRwE3boRy73lbDt89ifZcFSMvhjkeAPA5zQm+hufVVheOAoQ5jMOEUq06hdXfI43PsUsiZ/7f0wM4cb6ew/x4T0ROcSlfX3qKbXcuy8PpO7u8zDmI5WDkssJCylwgPASk1/AIXGmEEUXK1SNbQQzz0QNZ2B+5CGTScTE4kElyjY9YYDB9aDVYJVV5bcLfVhfsdOk+ODHOTCiD+rk9PCP1QB6Cs6odbunzFAp/bzo8x03qu7WjNZvwvLC5Z8nHPZjDnDrn+iII2f8IotPa3zglacgzm9Rn0JKhD5LyVoB+i9lBuX/rUxDEbIJIfo9v3lBLobtB0XnTBXNXSN3129HwZ9/96+5J7r/WPd9UunCAlpfsQkNRD5Lk/GjrjXxqJMUbwaWMX9Iwk="
     on_success: always # default: change
     on_failure: always # default: always
 
@@ -106,3 +106,11 @@ script:
   - moodle-plugin-ci behat
 # Now we view the coverage file!
   - if [ -e "coverage.xml" ]; then echo "Show PHPUnit code coverage:"; cat coverage.xml; fi
+
+after_script:
+# See: https://github.com/moodlerooms/moodle-plugin-ci/issues/32
+  # - ps aux
+  - killall -9 php
+  - killall -9 java
+  - killall -9 Xvfb
+  # - ps aux
