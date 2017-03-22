@@ -35,6 +35,12 @@ defined('MOODLE_INTERNAL') || die();
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class upload extends base {
+    /**
+     * Add a single file to the table
+     *
+     * @param stored_file $file Stored file instance
+     * @return string[] Array of table cell contents
+     */
     public function add_file(\stored_file $file) {
         // The common columns!
         $data = parent::add_file($file);

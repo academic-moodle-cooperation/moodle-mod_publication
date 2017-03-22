@@ -118,6 +118,11 @@ class base extends \table_sql {
                                1 => get_string('no'));
     }
 
+    /**
+     * Return all columns, column-headers and helpicons for this table
+     *
+     * @return array Array with column names, column headers and help icons
+     */
     protected function get_columns() {
         $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', array('id'      => 'selectallnone',
                                                                                          'onClick' => 'toggle_userselection()'));
@@ -144,10 +149,18 @@ class base extends \table_sql {
         return array($columns, $headers, $helpicons);
     }
 
+    /**
+     * Setter for users property
+     *
+     * @param int[] $users
+     */
     protected function set_users($users) {
         $this->users = $users;
     }
 
+    /**
+     * Sets the predefined SQL for this table
+     */
     protected function init_sql() {
         global $DB;
 
@@ -264,6 +277,12 @@ class base extends \table_sql {
         }
     }
 
+    /**
+     * Returns all files to be displayed for this itemid (=userid or groupid)
+     *
+     * @param int $itemid User or group ID to fetch files for
+     * @return array Array with itemid, files-array and resources-array as items
+     */
     public function get_files($itemid) {
         if (($itemid === $this->itemid) && (($this->files !== null) || ($this->resources !== null))) {
             // We cache just the current files, to use less memory!

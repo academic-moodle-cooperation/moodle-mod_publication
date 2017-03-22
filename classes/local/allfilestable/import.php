@@ -35,6 +35,11 @@ defined('MOODLE_INTERNAL') || die();
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class import extends base {
+    /**
+     * Return all columns, column-headers and helpicons for this table
+     *
+     * @return array Array with column names, column headers and help icons
+     */
     public function get_columns() {
         list($columns, $headers, $helpicons) = parent::get_columns();
 

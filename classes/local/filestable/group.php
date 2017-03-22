@@ -35,9 +35,15 @@ defined('MOODLE_INTERNAL') || die();
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class group extends base {
-
+    /** @var int $groupingid saves the team-assignments submission grouping id */
     protected $groupingid = 0;
 
+    /**
+     * Add a single file to the table
+     *
+     * @param stored_file $file Stored file instance
+     * @return string[] Array of table cell contents
+     */
     public function add_file(\stored_file $file) {
         global $USER, $DB;
 
@@ -102,6 +108,11 @@ class group extends base {
         return $data;
     }
 
+    /**
+     * Get all files, in which the current user's groups are involved
+     *
+     * @return stored_file[] array of stored_files indexed by pathanmehash
+     */
     public function get_files() {
         global $USER, $DB;
 

@@ -46,6 +46,9 @@ class group extends base {
     /** @var protected totalfiles amount of files in table, get's counted during formating of the rows! */
     protected $totalfiles = null;
 
+    /**
+     * Sets the predefined SQL for this table
+     */
     protected function init_sql() {
         global $DB;
 
@@ -84,6 +87,12 @@ class group extends base {
 
     }
 
+    /**
+     * constructor
+     * @param string $uniqueid a string identifying this table.Used as a key in session  vars.
+     *                         It gets set automatically with the helper methods!
+     * @param publication $publication publication object
+     */
     public function __construct($uniqueid, \publication $publication) {
         global $DB, $PAGE;
 
@@ -112,6 +121,11 @@ class group extends base {
         $PAGE->requires->js_call_amd('mod_publication/groupapprovalstatus', 'initializer', array($params));
     }
 
+    /**
+     * Return all columns, column-headers and helpicons for this table
+     *
+     * @return array Array with column names, column headers and help icons
+     */
     protected function get_columns() {
         $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', array('id'      => 'selectallnone',
                                                                                          'onClick' => 'toggle_userselection()'));

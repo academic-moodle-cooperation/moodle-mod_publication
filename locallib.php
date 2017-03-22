@@ -313,6 +313,13 @@ class publication {
         return $this->requiregroup;
     }
 
+    /**
+     * Get's all groups (optionaly filtered by groupingid or group-IDs in selgroups-array)
+     *
+     * @param int $groupingid (optional) Grouping-ID to filter groups for or 0
+     * @param int[] $selgroups (optional) selected group's IDs to filter for or empty array()
+     * @return int[] array of group's IDs
+     */
     public function get_groups($groupingid = 0, $selgroups = array()) {
         $groups = groups_get_all_groups($this->get_instance()->course, 0, $groupingid);
         $groups = array_keys($groups);
@@ -331,7 +338,7 @@ class publication {
     /**
      * Get userids to fetch files for, when displaying all submitted files or downloading them as ZIP
      *
-     * @param int[] $customusers (optional) user ids for which the returned user ids have to filter
+     * @param int[] $users (optional) user ids for which the returned user ids have to filter
      * @return int[] array of userids
      */
     public function get_users($users = array()) {
@@ -692,6 +699,12 @@ class publication {
         return $approval;
     }
 
+    /**
+     * Determine and return the teacher's approval status for the given file!
+     *
+     * @param stored_file $file file to determine approval status for
+     * @return int|null teacher's approval status (null pending, 1 approved, all other rejected)
+     */
     public function teacher_approval(\stored_file $file) {
         global $DB;
 
@@ -706,6 +719,12 @@ class publication {
         return $teacherapproval;
     }
 
+    /**
+     * Determine and return the student's approval status for the given file!
+     *
+     * @param stored_file $file file to determine approval status for
+     * @return int|null student's approval status (null/0 = pending, 1 = rejected, 2 = approved)
+     */
     public function student_approval(\stored_file $file) {
         global $DB;
 
@@ -957,7 +976,12 @@ class publication {
     /**
      * Adds onlinetext-file to zipping-files including all ressources!
      *
-     *
+     * @param stored_file[] $filesforzipping array of stored files indexed by filename
+     * @param stored_file $file onlinetext-file to add to ZIP
+     * @param string $itemname User or group's name to use for filename
+     * @param string $fileforzipname Filename to use for the file being added
+     * @param file_storage $fs used to get the ressource files for the online-text-file
+     * @param string $itemunique user-ID of the uploading user or empty for teamsubmissions
      */
     protected function add_onlinetext_to_zipfiles(array &$filesforzipping, stored_file $file, $itemname, $fileforzipname,
                                                   $fs = null, $itemunique = '') {

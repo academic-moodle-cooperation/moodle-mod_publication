@@ -39,16 +39,22 @@ require_once($CFG->libdir.'/tablelib.php');
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class base extends \html_table {
-
+    /** @var protected $publication publication object */
     protected $publication = null;
-
+    /** @var protected $fs file storage object */
     protected $fs = null;
-
+    /** @var protected $files array of stored_file objects */
     protected $files = null;
+    /** @var protected $resources array of stored_file objects used in onlinetexts */
     protected $resources = null;
-
+    /** @var protected $changepossible bool whether or not changes of approval are still possible */
     protected $changepossible = false;
 
+    /**
+     * constructor
+     *
+     * @param publication $publication publication object
+     */
     public function __construct(\publication $publication) {
 
         $this->publication = $publication;
@@ -56,6 +62,11 @@ class base extends \html_table {
         $this->fs = get_file_storage();
     }
 
+    /**
+     * Initialize the table (get the files, style table, prepare options used for approval-selects, add files to table, etc.)
+     *
+     * @return int amount of files in table
+     */
     public function init() {
         $files = $this->get_files();
 
@@ -82,6 +93,12 @@ class base extends \html_table {
         return count($this->data);
     }
 
+    /**
+     * Add a single file to the table
+     *
+     * @param stored_file $file Stored file instance
+     * @return string[] Array of table cell contents
+     */
     public function add_file(\stored_file $file) {
         global $OUTPUT;
 
@@ -97,6 +114,11 @@ class base extends \html_table {
         return $data;
     }
 
+    /**
+     * Get all files, in which the current user is involved
+     *
+     * @return stored_file[] array of stored_files indexed by pathanmehash
+     */
     public function get_files() {
         global $USER;
 
@@ -122,6 +144,11 @@ class base extends \html_table {
         return $this->files;
     }
 
+    /**
+     * Returns if it's possible to change the approval
+     *
+     * @return bool
+     */
     public function changepossible() {
         return $this->changepossible ? true : false;
     }
