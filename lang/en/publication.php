@@ -105,7 +105,6 @@ $string['warning_changetoobtainteacherapproval'] = 'After deactivating this sett
 $string['warning_changefromobtainstudentapproval'] = 'If you perform this change, only you can decide which files are visible to all students. The students are not asked for their approval. All files marked as approved will become visible to all students independent of the students\' decisions.';
 $string['warning_changetoobtainstudentapproval'] = 'If you perform this change, the students are asked for their approval for all files marked as visible. Files will only become visible after the students\' approval.';
 
-
 // Strings from the File  mod_publication_grantextension_form.php.
 $string['extensionduedate'] = 'Extension due date';
 $string['extensionnotafterduedate'] = 'Extension date must be after the due date';
@@ -194,7 +193,7 @@ $string['published_immediately'] = 'yes immediately, without approval by a teach
 $string['published_aftercheck'] = 'no, only after approval by a teacher';
 $string['save_changes'] = 'Save changes';
 
-// Strings for JS
+// Strings for JS...
 $string['total'] = 'total';
 $string['details'] = 'Details';
 

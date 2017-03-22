@@ -193,7 +193,7 @@ $string['published_immediately'] = 'ja sofort, ohne Prüfung durch die Trainer/i
 $string['published_aftercheck'] = 'nein, erst nach Prüfung durch die Trainer/innen';
 $string['save_changes'] = 'Änderungen speichern';
 
-// Strings for JS
+// Strings for JS...
 $string['total'] = 'Gesamt';
 $string['details'] = 'Details';
 
