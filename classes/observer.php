@@ -74,8 +74,6 @@ class observer {
 
         $subfilerecords = $DB->get_records('assignsubmission_file', array('assignment' => $assignid,
                                                                           'submission' => $submission->id));
-        $onlinetexts = $DB->get_records('assignsubmission_onlinetext', array('assignment' => $assignid,
-                                                                             'submission' => $submission->id));
         $fs = get_file_storage();
 
         $assignfileids = array();
@@ -174,129 +172,8 @@ class observer {
             }
 
             // And now the same for online texts!
-            foreach ($onlinetexts as $record) {
+            \publication::update_assign_onlinetext($assigncm, $assigncontext, $curpub->id, $context->id, $submission->id);
 
-                // First we fetch the resource files (embedded files in text!)
-                $fsfiles = $fs->get_area_files($assigncontext->id,
-                                               'assignsubmission_onlinetext',
-                                               ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
-                                               $submission->id,
-                                               'timemodified',
-                                               false);
-                $assignfiles = array();
-                foreach ($fsfiles as $file) {
-                    $filerecord = new \stdClass();
-                    $filerecord->contextid = $context->id;
-                    $filerecord->component = 'mod_publication';
-                    $filerecord->filearea = 'attachment';
-                    $filerecord->itemid = $itemid;
-                    $filerecord->filepath = '/resources/';
-                    $filerecord->filename = $file->get_filename();
-                    $pathnamehash = $fs->get_pathname_hash($filerecord->contextid, $filerecord->component, $filerecord->filearea,
-                                                           $filerecord->itemid, $filerecord->filepath, $filerecord->filename);
-
-                    if ($fs->file_exists_by_hash($pathnamehash)) {
-                        $otherfile = $fs->get_file_by_hash($pathnamehash);
-                        if ($file->get_contenthash() != $otherfile->get_contenthash()) {
-                            // We have to update the file!
-                            $otherfile->delete();
-                            $fs->create_file_from_storedfile($filerecord, $file);
-                        }
-                    } else {
-                        // We have to add the file!
-                        $fs->create_file_from_storedfile($filerecord, $file);
-                    }
-                }
-
-                // Now we delete old resource-files, which are no longer present!
-                $resources = $fs->get_directory_files($context->id,
-                                                       'mod_publication',
-                                                       'attachment',
-                                                       $itemid,
-                                                       '/resources/',
-                                                       true,
-                                                       false);
-                foreach ($resources as $resource) {
-                    $pathnamehash = $fs->get_pathname_hash($assigncontext->id, 'assignsubmission_onlinetext',
-                                                           ASSIGNSUBMISSION_ONLINETEXT_FILEAREA, $submission->id, '/',
-                                                           $resource->get_filename());
-                    if (!$fs->file_exists_by_hash($pathnamehash)) {
-                        $resource->delete();
-                    }
-                }
-
-                /* Here we convert the pluginfile urls to relative urls for the exported html-file
-                 * (the resources have to be included in the download!) */
-                $formattedtext = str_replace('@@PLUGINFILE@@/', './resources/', $record->onlinetext);
-                $formattedtext = format_text($formattedtext, $record->onlineformat, array('context' => $assigncontext));
-
-                $head = '<head><meta charset="UTF-8"></head>';
-                $submissioncontent = '<!DOCTYPE html><html>' . $head . '<body>'. $formattedtext . '</body></html>';
-
-                $filename = get_string('onlinetextfilename', 'assignsubmission_onlinetext');
-
-                // Does the file exist... let's check it!
-                $pathhash = $fs->get_pathname_hash($context->id, 'mod_publication', 'attachment', $itemid, '/', $filename);
-
-                $conditions = array('publication' => $curpub->id,
-                                    'userid'      => $itemid,
-                                    'type'        => PUBLICATION_MODE_ONLINETEXT);
-                $pubfile = $DB->get_record('publication_file', $conditions, '*', IGNORE_MISSING);
-
-                $createnew = false;
-                if ($fs->file_exists_by_hash($pathhash)) {
-                    $file = $fs->get_file_by_hash($pathhash);
-                    if (empty($formattedtext)) {
-                        // The onlinetext was empty, delete the file!
-                        $DB->delete_records('publication_file', $conditions);
-                        $file->delete();
-                    } else if (($file->get_timemodified() < $submission->timemodified)
-                            && ($file->get_contenthash() != sha1($submissioncontent))) {
-                        /* If the submission has been modified after the file,             *
-                         * we check for different content-hashes to see if it was changed! */
-                        $createnew = true;
-                        if ($file->get_id() == $pubfile->fileid) {
-                            // Everything's alright, we can delete the old file!
-                            $file->delete();
-                        } else {
-                            // Something unexcpected happened!
-                            throw new \coding_exception('Mismatching fileids (pubfile with id '.$pubfile->fileid.
-                                                        ' and stored file '.$file->get_id().'!');
-                        }
-                    }
-                } else if (!empty($formattedtext)) {
-                    // There exists no such file, so we create one!
-                    $createnew = true;
-                }
-
-                if ($createnew === true) {
-                    // We gotta create a new one!
-                    $newfilerecord = new \stdClass();
-                    $newfilerecord->contextid = $context->id;
-                    $newfilerecord->component = 'mod_publication';
-                    $newfilerecord->filearea = 'attachment';
-                    $newfilerecord->itemid = $itemid;
-                    $newfilerecord->filename = $filename;
-                    $newfilerecord->filepath = '/';
-                    $newfile = $fs->create_file_from_string($newfilerecord, $submissioncontent);
-                    if (empty($pubfile)) {
-                        $pubfile = new \stdClass();
-                        $pubfile->userid = $itemid;
-                        $pubfile->type = PUBLICATION_MODE_ONLINETEXT;
-                        $pubfile->publication = $curpub->id;
-                    }
-                    // The file has been updated, so we set the new time.
-                    $pubfile->timecreated = time();
-                    $pubfile->fileid = $newfile->get_id();
-                    $pubfile->filename = $filename;
-                    $pubfile->contenthash = $newfile->get_contenthash();
-                    if (!empty($pubfile->id)) {
-                        $DB->update_record('publication_file', $pubfile);
-                    } else {
-                        $DB->insert_record('publication_file', $pubfile);
-                    }
-                }
-            }
         }
 
         return true;

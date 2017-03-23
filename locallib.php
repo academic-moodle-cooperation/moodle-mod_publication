@@ -1160,22 +1160,42 @@ class publication {
      * @param object $assigncontext Assignment context object
      */
     protected function import_assign_onlinetexts($assigncm, $assigncontext) {
-        global $DB, $CFG;
-
         if ($this->get_instance()->mode != PUBLICATION_MODE_IMPORT) {
             return;
         }
+
+        self::update_assign_onlinetext($assigncm, $assigncontext, $this->get_instance()->id, $this->get_context()->id);
+    }
+
+    /**
+     * Updates the online-submission(s) of a single assignment used for manual import and autoimport via event observer
+     *
+     * @param stdClass $assigncm Assign's coursemodule object
+     * @param stdClass $assigncontext Assign's context object
+     * @param int $publicationid Publication's instance ID
+     * @param int $contextid Publication's context ID
+     * @param int $submissionid (optional) If set, only process this submission, else process all submissions
+     */
+    public static function update_assign_onlinetext($assigncm, $assigncontext, $publicationid, $contextid, $submissionid = 0) {
+        global $DB, $CFG;
 
         $fs = get_file_storage();
 
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
         $assigncourse = $DB->get_record('course', array('id' => $assigncm->course));
         $assignment = new assign($assigncontext, $assigncm, $assigncourse);
+        $teamsubmission = $assignment->get_instance()->teamsubmission;
 
-        $records = $DB->get_records('assignsubmission_onlinetext', array('assignment' => $assigncm->instance));
-        $contextid = $this->get_context()->id;
+        if (!empty($submissionid)) {
+            $records = $DB->get_records('assignsubmission_onlinetext', array('assignment' => $assigncm->instance,
+                                                                             'submission' => $submissionid));
+        } else {
+            $records = $DB->get_records('assignsubmission_onlinetext', array('assignment' => $assigncm->instance));
+        }
+
         foreach ($records as $record) {
             $submission = $DB->get_record('assign_submission', array('id' => $record->submission));
+            $itemid = empty($teamsubmission) ? $submission->userid : $submission->groupid;
 
             // First we fetch the resource files (embedded files in text!)
             $fsfiles = $fs->get_area_files($assigncontext->id,
@@ -1189,11 +1209,7 @@ class publication {
                 $filerecord->contextid = $contextid;
                 $filerecord->component = 'mod_publication';
                 $filerecord->filearea = 'attachment';
-                if (empty($assignment->get_instance()->teamsubmission)) {
-                    $filerecord->itemid = $submission->userid;
-                } else {
-                    $filerecord->itemid = $submission->groupid;
-                }
+                $filerecord->itemid = $itemid;
                 $filerecord->filepath = '/resources/';
                 $filerecord->filename = $file->get_filename();
                 $pathnamehash = $fs->get_pathname_hash($filerecord->contextid, $filerecord->component, $filerecord->filearea,
@@ -1213,7 +1229,6 @@ class publication {
             }
 
             // Now we delete old resource-files, which are no longer present!
-            $itemid = empty($assignment->get_instance()->teamsubmission) ? $submission->userid : $submission->groupid;
             $resources = $fs->get_directory_files($contextid,
                                                    'mod_publication',
                                                    'attachment',
@@ -1243,7 +1258,7 @@ class publication {
             // Does the file exist... let's check it!
             $pathhash = $fs->get_pathname_hash($contextid, 'mod_publication', 'attachment', $itemid, '/', $filename);
 
-            $conditions = array('publication' => $this->get_instance()->id,
+            $conditions = array('publication' => $publicationid,
                                 'userid'      => $itemid,
                                 'type'        => PUBLICATION_MODE_ONLINETEXT);
             $pubfile = $DB->get_record('publication_file', $conditions, '*', IGNORE_MISSING);
@@ -1260,7 +1275,7 @@ class publication {
                     /* If the submission has been modified after the file,             *
                      * we check for different content-hashes to see if it was changed! */
                     $createnew = true;
-                    if ($file->get_id() == $pubfile->fileid) {
+                    if (empty($pubfile) || ($file->get_id() == $pubfile->fileid)) {
                         // Everything's alright, we can delete the old file!
                         $file->delete();
                     } else {
@@ -1277,26 +1292,18 @@ class publication {
             if ($createnew === true) {
                 // We gotta create a new one!
                 $newfilerecord = new stdClass();
-                $newfilerecord->contextid = $this->get_context()->id;
+                $newfilerecord->contextid = $contextid;
                 $newfilerecord->component = 'mod_publication';
                 $newfilerecord->filearea = 'attachment';
-                if (empty($assignment->get_instance()->teamsubmission)) {
-                    $newfilerecord->itemid = $submission->userid;
-                } else {
-                    $newfilerecord->itemid = $submission->groupid;
-                }
+                $newfilerecord->itemid = $itemid;
                 $newfilerecord->filename = $filename;
                 $newfilerecord->filepath = '/';
                 $newfile = $fs->create_file_from_string($newfilerecord, $submissioncontent);
                 if (!$pubfile) {
                     $pubfile = new stdClass();
-                    if (empty($assignment->get_instance()->teamsubmission)) {
-                        $pubfile->userid = $submission->userid;
-                    } else {
-                        $pubfile->userid = $submission->groupid;
-                    }
+                    $pubfile->userid = $itemid;
                     $pubfile->type = PUBLICATION_MODE_ONLINETEXT;
-                    $pubfile->publication = $this->get_instance()->id;
+                    $pubfile->publication = $publicationid;
                 }
                 // The file has been updated, so we set the new time.
                 $pubfile->timecreated = time();
@@ -1310,7 +1317,6 @@ class publication {
                 }
             }
         }
-
     }
 
 }
