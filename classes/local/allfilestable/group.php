@@ -80,7 +80,7 @@ class group extends base {
         $from = $grouptable." LEFT JOIN {publication_file} files ON g.id = files.userid AND files.publication = :publication ";
 
         $where = "g.id ".$sqlgroupids;
-        $groupby = " g.id ";
+        $groupby = " g.id, groupname, groupmembers, teacherapproval ";
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
         $this->set_count_sql("SELECT COUNT(g.id) FROM ".$from." WHERE ".$where, $params);
@@ -105,6 +105,7 @@ class group extends base {
         parent::__construct($uniqueid, $publication);
 
         $this->sortable(true, 'groupname'); // Sorted by group by default.
+        $this->no_sorting('groupmembers');
 
         // Init JS!
         $params = new \stdClass();

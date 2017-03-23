@@ -168,36 +168,19 @@ class base extends \table_sql {
         $ufields = \user_picture::fields('u');
         $useridentityfields = get_extra_user_fields_sql($this->context, 'u');
 
-        if ($this->groupmode != NOGROUPS) {
-            $getgroupsql = "SELECT MAX(grps.courseid), MIN(grps.name)";
-            $getgroupsql .= " AS groups, grpm.userid AS userid
-                         FROM {groups_members} grpm
-                    LEFT JOIN {groups} grps ON grps.id = grpm.groupid
-                        WHERE grps.courseid = :courseid
-                     GROUP BY grpm.userid
-                     ORDER BY MIN(grps.name) ASC";
-            $params['courseid'] = $this->cm->course;
-            $groupssql = ' LEFT JOIN ('.$getgroupsql.') AS grpq ON u.id = grpq.userid ';
-        } else {
-            $groupssql = '';
-        }
-
         $fields = $ufields.' '.$useridentityfields.', u.username,
                                 COUNT(*) filecount,
                                 SUM(files.studentapproval) AS studentapproval,
                                 NULL AS teacherapproval,
                                 MAX(files.timecreated) AS timemodified ';
 
-        if ($this->groupmode != NOGROUPS) {
-            $fields .= ", groups";
-        }
-
+        // Also filters out users according to set activitygroupmode & current activitygroup!
         $users = $this->publication->get_users();
         list($sqluserids, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
         $params = $params + $userparams + array('publication' => $this->cm->instance);
 
         $from = '{user} u '.
-           'LEFT JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication '.$groupssql;
+           'LEFT JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ';
 
         $where = "u.id ".$sqluserids;
         $groupby = $ufields.' '.$useridentityfields.', u.username ';
@@ -264,12 +247,11 @@ class base extends \table_sql {
         if ($sort) {
             $sort = "ORDER BY $sort";
         }
-        $sql = "SELECT
-                {$this->sql->fields}
-                FROM {$this->sql->from}
-                WHERE {$this->sql->where}
-                ".($this->sql->groupby ? "GROUP BY {$this->sql->groupby}" : "")."
-                {$sort}";
+        $sql = "SELECT {$this->sql->fields}
+                  FROM {$this->sql->from}
+                 WHERE {$this->sql->where}
+               ".($this->sql->groupby ? "GROUP BY {$this->sql->groupby}" : "")."
+               {$sort}";
         if (!$this->is_downloading()) {
             $this->rawdata = $DB->get_records_sql($sql, $this->sql->params, $this->get_page_start(), $this->get_page_size());
         } else {
@@ -416,8 +398,8 @@ class base extends \table_sql {
      * @return $string Return user groups.
      */
     public function col_groups($values) {
-        if (isset($values->groups)) {
-            $groups = groups_get_all_groups($this->publication->get_instance()->course, $values->id, 0, 'g.name');
+        $groups = groups_get_all_groups($this->publication->get_instance()->course, $values->id, 0, 'g.name');
+        if (!empty($groups)) {
             $values->groups = '';
             foreach ($groups as $group) {
                 if ($values->groups != '') {
