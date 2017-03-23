@@ -1,5 +1,12 @@
 CHANGELOG
 =========
+3.2.1 (2016-03-23)
+------------------
+
+* [FIXED] #4368 fixed GROUP BY in SQL causing problems with postgres
+* [CHANGED] #4292 added missing PHPDoc comments and fixed code checker warnings and unified some duplicated code in a static method
+* [CHANGED] fixed .travis.yml to check against MOODLE_32_STABLE
+
 
 3.2.0 (2016-12-05)
 ------------------
