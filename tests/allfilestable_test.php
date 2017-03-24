@@ -48,14 +48,6 @@ class publication_allfilestable_test extends advanced_testcase {
     const DEFAULT_EDITING_TEACHER_COUNT = 6;
     /** Number of timestamps to create */
     const DEFAULT_TIMESTAMP_COUNT = 6;
-    /** Optional extra number of students to create */
-    const EXTRA_STUDENT_COUNT = 40;
-    /** Optional number of suspended students */
-    const EXTRA_SUSPENDED_COUNT = 10;
-    /** Optional extra number of teachers to create */
-    const EXTRA_TEACHER_COUNT = 5;
-    /** Optional extra number of editing teachers to create */
-    const EXTRA_EDITING_TEACHER_COUNT = 5;
     /** Number of groups to create */
     const GROUP_COUNT = 6;
 
@@ -70,18 +62,6 @@ class publication_allfilestable_test extends advanced_testcase {
 
     /** @var array $students List of DEFAULT_STUDENT_COUNT students in the course*/
     protected $students = null;
-
-    /** @var array $extrateachers List of EXTRA_TEACHER_COUNT teachers in the course*/
-    protected $extrateachers = null;
-
-    /** @var array $extraeditingteachers List of EXTRA_EDITING_TEACHER_COUNT editing teachers in the course*/
-    protected $extraeditingteachers = null;
-
-    /** @var array $extrastudents List of EXTRA_STUDENT_COUNT students in the course*/
-    protected $extrastudents = null;
-
-    /** @var array $extrasuspendedstudents List of EXTRA_SUSPENDED_COUNT students in the course*/
-    protected $extrasuspendedstudents = null;
 
     /** @var array $groups List of 10 groups in the course */
     protected $groups = null;

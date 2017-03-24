@@ -92,7 +92,6 @@ class mod_publication_mod_form extends moodleform_mod{
         $choices[- 1] = get_string('choose', 'publication');
         $assigninstances = $DB->get_records('assign', array('course' => $COURSE->id));
         $select = $mform->createElement('select', 'importfrom', get_string('assignment', 'publication'), $choices, $disabled);
-        $noteamassignments = array(-1);
         foreach ($assigninstances as $assigninstance) {
             $attributes = array('data-teamsubmission' => $assigninstance->teamsubmission);
             $select->addOption($assigninstance->name, $assigninstance->id, $attributes);
