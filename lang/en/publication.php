@@ -37,7 +37,7 @@ $string['publication:view'] = 'View student folder';
 $string['publication:upload'] = 'Upload files to a student folder';
 $string['publication:approve'] = 'Decide if files should be visible for every student';
 $string['publication:grantextension'] = 'Grant extension';
-$string['search:activity'] = 'Publication - activity information';
+$string['search:activity'] = 'Student folder - activity information';
 
 $string['name'] = 'Student folder name';
 $string['obtainstudentapproval'] = 'Obtain approval';
@@ -56,8 +56,8 @@ $string['reset_userdata'] = 'All data';
 
 // Strings from the File  mod_form.
 $string['autoimport'] = 'Sync automatically with Assignment';
-$string['autoimport_help'] = 'If activated, new submissions will in corresponding Assigment will be imported automatically into Publication module. (Optional) Studentapproval has to be obtained again for the new files.';
-$string['configautoimport'] = 'If you prefer to have student submissions be automatically imported into Publication instances. This feature can be enabled/disabled for each Publication instance separately.';
+$string['autoimport_help'] = 'If activated, new submissions will in corresponding Assigment will be imported automatically into Student folder module. (Optional) Studentapproval has to be obtained again for the new files.';
+$string['configautoimport'] = 'If you prefer to have student submissions be automatically imported into Student folder instances. This feature can be enabled/disabled for each Student folder instance separately.';
 $string['availability'] = 'Timeslot for Upload/Approval';
 
 $string['allowsubmissionsfromdate'] = 'from';
@@ -111,7 +111,7 @@ $string['extensionnotafterduedate'] = 'Extension date must be after the due date
 $string['extensionnotafterfromdate'] = 'Extension date must be after the allow submissions from date';
 
 // Strings from the File  index.php.
-$string['nopublicationsincourse'] = 'There are no publication instances in this course.';
+$string['nopublicationsincourse'] = 'There are no student folder instances in this course.';
 
 // Strings from the File  view.php.
 $string['allowsubmissionsfromdate_upload'] = 'Upload possibility from';
