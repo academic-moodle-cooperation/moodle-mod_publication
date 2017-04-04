@@ -195,7 +195,7 @@ class publication {
                     }
 
                 } else {
-                    echo get_string('assignment_notfound', 'publication');
+                    echo $OUTPUT->notification(get_string('assignment_notfound', 'publication'), 'warning');
                 }
             }
             echo html_writer::end_div();
