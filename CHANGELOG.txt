@@ -1,5 +1,13 @@
 CHANGELOG
 =========
+3.2.2 (2016-04-19)
+------------------
+
+* [FIXED] #4409 fixed file permission check for one's own files in teamsubmissions for standard group
+* [CHANGED] #4276 fix inconsistent plugin naming in english lang strings
+* [CHANGED] added local PHPUnit config file
+
+
 3.2.1 (2016-03-23)
 ------------------
 
