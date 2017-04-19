@@ -29,5 +29,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2016120502;
 $plugin->requires  = 2016120500;
 $plugin->component = 'mod_publication';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "v3.2.2";
+$plugin->maturity  = MATURITY_ALPHA;
+$plugin->release   = "v3.3-dev";
