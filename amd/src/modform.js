@@ -33,9 +33,15 @@ define(['jquery', 'core/log'], function($, log) {
      * @alias module:mod_publication/modform
      */
     var Modform = function() {
-        var importsel = ".path-mod-publication [name=importfrom], .path-mod-publication [name=obtainstudentapproval], ";
-        importsel += ".path-mod-publication [name=autoimport], .path-mod-publication [name=groupapproval]";
+        var groupmode = ".path-mod-publication [name=groupapproval]";
+        var obtainstudentapproval = ".path-mod-publication [name=obtainstudentapproval]";
+        var otherimport = ".path-mod-publication [name=importfrom], ";
+        otherimport += ".path-mod-publication [name=autoimport], " + obtainstudentapproval;
+        var importsel = otherimport + ", " + groupmode + ", " + obtainstudentapproval;
         this.importelements = $(importsel).parents(".fitem");
+        this.groupmodeelement = $(groupmode).parents(".fitem");
+        this.obtainstudentapprovalelement = $(obtainstudentapproval).parents(".fitem");
+        this.otherimportelements = $(otherimport).parents(".fitem");
 
         this.importfrom = $(".path-mod-publication [name=importfrom]");
 
@@ -65,9 +71,21 @@ define(['jquery', 'core/log'], function($, log) {
         } else if (mode === 1) { // Files from assignment!
             e.data.uploadelements.fadeOut(600).promise().done(function() {
                 e.data.uploadelements.prop("disabled", true);
-                e.data.importelements.fadeIn(600).promise().done(function() {
-                    e.data.importelements.prop("disabled", false);
-                });
+                // Show group approval element only when needed!
+                if (e.data.getapproval.val() === 1
+                        && e.data.importfrom.filter(":selected").data('teamsubmission') === 1) {
+                    // Show all import elements if group approval mode is needed!
+                    e.data.importelements.fadeIn(600).promise().done(function() {
+                        e.data.importelements.prop("disabled", false);
+                    });
+                } else {
+                    // Only show other import elements, if group approval mode is not used!
+                    e.data.otherimportelements.fadeIn(600).promise().done(function() {
+                        e.data.otherimportelements.prop("disabled", false);
+                    });
+                }
+
+                e.data.toogle_groupapproval_disabled(e);
             });
         } else {
             e.data.importelements.fadeOut(600).promise().done(function() {
@@ -78,8 +96,6 @@ define(['jquery', 'core/log'], function($, log) {
             });
             log.error("Incorrect comparison of mode (Type: " + typeof(mode) + "; Value: " + mode + ")", "publication");
         }
-
-        e.data.toogle_groupapproval_disabled(e);
     };
 
     Modform.prototype.toogle_groupapproval_disabled = function(e) {
@@ -96,9 +112,13 @@ define(['jquery', 'core/log'], function($, log) {
 
         if ((mode === 0) || (teamsubmission !== 1) || (parseInt(e.data.getapproval.val()) === 0)) {
             // Disabled if mode=upload or no teamsubmission-assignment is selected!
-            $(".path-mod-publication [name=groupapproval]").prop("disabled", true);
+            e.data.groupmodeelement.fadeOut(600).promise().done(function() {
+                e.data.groupmodeelement.prop("disabled", true);
+            });
         } else {
-            $(".path-mod-publication [name=groupapproval]").prop("disabled", false);
+            e.data.groupmodeelement.fadeIn(600).promise().done(function() {
+                e.data.groupmodeelement.prop("disabled", false);
+            });
         }
     };
 

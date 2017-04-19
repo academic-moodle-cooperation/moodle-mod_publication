@@ -1,5 +1,11 @@
 CHANGELOG
 =========
+3.3-dev
+------------------
+
+* [CHANGED] #3824 show group approval mode elements only when needed
+
+
 3.2.2 (2016-04-19)
 ------------------
 
