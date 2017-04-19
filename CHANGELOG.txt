@@ -3,6 +3,7 @@ CHANGELOG
 3.3-dev
 ------------------
 
+* [FEATURE] #3926 add preview for imported onlinetext-submissions
 * [CHANGED] #3824 show group approval mode elements only when needed
 
 

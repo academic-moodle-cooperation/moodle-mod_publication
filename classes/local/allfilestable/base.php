@@ -55,6 +55,8 @@ class base extends \table_sql {
     protected $itemid = null;
     /** @var protected totalfiles amount of files in table, get's counted during formating of the rows! */
     protected $totalfiles = null;
+    /** @var string[] of cached itemnames */
+    protected $itemnames = [];
 
     /**
      * constructor
@@ -313,6 +315,57 @@ class base extends \table_sql {
         // This method does nothing here!
     }
 
+    /**
+     * Method returns online-text-preview where it's needed!
+     * Is implemented/overwritten where needed!
+     *
+     * @param int $itemid user ID or group ID
+     * @param int $fileid file ID
+     * @return string link to onlinetext-preview
+     */
+    protected function add_onlinetext_preview($itemid, $fileid) {
+        global $DB, $OUTPUT;
+        // This method does nothing here!
+        // Get file data/record!
+        $conditions = array('publication' => $this->cm->instance,
+                            'userid'      => $itemid,
+                            'fileid'      => $fileid,
+                            'type'        => PUBLICATION_MODE_ONLINETEXT);
+        if (!$DB->record_exists('publication_file', $conditions, '*')) {
+            return '';
+        }
+
+        $itemname = $this->get_itemname($itemid);
+
+        $url = new \moodle_url('/mod/publication/onlinepreview.php', array('id'       => $this->cm->id,
+                                                                           'itemid'   => $itemid,
+                                                                           'itemname' => $itemname));
+
+        $detailsattr = array('class'         => 'onlinetextpreview',
+                             'data-itemid'   => $itemid,
+                             'data-itemname' => $itemname);
+        $symbol = \html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('preview')), $detailsattr);
+
+        return \html_writer::link($url, $symbol, array('target' => '_blank'));
+    }
+
+    /**
+     * Caches and returns itemnames for given itemids
+     *
+     * @param int $itemid
+     * @return string Itemname
+     */
+    protected function get_itemname($itemid) {
+        global $DB;
+
+        if (!array_key_exists($itemid, $this->itemnames)) {
+            $user = $DB->get_record('user', array('id' => $itemid));
+            $this->itemnames[$itemid] = fullname($user);
+        }
+
+        return $this->itemnames[$itemid];
+    }
+
     /***************************************************************
      *** COLUMN OUTPUT METHODS *************************************
      **************************************************************/
@@ -342,6 +395,10 @@ class base extends \table_sql {
      * @return $string Return user fullname.
      */
     public function col_fullname($values) {
+        // Saves DB access in \mod_publication\local\allfilestable::get_itemname()!
+        if (!array_key_exists($values->id, $this->itemnames)) {
+            $this->itemnames[$values->id] = fullname($values);
+        }
 
         $extension = $this->publication->user_extensionduedate($values->id);
         if ($extension) {
@@ -364,12 +421,17 @@ class base extends \table_sql {
 
     /**
      * This function is called for each data row to allow processing of the
-     * group.
+     * group. Also caches group name in itemnames for onlinetext-preview!
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return user fullname.
+     * @return $string Return group's name.
      */
     public function col_groupname($values) {
+        // Saves DB access in \mod_publication\local\allfilestable::get_itemname()!
+        if (!array_key_exists($values->id, $this->itemnames)) {
+            $this->itemnames[$values->id] = $values->groupname;
+        }
+
         return $values->groupname;
     }
 
@@ -441,7 +503,8 @@ class base extends \table_sql {
                 $filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
 
                 $url = new \moodle_url('/mod/publication/view.php', array('id' => $this->cm->id, 'download' => $file->get_id()));
-                $filerow[] = \html_writer::link($url, $file->get_filename());
+                $filerow[] = \html_writer::link($url, $file->get_filename()).
+                             $this->add_onlinetext_preview($values->id, $file->get_id());
 
                 $filetable->data[] = $filerow;
             }

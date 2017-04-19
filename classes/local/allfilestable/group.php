@@ -120,6 +120,11 @@ class group extends base {
         }
 
         $PAGE->requires->js_call_amd('mod_publication/groupapprovalstatus', 'initializer', array($params));
+
+        $params = new \stdClass();
+        $cm = get_coursemodule_from_instance('publication', $publication->get_instance()->id);
+        $params->cmid = $cm->id;
+        $PAGE->requires->js_call_amd('mod_publication/onlinetextpreview', 'initializer', array($params));
     }
 
     /**
@@ -236,5 +241,19 @@ class group extends base {
         $symbol = $symbol.\html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('show_details', 'publication')),
                                             $detailsattr);
 
+    }
+
+    /**
+     * Caches and returns itemnames for given itemids
+     *
+     * @param int $itemid
+     * @return string Itemname
+     */
+    protected function get_itemname($itemid) {
+        if (!array_key_exists($itemid, $this->itemnames)) {
+            $this->itemnames[$itemid] = groups_get_group_name($itemid);
+        }
+
+        return $this->itemnames[$itemid];
     }
 }

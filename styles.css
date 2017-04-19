@@ -127,6 +127,7 @@
     border-width: 0;
     padding: 1px;
     padding-right: 3px;
+    white-space: nowrap;
 }
 
 #page-mod-publication-view table.statustable tbody td,
@@ -227,4 +228,9 @@
 
 .path-mod-publication .publicationoverlay table td.time {
     text-align: right;
+}
+
+.path-mod-publication .modal .modal-body {
+    max-width: 100%;
+    overflow: auto;
 }

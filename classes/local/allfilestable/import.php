@@ -36,6 +36,23 @@ defined('MOODLE_INTERNAL') || die();
  */
 class import extends base {
     /**
+     * constructor
+     * @param string $uniqueid a string identifying this table.Used as a key in session  vars.
+     *                         It gets set automatically with the helper methods!
+     * @param publication $publication publication object
+     */
+    public function __construct($uniqueid, \publication $publication) {
+        global $PAGE;
+
+        parent::__construct($uniqueid, $publication);
+
+        $params = new \stdClass();
+        $cm = get_coursemodule_from_instance('publication', $publication->get_instance()->id);
+        $params->cmid = $cm->id;
+        $PAGE->requires->js_call_amd('mod_publication/onlinetextpreview', 'initializer', array($params));
+    }
+
+    /**
      * Return all columns, column-headers and helpicons for this table
      *
      * @return array Array with column names, column headers and help icons

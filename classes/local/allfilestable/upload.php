@@ -55,4 +55,16 @@ class upload extends base {
 
         return array($columns, $headers, $helpicons);
     }
+
+    /**
+     * Method is not needed here and has to return ''!
+     *
+     * @param int $itemid user ID or group ID
+     * @param int $fileid file ID
+     * @return string empty string
+     */
+    protected function add_onlinetext_preview($itemid, $fileid) {
+        // This method does nothing here!
+        return '';
+    }
 }

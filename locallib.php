@@ -1325,4 +1325,58 @@ class publication {
         }
     }
 
+    /**
+     * Format file content of imported onlinetexts to be rendered as preview.
+     *
+     * @param int $itemid User's or group's ID
+     * @param int $publicationid Publication instance's database ID
+     * @param int $contextid Publication instance's context ID
+     * @return string formatted HTML snippet ready to be output
+     */
+    public static function export_onlinetext_for_preview($itemid, $publicationid, $contextid) {
+        global $DB;
+
+        // Get file data/record!
+        $conditions = array('publication' => $publicationid,
+                            'userid'      => $itemid,
+                            'type'        => PUBLICATION_MODE_ONLINETEXT);
+        if (!$pubfile = $DB->get_record('publication_file', $conditions, '*')) {
+            return '';
+        }
+
+        $fs = get_file_storage();
+        $file = $fs->get_file_by_id($pubfile->fileid);
+        $content = $file->get_content();
+
+        // Correct ressources filepaths for onine-view!
+        $resources = $fs->get_directory_files($contextid,
+                                              'mod_publication',
+                                              'attachment',
+                                              $itemid,
+                                              '/resources/',
+                                              true,
+                                              false);
+        foreach ($resources as $resource) {
+            // TODO watch the encoding of the file's names, in the event of core changing it, we have to change too!
+            $filename = rawurlencode($resource->get_filename());
+            $search = './resources/'.$filename;
+            $replace = '@@PLUGINFILE@@/resources/'.$filename;
+            $content = str_replace($search, $replace, $content);
+        }
+        $content = file_rewrite_pluginfile_urls($content, 'pluginfile.php', $contextid, 'mod_publication', 'attachment',
+                                                $itemid, array('forcehttps' => true));
+
+        // Get only the body part!
+        $start = strpos($content, '<body>');
+        $length = strrpos($content, '</body>') - strpos($content, '<body>');
+        if ($start !== false && $length > 0) {
+            $content = substr($content, $start, $length);
+        } else {
+            $content = '';
+        }
+
+        return $content;
+
+    }
+
 }
