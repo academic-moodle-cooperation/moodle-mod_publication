@@ -572,15 +572,22 @@ class publication {
         $haspermission = false;
 
         if ($filepermissions) {
-
             if ($userid != 0) {
-                if ($this->get_instance()->importfrom == - 1) {
-                    if ($filepermissions->userid == $userid) {
+                if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD && $filepermissions->userid == $userid) {
+                    // Everyone is allowed to view their own files.
+                    $haspermission = true;
+                } else if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT) {
+                    // If it's a team-submission, we have to check for the group membership!
+                    $teamsubmission = $DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom));
+                    if (!empty($teamsubmission)) {
+                        $groupmembers = $this->get_submissionmembers($filepermissions->userid);
+                        if (array_key_exists($userid, $groupmembers)) {
+                            $haspermission = true;
+                        }
+                    } else if ($filepermissions->userid == $userid) {
                         // Everyone is allowed to view their own files.
                         $haspermission = true;
                     }
-                } else if (groups_is_member($filepermissions->userid, $userid)) {
-                    $haspermission = true;
                 }
             }
 
@@ -605,8 +612,7 @@ class publication {
                     // No need to ask student and teacher has approved.
                     $haspermission = true;
                 } else if ($this->get_instance()->obtainstudentapproval &&
-                $filepermissions->teacherapproval == 1 &&
-                $filepermissions->studentapproval == 1) {
+                        $filepermissions->teacherapproval == 1 && $filepermissions->studentapproval == 1) {
                     // Student and teacher have approved.
                     $haspermission = true;
                 }
