@@ -50,14 +50,14 @@ $string['configobtainteacherapproval'] = 'Documents of students are by default v
 $string['maxfiles'] = 'Maximum number of attachments';
 $string['configmaxfiles'] = 'Default maximum number of attachments allowed per user.';
 $string['maxbytes'] = 'Maximum attachment size';
-$string['configmaxbytes'] = 'Default maximum size for all files in the studentfolder.';
+$string['configmaxbytes'] = 'Default maximum size for all files in the student folder.';
 
 $string['reset_userdata'] = 'All data';
 
 // Strings from the File  mod_form.
 $string['autoimport'] = 'Sync automatically with Assignment';
-$string['autoimport_help'] = 'If activated, new submissions will in corresponding Assigment will be imported automatically into Student folder module. (Optional) Studentapproval has to be obtained again for the new files.';
-$string['configautoimport'] = 'If you prefer to have student submissions be automatically imported into Student folder instances. This feature can be enabled/disabled for each Student folder instance separately.';
+$string['autoimport_help'] = 'If activated, new submissions will in corresponding Assigment will be imported automatically into student folder module. (Optional) Studentapproval has to be obtained again for the new files.';
+$string['configautoimport'] = 'If you prefer to have student submissions be automatically imported into student folder instances. This feature can be enabled/disabled for each student folder instance separately.';
 $string['availability'] = 'Timeslot for Upload/Approval';
 
 $string['allowsubmissionsfromdate'] = 'from';
