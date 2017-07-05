@@ -39,21 +39,21 @@ require_once($CFG->libdir.'/tablelib.php');
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class base extends \table_sql {
-    /** @var protected publication object */
+    /** @var \publication publication object */
     protected $publication = null;
-    /** @var protected context instance object */
+    /** @var \context_module context instance object */
     protected $context;
-    /** @var protected coursemodule object */
+    /** @var \stdClass coursemodule object */
     protected $cm = null;
-    /** @var protected file storage */
+    /** @var \file_storage file storage */
     protected $fs = null;
-    /** @var protected files */
+    /** @var \stored_file[] files */
     protected $files = null;
-    /** @var protected resource-files */
+    /** @var \stored_file[] resource-files */
     protected $resources = null;
-    /** @var protected current itemid for files array */
+    /** @var int current itemid for files array */
     protected $itemid = null;
-    /** @var protected totalfiles amount of files in table, get's counted during formating of the rows! */
+    /** @var int amount of files in table, get's counted during formating of the rows! */
     protected $totalfiles = null;
     /** @var string[] of cached itemnames */
     protected $itemnames = [];
@@ -62,7 +62,7 @@ class base extends \table_sql {
      * constructor
      * @param string $uniqueid a string identifying this table.Used as a key in session  vars.
      *                         It gets set automatically with the helper methods!
-     * @param publication $publication publication object
+     * @param \publication $publication publication object
      */
     public function __construct($uniqueid, \publication $publication) {
         global $CFG, $OUTPUT;

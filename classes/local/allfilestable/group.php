@@ -35,16 +35,14 @@ defined('MOODLE_INTERNAL') || die();
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class group extends base {
-    /** @var groupingid grouping id for assign's team submissions */
+    /** @var int grouping id for assign's team submissions */
     protected $groupingid = 0;
-    /** @var requiregroup if a group membership is required by assign's team submission */
+    /** @var bool if a group membership is required by assign's team submission */
     protected $requiregroup = 0;
-    /** @var assigncm course module object of assign to import from */
+    /** @var \stdClass course module object of assign to import from */
     protected $assigncm = null;
-    /** @var assigncontext context instance of assign to import from */
+    /** @var \context_module context instance of assign to import from */
     protected $assigncontext = null;
-    /** @var protected totalfiles amount of files in table, get's counted during formating of the rows! */
-    protected $totalfiles = null;
 
     /**
      * Sets the predefined SQL for this table
