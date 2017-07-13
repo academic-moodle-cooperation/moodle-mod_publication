@@ -234,7 +234,7 @@ function publication_reset_userdata($data) {
 }
 
 /**
- * Serves ressource files.
+ * Serves resource files.
  *
  * @param mixed $course course or id of the course
  * @param mixed $cm course module or id of the course module
