@@ -44,6 +44,7 @@ define('PUBLICATION_APPROVAL_SINGLE', 1);
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class publication {
+    // TODO replace $instance with proper properties + PHPDoc comments?!?
     /** @var object instance */
     private $instance;
     /** @var object context */
