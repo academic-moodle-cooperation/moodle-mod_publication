@@ -108,7 +108,8 @@ class mod_publication_files_form extends moodleform {
 
                 $buttonarray[] = &$mform->createElement('submit', 'submitbutton',
                         get_string('savechanges'), array('onClick' => $onclick));
-                $buttonarray[] = &$mform->createElement('reset', 'resetbutton', get_string('revert'));
+                $buttonarray[] = &$mform->createElement('reset', 'resetbutton', get_string('revert'),
+                        array('class' => 'btn btn-secondary'));
 
                 $mform->addGroup($buttonarray, 'submitgrp', '', array(' '), false);
             } else {
