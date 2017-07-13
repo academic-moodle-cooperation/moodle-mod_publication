@@ -83,9 +83,8 @@ $string['modeupload'] = 'students can upload documents';
 $string['modeimport'] = 'take documents from an assignment';
 
 $string['courseuploadlimit'] = 'Course upload limit';
-$string['allowedfiletypes'] = 'Allowed filetypes (,)';
-$string['allowedfiletypes_help'] = 'Set the allowed filetypes for uploading assignments, separated by a comma (,). e.g.: txt, jpg.
-If any file type is possible, leave the field empty. The filter is not case sensitive, so PDF equals pdf.';
+$string['allowedfiletypes'] = 'Allowed filetypes (;)';
+$string['allowedfiletypes_help'] = 'Accepted file types can be restricted by entering a semicolon-separated list of mimetypes, e.g. \'video/mp4; audio/mp3; image/png; image/jpeg\', or file extensions including a dot, e.g. \'.png; .jpg\'. If the field is left empty, then all file types are allowed.';
 $string['allowedfiletypes_err'] = 'Check input! Invalid file extensions or seperators';
 $string['obtainteacherapproval_help'] = 'Decide if files will be made visible immediately upon upload or not: <br><ul><li> yes - all files will be visible to everyone right away</li><li> no - files will be published only after the teacher approved</li></ul>';
 $string['assignment'] = 'Assignment';
@@ -93,6 +92,7 @@ $string['assignment_help'] = 'Choose the assignment to import files from. In the
 $string['obtainstudentapproval_help'] = 'Decide if students approval will be obtained: <br><ul><li> yes - files will be visible to all only after the student approved. The teacher may select individual students/files to ask for approval.</li><li> no - the student’s approval will not be obtained via Moodle. The file’s visibility is solely the teacher’s desicion.</li></ul>';
 $string['choose'] = 'please choose ...';
 $string['importfrom_err'] = 'You have to choose an assignment you want to import from.';
+$string['nonexistentfiletypes'] = 'The following file types were not recognised: {$a}';
 
 $string['groupapprovalmode'] = 'Groupapproval mode';
 $string['groupapprovalmode_help'] = 'Here you decide if approval of all group members or just approval of at least one group member is required for files to be visible. The files will only be visible after approval by all group members or at least one group member.';
@@ -188,6 +188,7 @@ $string['saveteacherapproval'] = 'save approval';
 $string['reset'] = 'Revert';
 
 // Strings from the File  upload.php.
+$string['filesofthesetypes'] = 'Files of these types may be added:';
 $string['guideline'] = 'visible for everybody:';
 $string['published_immediately'] = 'yes immediately, without approval by a teacher';
 $string['published_aftercheck'] = 'no, only after approval by a teacher';

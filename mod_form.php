@@ -149,8 +149,18 @@ class mod_publication_mod_form extends moodleform_mod{
         $mform->addElement('text', 'allowedfiletypes', get_string('allowedfiletypes', 'publication'), array('size' => '45'));
         $mform->setType('allowedfiletypes', PARAM_RAW);
         $mform->addHelpButton('allowedfiletypes', 'allowedfiletypes', 'publication');
-        $mform->addRule('allowedfiletypes', get_string('allowedfiletypes_err', 'publication'), 'regex',
-                '/^([A-Za-z0-9]+([ ]*[,][ ]*[A-Za-z0-9]+)*)$/', 'client', false, false);
+        $mform->addFormRule(function ($values, $files) {
+            if (empty($values['allowedfiletypes'])) {
+                return true;
+            }
+            $nonexistent = \publication::get_nonexistent_file_types($values['allowedfiletypes']);
+            if (empty($nonexistent)) {
+                return true;
+            } else {
+                $a = join(' ', $nonexistent);
+                return ["allowedfiletypes" => get_string('nonexistentfiletypes', 'publication', $a)];
+            }
+        });
 
         $attributes = array();
         if (isset($this->current->id) && isset($this->current->obtainteacherapproval)) {

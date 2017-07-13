@@ -64,16 +64,7 @@ $entry->definitionformat = FORMAT_HTML; // Updated later.
 $maxfiles = $publication->get_instance()->maxfiles;
 $maxbytes = $publication->get_instance()->maxbytes;
 
-// Patch accepted filetypes.
-if (isset($publication->get_instance()->allowedfiletypes) AND !empty($publication->get_instance()->allowedfiletypes)) {
-    $acceptedfiletypes = explode(', ', strtolower($publication->get_instance()->allowedfiletypes));
-    foreach ($acceptedfiletypes as &$a) {
-        $a = '.'.trim($a); // Conversion to fe *.jpg...
-    }
-} else {
-    $acceptedfiletypes = array('*');
-}
-
+$acceptedfiletypes = $publication->get_accepted_types();
 
 $definitionoptions = array('trusttext' => true, 'subdirs' => false, 'maxfiles' => $maxfiles,
         'maxbytes' => $maxbytes, 'context' => $context, 'accepted_types' => $acceptedfiletypes);
@@ -81,8 +72,8 @@ $attachmentoptions = array('subdirs' => false, 'maxfiles' => $maxfiles,
         'maxbytes' => $maxbytes, 'accepted_types' => $acceptedfiletypes);
 
 $entry = file_prepare_standard_editor($entry, 'definition', $definitionoptions, $context, 'mod_publication', 'entry', $entry->id);
-$entry = file_prepare_standard_filemanager($entry, 'attachment', $attachmentoptions,
-             $context, 'mod_publication', 'attachment', $entry->id);
+$entry = file_prepare_standard_filemanager($entry, 'attachment', $attachmentoptions, $context, 'mod_publication',
+        'attachment', $entry->id);
 
 $entry->cmid = $cm->id;
 

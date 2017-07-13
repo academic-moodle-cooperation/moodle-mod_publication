@@ -5,6 +5,7 @@ CHANGELOG
 
 * [FEATURE] #3926 add preview for imported onlinetext-submissions
 * [CHANGED] #3824 show group approval mode elements only when needed
+* [CHANGED] #4432 update filetype restrictions to support either extensions or mime types (see mod_assign update)
 
 
 3.2.2 (2016-04-19)

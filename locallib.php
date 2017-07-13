@@ -1379,4 +1379,69 @@ class publication {
 
     }
 
+    // Allowed file-types have been changed in Moodle 3.3 (and form element will probably change in Moodle 3.4 again)!
+
+    /**
+     * Get the type sets configured for this publication.
+     * Adapted from assignsubmission_file!
+     *
+     * @return array('groupname', 'mime/type', ...)
+     */
+    public function get_configured_typesets() {
+        $typeslist = (string)$this->instance->allowedfiletypes;
+
+        $sets = self::get_typesets($typeslist);
+
+        return $sets;
+    }
+
+    /**
+     * Get the type sets passed.
+     * Adapted from assignsubmission_file!
+     *
+     * @param string $types The space , ; separated list of types
+     * @return array('groupname', 'mime/type', ...)
+     */
+    public static function get_typesets($types) {
+        $sets = array();
+        if (!empty($types)) {
+            $sets = preg_split('/[\s,;:"\']+/', $types, null, PREG_SPLIT_NO_EMPTY);
+        }
+        return $sets;
+    }
+
+    /**
+     * Return the accepted types list for the file manager component.
+     * Adapted from assignsubmission_file!
+     *
+     * @return array|string
+     */
+    public function get_accepted_types() {
+        $acceptedtypes = $this->get_configured_typesets();
+
+        if (!empty($acceptedtypes)) {
+            return $acceptedtypes;
+        }
+
+        return '*';
+    }
+
+    /**
+     * List the nonexistent file types that need to be removed.
+     * Adapted from assignsubmission_file!
+     *
+     * @param string $types space , or ; separated types
+     * @return array A list of the nonexistent file types.
+     */
+    public static function get_nonexistent_file_types($types) {
+        $nonexistent = [];
+        foreach (self::get_typesets($types) as $type) {
+            // If there's no extensions under that group, it doesn't exist.
+            $extensions = file_get_typegroup('extension', [$type]);
+            if (empty($extensions)) {
+                $nonexistent[$type] = true;
+            }
+        }
+        return array_keys($nonexistent);
+    }
 }

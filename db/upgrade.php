@@ -131,5 +131,39 @@ function xmldb_publication_upgrade($oldversion) {
     // Moodle v3.2.0 release upgrade line.
     // Put any upgrade step following this!
 
+    // Moodle v3.3.0 release upgrade line.
+    // Put any upgrade step following this!
+
+    if ($oldversion < 2017071200) {
+        // Get all old filetype-restrictions and convert them!
+        $rs = $DB->get_recordset_sql("SELECT id id, allowedfiletypes allowedfiletypes
+                                        FROM {publication}
+                                       WHERE ".$DB->sql_isnotempty('publication', 'allowedfiletypes', false, true));
+        echo "<pre>";
+        foreach ($rs as $cur) {
+            // We only convert old style entries!
+            if (!preg_match('/^([\.A-Za-z0-9]+([ ]*[,][ ]*[\.A-Za-z0-9]+)*)$/', $cur->allowedfiletypes)) {
+                echo "Skipping record with ID ".$cur->id." having filetypes '".$cur->allowedfiletypes."'' allowed!<br />\n";
+                continue;
+            }
+
+            $allowedfiletypes = preg_split('([ ]*[,][ ]*)', $cur->allowedfiletypes);
+            array_walk($allowedfiletypes, function(&$type) {
+                if ((strpos($type, '.') === false) || (strpos($type, '.') !== 0)) {
+                    $type = '.'.$type;
+                }
+            });
+            echo "Update allowedfiletypes for ID ".$cur->id.": ".$cur->allowedfiletypes." --> ".implode('; ', $allowedfiletypes).
+                    "<br />\n";
+            $cur->allowedfiletypes = implode('; ', $allowedfiletypes);
+            $DB->update_record('publication', $cur);
+        }
+        echo "</pre>";
+        $rs->close();
+
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2017071200, 'publication');
+    }
+
     return true;
 }

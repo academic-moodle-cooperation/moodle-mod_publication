@@ -83,9 +83,8 @@ $string['modeupload'] = 'Teilnehmer/innen dürfen Dateien hochladen';
 $string['modeimport'] = 'Dateien aus Aufgabe importieren';
 
 $string['courseuploadlimit'] = 'Max. Dateigröße Aktivität';
-$string['allowedfiletypes'] = 'Erlaubte Dateitypen (,)';
-$string['allowedfiletypes_help'] = 'Hier können Sie die erlaubten Dateitypen beim Hochladen von Aufgaben setzen, separiert durch Kommas (,). z.B.: txt, jpg.
-Wenn jeder Dateityp erlaubt ist, das Feld freilassen. Groß- und Kleinschreibung wird hierbei ignoriert.';
+$string['allowedfiletypes'] = 'Erlaubte Dateitypen (;)';
+$string['allowedfiletypes_help'] = 'Die akzeptierten Dateitypen können als strichpunktgetrennte Liste von MIME-Typen angegeben werden, z.B. \'video/mp4; audio/mp3; image/png; image/jpeg\'. Alternativ können Sie auch Dateiendungen inclusive Punkt angeben, z.B. \'.png; .jpg\'. Falls das Feld leer ist, sind alle Dateitypen erlaubt.';
 $string['allowedfiletypes_err'] = 'Bitte Eingabe überprüfen! Dateitypen enthalten ungültige Sonder- oder Trennzeichen';
 $string['obtainteacherapproval_help'] = 'Diese Option legt fest, ob Dateien sofort für alle ohne Prüfung sichtbar werden: <br><ul><li> Ja - Einträge werden sofort nach dem Speichern angezeigt </li><li> Nein - Einträge werden von Trainer/innen geprüft und freigegeben</li></ul>';
 $string['assignment'] = 'Aufgabe';
@@ -93,6 +92,7 @@ $string['assignment_help'] = 'Aufgabe für den Dateiimport auswählen. Derzeit k
 $string['obtainstudentapproval_help'] = 'Hier legen Sie fest, ob Sie das Einverständnis der Teilnehmer/innen über Moodle (ja) oder auf eine andere Weise einholen (nein). <br> In Moodle können Sie festlegen, von welchen Teilnehmer/innen das Einverständnis eingeholt wird. Erst nach Einverständnis der Teilnehmer/innen sind die Dateien auch wirklich für alle sichtbar.';
 $string['choose'] = 'bitte auswählen ...';
 $string['importfrom_err'] = 'Sie müssen eine Aufgabe auswählen von der Sie importieren möchten.';
+$string['nonexistentfiletypes'] = 'Die folgenden Dateitypen konnten nicht erkannt werden: {$a}';
 
 $string['groupapprovalmode'] = 'Modus Gruppenzustimmung';
 $string['groupapprovalmode_help'] = 'Hier legen Sie fest, ob Sie das Einverständnis aller Gruppenmitglieder oder eines einzelnen Gruppenmitglied einholen.<br />Erst nach Einverständnis aller Gruppenmitglieder oder eines einzelnen Gruppenmitglied sind die Dateien auch wirklich für alle sichtbar.';
@@ -188,6 +188,7 @@ $string['reset'] = 'Zurücksetzen';
 $string['savestudentapprovalwarning'] = 'Sind Sie sicher dass Sie diese Änderungen speichern möchten? Der Status kann im Nachhinein nicht mehr geändert werden.';
 
 // Strings from the File  upload.php.
+$string['filesofthesetypes'] = 'Dateien dieses Typs können hinzugefügt werden:';
 $string['guideline'] = 'sichtbar für alle:';
 $string['published_immediately'] = 'ja sofort, ohne Prüfung durch die Trainer/innen';
 $string['published_aftercheck'] = 'nein, erst nach Prüfung durch die Trainer/innen';
