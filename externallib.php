@@ -35,12 +35,12 @@ class mod_publication_external extends external_api {
      * @return external_function_parameters
      */
     public static function get_onlinetextpreview_parameters() {
-        // Function get_onlinetextpreveiw_parameters() always return an external_function_parameters().
+        // Function get_onlinetextpreview_parameters() always return an external_function_parameters().
         // The external_function_parameters constructor expects an array of external_description.
         return new external_function_parameters(
                 // An external_description can be: external_value, external_single_structure or an external_multiple structure!
-                array('itemid' => new external_value(PARAM_INT, PARAM_REQUIRED),
-                      'cmid'   => new external_value(PARAM_INT, PARAM_REQUIRED))
+                array('itemid' => new external_value(PARAM_INT, 'Group\'s or user\'s ID'),
+                      'cmid'   => new external_value(PARAM_INT, 'Coursemodule ID'))
         );
     }
 
@@ -74,6 +74,6 @@ class mod_publication_external extends external_api {
      * @return external_description
      */
     public static function get_onlinetextpreview_returns() {
-        return new external_value(PARAM_RAW, PARAM_DEFAULT, '');
+        return new external_value(PARAM_RAW, 'HTML snippet representing the online text to use in overlay', VALUE_OPTIONAL, '');
     }
 }
