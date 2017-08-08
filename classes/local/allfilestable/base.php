@@ -300,7 +300,7 @@ class base extends \table_sql {
         if ($this->totalfiles !== null) {
             return $this->totalfiles;
         } else {
-            throw new \coding_exception("Must be setup before calling totalfiles!");
+            return 0;
         }
     }
 
