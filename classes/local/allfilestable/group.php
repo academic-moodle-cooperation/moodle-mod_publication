@@ -50,7 +50,7 @@ class group extends base {
     protected function init_sql() {
         global $DB;
 
-        $params = array();
+        $params = [];
 
         $fields = "g.id, g.name AS groupname, NULL AS groupmembers, COUNT(*) AS filecount,
                    SUM(files.studentapproval) AS studentapproval, NULL AS teacherapproval, MAX(files.timecreated) AS timemodified ";
@@ -58,10 +58,10 @@ class group extends base {
         $groups = $this->publication->get_groups($this->groupingid);
         if (count($groups) > 0) {
             list($sqlgroupids, $groupparams) = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED, 'group');
-            $params = $params + $groupparams + array('publication' => $this->cm->instance);
+            $params = $params + $groupparams + ['publication' => $this->cm->instance];
         } else {
             $sqlgroupids = " = :group ";
-            $params['group'] = -1;
+            $params = $params + ['group' => -1, 'publication' => $this->cm->instance];
         }
 
         if ($this->requiregroup || !count($this->publication->get_submissionmembers(0))) {
@@ -123,6 +123,20 @@ class group extends base {
         $cm = get_coursemodule_from_instance('publication', $publication->get_instance()->id);
         $params->cmid = $cm->id;
         $PAGE->requires->js_call_amd('mod_publication/onlinetextpreview', 'initializer', array($params));
+    }
+
+    /**
+     * This function is not part of the public api.
+     */
+    public function print_nothing_to_display() {
+        global $OUTPUT;
+
+        // Render button to allow user to reset table preferences.
+        echo $this->render_reset_button();
+
+        $this->print_initials_bar();
+
+        echo $OUTPUT->box(get_string('nothing_to_show_groups', 'publication'), 'font-italic');
     }
 
     /**

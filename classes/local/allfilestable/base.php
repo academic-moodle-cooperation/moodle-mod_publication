@@ -121,6 +121,20 @@ class base extends \table_sql {
     }
 
     /**
+     * This function is not part of the public api.
+     */
+    public function print_nothing_to_display() {
+        global $OUTPUT;
+
+        // Render button to allow user to reset table preferences.
+        echo $this->render_reset_button();
+
+        $this->print_initials_bar();
+
+        echo $OUTPUT->box(get_string('nothing_to_show_users', 'publication'), 'font-italic');
+    }
+
+    /**
      * Return all columns, column-headers and helpicons for this table
      *
      * @return array Array with column names, column headers and help icons
