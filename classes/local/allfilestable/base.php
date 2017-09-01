@@ -347,7 +347,7 @@ class base extends \table_sql {
         if ($extension) {
             if (has_capability('mod/publication:grantextension', $this->context) ||
                 has_capability('mod/publication:approve', $this->context)) {
-                $extensiontxt .= html_writer::empty_tag('br')."\n".
+                $extensiontxt = \html_writer::empty_tag('br')."\n".
                                  get_string('extensionto', 'publication').': '.userdate($extension);
             }
         } else {
