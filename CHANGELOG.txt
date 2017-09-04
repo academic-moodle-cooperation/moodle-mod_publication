@@ -1,5 +1,15 @@
 CHANGELOG
 =========
+3.3.1 (2017-09-04)
+------------------
+
+* [FIXED] #4675 integrated fix for granting extension causing fatal errors (thanks @raad https://github.com/raad)
+* [FIXED] warning in "grant extension"-form due to no due date being used
+* [FIXED] #4686 fixed template JSON not validating and template HTML as well as template coding style
+* [FIXED] fixed/added some PHPDoc comments
+* [CHANGED] #4685 updated travis.yml to use moodle-plugin-ci version 2 and run behat tests in firefox and chrome
+
+
 3.3.0 (2017-08-10)
 ------------------
 
