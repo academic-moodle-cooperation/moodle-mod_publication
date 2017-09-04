@@ -62,11 +62,15 @@ class mod_publication_grantextension_form extends moodleform {
             $mform->addElement('static', 'duedate',
                     get_string('duedate', 'publication'), userdate($publication->get_instance()->duedate));
             $finaldate = $publication->get_instance()->duedate;
+        } else {
+            $finaldate = 0;
         }
 
         $mform->addElement('date_time_selector', 'extensionduedate',
                 get_string('extensionduedate', 'publication'), array('optional' => true));
-        $mform->setDefault('extensionduedate', $finaldate);
+        if ($finaldate) {
+            $mform->setDefault('extensionduedate', $finaldate);
+        }
 
         if (count($userids) == 1) {
             $extensionduedate = $publication->user_extensionduedate($userids[0]);
