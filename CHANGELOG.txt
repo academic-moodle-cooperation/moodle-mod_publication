@@ -1,5 +1,12 @@
 CHANGELOG
 =========
+3.2.3 (2017-09-04)
+------------------
+
+* [FIXED] #4675 integrated fix for granting extension causing fatal errors (thanks @raad https://github.com/raad)
+* [FIXED] fixed warning in "grant extension"-form due to no due date being used
+
+
 3.2.2 (2016-04-19)
 ------------------
 
