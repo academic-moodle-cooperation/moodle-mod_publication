@@ -28,6 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . "/mod/publication/locallib.php");
 
+/**
+ * Class mod_publication_external contains external functions used by mod_publication's AJAX
+ *
+ * @package       mod_publication
+ * @author        Philipp Hager
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mod_publication_external extends external_api {
 
     /**
@@ -48,6 +56,9 @@ class mod_publication_external extends external_api {
 
     /**
      * The function itself
+     *
+     * @param int $itemid the itemid (user ID or group ID) whom the onlinetext belongs to!
+     * @param int $cmid the course-module ID
      * @return string welcome message
      */
     public static function get_onlinetextpreview($itemid, $cmid) {

@@ -162,8 +162,6 @@ class publication_allfilestable_test extends advanced_testcase {
 
     /**
      * Tests if we can create an allfilestable without uploaded files
-     * @group amc
-     * @group mod_publication
      */
     public function test_allfilestable_upload() {
         // Setup fixture!
@@ -194,8 +192,6 @@ class publication_allfilestable_test extends advanced_testcase {
 
     /**
      * Tests if we can create an allfilestable without imported files
-     * @group amc
-     * @group mod_publication
      */
     public function test_allfilestable_import() {
         // Setup fixture!
@@ -230,8 +226,6 @@ class publication_allfilestable_test extends advanced_testcase {
 
     /**
      * Tests if we can create an allfilestable without imported group-files
-     * @group amc
-     * @group mod_publication
      */
     public function test_allfilestable_group() {
         // Setup fixture!
