@@ -35,55 +35,63 @@
 
     Example context (json):
     {
-        "id": elementid,
+        "id": 7,
         "status": { "approved": false,
                     "rejected": true,
                     "pending": false },
-        "mode": approvalmodetxt,
+        "mode": "at least <strong>ONE</strong> member has to approve",
         "approval": [
             { "name": "John Doe", "time": "04.11.2016 15:37" },
-            { "name": "Jane Doe", "time": "01.11.2016 09:42" },
+            { "name": "Jane Doe", "time": "01.11.2016 09:42" }
         ],
         "rejected": [
             { "name": "Jessica Jones", "time": "07.10.2016 10:46" },
-            { "name": "Luke Cage", "time": "13.10.2016 09:42" },
+            { "name": "Luke Cage", "time": "13.10.2016 09:42" }
         ],
         "pending": [
             { "name": "Barry Allen", "time": "-" },
-            { "name": "Bruce Banner", "time": "-" },
+            { "name": "Bruce Banner", "time": "-" }
         ]
     }
 
 }}
-<div class="publicationoverlay" role="tooltip" aria-describedby="{{id}}">
+<div class="publicationoverlay" role="tooltip">
     {{#status}}
-    <div><strong>{{# str }} status, mod_publication {{/ str }}&nbsp;&mdash;&nbsp;{{# str }} total, mod_publication {{/ str }}:</strong>
-        {{#approved}}{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}({{# str }} approved, mod_publication {{/ str }}){{/approved}}
-        {{#rejected}}{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}({{# str }} rejected, mod_publication {{/ str }}){{/rejected}}
-        {{#pending}}{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}({{# str }} pending, mod_publication {{/ str }}){{/pending}}
+    <div><strong>{{# str }} status, mod_publication {{/ str }}&nbsp;&mdash;&nbsp;{{!
+        }}{{# str }} total, mod_publication {{/ str }}:</strong>
+        {{#approved}}{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}{{!
+            }}({{# str }} approved, mod_publication {{/ str }}){{/approved}}
+        {{#rejected}}{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}{{!
+            }}({{# str }} rejected, mod_publication {{/ str }}){{/rejected}}
+        {{#pending}}{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}{{!
+            }}({{# str }} pending, mod_publication {{/ str }}){{/pending}}
     </div>
     {{/status}}
     <div>
-        <div><strong>{{# str }} status, mod_publication {{/ str }}&nbsp;&mdash;&nbsp;{{# str }} details, mod_publication {{/ str }}:</strong></div>
+        <div><strong>{{# str }} status, mod_publication {{/ str }}&nbsp;&mdash;&nbsp;{{!
+            }}{{# str }} details, mod_publication {{/ str }}:</strong></div>
         <table>
             {{#approved}}
             <tr>
                 <td>{{name}}</td>
-                <td>{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}({{# str }} approved, mod_publication {{/ str }})</td>
+                <td>{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}{{!
+                    }}({{# str }} approved, mod_publication {{/ str }})</td>
                 <td class="time">{{time}}</td>
             </tr>
             {{/approved}}
             {{#rejected}}
             <tr>
                 <td>{{name}}</td>
-                <td>{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}({{# str }} rejected, mod_publication {{/ str }})</td>
+                <td>{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}{{!
+                    }}({{# str }} rejected, mod_publication {{/ str }})</td>
                 <td class="time">{{time}}</td>
             </tr>
             {{/rejected}}
             {{#pending}}
             <tr>
                 <td>{{name}}</td>
-                <td>{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}({{# str }} pending, mod_publication {{/ str }})</th>
+                <td>{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}{{!
+                    }}({{# str }} pending, mod_publication {{/ str }})</td>
                 <td class="time">{{time}}</td>
             </tr>
             {{/pending}}
