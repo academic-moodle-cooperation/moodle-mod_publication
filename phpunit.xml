@@ -15,7 +15,7 @@
         stopOnSkipped="false"
         printerClass="Hint_ResultPrinter"
         testSuiteLoaderClass="phpunit_autoloader"
-        >
+>
 
     <php>
         <!--<const name="PHPUNIT_LONGTEST" value="1"/> uncomment to execute also slow or otherwise expensive tests-->
@@ -27,18 +27,18 @@
     </php>
 
 
-        <testsuites>
-            <testsuite name="mod_publication_testsuite">
+    <testsuites>
+        <testsuite name="mod_publication_testsuite">
+            <directory suffix="_test.php">.</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="false">
+            <directory suffix=".php">.</directory>
+            <exclude>
                 <directory suffix="_test.php">.</directory>
-            </testsuite>
-        </testsuites>
-        <filter>
-            <whitelist processUncoveredFilesFromWhitelist="false">
-                <directory suffix=".php">.</directory>
-                <exclude>
-                    <directory suffix="_test.php">.</directory>
-                </exclude>
-            </whitelist>
-        </filter>
+            </exclude>
+        </whitelist>
+    </filter>
 
 </phpunit>

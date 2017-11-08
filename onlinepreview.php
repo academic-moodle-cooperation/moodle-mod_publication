@@ -31,9 +31,9 @@ $id = required_param('id', PARAM_INT); // Course Module ID.
 $itemid = required_param('itemid', PARAM_INT); // Item-ID (group- or user-ID).
 $itemname = optional_param('itemname', false, PARAM_TEXT); // Item-Name to save DB access!
 
-$url = new moodle_url('/mod/publication/onlinetextpreview.php', array('id' => $id, 'itemid' => $itemid));
+$url = new moodle_url('/mod/publication/onlinetextpreview.php', ['id' => $id, 'itemid' => $itemid]);
 $cm = get_coursemodule_from_id('publication', $id, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
 require_login($course, true, $cm);
 $PAGE->set_url($url);
@@ -44,8 +44,8 @@ require_capability('mod/publication:view', $context);
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('preview').' '.get_string('onlinetextfilename', 'assignsubmission_onlinetext').
-                      ($itemname ? ' '.strtolower(get_string('from')).' '.$itemname : ''));
+echo $OUTPUT->heading(get_string('preview') . ' ' . get_string('onlinetextfilename', 'assignsubmission_onlinetext') .
+        ($itemname ? ' ' . strtolower(get_string('from')) . ' ' . $itemname : ''));
 
 echo publication::export_onlinetext_for_preview($itemid, $cm->instance, $context->id);
 

@@ -22,13 +22,16 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_publication\local\filestable;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/publication/locallib.php');
-require_once($CFG->libdir.'/tablelib.php');
+global $CFG;
+
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/publication/locallib.php');
+require_once($CFG->libdir . '/tablelib.php');
 
 /**
  * Base class for tables showing my files or group files (upload or import)
@@ -39,23 +42,26 @@ require_once($CFG->libdir.'/tablelib.php');
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class base extends \html_table {
-    /** @var protected $publication publication object */
+    /** @var \publication publication object */
     protected $publication = null;
-    /** @var protected $fs file storage object */
+    /** @var \file_storage file storage object */
     protected $fs = null;
-    /** @var protected $files array of stored_file objects */
+    /** @var \stored_file[] array of stored_file objects */
     protected $files = null;
-    /** @var protected $resources array of stored_file objects used in onlinetexts */
+    /** @var \stored_file[] array of stored_file objects used in onlinetexts */
     protected $resources = null;
-    /** @var protected $changepossible bool whether or not changes of approval are still possible */
+    /** @var bool whether or not changes of approval are still possible */
     protected $changepossible = false;
+    /** @var string[] select options */
+    protected $options = [];
 
     /**
      * constructor
      *
-     * @param publication $publication publication object
+     * @param \publication $publication publication object
      */
     public function __construct(\publication $publication) {
+        parent::__construct();
 
         $this->publication = $publication;
 
@@ -75,14 +81,14 @@ class base extends \html_table {
         }
 
         if (!isset($this->attributes)) {
-            $this->attributes = array('class' => 'coloredrows');
+            $this->attributes = ['class' => 'coloredrows'];
         } else if (!isset($this->attributes['class'])) {
             $this->attributes['class'] = 'coloredrows';
         } else {
             $this->attributes['class'] .= ' coloredrows';
         }
 
-        $this->options = array();
+        $this->options = [];
         $this->options[2] = get_string('student_approve', 'publication');
         $this->options[1] = get_string('student_reject', 'publication');
 
@@ -100,17 +106,19 @@ class base extends \html_table {
     /**
      * Add a single file to the table
      *
-     * @param stored_file $file Stored file instance
+     * @param \stored_file $file Stored file instance
      * @return string[] Array of table cell contents
      */
     public function add_file(\stored_file $file) {
         global $OUTPUT;
 
-        $data = array();
+        $data = [];
         $data[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
 
-        $dlurl = new \moodle_url('/mod/publication/view.php', array('id'       => $this->publication->get_coursemodule()->id,
-                                                                    'download' => $file->get_id()));
+        $dlurl = new \moodle_url('/mod/publication/view.php', [
+                'id' => $this->publication->get_coursemodule()->id,
+                'download' => $file->get_id()
+        ]);
         $data[] = \html_writer::link($dlurl, $file->get_filename());
 
         // The specific data will be added in the child-classes!
@@ -121,7 +129,7 @@ class base extends \html_table {
     /**
      * Get all files, in which the current user is involved
      *
-     * @return stored_file[] array of stored_files indexed by pathanmehash
+     * @return \stored_file[] array of stored_files indexed by pathanmehash
      */
     public function get_files() {
         global $USER;

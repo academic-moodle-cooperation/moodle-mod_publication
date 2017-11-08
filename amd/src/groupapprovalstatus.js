@@ -22,9 +22,9 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- /**
-  * @module mod_publication/groupapprovalstatus
-  */
+/**
+ * @module mod_publication/groupapprovalstatus
+ */
 define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'], function($, ModalFactory, str, templates, log) {
 
     /**
@@ -62,9 +62,9 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'
             instance.modalpromise.done(function(modal) {
                 log.info('Done preparing modal', 'mod_publication');
                 instance.modal = modal;
-                $( ".path-mod-publication .statustable .approvaldetails *").click(function(e) {
+                $('.path-mod-publication .statustable .approvaldetails *').click(function(e) {
                     e.stopPropagation();
-                    var element = $( e.target );
+                    var element = $(e.target);
 
                     var dataelement = element.parent();
 
@@ -100,7 +100,11 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'
                     try {
                         stat = dataelement.data('status');
                     } catch (ex) {
-                        stat = { approved: false, rejected: false, pending: false };
+                        stat = {
+                            approved: false,
+                            rejected: false,
+                            pending: false
+                        };
                     }
 
                     var context = {
@@ -128,10 +132,10 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'
                     });
                 });
                 // Everything is prepared, fade the symbols in!
-                $( ".path-mod-publication .statustable .approvaldetails").fadeIn('slow');
+                $('.path-mod-publication .statustable .approvaldetails').fadeIn('slow');
             });
         }).fail(function(ex) {
-            log.error("Error getting strings: " + ex, "mod_publication");
+            log.error('Error getting strings: ' + ex, 'mod_publication');
         });
     };
 

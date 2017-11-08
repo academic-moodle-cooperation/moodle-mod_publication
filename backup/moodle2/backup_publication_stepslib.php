@@ -39,7 +39,8 @@ class backup_publication_activity_structure_step extends backup_activity_structu
 
     /**
      * Define the structure for the publication activity
-     * @return void
+     *
+     * @return backup_nested_element
      */
     protected function define_structure() {
 
@@ -47,41 +48,47 @@ class backup_publication_activity_structure_step extends backup_activity_structu
         $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated.
-        $publication = new backup_nested_element('publication', array('id'), array('name',
-                                                                                   'intro',
-                                                                                   'introformat',
-                                                                                   'alwaysshowdescription',
-                                                                                   'duedate',
-                                                                                   'allowsubmissionsfromdate',
-                                                                                   'timemodified',
-                                                                                   'cutoffdate',
-                                                                                   'mode',
-                                                                                   'importfrom',
-                                                                                   'obtainstudentapproval',
-                                                                                   'maxfiles',
-                                                                                   'maxbytes',
-                                                                                   'allowedfiletypes',
-                                                                                   'obtainteacherapproval'));
+        $publication = new backup_nested_element('publication', ['id'], [
+                'name',
+                'intro',
+                'introformat',
+                'alwaysshowdescription',
+                'duedate',
+                'allowsubmissionsfromdate',
+                'timemodified',
+                'cutoffdate',
+                'mode',
+                'importfrom',
+                'obtainstudentapproval',
+                'maxfiles',
+                'maxbytes',
+                'allowedfiletypes',
+                'obtainteacherapproval'
+        ]);
 
         $extduedates = new backup_nested_element('extduedates');
 
-        $extduedate = new backup_nested_element('extduedate', array('id'), array('userid',
-                                                                                 'publication',
-                                                                                 'extensionduedate'));
+        $extduedate = new backup_nested_element('extduedate', ['id'], [
+                'userid',
+                'publication',
+                'extensionduedate'
+        ]);
 
         $files = new backup_nested_element('files');
 
-        $file = new backup_nested_element('file', array('id'), array('userid',
-                                                                     'timecreated',
-                                                                     'fileid',
-                                                                     'filename',
-                                                                     'contenthash',
-                                                                     'type',
-                                                                     'teacherapproval',
-                                                                     'studentapproval'));
+        $file = new backup_nested_element('file', ['id'], [
+                'userid',
+                'timecreated',
+                'fileid',
+                'filename',
+                'contenthash',
+                'type',
+                'teacherapproval',
+                'studentapproval'
+        ]);
 
         // Define sources.
-        $publication->set_source_table('publication', array('id' => backup::VAR_ACTIVITYID));
+        $publication->set_source_table('publication', ['id' => backup::VAR_ACTIVITYID]);
 
         if ($userinfo) {
             // Build the tree.
@@ -90,9 +97,9 @@ class backup_publication_activity_structure_step extends backup_activity_structu
             $publication->add_child($files);
             $files->add_child($file);
 
-            $extduedate->set_source_table('publication_extduedates', array('publication' => backup::VAR_PARENTID));
+            $extduedate->set_source_table('publication_extduedates', ['publication' => backup::VAR_PARENTID]);
 
-            $file->set_source_table('publication_file', array('publication' => backup::VAR_PARENTID));
+            $file->set_source_table('publication_file', ['publication' => backup::VAR_PARENTID]);
 
             $file->annotate_files('mod_publication', 'attachment', null);
 
@@ -104,6 +111,7 @@ class backup_publication_activity_structure_step extends backup_activity_structu
             // This file area hasn't itemid.
             $publication->annotate_files('mod_publication', 'attachment', null);
         }
+
         // Return the root element (publication), wrapped into standard activity structure.
 
         return $this->prepare_activity_structure($publication);

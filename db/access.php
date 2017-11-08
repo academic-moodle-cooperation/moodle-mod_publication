@@ -25,58 +25,58 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-        'mod/publication:view' => array(
+$capabilities = [
+        'mod/publication:view' => [
                 'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array(
+                'archetypes' => [
                         'guest' => CAP_ALLOW,
                         'student' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
+                ]
+        ],
 
-        'mod/publication:addinstance' => array(
+        'mod/publication:addinstance' => [
                 'riskbitmask' => RISK_XSS,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
+                'archetypes' => [
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                ),
+                ],
                 'clonepermissionsfrom' => 'moodle/course:manageactivities'
-        ),
+        ],
 
-        'mod/publication:upload' => array(
+        'mod/publication:upload' => [
                 'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array(
+                'archetypes' => [
                         'student' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
+                ]
+        ],
 
-        'mod/publication:approve' => array(
+        'mod/publication:approve' => [
                 'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array(
+                'archetypes' => [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
+                ]
+        ],
 
-        'mod/publication:grantextension' => array(
+        'mod/publication:grantextension' => [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array(
+                'archetypes' => [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
-);
+                ]
+        ],
+];

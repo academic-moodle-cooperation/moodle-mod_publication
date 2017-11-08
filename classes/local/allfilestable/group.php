@@ -22,6 +22,7 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_publication\local\allfilestable;
 
 defined('MOODLE_INTERNAL') || die();
@@ -75,27 +76,28 @@ class group extends base {
             $params['stdname'] = get_string('defaultteam', 'assign');
         }
 
-        $from = $grouptable." LEFT JOIN {publication_file} files ON g.id = files.userid AND files.publication = :publication ";
+        $from = $grouptable . " LEFT JOIN {publication_file} files ON g.id = files.userid AND files.publication = :publication ";
 
-        $where = "g.id ".$sqlgroupids;
+        $where = "g.id " . $sqlgroupids;
         $groupby = " g.id, groupname, groupmembers, teacherapproval ";
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
-        $this->set_count_sql("SELECT COUNT(g.id) FROM ".$from." WHERE ".$where, $params);
+        $this->set_count_sql("SELECT COUNT(g.id) FROM " . $from . " WHERE " . $where, $params);
 
     }
 
     /**
      * constructor
+     *
      * @param string $uniqueid a string identifying this table.Used as a key in session  vars.
      *                         It gets set automatically with the helper methods!
-     * @param publication $publication publication object
+     * @param \publication $publication publication object
      */
     public function __construct($uniqueid, \publication $publication) {
         global $DB, $PAGE;
 
         $assignid = $publication->get_instance()->importfrom;
-        $this->groupingid = $DB->get_field('assign', 'teamsubmissiongroupingid', array('id' => $assignid));
+        $this->groupingid = $DB->get_field('assign', 'teamsubmissiongroupingid', ['id' => $assignid]);
         $this->requiregroup = $publication->requiregroup();
         $this->assigncm = get_coursemodule_from_instance('assign', $assignid, $publication->get_instance()->course);
         $this->assigncontext = \context_module::instance($this->assigncm->id);
@@ -108,7 +110,7 @@ class group extends base {
         // Init JS!
         $params = new \stdClass();
         $params->id = $uniqueid;
-        switch($publication->get_instance()->groupapproval) {
+        switch ($publication->get_instance()->groupapproval) {
             case PUBLICATION_APPROVAL_ALL;
                 $params->mode = get_string('groupapprovalmode_all', 'mod_publication');
                 break;
@@ -117,12 +119,12 @@ class group extends base {
                 break;
         }
 
-        $PAGE->requires->js_call_amd('mod_publication/groupapprovalstatus', 'initializer', array($params));
+        $PAGE->requires->js_call_amd('mod_publication/groupapprovalstatus', 'initializer', [$params]);
 
         $params = new \stdClass();
         $cm = get_coursemodule_from_instance('publication', $publication->get_instance()->id);
         $params->cmid = $cm->id;
-        $PAGE->requires->js_call_amd('mod_publication/onlinetextpreview', 'initializer', array($params));
+        $PAGE->requires->js_call_amd('mod_publication/onlinetextpreview', 'initializer', [$params]);
     }
 
     /**
@@ -145,12 +147,14 @@ class group extends base {
      * @return array Array with column names, column headers and help icons
      */
     protected function get_columns() {
-        $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', array('id'      => 'selectallnone',
-                                                                                         'onClick' => 'toggle_userselection()'));
+        $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', [
+                'id' => 'selectallnone',
+                'onClick' => 'toggle_userselection()'
+        ]);
 
-        $columns = array('selection', 'groupname', 'groupmembers', 'timemodified');
-        $headers = array($selectallnone, get_string('group'), get_string('groupmembers'), get_string('lastmodified'));
-        $helpicons = array(null, null, null, null);
+        $columns = ['selection', 'groupname', 'groupmembers', 'timemodified'];
+        $headers = [$selectallnone, get_string('group'), get_string('groupmembers'), get_string('lastmodified')];
+        $helpicons = [null, null, null, null];
 
         if (has_capability('mod/publication:approve', $this->context)) {
             if ($this->publication->get_instance()->obtainstudentapproval) {
@@ -172,14 +176,14 @@ class group extends base {
         }
 
         // Import and upload tables will enhance this list! Import from teamassignments will overwrite it!
-        return array($columns, $headers, $helpicons);
+        return [$columns, $headers, $helpicons];
     }
 
     /**
      * Display members of the group
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return groups members.
+     * @return string Return groups members.
      */
     public function col_groupmembers($values) {
         $cell = '';
@@ -206,13 +210,15 @@ class group extends base {
     protected function add_details_tooltip(&$symbol, \stored_file $file) {
         global $DB, $OUTPUT;
 
-        $pubfileid = $DB->get_field('publication_file', 'id', array('publication' => $this->publication->get_instance()->id,
-                                                                    'fileid'      => $file->get_id()));
+        $pubfileid = $DB->get_field('publication_file', 'id', [
+                'publication' => $this->publication->get_instance()->id,
+                'fileid' => $file->get_id()
+        ]);
         list(, $approvaldetails) = $this->publication->group_approval($pubfileid);
 
-        $approved = array();
-        $rejected = array();
-        $pending = array();
+        $approved = [];
+        $rejected = [];
+        $pending = [];
         foreach ($approvaldetails as $cur) {
             if (empty($cur->approvaltime)) {
                 $cur->approvaltime = '-';
@@ -220,11 +226,11 @@ class group extends base {
                 $cur->approvaltime = userdate($cur->approvaltime, get_string('strftimedatetime'));
             }
             if ($cur->approval === null) {
-                $pending[] = array('name' => fullname($cur), 'time' => '-');;
+                $pending[] = ['name' => fullname($cur), 'time' => '-'];;
             } else if ($cur->approval == 0) {
-                $rejected[] = array('name' => fullname($cur), 'time' => $cur->approvaltime);
+                $rejected[] = ['name' => fullname($cur), 'time' => $cur->approvaltime];
             } else if ($cur->approval == 1) {
-                $approved[] = array('name' => fullname($cur), 'time' => $cur->approvaltime);
+                $approved[] = ['name' => fullname($cur), 'time' => $cur->approvaltime];
             }
         }
 
@@ -243,15 +249,17 @@ class group extends base {
                 $status->pending = true;
         }
 
-        $detailsattr = array('class'         => 'approvaldetails',
-                             'data-pending'  => json_encode($pending),
-                             'data-approved' => json_encode($approved),
-                             'data-rejected' => json_encode($rejected),
-                             'data-filename' => $file->get_filename(),
-                             'data-status'   => json_encode($status));
+        $detailsattr = [
+                'class' => 'approvaldetails',
+                'data-pending' => json_encode($pending),
+                'data-approved' => json_encode($approved),
+                'data-rejected' => json_encode($rejected),
+                'data-filename' => $file->get_filename(),
+                'data-status' => json_encode($status)
+        ];
 
-        $symbol = $symbol.\html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('show_details', 'publication')),
-                                            $detailsattr);
+        $symbol = $symbol . \html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('show_details', 'publication')),
+                        $detailsattr);
 
     }
 

@@ -22,9 +22,9 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- /**
-  * @module mod_publication/onlinetextpreview
-  */
+/**
+ * @module mod_publication/onlinetextpreview
+ */
 define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'core/notification'], function($,
         ModalFactory, str, ajax, log, notification) {
 
@@ -53,7 +53,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'co
         if (!instance.modal) {
             instance.modalpromise = ModalFactory.create({
                 type: ModalFactory.types.DEFAULT,
-                large: true,
+                large: true
             });
         }
 
@@ -66,10 +66,10 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'co
             instance.modalpromise.done(function(modal) {
                 log.info('Done preparing modal', 'mod_publication');
                 instance.modal = modal;
-                $( ".path-mod-publication table.publications .onlinetextpreview *").click(function(e) {
+                $('.path-mod-publication table.publications .onlinetextpreview *').click(function(e) {
                     e.stopPropagation();
                     e.preventDefault();
-                    var element = $( e.target );
+                    var element = $(e.target);
 
                     var dataelement = element.parent();
 
@@ -80,26 +80,28 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'co
                         notification.exception(ex);
                     }
 
-                    ajax.call([{
-                        methodname: 'mod_publication_get_onlinetextpreview',
-                        args: {itemid: itemid, cmid: instance.cmid},
-                        done: function(data) {
-                            var itemname = '';
-                            if (dataelement.data('itemname').length) {
-                                itemname = ' ' + s[2].toLowerCase() + ' ' + dataelement.data('itemname');
+                    ajax.call([
+                        {
+                            methodname: 'mod_publication_get_onlinetextpreview',
+                            args: {itemid: itemid, cmid: instance.cmid},
+                            done: function(data) {
+                                var itemname = '';
+                                if (dataelement.data('itemname').length) {
+                                    itemname = ' ' + s[2].toLowerCase() + ' ' + dataelement.data('itemname');
+                                }
+                                instance.modal.setTitle(s[0] + ' ' + s[1] + itemname);
+                                instance.modal.setBody(data);
+                                instance.modal.show();
+                            },
+                            fail: function(ex) {
+                                notification.exception(ex);
                             }
-                            instance.modal.setTitle(s[0] + ' ' + s[1] + itemname);
-                            instance.modal.setBody(data);
-                            instance.modal.show();
-                        },
-                        fail: function (ex) {
-                            notification.exception(ex);
                         }
-                    }]);
+                    ]);
                 });
             });
         }).fail(function(ex) {
-            log.error("Error getting strings: " + ex, "mod_publication");
+            log.error('Error getting strings: ' + ex, 'mod_publication');
         });
     };
 

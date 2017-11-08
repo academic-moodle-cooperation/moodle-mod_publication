@@ -34,23 +34,24 @@ defined('MOODLE_INTERNAL') || die();
 function publication_add_instance($publication) {
     global $DB, $OUTPUT;
 
-    $cmid       = $publication->coursemodule;
-    $courseid   = $publication->course;
+    $cmid = $publication->coursemodule;
+    $courseid = $publication->course;
 
+    $id = 0;
     try {
         $id = $DB->insert_record('publication', $publication);
     } catch (Exception $e) {
         echo $OUTPUT->notification($e->message, 'error');
     }
 
-    $DB->set_field('course_modules', 'instance', $id, array('id' => $cmid));
+    $DB->set_field('course_modules', 'instance', $id, ['id' => $cmid]);
 
-    $record = $DB->get_record('publication', array('id' => $id));
+    $record = $DB->get_record('publication', ['id' => $id]);
 
-    $record->course     = $courseid;
-    $record->cmid       = $cmid;
+    $record->course = $courseid;
+    $record->cmid = $cmid;
 
-    $course = $DB->get_record('course', array('id' => $record->course), '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $record->course], '*', MUST_EXIST);
     $cm = get_coursemodule_from_id('publication', $cmid, 0, false, MUST_EXIST);
     $context = context_module::instance($cm->id);
     $instance = new publication($cm, $course, $context);
@@ -71,7 +72,7 @@ function publication_add_instance($publication) {
  * @return mixed True if module supports feature, null if doesn't know
  */
 function publication_supports($feature) {
-    switch($feature) {
+    switch ($feature) {
         case FEATURE_GROUPS:
             return true;
         case FEATURE_GROUPINGS:
@@ -81,8 +82,6 @@ function publication_supports($feature) {
         case FEATURE_GRADE_HAS_GRADE:
             return false;
         case FEATURE_GRADE_OUTCOMES:
-            return false;
-        case FEATURE_GRADE_HAS_GRADE:
             return false;
         case FEATURE_BACKUP_MOODLE2:
             return true;
@@ -100,6 +99,7 @@ function publication_supports($feature) {
  * updates an existing publication instance
  *
  * @param publication $publication
+ * @return bool true
  */
 function publication_update_instance($publication) {
     global $DB;
@@ -110,7 +110,7 @@ function publication_update_instance($publication) {
 
     $DB->update_record('publication', $publication);
 
-    $course = $DB->get_record('course', array('id' => $publication->course), '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $publication->course], '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('publication', $publication->id, 0, false, MUST_EXIST);
     $context = context_module::instance($cm->id);
     $instance = new publication($cm, $course, $context);
@@ -128,27 +128,28 @@ function publication_update_instance($publication) {
  * complete deletes an publication instance
  *
  * @param int $id
- * @return boolean
+ * @return bool
  */
 function publication_delete_instance($id) {
     global $DB;
 
-    if (! $publication = $DB->get_record('publication', array('id' => $id))) {
+    if (!$publication = $DB->get_record('publication', ['id' => $id])) {
         return false;
     }
 
-    $DB->delete_records('publication_extduedates', array('publication' => $publication->id));
+    $DB->delete_records('publication_extduedates', ['publication' => $publication->id]);
 
     $fs = get_file_storage();
 
     $fs->delete_area_files($publication->id, 'mod_publication', 'attachment');
 
-    $DB->delete_records('publication_file', array('publication' => $publication->id));
+    $DB->delete_records('publication_file', ['publication' => $publication->id]);
 
     $result = true;
-    if (! $DB->delete_records('publication', array('id' => $publication->id))) {
+    if (!$DB->delete_records('publication', ['id' => $publication->id])) {
         $result = false;
     }
+
     return $result;
 }
 
@@ -156,15 +157,14 @@ function publication_delete_instance($id) {
  * Returns info object about the course module
  *
  * @param stdClass $coursemodule The coursemodule object (record).
- * @return cached_cm_info An object on information that the courses
- *                        will know about (most noticeably, an icon).
+ * @return bool|cached_cm_info An object on information that the courses will know about (most noticeably, an icon) or false.
  */
 function publication_get_coursemodule_info($coursemodule) {
     global $DB;
 
-    $dbparams = array('id' => $coursemodule->instance);
+    $dbparams = ['id' => $coursemodule->instance];
     $fields = 'id, name, alwaysshowdescription, allowsubmissionsfromdate, intro, introformat';
-    if (! $publication = $DB->get_record('publication', $dbparams, $fields)) {
+    if (!$publication = $DB->get_record('publication', $dbparams, $fields)) {
         return false;
     }
 
@@ -176,13 +176,14 @@ function publication_get_coursemodule_info($coursemodule) {
             $result->content = format_module_intro('publication', $publication, $coursemodule->id, false);
         }
     }
+
     return $result;
 }
 
 /**
  * Defines which elements mod_publication needs to add to reset form
  *
- * @param moodleform $mform The reset course form to extend
+ * @param MoodleQuickForm $mform The reset course form to extend
  */
 function publication_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'publicationheader', get_string('modulenameplural', 'publication'));
@@ -198,22 +199,22 @@ function publication_reset_course_form_definition(&$mform) {
 function publication_reset_userdata($data) {
     global $DB;
 
-    if (!$DB->count_records('publication', array('course' => $data->courseid))) {
-        return array();
+    if (!$DB->count_records('publication', ['course' => $data->courseid])) {
+        return [];
     }
 
     $componentstr = get_string('modulenameplural', 'publication');
-    $status = array();
+    $status = [];
 
     if (isset($data->reset_publication_userdata)) {
 
-        $publications = $DB->get_records('publication', array('course' => $data->courseid));
+        $publications = $DB->get_records('publication', ['course' => $data->courseid]);
 
         foreach ($publications as $publication) {
 
-            $DB->delete_records('publication_extduedates', array('publication' => $publication->id));
+            $DB->delete_records('publication_extduedates', ['publication' => $publication->id]);
 
-            $filerecords = $DB->get_records('publication_file', array('publication' => $publication->id));
+            $filerecords = $DB->get_records('publication_file', ['publication' => $publication->id]);
 
             $fs = get_file_storage();
             foreach ($filerecords as $filerecord) {
@@ -222,10 +223,13 @@ function publication_reset_userdata($data) {
                 }
             }
 
-            $DB->delete_records('publication_file', array('publication' => $publication->id));
+            $DB->delete_records('publication_file', ['publication' => $publication->id]);
 
-            $status[] = array('component' => $componentstr, 'item' => $publication->name,
-                    'error' => false);
+            $status[] = [
+                    'component' => $componentstr,
+                    'item' => $publication->name,
+                    'error' => false
+            ];
         }
     }
 
@@ -245,7 +249,7 @@ function publication_reset_userdata($data) {
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - just send the file
  */
-function mod_publication_pluginfile($course, $cm, context $context, $filearea, $args, $forcedownload, array $options=array()) {
+function mod_publication_pluginfile($course, $cm, context $context, $filearea, $args, $forcedownload, array $options = []) {
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
     }
@@ -268,5 +272,9 @@ function mod_publication_pluginfile($course, $cm, context $context, $filearea, $
     if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
         return false;
     }
+
     send_stored_file($file, 0, 0, $forcedownload, $options);
+
+    // Wont be reached!
+    return false;
 }

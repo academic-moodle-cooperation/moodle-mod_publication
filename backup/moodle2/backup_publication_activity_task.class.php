@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+
 require_once($CFG->dirroot . '/mod/publication/backup/moodle2/backup_publication_stepslib.php');
 
 /**
@@ -56,6 +58,7 @@ class backup_publication_activity_task extends backup_activity_task {
     /**
      * Code the transformations to perform in the activity in
      * order to get transportable (encoded) links
+     *
      * @param string $content
      * @return string
      */
@@ -64,10 +67,10 @@ class backup_publication_activity_task extends backup_activity_task {
 
         $base = preg_quote($CFG->wwwroot, "/");
 
-        $search = "/(".$base."\/mod\/publication\/index.php\?id\=)([0-9]+)/";
+        $search = "/(" . $base . "\/mod\/publication\/index.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@PUBLICATIONINDEX*$2@$', $content);
 
-        $search = "/(".$base."\/mod\/publication\/view.php\?id\=)([0-9]+)/";
+        $search = "/(" . $base . "\/mod\/publication\/view.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@PUBLICATIONVIEWBYID*$2@$', $content);
 
         return $content;

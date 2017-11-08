@@ -22,6 +22,7 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_publication\local\filestable;
 
 defined('MOODLE_INTERNAL') || die();
@@ -41,7 +42,7 @@ class group extends base {
     /**
      * Add a single file to the table
      *
-     * @param stored_file $file Stored file instance
+     * @param \stored_file $file Stored file instance
      * @return string[] Array of table cell contents
      */
     public function add_file(\stored_file $file) {
@@ -53,8 +54,10 @@ class group extends base {
         // Now add the specific data to the table!
         $teacherapproval = $this->publication->teacher_approval($file);
         if ($teacherapproval && $this->publication->get_instance()->obtainstudentapproval) {
-            $pubfileid = $DB->get_field('publication_file', 'id', array('publication' => $this->publication->get_instance()->id,
-                                                                        'fileid'      => $file->get_id()));
+            $pubfileid = $DB->get_field('publication_file', 'id', [
+                    'publication' => $this->publication->get_instance()->id,
+                    'fileid' => $file->get_id()
+            ]);
             list($studentapproval, $approvaldetails) = $this->publication->group_approval($pubfileid);
             if ($this->publication->is_open()
                     && (!key_exists($USER->id, $approvaldetails) || ($approvaldetails[$USER->id]->approval === null))) {
@@ -64,15 +67,15 @@ class group extends base {
                 } else {
                     $checked = $approvaldetails[$USER->id]->approval === null ? 0 : $approvaldetails[$USER->id]->approval + 1;
                 }
-                $data[] = \html_writer::select($this->options, 'studentapproval['.$file->get_id().']', $checked);
+                $data[] = \html_writer::select($this->options, 'studentapproval[' . $file->get_id() . ']', $checked);
             } else {
                 if ($studentapproval === null) {
                     $data[] = get_string('student_pending', 'publication');
                 } else if ($studentapproval) {
                     $data[] = get_string('student_approved', 'publication');
                 } else {
-                    $rejected = array();
-                    $pending = array();
+                    $rejected = [];
+                    $pending = [];
                     foreach ($approvaldetails as $cur) {
                         if ($cur->approval === 0) {
                             $rejected[] = fullname($cur);
@@ -81,10 +84,10 @@ class group extends base {
                         }
                     }
                     if (count($rejected) > 0) {
-                        $rejected = get_string('rejected', 'publication').': '.implode(', ', $rejected);
+                        $rejected = get_string('rejected', 'publication') . ': ' . implode(', ', $rejected);
                     } else if ($this->publication->get_instance()->groupapproval == PUBLICATION_APPROVAL_ALL) {
                         if (count($pending) > 0) {
-                            $rejected = get_string('pending', 'publication').': '.implode(', ', $pending);
+                            $rejected = get_string('pending', 'publication') . ': ' . implode(', ', $pending);
                         } else {
                             $rejected = '';
                         }
@@ -92,11 +95,11 @@ class group extends base {
                         $rejected = '';
                     }
                     $data[] = \html_writer::tag('span', get_string('student_rejected', 'publication'),
-                                                array('title' => $rejected));
+                            ['title' => $rejected]);
                 }
             }
         } else {
-            switch($teacherapproval) {
+            switch ($teacherapproval) {
                 case 1:
                     $data[] = get_string('teacher_approved', 'publication');
                     break;
@@ -111,7 +114,7 @@ class group extends base {
     /**
      * Get all files, in which the current user's groups are involved
      *
-     * @return stored_file[] array of stored_files indexed by pathanmehash
+     * @return \stored_file[] array of stored_files indexed by pathanmehash
      */
     public function get_files() {
         global $USER, $DB;
@@ -127,11 +130,11 @@ class group extends base {
          * group if there's no group or multiple groups, instead it uses just the first group it finds for the user!
          * So if assign doesn't behave that exact, we just use all users groups (except there's a groupingid set for submission! */
         $assignid = $this->publication->get_instance()->importfrom;
-        $this->groupingid = $DB->get_field('assign', 'teamsubmissiongroupingid', array('id' => $assignid));
+        $this->groupingid = $DB->get_field('assign', 'teamsubmissiongroupingid', ['id' => $assignid]);
         $groups = groups_get_all_groups($this->publication->get_instance()->course, $USER->id, $this->groupingid);
         if (empty($groups)) {
             // Users without group membership get assigned group id 0!
-            $groups = array();
+            $groups = [];
             $groups[0] = new \stdClass();
             $groups[0]->id = 0;
         }

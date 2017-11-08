@@ -53,8 +53,10 @@ function xmldb_publication_upgrade($oldversion) {
 
     if ($oldversion < 2015120201) {
         // Remove unused settings (requiremodintro and duplicates of stdexamplecount and requiremodintro)!
-        $DB->delete_records('config_plugins', array('plugin' => 'publication',
-                                                    'name'   => 'requiremodintro'));
+        $DB->delete_records('config_plugins', [
+                'plugin' => 'publication',
+                'name' => 'requiremodintro'
+        ]);
 
         upgrade_mod_savepoint(true, 2015120201, 'publication');
     }
@@ -100,9 +102,9 @@ function xmldb_publication_upgrade($oldversion) {
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
         // Adding keys to table publication_groupapproval.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('fileid', XMLDB_KEY_FOREIGN, array('fileid'), 'publication_files', array('id'));
-        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('fileid', XMLDB_KEY_FOREIGN, ['fileid'], 'publication_files', ['id']);
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
 
         // Conditionally launch create table for publication_groupapproval.
         if (!$dbman->table_exists($table)) {
@@ -138,22 +140,23 @@ function xmldb_publication_upgrade($oldversion) {
         // Get all old filetype-restrictions and convert them!
         $rs = $DB->get_recordset_sql("SELECT id id, allowedfiletypes allowedfiletypes
                                         FROM {publication}
-                                       WHERE ".$DB->sql_isnotempty('publication', 'allowedfiletypes', false, true));
+                                       WHERE " . $DB->sql_isnotempty('publication', 'allowedfiletypes', false, true));
         echo "<pre>";
         foreach ($rs as $cur) {
             // We only convert old style entries!
             if (!preg_match('/^([\.A-Za-z0-9]+([ ]*[,][ ]*[\.A-Za-z0-9]+)*)$/', $cur->allowedfiletypes)) {
-                echo "Skipping record with ID ".$cur->id." having filetypes '".$cur->allowedfiletypes."'' allowed!<br />\n";
+                echo "Skipping record with ID " . $cur->id . " having filetypes '" . $cur->allowedfiletypes . "'' allowed!<br />\n";
                 continue;
             }
 
             $allowedfiletypes = preg_split('([ ]*[,][ ]*)', $cur->allowedfiletypes);
-            array_walk($allowedfiletypes, function(&$type) {
+            array_walk($allowedfiletypes, function (&$type) {
                 if ((strpos($type, '.') === false) || (strpos($type, '.') !== 0)) {
-                    $type = '.'.$type;
+                    $type = '.' . $type;
                 }
             });
-            echo "Update allowedfiletypes for ID ".$cur->id.": ".$cur->allowedfiletypes." --> ".implode('; ', $allowedfiletypes).
+            echo "Update allowedfiletypes for ID " . $cur->id . ": " . $cur->allowedfiletypes . " --> " .
+                    implode('; ', $allowedfiletypes) .
                     "<br />\n";
             $cur->allowedfiletypes = implode('; ', $allowedfiletypes);
             $DB->update_record('publication', $cur);

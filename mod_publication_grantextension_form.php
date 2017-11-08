@@ -26,8 +26,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/publication/locallib.php');
+global $CFG;
+
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/publication/locallib.php');
 
 /**
  * Form for granting extensions
@@ -67,7 +69,7 @@ class mod_publication_grantextension_form extends moodleform {
         }
 
         $mform->addElement('date_time_selector', 'extensionduedate',
-                get_string('extensionduedate', 'publication'), array('optional' => true));
+                get_string('extensionduedate', 'publication'), ['optional' => true]);
         if ($finaldate) {
             $mform->setDefault('extensionduedate', $finaldate);
         }
@@ -95,6 +97,7 @@ class mod_publication_grantextension_form extends moodleform {
      *
      * @param array $data
      * @param array $files
+     * @return string[] errors
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);

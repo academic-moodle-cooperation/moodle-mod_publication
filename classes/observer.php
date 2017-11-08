@@ -22,7 +22,10 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_publication;
+use \core\notification as notification;
+use \mod_assign\event\assessable_submitted as assessable_submitted;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -41,56 +44,60 @@ class observer {
      * @param \mod_assign\event\assessable_submitted $e Event object containing useful data
      * @return bool true if success
      */
-    public static function import_assessable(\mod_assign\event\assessable_submitted $e) {
+    public static function import_assessable(assessable_submitted $e) {
         global $DB, $CFG, $OUTPUT;
 
-        // Keep other page calls slimed down!
-        require_once($CFG->dirroot .'/mod/publication/locallib.php');
+        // Keep other page calls slimmed down!
+        require_once($CFG->dirroot . '/mod/publication/locallib.php');
 
         // We have the submission ID, so first we fetch the corresponding submission, assign, etc.!
         $assign = $e->get_assign();
         $assignid = $assign->get_course_module()->instance;
-        $submission = $DB->get_record($e->objecttable, array('id' => $e->objectid));
+        $submission = $DB->get_record($e->objecttable, ['id' => $e->objectid]);
 
         if (!empty($assign->get_instance()->teamsubmission) && !empty($submission->userid)) {
             /* If the userid is set, we can skip here... the files and texts are in the submission with groupid set
                or groupid 0 for users without group! */
-            return;
+            return true;
         }
 
-        $assignmoduleid = $DB->get_field('modules', 'id', array('name' => 'assign'));
-        $assigncm = $DB->get_record('course_modules', array('course'   => $assign->get_course()->id,
-                                                            'module'   => $assignmoduleid,
-                                                            'instance' => $assignid));
+        $assignmoduleid = $DB->get_field('modules', 'id', ['name' => 'assign']);
+        $assigncm = $DB->get_record('course_modules', [
+                'course' => $assign->get_course()->id,
+                'module' => $assignmoduleid,
+                'instance' => $assignid
+        ]);
         $assigncontext = \context_module::instance($assigncm->id);
 
         $sql = "SELECT pub.id, pub.course
                   FROM {publication} pub
                  WHERE (pub.mode = ?) AND (pub.importfrom = ?) AND (pub.autoimport = 1)";
-        $params = array(\PUBLICATION_MODE_IMPORT, $assignid);
-        if (! $publications = $DB->get_records_sql($sql, $params)) {
+        $params = [\PUBLICATION_MODE_IMPORT, $assignid];
+        if (!$publications = $DB->get_records_sql($sql, $params)) {
             return true;
         }
 
-        $subfilerecords = $DB->get_records('assignsubmission_file', array('assignment' => $assignid,
-                                                                          'submission' => $submission->id));
+        $subfilerecords = $DB->get_records('assignsubmission_file', [
+                'assignment' => $assignid,
+                'submission' => $submission->id
+        ]);
         $fs = get_file_storage();
 
-        $assignfileids = array();
-        $assignfiles = array();
+        $assignfileids = [];
+        $assignfiles = [];
         $itemid = empty($assign->get_instance()->teamsubmission) ? $submission->userid : $submission->groupid;
 
         foreach ($publications as $curpub) {
             $cm = get_coursemodule_from_instance('publication', $curpub->id, 0, false, MUST_EXIST);
             $context = \context_module::instance($cm->id);
             foreach ($subfilerecords as $record) {
-                if ($assignfileids == array()) {
+                if ($assignfileids == []) {
                     $files = $fs->get_area_files($assigncontext->id,
-                                                 "assignsubmission_file",
-                                                 "submission_files",
-                                                 $record->submission,
-                                                 "id",
-                                                 false);
+                            "assignsubmission_file",
+                            "submission_files",
+                            $record->submission,
+                            "id",
+                            false);
 
                     foreach ($files as $file) {
                         $assignfiles[$file->get_id()] = $file;
@@ -98,7 +105,7 @@ class observer {
                     }
                 }
 
-                $conditions = array();
+                $conditions = [];
                 $conditions['publication'] = $curpub->id;
                 $conditions['userid'] = $itemid;
                 // We look for regular imported files here!
@@ -135,18 +142,18 @@ class observer {
 
                     try {
                         if ($fs->file_exists($newfilerecord->contextid,
-                                             $newfilerecord->component,
-                                             $newfilerecord->filearea,
-                                             $newfilerecord->itemid,
-                                             $assignfiles[$assignfileid]->get_filepath(),
-                                             $assignfiles[$assignfileid]->get_filename())) {
-                            \core\notification::info($OUTPUT->box('File existed, skipped creation!', 'generalbox'));
+                                $newfilerecord->component,
+                                $newfilerecord->filearea,
+                                $newfilerecord->itemid,
+                                $assignfiles[$assignfileid]->get_filepath(),
+                                $assignfiles[$assignfileid]->get_filename())) {
+                            notification::info($OUTPUT->box('File existed, skipped creation!', 'generalbox'));
                             $newfile = $fs->get_file($newfilerecord->contextid,
-                                                     $newfilerecord->component,
-                                                     $newfilerecord->filearea,
-                                                     $newfilerecord->itemid,
-                                                     $assignfiles[$assignfileid]->get_filepath(),
-                                                     $assignfiles[$assignfileid]->get_filename());
+                                    $newfilerecord->component,
+                                    $newfilerecord->filearea,
+                                    $newfilerecord->itemid,
+                                    $assignfiles[$assignfileid]->get_filepath(),
+                                    $assignfiles[$assignfileid]->get_filename());
                         } else {
                             $newfile = $fs->create_file_from_storedfile($newfilerecord, $assignfiles[$assignfileid]);
                         }
@@ -162,10 +169,10 @@ class observer {
                         $dataobject->type = \PUBLICATION_MODE_IMPORT;
 
                         $DB->insert_record('publication_file', $dataobject);
-                    } catch (Exception $e) {
+                    } catch (\Exception $ex) {
                         // File could not be copied, maybe it does allready exist.
                         // Should not happen.
-                        \core\notification::error($OUTPUT->box($e->message, 'generalbox'));
+                        notification::error($OUTPUT->box($ex->getMessage(), 'generalbox'));
                     }
                 }
 

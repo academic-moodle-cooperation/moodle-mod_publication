@@ -22,6 +22,7 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_publication\local\allfilestable;
 
 defined('MOODLE_INTERNAL') || die();
@@ -37,9 +38,10 @@ defined('MOODLE_INTERNAL') || die();
 class import extends base {
     /**
      * constructor
+     *
      * @param string $uniqueid a string identifying this table.Used as a key in session  vars.
      *                         It gets set automatically with the helper methods!
-     * @param publication $publication publication object
+     * @param \publication $publication publication object
      */
     public function __construct($uniqueid, \publication $publication) {
         global $PAGE;
@@ -49,7 +51,7 @@ class import extends base {
         $params = new \stdClass();
         $cm = get_coursemodule_from_instance('publication', $publication->get_instance()->id);
         $params->cmid = $cm->id;
-        $PAGE->requires->js_call_amd('mod_publication/onlinetextpreview', 'initializer', array($params));
+        $PAGE->requires->js_call_amd('mod_publication/onlinetextpreview', 'initializer', [$params]);
     }
 
     /**
@@ -79,6 +81,6 @@ class import extends base {
             $helpicons[] = null;
         }
 
-        return array($columns, $headers, $helpicons);
+        return [$columns, $headers, $helpicons];
     }
 }

@@ -54,13 +54,13 @@ class publication_allfilestable_test extends advanced_testcase {
     /** @var stdClass $course New course created to hold the assignments */
     protected $course = null;
 
-    /** @var array $teachers List of DEFAULT_TEACHER_COUNT teachers in the course*/
+    /** @var array $teachers List of DEFAULT_TEACHER_COUNT teachers in the course */
     protected $teachers = null;
 
     /** @var array $editingteachers List of DEFAULT_EDITING_TEACHER_COUNT editing teachers in the course */
     protected $editingteachers = null;
 
-    /** @var array $students List of DEFAULT_STUDENT_COUNT students in the course*/
+    /** @var array $students List of DEFAULT_STUDENT_COUNT students in the course */
     protected $students = null;
 
     /** @var array $groups List of 10 groups in the course */
@@ -77,28 +77,28 @@ class publication_allfilestable_test extends advanced_testcase {
 
         $this->resetAfterTest(true);
 
-        $this->course = $this->getDataGenerator()->create_course();
-        $this->teachers = array();
+        $this->course = self::getDataGenerator()->create_course();
+        $this->teachers = [];
         for ($i = 0; $i < self::DEFAULT_TEACHER_COUNT; $i++) {
-            array_push($this->teachers, $this->getDataGenerator()->create_user());
+            array_push($this->teachers, self::getDataGenerator()->create_user());
         }
 
-        $this->editingteachers = array();
+        $this->editingteachers = [];
         for ($i = 0; $i < self::DEFAULT_EDITING_TEACHER_COUNT; $i++) {
-            array_push($this->editingteachers, $this->getDataGenerator()->create_user());
+            array_push($this->editingteachers, self::getDataGenerator()->create_user());
         }
 
-        $this->students = array();
+        $this->students = [];
         for ($i = 0; $i < self::DEFAULT_STUDENT_COUNT; $i++) {
-            array_push($this->students, $this->getDataGenerator()->create_user());
+            array_push($this->students, self::getDataGenerator()->create_user());
         }
 
-        $this->groups = array();
+        $this->groups = [];
         for ($i = 0; $i < self::GROUP_COUNT; $i++) {
-            array_push($this->groups, $this->getDataGenerator()->create_group(array('courseid' => $this->course->id)));
+            array_push($this->groups, self::getDataGenerator()->create_group(['courseid' => $this->course->id]));
         }
 
-        $this->timestamps = array();
+        $this->timestamps = [];
         for ($i = 0; $i < self::DEFAULT_TIMESTAMP_COUNT; $i++) {
             $hour = rand(0, 23);
             $minute = rand(0, 60);
@@ -109,32 +109,32 @@ class publication_allfilestable_test extends advanced_testcase {
             array_push($this->timestamps, mktime($hour, $minute, $second, $month, $day, $year));
         }
 
-        $teacherrole = $DB->get_record('role', array('shortname' => 'teacher'));
+        $teacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
         foreach ($this->teachers as $i => $teacher) {
-            $this->getDataGenerator()->enrol_user($teacher->id,
-                                                  $this->course->id,
-                                                  $teacherrole->id);
+            self::getDataGenerator()->enrol_user($teacher->id,
+                    $this->course->id,
+                    $teacherrole->id);
             groups_add_member($this->groups[$i % self::GROUP_COUNT], $teacher);
         }
 
-        $editingteacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+        $editingteacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
         foreach ($this->editingteachers as $i => $editingteacher) {
-            $this->getDataGenerator()->enrol_user($editingteacher->id,
-                                                  $this->course->id,
-                                                  $editingteacherrole->id);
+            self::getDataGenerator()->enrol_user($editingteacher->id,
+                    $this->course->id,
+                    $editingteacherrole->id);
             groups_add_member($this->groups[$i % self::GROUP_COUNT], $editingteacher);
         }
 
-        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
         foreach ($this->students as $i => $student) {
-            $this->getDataGenerator()->enrol_user($student->id,
-                                                  $this->course->id,
-                                                  $studentrole->id);
+            self::getDataGenerator()->enrol_user($student->id,
+                    $this->course->id,
+                    $studentrole->id);
             groups_add_member($this->groups[$i % self::GROUP_COUNT], $student);
         }
 
         // Make sure to run these tests as (editing)teacher, due to students getting no table if no files are present!
-        $this->setUser($this->editingteachers[0]);
+        self::setUser($this->editingteachers[0]);
     }
 
     /**
@@ -143,8 +143,8 @@ class publication_allfilestable_test extends advanced_testcase {
      * @param array $params Array of parameters to pass to the generator
      * @return testable_publication Testable wrapper around the publication class.
      */
-    protected function create_instance($params=array()) {
-        $generator = $this->getDataGenerator()->get_plugin_generator('mod_publication');
+    protected function create_instance($params = []) {
+        $generator = self::getDataGenerator()->get_plugin_generator('mod_publication');
         $params['course'] = $this->course->id;
         $instance = $generator->create_instance($params);
         $cm = get_coursemodule_from_instance('publication', $instance->id);
@@ -157,7 +157,7 @@ class publication_allfilestable_test extends advanced_testcase {
      * Tests the basic creation of a publication instance with standardized settings!
      */
     public function test_create_instance() {
-        $this->assertNotEmpty($this->create_instance());
+        self::assertNotEmpty($this->create_instance());
     }
 
     /**
@@ -165,11 +165,11 @@ class publication_allfilestable_test extends advanced_testcase {
      */
     public function test_allfilestable_upload() {
         // Setup fixture!
-        $publication = $this->create_instance(array('mode' => PUBLICATION_MODE_UPLOAD,
-                                                    'obtainteacherapproval' => 0,
-                                                    'obtainstudentapproval' => 0));
-
-        $exception = false;
+        $publication = $this->create_instance([
+                'mode' => PUBLICATION_MODE_UPLOAD,
+                'obtainteacherapproval' => 0,
+                'obtainstudentapproval' => 0
+        ]);
 
         // Exercise SUT!
         try {
@@ -177,14 +177,10 @@ class publication_allfilestable_test extends advanced_testcase {
             $publication->display_allfilesform();
             $output = ob_get_contents();
             ob_end_clean();
-            $this->assertFalse(strpos($output, "Nothing to display"));
+            self::assertFalse(strpos($output, "Nothing to display"));
         } catch (Exception $e) {
-            $exception = true;
             throw $e;
         }
-
-        // Validate outcome!
-        $this->assertEquals(false, $exception);
 
         // Teardown fixture!
         $publication = null;
@@ -195,15 +191,15 @@ class publication_allfilestable_test extends advanced_testcase {
      */
     public function test_allfilestable_import() {
         // Setup fixture!
-        $generator = $this->getDataGenerator()->get_plugin_generator('mod_assign');
+        $generator = self::getDataGenerator()->get_plugin_generator('mod_assign');
         $params['course'] = $this->course->id;
         $assign = $generator->create_instance($params);
-        $publication = $this->create_instance(array('mode'       => PUBLICATION_MODE_IMPORT,
-                                                    'importfrom' => $assign->id,
-                                                    'obtainteacherapproval' => 0,
-                                                    'obtainstudentapproval' => 0));
-
-        $exception = false;
+        $publication = $this->create_instance([
+                'mode' => PUBLICATION_MODE_IMPORT,
+                'importfrom' => $assign->id,
+                'obtainteacherapproval' => 0,
+                'obtainstudentapproval' => 0
+        ]);
 
         // Exercise SUT!
         try {
@@ -211,14 +207,10 @@ class publication_allfilestable_test extends advanced_testcase {
             $publication->display_allfilesform();
             $output = ob_get_contents();
             ob_end_clean();
-            $this->assertFalse(strpos($output, "Nothing to display"));
+            self::assertFalse(strpos($output, "Nothing to display"));
         } catch (Exception $e) {
-            $exception = true;
             throw $e;
         }
-
-        // Validate outcome!
-        $this->assertEquals(false, $exception);
 
         // Teardown fixture!
         $publication = null;
@@ -229,15 +221,15 @@ class publication_allfilestable_test extends advanced_testcase {
      */
     public function test_allfilestable_group() {
         // Setup fixture!
-        $generator = $this->getDataGenerator()->get_plugin_generator('mod_assign');
+        $generator = self::getDataGenerator()->get_plugin_generator('mod_assign');
         $params['course'] = $this->course->id;
         $params['teamsubmission'] = 1;
         $params['preventsubmissionnotingroup'] = 0;
         $assign = $generator->create_instance($params);
-        $publication = $this->create_instance(array('mode'       => PUBLICATION_MODE_IMPORT,
-                                                    'importfrom' => $assign->id));
-
-        $exception = false;
+        $publication = $this->create_instance([
+                'mode' => PUBLICATION_MODE_IMPORT,
+                'importfrom' => $assign->id
+        ]);
 
         // Exercise SUT!
         try {
@@ -245,14 +237,10 @@ class publication_allfilestable_test extends advanced_testcase {
             $publication->display_allfilesform();
             $output = ob_get_contents();
             ob_end_clean();
-            $this->assertFalse(strpos($output, "Nothing to display"));
+            self::assertFalse(strpos($output, "Nothing to display"));
         } catch (Exception $e) {
-            $exception = true;
             throw $e;
         }
-
-        // Validate outcome!
-        $this->assertEquals(false, $exception);
 
         // Teardown fixture!
         $publication = null;

@@ -25,18 +25,21 @@
  */
 
 require_once('../../config.php');
+
+global $CFG, $DB, $OUTPUT, $PAGE;
+
 require_once($CFG->dirroot . '/mod/publication/locallib.php');
 require_once($CFG->dirroot . '/mod/publication/mod_publication_grantextension_form.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
 $userids = required_param_array('userids', PARAM_INT); // User id.
 
-$url = new moodle_url('/mod/publication/grantextension.php', array('id' => $id));
+$url = new moodle_url('/mod/publication/grantextension.php', ['id' => $id]);
 if (!$cm = get_coursemodule_from_id('publication', $id, 0, false, MUST_EXIST)) {
     print_error('invalidcoursemodule');
 }
 
-if (!$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)) {
+if (!$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST)) {
     print_error('coursemisconf');
 }
 
@@ -48,7 +51,7 @@ require_capability('mod/publication:grantextension', $context);
 
 $publication = new publication($cm, $course, $context);
 
-$url = new moodle_url('/mod/publication/grantextension.php', array('cmid' => $cm->id));
+$url = new moodle_url('/mod/publication/grantextension.php', ['cmid' => $cm->id]);
 if (!empty($id)) {
     $url->param('id', $id);
 }
@@ -57,14 +60,14 @@ $PAGE->set_url($url);
 
 // Create a new form object.
 $mform = new mod_publication_grantextension_form(null,
-        array('publication' => $publication, 'userids' => $userids));
+        ['publication' => $publication, 'userids' => $userids]);
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/mod/publication/view.php', array('id' => $cm->id)));
+    redirect(new moodle_url('/mod/publication/view.php', ['id' => $cm->id]));
 
 } else if ($data = $mform->get_data()) {
     // Store updated set of files.
-    $dataobject = array();
+    $dataobject = [];
     $dataobject['publication'] = $publication->get_instance()->id;
 
     foreach ($data->userids as $uid) {
@@ -75,11 +78,11 @@ if ($mform->is_cancelled()) {
         if ($data->extensionduedate > 0) {
             // Create new record.
             $dataobject['extensionduedate'] = $data->extensionduedate;
-            $DB->insert_record('publication_extduedates', $dataobject);
+            $DB->insert_record('publication_extduedates', (object)$dataobject);
         }
     }
 
-    redirect(new moodle_url('/mod/publication/view.php', array('id' => $cm->id)));
+    redirect(new moodle_url('/mod/publication/view.php', ['id' => $cm->id]));
 }
 
 // Load existing files into draft area.

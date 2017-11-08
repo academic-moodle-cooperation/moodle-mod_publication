@@ -26,8 +26,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/publication/locallib.php');
+global $CFG;
+
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/publication/locallib.php');
 
 /**
  * Form for displaying and changing approval for publication files
@@ -82,9 +84,9 @@ class mod_publication_files_form extends moodleform {
         $mform->addElement('header', 'myfiles', $headertext);
         $mform->setExpanded('myfiles');
 
-        $PAGE->requires->js_call_amd('mod_publication/filesform', 'initializer', array());
+        $PAGE->requires->js_call_amd('mod_publication/filesform', 'initializer', []);
 
-        $noticehtml = html_writer::start_tag('div', array('class' => 'notice'));
+        $noticehtml = html_writer::start_tag('div', ['class' => 'notice']);
         $noticehtml .= get_string('notice', 'publication') . ' ' . $notice;
         $noticehtml .= html_writer::end_tag('div');
 
@@ -100,25 +102,25 @@ class mod_publication_files_form extends moodleform {
         // Display submit buttons if necessary.
         if (!empty($table) && $table->changepossible()) {
             if ($publication->is_open()) {
-                $buttonarray = array();
+                $buttonarray = [];
 
                 $onclick = 'return confirm("' . get_string('savestudentapprovalwarning', 'publication') . '")';
 
                 $buttonarray[] = &$mform->createElement('submit', 'submitbutton',
-                        get_string('savechanges'), array('onClick' => $onclick));
+                        get_string('savechanges'), ['onClick' => $onclick]);
                 $buttonarray[] = &$mform->createElement('reset', 'resetbutton', get_string('revert'),
-                        array('class' => 'btn btn-secondary'));
+                        ['class' => 'btn btn-secondary']);
 
-                $mform->addGroup($buttonarray, 'submitgrp', '', array(' '), false);
+                $mform->addGroup($buttonarray, 'submitgrp', '', [' '], false);
             } else {
                 $mform->addElement('static', 'approvaltimeover', '', get_string('approval_timeover', 'publication'));
             }
         }
 
         if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD
-            && has_capability('mod/publication:upload', $publication->get_context())) {
+                && has_capability('mod/publication:upload', $publication->get_context())) {
             if ($publication->is_open()) {
-                $buttonarray = array();
+                $buttonarray = [];
 
                 if (empty($table)) { // This means, there are no files shown!
                     $label = get_string('add_uploads', 'publication');
@@ -127,7 +129,7 @@ class mod_publication_files_form extends moodleform {
                 }
 
                 $buttonarray[] = &$mform->createElement('submit', 'gotoupload', $label);
-                $mform->addGroup($buttonarray, 'uploadgrp', '', array(' '), false);
+                $mform->addGroup($buttonarray, 'uploadgrp', '', [' '], false);
             } else {
                 $mform->addElement('static', 'edittimeover', '', get_string('edit_timeover', 'publication'));
             }

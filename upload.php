@@ -35,7 +35,7 @@ if (!$cm = get_coursemodule_from_id('publication', $cmid)) {
     print_error('invalidcoursemodule');
 }
 
-if (!$course = $DB->get_record('course', array('id' => $cm->course))) {
+if (!$course = $DB->get_record('course', ['id' => $cm->course])) {
     print_error('coursemisconf');
 }
 
@@ -47,8 +47,7 @@ require_capability('mod/publication:upload', $context);
 
 $publication = new publication($cm, $course, $context);
 
-
-$url = new moodle_url('/mod/publication/upload.php', array('cmid' => $cm->id));
+$url = new moodle_url('/mod/publication/upload.php', ['cmid' => $cm->id]);
 if (!empty($id)) {
     $url->param('id', $id);
 }
@@ -58,7 +57,7 @@ $PAGE->set_url($url);
 $entry = new stdClass();
 $entry->id = $USER->id;
 
-$entry->definition       = '';          // Updated later.
+$entry->definition = '';          // Updated later.
 $entry->definitionformat = FORMAT_HTML; // Updated later.
 
 $maxfiles = $publication->get_instance()->maxfiles;
@@ -66,10 +65,20 @@ $maxbytes = $publication->get_instance()->maxbytes;
 
 $acceptedfiletypes = $publication->get_accepted_types();
 
-$definitionoptions = array('trusttext' => true, 'subdirs' => false, 'maxfiles' => $maxfiles,
-        'maxbytes' => $maxbytes, 'context' => $context, 'accepted_types' => $acceptedfiletypes);
-$attachmentoptions = array('subdirs' => false, 'maxfiles' => $maxfiles,
-        'maxbytes' => $maxbytes, 'accepted_types' => $acceptedfiletypes);
+$definitionoptions = [
+        'trusttext' => true,
+        'subdirs' => false,
+        'maxfiles' => $maxfiles,
+        'maxbytes' => $maxbytes,
+        'context' => $context,
+        'accepted_types' => $acceptedfiletypes
+];
+$attachmentoptions = [
+        'subdirs' => false,
+        'maxfiles' => $maxfiles,
+        'maxbytes' => $maxbytes,
+        'accepted_types' => $acceptedfiletypes
+];
 
 $entry = file_prepare_standard_editor($entry, 'definition', $definitionoptions, $context, 'mod_publication', 'entry', $entry->id);
 $entry = file_prepare_standard_filemanager($entry, 'attachment', $attachmentoptions, $context, 'mod_publication',
@@ -78,12 +87,16 @@ $entry = file_prepare_standard_filemanager($entry, 'attachment', $attachmentopti
 $entry->cmid = $cm->id;
 
 // Create a new form object (found in lib.php).
-$mform = new mod_publication_upload_form(null, array('current' => $entry, 'cm' => $cm, 'publication' => $publication,
-        'definitionoptions' => $definitionoptions, 'attachmentoptions' => $attachmentoptions));
-
+$mform = new mod_publication_upload_form(null, [
+        'current' => $entry,
+        'cm' => $cm,
+        'publication' => $publication,
+        'definitionoptions' => $definitionoptions,
+        'attachmentoptions' => $attachmentoptions
+]);
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/mod/publication/view.php', array('id' => $cm->id)));
+    redirect(new moodle_url('/mod/publication/view.php', ['id' => $cm->id]));
 
 } else if ($data = $mform->get_data()) {
     // Store updated set of files.
@@ -100,12 +113,12 @@ if ($mform->is_cancelled()) {
 
     $files = $fs->get_area_files($context->id, 'mod_publication', $filearea, $sid, 'timemodified', false);
 
-    $values = array();
+    $values = [];
     foreach ($files as $file) {
         $values[] = $file->get_id();
     }
 
-    $rows = $DB->get_records('publication_file', array('publication' => $publication->get_instance()->id, 'userid' => $USER->id));
+    $rows = $DB->get_records('publication_file', ['publication' => $publication->get_instance()->id, 'userid' => $USER->id]);
 
     // Find new files and store in db.
     foreach ($files as $file) {
@@ -142,11 +155,11 @@ if ($mform->is_cancelled()) {
         }
 
         if (!$found) {
-            $DB->delete_records('publication_file', array('id' => $row->id));
+            $DB->delete_records('publication_file', ['id' => $row->id]);
         }
     }
 
-    redirect(new moodle_url('/mod/publication/view.php', array('id' => $cm->id)));
+    redirect(new moodle_url('/mod/publication/view.php', ['id' => $cm->id]));
 }
 
 // Load existing files into draft area.

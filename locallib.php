@@ -63,7 +63,7 @@ class publication {
      * @param object $course (optional) course object
      * @param context_module $context (optional) Course Module Context
      */
-    public function __construct($cm, $course=null, $context=null) {
+    public function __construct($cm, $course = null, $context = null) {
         global $DB;
 
         $this->coursemodule = $cm;
@@ -71,7 +71,7 @@ class publication {
         if ($course != null) {
             $this->course = $course;
         } else {
-            $this->course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+            $this->course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         }
 
         if ($context != null) {
@@ -80,12 +80,12 @@ class publication {
             $this->context = context_module::instance($cm->id);
         }
 
-        $this->instance = $DB->get_record("publication", array("id" => $cm->instance));
+        $this->instance = $DB->get_record("publication", ["id" => $cm->instance]);
 
         $this->instance->obtainteacherapproval = !$this->instance->obtainteacherapproval;
 
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
-            $cond = array('id' => $this->instance->importfrom);
+            $cond = ['id' => $this->instance->importfrom];
             $this->requiregroup = $DB->get_field('assign', 'preventsubmissionnotingroup', $cond);
         }
     }
@@ -100,6 +100,7 @@ class publication {
                 time() > $this->get_instance()->allowsubmissionfromdate) {
             return true;
         }
+
         return false;
     }
 
@@ -123,7 +124,7 @@ class publication {
                 $message = get_string('allowsubmissionsanddescriptionfromdatesummary',
                         'publication', userdate($this->instance->allowsubmissionsfromdate));
             }
-            echo html_writer::div($message, '', array('id' => 'intro'));
+            echo html_writer::div($message, '', ['id' => 'intro']);
         }
     }
 
@@ -139,19 +140,19 @@ class publication {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'dates');
         echo '<table>';
         if ($this->instance->allowsubmissionsfromdate) {
-            echo '<tr><td class="c0">'.get_string('allowsubmissionsfromdate' . $textsuffix, 'publication').':</td>';
-            echo '    <td class="c1">'.userdate($this->instance->allowsubmissionsfromdate).'</td></tr>';
+            echo '<tr><td class="c0">' . get_string('allowsubmissionsfromdate' . $textsuffix, 'publication') . ':</td>';
+            echo '    <td class="c1">' . userdate($this->instance->allowsubmissionsfromdate) . '</td></tr>';
         }
         if ($this->instance->duedate) {
-            echo '<tr><td class="c0">'.get_string('duedate' . $textsuffix, 'publication').':</td>';
-            echo '    <td class="c1">'.userdate($this->instance->duedate).'</td></tr>';
+            echo '<tr><td class="c0">' . get_string('duedate' . $textsuffix, 'publication') . ':</td>';
+            echo '    <td class="c1">' . userdate($this->instance->duedate) . '</td></tr>';
         }
 
         $extensionduedate = $this->user_extensionduedate($USER->id);
 
         if ($extensionduedate) {
-            echo '<tr><td class="c0">'.get_string('extensionto', 'publication').':</td>';
-            echo '    <td class="c1">'.userdate($extensionduedate).'</td></tr>';
+            echo '<tr><td class="c0">' . get_string('extensionto', 'publication') . ':</td>';
+            echo '    <td class="c1">' . userdate($extensionduedate) . '</td></tr>';
         }
 
         echo '</table>';
@@ -169,27 +170,29 @@ class publication {
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
             echo html_writer::start_div('assignurl');
 
-            if ($this->get_instance()->importfrom == - 1) {
+            if ($this->get_instance()->importfrom == -1) {
                 echo get_string('assignment_notset', 'publication');
             } else {
-                $assign = $DB->get_record('assign', array('id' => $this->instance->importfrom));
+                $assign = $DB->get_record('assign', ['id' => $this->instance->importfrom]);
 
-                $assignmoduleid = $DB->get_field('modules', 'id', array('name' => 'assign'));
+                $assignmoduleid = $DB->get_field('modules', 'id', ['name' => 'assign']);
 
                 if ($assign) {
-                    $assigncm = $DB->get_record('course_modules', array('course' => $assign->course,
-                                                                        'module' => $assignmoduleid,
-                                                                        'instance' => $assign->id));
+                    $assigncm = $DB->get_record('course_modules', [
+                            'course' => $assign->course,
+                            'module' => $assignmoduleid,
+                            'instance' => $assign->id
+                    ]);
                 } else {
                     $assigncm = false;
                 }
                 if ($assign && $assigncm) {
-                    $assignurl = new moodle_url('/mod/assign/view.php', array('id' => $assigncm->id));
+                    $assignurl = new moodle_url('/mod/assign/view.php', ['id' => $assigncm->id]);
                     echo get_string('assignment', 'publication') . ': ' . html_writer::link($assignurl, $assign->name);
 
                     if (has_capability('mod/publication:addinstance', $this->context)) {
                         $url = new moodle_url('/mod/publication/view.php',
-                                array('id' => $this->coursemodule->id, 'sesskey' => sesskey(), 'action' => 'import'));
+                                ['id' => $this->coursemodule->id, 'sesskey' => sesskey(), 'action' => 'import']);
                         $label = get_string('updatefiles', 'publication');
 
                         echo $OUTPUT->single_button($url, $label);
@@ -217,7 +220,7 @@ class publication {
             if (has_capability('mod/publication:upload', $this->context)) {
                 if ($this->is_open()) {
                     $url = new moodle_url('/mod/publication/upload.php',
-                            array('id' => $this->instance->id, 'cmid' => $this->coursemodule->id));
+                            ['id' => $this->instance->id, 'cmid' => $this->coursemodule->id]);
                     $label = get_string('edit_uploads', 'publication');
                     $editbutton = $OUTPUT->single_button($url, $label);
 
@@ -240,9 +243,10 @@ class publication {
     public function user_extensionduedate($uid) {
         global $DB;
 
-        $extensionduedate = $DB->get_field('publication_extduedates', 'extensionduedate', array(
+        $extensionduedate = $DB->get_field('publication_extduedates', 'extensionduedate', [
                 'publication' => $this->get_instance()->id,
-                'userid' => $uid));
+                'userid' => $uid
+        ]);
 
         if (!$extensionduedate) {
             return 0;
@@ -271,7 +275,7 @@ class publication {
         }
 
         if (($from == 0 || $from < $now) &&
-            ($due == 0 || $due > $now)) {
+                ($due == 0 || $due > $now)) {
             return true;
         }
 
@@ -290,7 +294,7 @@ class publication {
     /**
      * Context getter
      *
-     * @return object context object
+     * @return \context_module context object
      */
     public function get_context() {
         return $this->context;
@@ -321,7 +325,7 @@ class publication {
      * @param int[] $selgroups (optional) selected group's IDs to filter for or empty array()
      * @return int[] array of group's IDs
      */
-    public function get_groups($groupingid = 0, $selgroups = array()) {
+    public function get_groups($groupingid = 0, $selgroups = []) {
         $groups = groups_get_all_groups($this->get_instance()->course, 0, $groupingid);
         $groups = array_keys($groups);
 
@@ -342,7 +346,7 @@ class publication {
      * @param int[] $users (optional) user ids for which the returned user ids have to filter
      * @return int[] array of userids
      */
-    public function get_users($users = array()) {
+    public function get_users($users = []) {
         global $DB;
 
         $customusers = '';
@@ -350,7 +354,7 @@ class publication {
         if (is_array($users) && count($users) > 0) {
             $customusers = " and u.id IN (" . implode($users, ', ') . ") ";
         } else if ($users === false) {
-            return array();
+            return [];
         }
 
         // Find out current groups mode.
@@ -362,15 +366,15 @@ class publication {
         if (has_capability('mod/publication:approve', $this->context)
                 || has_capability('mod/publication:grantextension', $this->context)) {
             // We can skip the approval-checks for teachers!
-            $sql = 'SELECT u.id FROM {user} u '.
-                    'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
-                    'WHERE u.deleted = 0 AND eu.id=u.id '. $customusers;
+            $sql = 'SELECT u.id FROM {user} u ' .
+                    'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
+                    'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers;
         } else {
-            $sql = 'SELECT u.id FROM {user} u '.
-                    'LEFT JOIN ('.$esql.') eu ON eu.id=u.id '.
-                    'LEFT JOIN {publication_file} files ON (u.id = files.userid) '.
-                    'WHERE u.deleted = 0 AND eu.id=u.id '. $customusers .
-                    'AND files.publication = '. $this->get_instance()->id . ' ';
+            $sql = 'SELECT u.id FROM {user} u ' .
+                    'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
+                    'LEFT JOIN {publication_file} files ON (u.id = files.userid) ' .
+                    'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers .
+                    'AND files.publication = ' . $this->get_instance()->id . ' ';
 
             if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
                 // Mode upload.
@@ -401,7 +405,7 @@ class publication {
         $users = $DB->get_fieldset_sql($sql, $params);
 
         if (empty($users)) {
-            return array(-1);
+            return [-1];
         }
 
         return $users;
@@ -425,29 +429,31 @@ class publication {
         }
 
         // Next we get perpage param from database!
-        $perpage    = get_user_preferences('publication_perpage', 10);
+        $perpage = get_user_preferences('publication_perpage', 10);
         $filter = get_user_preferences('publicationfilter', 0);
 
-        $page    = optional_param('page', 0, PARAM_INT);
+        $page = optional_param('page', 0, PARAM_INT);
 
-        $formattrs = array();
+        $formattrs = [];
         $formattrs['action'] = new moodle_url('/mod/publication/view.php');
         $formattrs['id'] = 'fastg';
         $formattrs['method'] = 'post';
         $formattrs['class'] = 'mform';
 
-        echo html_writer::start_tag('form', $formattrs).
-             html_writer::empty_tag('input', array('type' => 'hidden',
-                                                   'name' => 'id',
-                                                   'value' => $this->get_coursemodule()->id)).
-             html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'page',    'value' => $page)).
-             html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
+        echo html_writer::start_tag('form', $formattrs) .
+                html_writer::empty_tag('input', [
+                        'type' => 'hidden',
+                        'name' => 'id',
+                        'value' => $this->get_coursemodule()->id
+                ]) .
+                html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'page', 'value' => $page]) .
+                html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
 
-        echo html_writer::start_tag('div', array('id' => 'id_allfiles', 'class' => 'clearfix', 'aria-live' => 'polite'));
+        echo html_writer::start_tag('div', ['id' => 'id_allfiles', 'class' => 'clearfix', 'aria-live' => 'polite']);
         $allfiles = get_string('allfiles', 'publication');
         $publicfiles = get_string('publicfiles', 'publication');
         $title = (has_capability('mod/publication:approve', $context)) ? $allfiles : $publicfiles;
-        echo html_writer::tag('div', $title, array('class'  => 'legend'));
+        echo html_writer::tag('div', $title, ['class' => 'legend']);
         echo html_writer::start_div('fcontainer clearfix');
 
         echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
@@ -455,21 +461,23 @@ class publication {
         if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
             $table = new \mod_publication\local\allfilestable\upload('mod-publication-allfiles', $this);
         } else {
-            if ($DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom))) {
+            if ($DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom])) {
                 $table = new \mod_publication\local\allfilestable\group('mod-publication-allgroupfiles', $this);
             } else {
                 $table = new \mod_publication\local\allfilestable\import('mod-publication-allfiles', $this);
             }
         }
 
-        $link = html_writer::link(new moodle_url('/mod/publication/view.php', array('id' => $this->coursemodule->id,
-                                                                                    'action' => 'zip')),
-                                  get_string('downloadall', 'publication'));
-        echo html_writer::tag('div', $link, array('class' => 'mod-publication-download-link'));
+        $link = html_writer::link(new moodle_url('/mod/publication/view.php', [
+                'id' => $this->coursemodule->id,
+                'action' => 'zip'
+        ]),
+                get_string('downloadall', 'publication'));
+        echo html_writer::tag('div', $link, ['class' => 'mod-publication-download-link']);
 
         $table->out($perpage, true); // Print the whole table.
 
-        $options = array();
+        $options = [];
         $options['zipusers'] = get_string('zipusers', 'publication');
 
         if (has_capability('mod/publication:approve', $context) && $table->totalfiles() > 0) {
@@ -487,37 +495,45 @@ class publication {
 
         if (count($options) > 0) {
             if (has_capability('mod/publication:approve', $context)) {
-                echo html_writer::empty_tag('input', array('type' => 'reset',
-                                                           'name' => 'resetvisibility',
-                                                           'value' => get_string('reset', 'publication'),
-                                                           'class' => 'visibilitysaver btn btn-secondary'));
+                echo html_writer::empty_tag('input', [
+                        'type' => 'reset',
+                        'name' => 'resetvisibility',
+                        'value' => get_string('reset', 'publication'),
+                        'class' => 'visibilitysaver btn btn-secondary'
+                ]);
 
                 if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
                         $this->get_instance()->obtainstudentapproval) {
-                    echo html_writer::empty_tag('input', array('type' => 'submit',
-                                                               'name' => 'savevisibility',
-                                                               'value' => get_string('saveapproval', 'publication'),
-                                                               'class' => 'visibilitysaver btn btn-primary'));
+                    echo html_writer::empty_tag('input', [
+                            'type' => 'submit',
+                            'name' => 'savevisibility',
+                            'value' => get_string('saveapproval', 'publication'),
+                            'class' => 'visibilitysaver btn btn-primary'
+                    ]);
                 } else {
-                    echo html_writer::empty_tag('input', array('type' => 'submit',
-                                                               'name' => 'savevisibility',
-                                                               'value' => get_string('saveteacherapproval', 'publication'),
-                                                               'class' => 'visibilitysaver btn btn-primary'));
+                    echo html_writer::empty_tag('input', [
+                            'type' => 'submit',
+                            'name' => 'savevisibility',
+                            'value' => get_string('saveteacherapproval', 'publication'),
+                            'class' => 'visibilitysaver btn btn-primary'
+                    ]);
                 }
             }
 
-            echo html_writer::start_div('withselection').
-                 html_writer::span(get_string('withselected', 'publication')).
-                 html_writer::select($options, 'action').
-                 html_writer::empty_tag('input', array('type' => 'submit',
-                                                       'name' => 'submitgo',
-                                                       'value' => get_string('go', 'publication'),
-                                                       'class' => 'btn btn-primary')).
-                 html_writer::end_div();
+            echo html_writer::start_div('withselection') .
+                    html_writer::span(get_string('withselected', 'publication')) .
+                    html_writer::select($options, 'action') .
+                    html_writer::empty_tag('input', [
+                            'type' => 'submit',
+                            'name' => 'submitgo',
+                            'value' => get_string('go', 'publication'),
+                            'class' => 'btn btn-primary'
+                    ]) .
+                    html_writer::end_div();
         }
 
         // Select all/none.
-        echo html_writer::start_tag('div', array('class' => 'checkboxcontroller'))."
+        echo html_writer::start_tag('div', ['class' => 'checkboxcontroller']) . "
             <script type=\"text/javascript\">
                 function toggle_userselection() {
                     var checkboxes = document.getElementsByClassName('userselection');
@@ -531,22 +547,22 @@ class publication {
                         }
                     }
                 }
-            </script>".
-             html_writer::end_div().
-             html_writer::end_div().
-             html_writer::end_div().
-             html_writer::end_tag('form');
+            </script>" .
+                html_writer::end_div() .
+                html_writer::end_div() .
+                html_writer::end_div() .
+                html_writer::end_tag('form');
 
         // Mini form for setting user preference.
-        $formaction = new moodle_url('/mod/publication/view.php', array('id' => $this->coursemodule->id));
-        $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', array('class' => 'optionspref'));
+        $formaction = new moodle_url('/mod/publication/view.php', ['id' => $this->coursemodule->id]);
+        $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', ['class' => 'optionspref']);
 
         $mform->addElement('hidden', 'updatepref');
         $mform->setDefault('updatepref', 1);
 
         $mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'publication'));
 
-        $mform->addElement('text', 'perpage', get_string('entiresperpage', 'publication'), array('size' => 1));
+        $mform->addElement('text', 'perpage', get_string('entiresperpage', 'publication'), ['size' => 1]);
         $mform->setDefault('perpage', $perpage);
 
         $mform->addElement('submit', 'savepreferences', get_string('savepreferences'));
@@ -564,7 +580,7 @@ class publication {
     public function has_filepermission($fileid, $userid = 0) {
         global $DB;
 
-        $conditions = array();
+        $conditions = [];
         $conditions['publication'] = $this->get_instance()->id;
         $conditions['fileid'] = $fileid;
 
@@ -579,7 +595,7 @@ class publication {
                     $haspermission = true;
                 } else if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT) {
                     // If it's a team-submission, we have to check for the group membership!
-                    $teamsubmission = $DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom));
+                    $teamsubmission = $DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom]);
                     if (!empty($teamsubmission)) {
                         $groupmembers = $this->get_submissionmembers($filepermissions->userid);
                         if (array_key_exists($userid, $groupmembers)) {
@@ -639,8 +655,8 @@ class publication {
             $approval = empty($approval) ? 0 : 1;
         }
 
-        $record = $DB->get_record('publication_groupapproval', array('fileid' => $pubfileid, 'userid' => $userid));
-        $filerec = $DB->get_record('publication_file', array('id' => $pubfileid));
+        $record = $DB->get_record('publication_groupapproval', ['fileid' => $pubfileid, 'userid' => $userid]);
+        $filerec = $DB->get_record('publication_file', ['id' => $pubfileid]);
         if (!empty($record)) {
             if ($record->approval === $approval) {
                 // Nothing changed, return!
@@ -665,8 +681,8 @@ class publication {
         $groupmembers = $this->get_submissionmembers($filerec->userid);
         if (!empty($groupmembers)) {
             list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
-            $select = "fileid = :fileid AND approval = :approval AND userid ".$usersql;
-            $params = array('fileid' => $pubfileid, 'approval' => 0) + $userparams;
+            $select = "fileid = :fileid AND approval = :approval AND userid " . $usersql;
+            $params = ['fileid' => $pubfileid, 'approval' => 0] + $userparams;
             if ($DB->record_exists_select('publication_groupapproval', $select, $params)) {
                 // If anyone rejected it's rejected, no matter what!
                 $approval = 0;
@@ -681,11 +697,11 @@ class publication {
                     }
                 } else {
                     // All group members have to approve!
-                    $select = "fileid = :fileid AND approval IS NULL AND userid ".$usersql;
-                    $params = array('fileid' => $pubfileid) + $userparams;
+                    $select = "fileid = :fileid AND approval IS NULL AND userid " . $usersql;
+                    $params = ['fileid' => $pubfileid] + $userparams;
                     $approving = $DB->count_records_sql("SELECT count(DISTINCT userid)
                                                            FROM {publication_groupapproval}
-                                                          WHERE fileid = :fileid AND approval = 1 AND userid ".$usersql, $params);
+                                                          WHERE fileid = :fileid AND approval = 1 AND userid " . $usersql, $params);
                     if ($approving < count($userparams)) {
                         // Rejected if not every group member has approved the file!
                         $approval = null;
@@ -716,7 +732,7 @@ class publication {
         global $DB;
 
         if (empty($conditions)) {
-            static $conditions = array();
+            static $conditions = [];
             $conditions['publication'] = $this->get_instance()->id;
         }
         $conditions['fileid'] = $file->get_id();
@@ -736,7 +752,7 @@ class publication {
         global $DB;
 
         if (empty($conditions)) {
-            static $conditions = array();
+            static $conditions = [];
             $conditions['publication'] = $this->get_instance()->id;
         }
         $conditions['fileid'] = $file->get_id();
@@ -758,28 +774,28 @@ class publication {
         global $DB;
 
         if (($this->get_instance()->mode != PUBLICATION_MODE_IMPORT)
-                || !$DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom))) {
+                || !$DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom])) {
             throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
         }
 
         if (!empty($groupid)) {
             $groupmembers = groups_get_members($groupid);
-        } else if (!$DB->get_field('assign', 'preventsubmissionnotingroup', array('id' => $this->get_instance()->importfrom))) {
+        } else if (!$DB->get_field('assign', 'preventsubmissionnotingroup', ['id' => $this->get_instance()->importfrom])) {
             // If groupid == 0, we get all users without group!
-            $groupmembers = array();
+            $groupmembers = [];
             $assigncm = get_coursemodule_from_instance('assign', $this->instance->importfrom);
             $context = context_module::instance($assigncm->id);
             $users = get_enrolled_users($context, "mod/assign:submit", 0);
             if (!empty($users)) {
                 foreach ($users as $user) {
                     $ugrps = groups_get_user_groups($this->instance->course, $user->id);
-                    if ( !count($ugrps[0]) ) {
+                    if (!count($ugrps[0])) {
                         $groupmembers[$user->id] = $user;
                     }
                 }
             }
         } else {
-            $groupmembers = array();
+            $groupmembers = [];
         }
 
         return $groupmembers;
@@ -795,11 +811,11 @@ class publication {
         global $DB;
 
         if (($this->get_instance()->mode != PUBLICATION_MODE_IMPORT)
-                || !$DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom))) {
+                || !$DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom])) {
             throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
         }
 
-        $filerec = $DB->get_record('publication_file', array('id' => $pubfileid));
+        $filerec = $DB->get_record('publication_file', ['id' => $pubfileid]);
 
         // Get group members!
         $groupmembers = $this->get_submissionmembers($filerec->userid);
@@ -809,14 +825,14 @@ class publication {
             $sql = "SELECT u.*, ga.approval, ga.timemodified AS approvaltime
                       FROM {user} u
                  LEFT JOIN {publication_groupapproval} ga ON u.id = ga.userid AND ga.fileid = :fileid
-                     WHERE u.id ".$usersql;
-            $params = array('fileid' => $filerec->id) + $userparams;
+                     WHERE u.id " . $usersql;
+            $params = ['fileid' => $filerec->id] + $userparams;
             $groupdata = $DB->get_records_sql($sql, $params);
         } else {
-            $groupdata = array();
+            $groupdata = [];
         }
 
-        return array($filerec->studentapproval, $groupdata);
+        return [$filerec->studentapproval, $groupdata];
     }
 
     /**
@@ -827,7 +843,7 @@ class publication {
     public function download_file($fileid) {
         global $DB, $USER;
 
-        $conditions = array();
+        $conditions = [];
         $conditions['publication'] = $this->get_instance()->id;
         $conditions['fileid'] = $fileid;
         $record = $DB->get_record('publication_file', $conditions);
@@ -848,11 +864,11 @@ class publication {
             if ($record->type == PUBLICATION_MODE_ONLINETEXT) {
                 global $CFG;
                 // Create path for new zip file.
-                $zipfile = tempnam($CFG->dataroot.'/temp/', 'publication_');
+                $zipfile = tempnam($CFG->dataroot . '/temp/', 'publication_');
                 // Zip files.
                 $zipname = str_replace('.html', '.zip', $file->get_filename());
                 $zipper = new zip_packer();
-                $filesforzipping = array();
+                $filesforzipping = [];
 
                 $this->add_onlinetext_to_zipfiles($filesforzipping, $file, '', $file->get_filename(), $fs);
                 if (count($filesforzipping) == 1) {
@@ -862,7 +878,7 @@ class publication {
                     send_temp_file($zipfile, $zipname); // Send file and delete after sending.
                 }
             } else {
-                send_file($file, $file->get_filename(), 'default' , 0, false, true, $file->get_mimetype(), false);
+                send_file($file, $file->get_filename(), 'default', 0, false, true, $file->get_mimetype(), false);
             }
             die();
         } else {
@@ -875,30 +891,30 @@ class publication {
      *
      * @param unknown $uploaders false => empty zip, true all users, array files from uploaders (users/groups) in array
      */
-    public function download_zip($uploaders = array()) {
+    public function download_zip($uploaders = []) {
         global $CFG, $DB, $USER;
-        require_once($CFG->libdir.'/filelib.php');
+        require_once($CFG->libdir . '/filelib.php');
 
         $cm = $this->get_coursemodule();
 
         $canapprove = has_capability('mod/publication:approve', $this->get_context());
-        if ($this->get_instance()->importfrom == - 1) {
+        if ($this->get_instance()->importfrom == -1) {
             $teamsubmission = false;
         } else {
-            $teamsubmission = $DB->get_field('assign', 'teamsubmission', array('id' => $this->get_instance()->importfrom));
+            $teamsubmission = $DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom]);
         }
 
-        $conditions = array();
+        $conditions = [];
         $conditions['publication'] = $this->get_instance()->id;
 
-        $filesforzipping = array();
+        $filesforzipping = [];
         $fs = get_file_storage();
 
         // Get group name for filename.
         $groupname = '';
         $currentgroup = groups_get_activity_group($cm, true);
         if (!empty($currentgroup)) {
-            $groupname = $DB->get_field('groups', 'name', array('id' => $currentgroup)).'-';
+            $groupname = $DB->get_field('groups', 'name', ['id' => $currentgroup]) . '-';
         }
 
         if (!$teamsubmission) {
@@ -907,8 +923,8 @@ class publication {
             $uploaders = $this->get_groups(0, $uploaders);
         }
 
-        $filename = str_replace(' ', '_', clean_filename($this->course->shortname.'-'.
-                $this->get_instance()->name.'-'.$groupname.$this->get_instance()->id.'.zip')); // Name of new zip file.
+        $filename = str_replace(' ', '_', clean_filename($this->course->shortname . '-' .
+                $this->get_instance()->name . '-' . $groupname . $this->get_instance()->id . '.zip')); // Name of new zip file.
 
         $userfields = get_all_user_name_fields();
         $userfields['id'] = 'id';
@@ -922,14 +938,14 @@ class publication {
 
             if (!$teamsubmission) {
                 // Get user firstname/lastname.
-                $auser = $DB->get_record('user', array('id' => $uploader), $userfields);
+                $auser = $DB->get_record('user', ['id' => $uploader], $userfields);
                 $itemname = fullname($auser);
                 $itemunique = $uploader;
             } else {
                 if (empty($uploader)) {
                     $itemname = get_string('defaultteam', 'assign');
                 } else {
-                    $itemname = $DB->get_field('groups', 'name', array('id' => $uploader));
+                    $itemname = $DB->get_field('groups', 'name', ['id' => $uploader]);
                 }
                 $itemunique = '';
             }
@@ -943,9 +959,9 @@ class publication {
                     // Get files new name.
                     $fileext = strstr($file->get_filename(), '.');
                     $fileoriginal = str_replace($fileext, '', $file->get_filename());
-                    $fileforzipname = clean_filename($itemname.'_'.$fileoriginal.'_'.$itemunique.$fileext);
+                    $fileforzipname = clean_filename($itemname . '_' . $fileoriginal . '_' . $itemunique . $fileext);
                     if (key_exists($fileforzipname, $filesforzipping)) {
-                        throw new coding_exception('Can\'t overwrite '.$fileforzipname.'!');
+                        throw new coding_exception('Can\'t overwrite ' . $fileforzipname . '!');
                     }
                     if ($record->type == PUBLICATION_MODE_ONLINETEXT) {
                         $this->add_onlinetext_to_zipfiles($filesforzipping, $file, $itemname, $fileforzipname, $fs, $itemunique);
@@ -971,12 +987,13 @@ class publication {
     private function pack_files($filesforzipping) {
         global $CFG;
         // Create path for new zip file.
-        $tempzip = tempnam($CFG->dataroot.'/temp/', 'publication_');
+        $tempzip = tempnam($CFG->dataroot . '/temp/', 'publication_');
         // Zip files.
         $zipper = new zip_packer();
         if ($zipper->archive_to_pathname($filesforzipping, $tempzip)) {
             return $tempzip;
         }
+
         return false;
     }
 
@@ -999,29 +1016,29 @@ class publication {
 
         // First we get all ressources!
         $resources = $fs->get_directory_files($this->get_context()->id,
-                                              'mod_publication',
-                                              'attachment',
-                                              $file->get_itemid(),
-                                              '/resources/',
-                                              true,
-                                              false);
+                'mod_publication',
+                'attachment',
+                $file->get_itemid(),
+                '/resources/',
+                true,
+                false);
         if (count($resources) > 0) {
             // If it's an online-Text with resources, we have to add altered content and all the ressources for it!
             $content = $file->get_content();
             // We grabbed the resources already above!
             // Then we change every occurence of the ressource-name from ./resourcename to ./ITEMNAME/resourcename!
-            $folder = clean_filename((!empty($itemname) ? $itemname.'_' : '').
-                                     (($itemunique != '') ? $itemunique.'_' : '').
-                                     'resources');
+            $folder = clean_filename((!empty($itemname) ? $itemname . '_' : '') .
+                    (($itemunique != '') ? $itemunique . '_' : '') .
+                    'resources');
             foreach ($resources as $resource) {
-                $search = './resources/'.$resource->get_filename();
-                $replace = $folder.'/'.$resource->get_filename();
-                $content = str_replace($search, './'.$replace, $content);
+                $search = './resources/' . $resource->get_filename();
+                $replace = $folder . '/' . $resource->get_filename();
+                $content = str_replace($search, './' . $replace, $content);
                 $filesforzipping[$replace] = $resource;
             }
             /* We add the altered filecontent instead of the stored one        *
              * (needs an array to differentiate between content and filepath)! */
-            $filesforzipping[$fileforzipname] = array($content);
+            $filesforzipping[$fileforzipname] = [$content];
         } else {
             $filesforzipping[$fileforzipname] = $file;
         }
@@ -1034,11 +1051,13 @@ class publication {
         global $DB;
 
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
-            $assign = $DB->get_record('assign', array('id' => $this->instance->importfrom));
-            $assignmoduleid = $DB->get_field('modules', 'id', array('name' => 'assign'));
-            $assigncm = $DB->get_record('course_modules', array('course'   => $assign->course,
-                                                                'module'   => $assignmoduleid,
-                                                                'instance' => $assign->id));
+            $assign = $DB->get_record('assign', ['id' => $this->instance->importfrom]);
+            $assignmoduleid = $DB->get_field('modules', 'id', ['name' => 'assign']);
+            $assigncm = $DB->get_record('course_modules', [
+                    'course' => $assign->course,
+                    'module' => $assignmoduleid,
+                    'instance' => $assign->id
+            ]);
 
             $assigncontext = context_module::instance($assigncm->id);
 
@@ -1062,12 +1081,12 @@ class publication {
     protected function import_assign_files($assigncm, $assigncontext) {
         global $DB, $CFG;
 
-        $records = $DB->get_records('assignsubmission_file', array('assignment' => $this->get_instance()->importfrom));
+        $records = $DB->get_records('assignsubmission_file', ['assignment' => $this->get_instance()->importfrom]);
 
         $fs = get_file_storage();
 
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
-        $assigncourse = $DB->get_record('course', array('id' => $assigncm->course));
+        $assigncourse = $DB->get_record('course', ['id' => $assigncm->course]);
         $assignment = new assign($assigncontext, $assigncm, $assigncourse);
 
         foreach ($records as $record) {
@@ -1078,18 +1097,18 @@ class publication {
                     $record->submission,
                     "id",
                     false);
-            $submission = $DB->get_record('assign_submission', array('id' => $record->submission));
+            $submission = $DB->get_record('assign_submission', ['id' => $record->submission]);
 
-            $assignfileids = array();
+            $assignfileids = [];
 
-            $assignfiles = array();
+            $assignfiles = [];
 
             foreach ($files as $file) {
                 $assignfiles[$file->get_id()] = $file;
                 $assignfileids[$file->get_id()] = $file->get_id();
             }
 
-            $conditions = array();
+            $conditions = [];
             $conditions['publication'] = $this->get_instance()->id;
             if (empty($assignment->get_instance()->teamsubmission)) {
                 $conditions['userid'] = $submission->userid;
@@ -1189,28 +1208,30 @@ class publication {
         $fs = get_file_storage();
 
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
-        $assigncourse = $DB->get_record('course', array('id' => $assigncm->course));
+        $assigncourse = $DB->get_record('course', ['id' => $assigncm->course]);
         $assignment = new assign($assigncontext, $assigncm, $assigncourse);
         $teamsubmission = $assignment->get_instance()->teamsubmission;
 
         if (!empty($submissionid)) {
-            $records = $DB->get_records('assignsubmission_onlinetext', array('assignment' => $assigncm->instance,
-                                                                             'submission' => $submissionid));
+            $records = $DB->get_records('assignsubmission_onlinetext', [
+                    'assignment' => $assigncm->instance,
+                    'submission' => $submissionid
+            ]);
         } else {
-            $records = $DB->get_records('assignsubmission_onlinetext', array('assignment' => $assigncm->instance));
+            $records = $DB->get_records('assignsubmission_onlinetext', ['assignment' => $assigncm->instance]);
         }
 
         foreach ($records as $record) {
-            $submission = $DB->get_record('assign_submission', array('id' => $record->submission));
+            $submission = $DB->get_record('assign_submission', ['id' => $record->submission]);
             $itemid = empty($teamsubmission) ? $submission->userid : $submission->groupid;
 
             // First we fetch the resource files (embedded files in text!)
             $fsfiles = $fs->get_area_files($assigncontext->id,
-                                           'assignsubmission_onlinetext',
-                                           ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
-                                           $submission->id,
-                                           'timemodified',
-                                           false);
+                    'assignsubmission_onlinetext',
+                    ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
+                    $submission->id,
+                    'timemodified',
+                    false);
             foreach ($fsfiles as $file) {
                 $filerecord = new \stdClass();
                 $filerecord->contextid = $contextid;
@@ -1220,7 +1241,7 @@ class publication {
                 $filerecord->filepath = '/resources/';
                 $filerecord->filename = $file->get_filename();
                 $pathnamehash = $fs->get_pathname_hash($filerecord->contextid, $filerecord->component, $filerecord->filearea,
-                                                       $filerecord->itemid, $filerecord->filepath, $filerecord->filename);
+                        $filerecord->itemid, $filerecord->filepath, $filerecord->filename);
 
                 if ($fs->file_exists_by_hash($pathnamehash)) {
                     $otherfile = $fs->get_file_by_hash($pathnamehash);
@@ -1237,16 +1258,16 @@ class publication {
 
             // Now we delete old resource-files, which are no longer present!
             $resources = $fs->get_directory_files($contextid,
-                                                   'mod_publication',
-                                                   'attachment',
-                                                   $itemid,
-                                                   '/resources/',
-                                                   true,
-                                                   false);
+                    'mod_publication',
+                    'attachment',
+                    $itemid,
+                    '/resources/',
+                    true,
+                    false);
             foreach ($resources as $resource) {
                 $pathnamehash = $fs->get_pathname_hash($assignment->get_context()->id, 'assignsubmission_onlinetext',
-                                                       ASSIGNSUBMISSION_ONLINETEXT_FILEAREA, $submission->id, '/',
-                                                       $resource->get_filename());
+                        ASSIGNSUBMISSION_ONLINETEXT_FILEAREA, $submission->id, '/',
+                        $resource->get_filename());
                 if (!$fs->file_exists_by_hash($pathnamehash)) {
                     $resource->delete();
                 }
@@ -1255,19 +1276,21 @@ class publication {
             /* Here we convert the pluginfile urls to relative urls for the exported html-file
              * (the resources have to be included in the download!) */
             $formattedtext = str_replace('@@PLUGINFILE@@/', './resources/', $record->onlinetext);
-            $formattedtext = format_text($formattedtext, $record->onlineformat, array('context' => $assigncontext));
+            $formattedtext = format_text($formattedtext, $record->onlineformat, ['context' => $assigncontext]);
 
             $head = '<head><meta charset="UTF-8"></head>';
-            $submissioncontent = '<!DOCTYPE html><html>' . $head . '<body>'. $formattedtext . '</body></html>';
+            $submissioncontent = '<!DOCTYPE html><html>' . $head . '<body>' . $formattedtext . '</body></html>';
 
             $filename = get_string('onlinetextfilename', 'assignsubmission_onlinetext');
 
             // Does the file exist... let's check it!
             $pathhash = $fs->get_pathname_hash($contextid, 'mod_publication', 'attachment', $itemid, '/', $filename);
 
-            $conditions = array('publication' => $publicationid,
-                                'userid'      => $itemid,
-                                'type'        => PUBLICATION_MODE_ONLINETEXT);
+            $conditions = [
+                    'publication' => $publicationid,
+                    'userid' => $itemid,
+                    'type' => PUBLICATION_MODE_ONLINETEXT
+            ];
             $pubfile = $DB->get_record('publication_file', $conditions, '*', IGNORE_MISSING);
 
             $createnew = false;
@@ -1287,8 +1310,9 @@ class publication {
                         $file->delete();
                     } else {
                         // Something unexcpected happened!
-                        throw new coding_exception('Mismatching fileids (pubfile with id '.$pubfile->fileid.' and stored file '.
-                                                   $file->get_id().'!');
+                        throw new coding_exception('Mismatching fileids (pubfile with id ' . $pubfile->fileid .
+                                ' and stored file ' .
+                                $file->get_id() . '!');
                     }
                 }
             } else if (!empty($formattedtext)) {
@@ -1338,9 +1362,11 @@ class publication {
         global $DB;
 
         // Get file data/record!
-        $conditions = array('publication' => $publicationid,
-                            'userid'      => $itemid,
-                            'type'        => PUBLICATION_MODE_ONLINETEXT);
+        $conditions = [
+                'publication' => $publicationid,
+                'userid' => $itemid,
+                'type' => PUBLICATION_MODE_ONLINETEXT
+        ];
         if (!$pubfile = $DB->get_record('publication_file', $conditions, '*')) {
             return '';
         }
@@ -1351,21 +1377,21 @@ class publication {
 
         // Correct ressources filepaths for onine-view!
         $resources = $fs->get_directory_files($contextid,
-                                              'mod_publication',
-                                              'attachment',
-                                              $itemid,
-                                              '/resources/',
-                                              true,
-                                              false);
+                'mod_publication',
+                'attachment',
+                $itemid,
+                '/resources/',
+                true,
+                false);
         foreach ($resources as $resource) {
             // TODO watch the encoding of the file's names, in the event of core changing it, we have to change too!
             $filename = rawurlencode($resource->get_filename());
-            $search = './resources/'.$filename;
-            $replace = '@@PLUGINFILE@@/resources/'.$filename;
+            $search = './resources/' . $filename;
+            $replace = '@@PLUGINFILE@@/resources/' . $filename;
             $content = str_replace($search, $replace, $content);
         }
         $content = file_rewrite_pluginfile_urls($content, 'pluginfile.php', $contextid, 'mod_publication', 'attachment',
-                                                $itemid, array('forcehttps' => true));
+                $itemid, ['forcehttps' => true]);
 
         // Get only the body part!
         $start = strpos($content, '<body>');
@@ -1404,10 +1430,11 @@ class publication {
      * @return array('groupname', 'mime/type', ...)
      */
     public static function get_typesets($types) {
-        $sets = array();
+        $sets = [];
         if (!empty($types)) {
             $sets = preg_split('/[\s,;:"\']+/', $types, null, PREG_SPLIT_NO_EMPTY);
         }
+
         return $sets;
     }
 
@@ -1443,6 +1470,7 @@ class publication {
                 $nonexistent[$type] = true;
             }
         }
+
         return array_keys($nonexistent);
     }
 }

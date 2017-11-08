@@ -44,7 +44,7 @@ class restore_publication_activity_structure_step extends restore_activity_struc
      */
     protected function define_structure() {
 
-        $paths = array();
+        $paths = [];
         // To know if we are including userinfo.
         $userinfo = $this->get_setting_value('userinfo');
 
@@ -52,7 +52,7 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         $paths[] = new restore_path_element('publication', '/activity/publication');
         if ($userinfo) {
             $files = new restore_path_element('publication_file',
-                                                   '/activity/publication/files/file');
+                    '/activity/publication/files/file');
             $paths[] = $files;
 
             $extduedates = new restore_path_element('publication_extduedates',
@@ -90,15 +90,15 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         }
 
         // Delete importfrom after restore.
-        $data->importfrom = - 1;
+        $data->importfrom = -1;
 
         // Convert pre v3.3 file-type-restrictions to the new format!
         if (!empty($data->allowedfiletypes) && preg_match('/^([\.A-Za-z0-9]+([ ]*[,][ ]*[\.A-Za-z0-9]+)*)$/',
-                $data->allowedfiletypes)) {
+                        $data->allowedfiletypes)) {
             $allowedfiletypes = preg_split('([ ]*[,][ ]*)', $data->allowedfiletypes);
-            array_walk($allowedfiletypes, function(&$type) {
+            array_walk($allowedfiletypes, function (&$type) {
                 if ((strpos($type, '.') === false) || (strpos($type, '.') !== 0)) {
-                    $type = '.'.$type;
+                    $type = '.' . $type;
                 }
             });
             $data->allowedfiletypes = implode('; ', $allowedfiletypes);
@@ -111,6 +111,7 @@ class restore_publication_activity_structure_step extends restore_activity_struc
 
     /**
      * Process a submission restore
+     *
      * @param object $data The data in object form
      * @return void
      */
@@ -134,6 +135,7 @@ class restore_publication_activity_structure_step extends restore_activity_struc
 
     /**
      * Process a user_flags restore
+     *
      * @param object $data The data in object form
      * @return void
      */
@@ -157,6 +159,7 @@ class restore_publication_activity_structure_step extends restore_activity_struc
 
     /**
      * Once the database tables have been fully restored, restore the files
+     *
      * @return void
      */
     protected function after_execute() {
@@ -184,26 +187,28 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         $files = $fs->get_area_files($contextid, 'mod_publication', 'attachment');
 
         foreach ($files as $file) {
-            $contingencies = array('publication' => $pubid,
-                                   // We need to look for the new user ID if there is one!
-                                   'userid' => $this->get_mappingid('user', $file->get_itemid(), $file->get_itemid()),
-                                   'filename' => $file->get_filename());
+            $contingencies = [
+                    'publication' => $pubid,
+                    // We need to look for the new user ID if there is one!
+                    'userid' => $this->get_mappingid('user', $file->get_itemid(), $file->get_itemid()),
+                    'filename' => $file->get_filename()
+            ];
             $DB->set_field('publication_file', 'fileid', $file->get_id(), $contingencies);
         }
 
         // Now we correct the itemids of the files!
-        $rs = $DB->get_recordset('publication_file', array('publication' => $pubid));
+        $rs = $DB->get_recordset('publication_file', ['publication' => $pubid]);
         foreach ($rs as $record) {
             $file = $fs->get_file_by_id($record->fileid);
             if ($file->get_itemid() != $record->userid) {
-                $dataobject = (object)array('id' => $record->fileid, 'itemid' => $record->userid);
+                $dataobject = (object)['id' => $record->fileid, 'itemid' => $record->userid];
                 $DB->update_record('files', $dataobject);
             }
         }
         $rs->close();
 
         // And we correct the directories!
-        $rs = $DB->get_recordset('files', array('contextid' => $contextid, 'component' => 'mod_publication', 'filename' => '.'));
+        $rs = $DB->get_recordset('files', ['contextid' => $contextid, 'component' => 'mod_publication', 'filename' => '.']);
         foreach ($rs as $record) {
             $record->itemid = $this->get_mappingid('user', $record->itemid, $record->itemid); // We may need to update user ID!
             $DB->update_record('files', $record);

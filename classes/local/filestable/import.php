@@ -22,6 +22,7 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_publication\local\filestable;
 
 defined('MOODLE_INTERNAL') || die();
@@ -38,7 +39,7 @@ class import extends base {
     /**
      * Add a single file to the table
      *
-     * @param stored_file $file Stored file instance
+     * @param \stored_file $file Stored file instance
      * @return string[] Array of table cell contents
      */
     public function add_file(\stored_file $file) {
@@ -51,9 +52,9 @@ class import extends base {
             $studentapproval = $this->publication->student_approval($file);
             if ($this->publication->is_open() && $studentapproval == 0) {
                 $this->changepossible = true;
-                $data[] = \html_writer::select($this->options, 'studentapproval[' . $file->get_id()  . ']', $studentapproval);
+                $data[] = \html_writer::select($this->options, 'studentapproval[' . $file->get_id() . ']', $studentapproval);
             } else {
-                switch($studentapproval) {
+                switch ($studentapproval) {
                     case 2:
                         $data[] = get_string('student_approved', 'publication');
                         break;
@@ -65,7 +66,7 @@ class import extends base {
                 }
             }
         } else {
-            switch($teacherapproval) {
+            switch ($teacherapproval) {
                 case 1:
                     $data[] = get_string('teacher_approved', 'publication');
                     break;

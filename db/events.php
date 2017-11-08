@@ -25,13 +25,13 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$observers = array (
-        array (
-            'eventname'    => 'mod_assign\event\assessable_submitted',
-            'callback'     => 'mod_publication\observer::import_assessable',
-            'includefile'  => '/mod/publication/classes/observer.php',
-            'priority'     => 0,
-            'internal'     => true,
-        ),
+$observers = [
+        [
+                'eventname' => 'mod_assign\event\assessable_submitted',
+                'callback' => 'mod_publication\observer::import_assessable',
+                'includefile' => '/mod/publication/classes/observer.php',
+                'priority' => 0,
+                'internal' => true,
+        ],
 
-);
+];

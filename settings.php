@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+global $CFG;
+
 if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox('publication/obtainstudentapproval',

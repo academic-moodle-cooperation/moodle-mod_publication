@@ -25,26 +25,25 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$services = array(
-    'mod_publication_onlinetextpreview' => array(                       // The name of the web service.
-        'functions' => array ('mod_publication_get_onlinetextpreview'), // Web service functions of this service.
-        'requiredcapability' => '',                /* If set, the web service user need this capability to access
-                                                    * any function of this service. For example: 'some/capability:specified'.
-                                                    */
-        'restrictedusers' => 0,                    /* If enabled, the Moodle administrator must link some user to this service
-                                                    * into the administration.
-                                                    */
-        'enabled' => 1,                            // If enabled, the service can be reachable on a default installation.
-    )
-);
+$services = [
+        'mod_publication_onlinetextpreview' => [ // The name of the web service.
+           'functions' => ['mod_publication_get_onlinetextpreview'], // Web service functions of this service.
+           'requiredcapability' => '', /* If set, the web service user need this capability to access any function of this
+                                        * service. For example: 'some/capability:specified'.*/
+           'restrictedusers' => 0, /* If enabled, the Moodle administrator must link some user to this service into the
+                                    * administration.*/
+           'enabled' => 1, // If enabled, the service can be reachable on a default installation.
+        ]
+];
 
-$functions = array(
-    'mod_publication_get_onlinetextpreview' => array(                   // Web service function name.
-        'classname'   => 'mod_publication_external',                    // Class containing the external function.
-        'methodname'  => 'get_onlinetextpreview',                       // External function name.
-        'classpath'   => 'mod/publication/externallib.php',             // File containing the class/external function.
-        'description' => 'Fetches HTML snippet to preview onlinetext.', // Human readable description of the web service function.
-        'type'        => 'read',                                        // Database rights of the WS-function (read, write).
-        'ajax'        => true,
-    ),
-);
+$functions = [
+        'mod_publication_get_onlinetextpreview' => [ // Web service function name.
+           'classname' => 'mod_publication_external', // Class containing the external function.
+           'methodname' => 'get_onlinetextpreview', // External function name.
+           'classpath' => 'mod/publication/externallib.php', // File containing the class/external function.
+           'description' => 'Fetches HTML snippet to preview onlinetext.', /* Human readable description of the web service
+                                                                            * function.*/
+           'type' => 'read', // Database rights of the WS-function (read, write).
+           'ajax' => true,
+        ],
+];

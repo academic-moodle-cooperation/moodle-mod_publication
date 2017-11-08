@@ -25,7 +25,9 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir.'/formslib.php'); // Putting this is as a safety as i got a class not found error.
+global $CFG;
+
+require_once($CFG->libdir . '/formslib.php'); // Putting this is as a safety as i got a class not found error.
 
 /**
  * Form to upload files for mod_publication
@@ -42,11 +44,10 @@ class mod_publication_upload_form extends moodleform {
      * Definition of file upload format
      */
     public function definition() {
-        global $OUTPUT;
         $mform = $this->_form;
 
-        $currententry       = $this->_customdata['current'];
-        $publication        = $this->_customdata['publication'];
+        $currententry = $this->_customdata['current'];
+        $publication = $this->_customdata['publication'];
         $attachmentoptions = $this->_customdata['attachmentoptions'];
 
         if ($publication->get_instance()->obtainteacherapproval) {
@@ -76,11 +77,11 @@ class mod_publication_upload_form extends moodleform {
                     if (strpos($type, '/') !== false) {
                         $a->name = get_mimetype_description($type);
                         $a->extlist = implode(' ', $extensions);
-                        $typetext = html_writer::tag('li', $a->name.' &mdash; '.$a->extlist);
+                        $typetext = html_writer::tag('li', $a->name . ' &mdash; ' . $a->extlist);
                     } else if (get_string_manager()->string_exists("group:$type", 'mimetypes')) {
                         $a->name = get_string("group:$type", 'mimetypes');
                         $a->extlist = implode(' ', $extensions);
-                        $typetext = html_writer::tag('li', $a->name.' &mdash; '.$a->extlist);
+                        $typetext = html_writer::tag('li', $a->name . ' &mdash; ' . $a->extlist);
                     }
                 }
                 $text .= $typetext;

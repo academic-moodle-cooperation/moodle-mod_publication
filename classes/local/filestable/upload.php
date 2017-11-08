@@ -22,6 +22,7 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_publication\local\filestable;
 
 defined('MOODLE_INTERNAL') || die();
@@ -38,7 +39,7 @@ class upload extends base {
     /**
      * Add a single file to the table
      *
-     * @param stored_file $file Stored file instance
+     * @param \stored_file $file Stored file instance
      * @return string[] Array of table cell contents
      */
     public function add_file(\stored_file $file) {
@@ -50,11 +51,11 @@ class upload extends base {
         if ($this->publication->get_instance()->obtainteacherapproval) {
             // Teacher has to approve: show all status.
             if (is_null($teacherapproval)) {
-                $data[] = get_string('hidden', 'publication') .' ('. get_string('teacher_pending', 'publication') . ')';
+                $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
             } else if ($teacherapproval == 1) {
                 $data[] = get_string('visible', 'publication');
             } else {
-                $data[] = get_string('hidden', 'publication') .' ('. get_string('teacher_rejected', 'publication') . ')';
+                $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_rejected', 'publication') . ')';
             }
         } else {
             // Teacher doenst have to approve: only show when rejected.
@@ -63,7 +64,7 @@ class upload extends base {
             } else if ($teacherapproval == 1) {
                 $data[] = get_string('visible', 'publication');
             } else {
-                $data[] = get_string('hidden', 'publication') .' ('. get_string('teacher_rejected', 'publication') .')';
+                $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_rejected', 'publication') . ')';
             }
         }
 

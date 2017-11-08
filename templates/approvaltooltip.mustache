@@ -57,47 +57,50 @@
 }}
 <div class="publicationoverlay" role="tooltip">
     {{#status}}
-    <div><strong>{{# str }} status, mod_publication {{/ str }}&nbsp;&mdash;&nbsp;{{!
+        <div><strong>{{# str }} status, mod_publication {{/ str }}&nbsp;&mdash;&nbsp;{{!
         }}{{# str }} total, mod_publication {{/ str }}:</strong>
-        {{#approved}}{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}{{!
+            {{#approved}}{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}{{!
             }}({{# str }} approved, mod_publication {{/ str }}){{/approved}}
-        {{#rejected}}{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}{{!
+            {{#rejected}}{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}{{!
             }}({{# str }} rejected, mod_publication {{/ str }}){{/rejected}}
-        {{#pending}}{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}{{!
+            {{#pending}}{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}{{!
             }}({{# str }} pending, mod_publication {{/ str }}){{/pending}}
-    </div>
+        </div>
     {{/status}}
     <div>
         <div><strong>{{# str }} status, mod_publication {{/ str }}&nbsp;&mdash;&nbsp;{{!
             }}{{# str }} details, mod_publication {{/ str }}:</strong></div>
         <table>
             {{#approved}}
-            <tr>
-                <td>{{name}}</td>
-                <td>{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}{{!
-                    }}({{# str }} approved, mod_publication {{/ str }})</td>
-                <td class="time">{{time}}</td>
-            </tr>
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{# pix }} i/valid, core, {{# str }} approved, mod_publication {{/ str }} {{/ pix }}{{!
+                    }}({{# str }} approved, mod_publication {{/ str }})
+                    </td>
+                    <td class="time">{{time}}</td>
+                </tr>
             {{/approved}}
             {{#rejected}}
-            <tr>
-                <td>{{name}}</td>
-                <td>{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}{{!
-                    }}({{# str }} rejected, mod_publication {{/ str }})</td>
-                <td class="time">{{time}}</td>
-            </tr>
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{# pix }} i/invalid, core, {{# str }} rejected, mod_publication {{/ str }} {{/ pix }}{{!
+                    }}({{# str }} rejected, mod_publication {{/ str }})
+                    </td>
+                    <td class="time">{{time}}</td>
+                </tr>
             {{/rejected}}
             {{#pending}}
-            <tr>
-                <td>{{name}}</td>
-                <td>{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}{{!
-                    }}({{# str }} pending, mod_publication {{/ str }})</td>
-                <td class="time">{{time}}</td>
-            </tr>
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{# pix }} questionmark, mod_publication, {{# str }} pending, mod_publication {{/ str }} {{/ pix }}{{!
+                    }}({{# str }} pending, mod_publication {{/ str }})
+                    </td>
+                    <td class="time">{{time}}</td>
+                </tr>
             {{/pending}}
         </table>
     </div>
     {{#mode}}
-    <div><strong>{{# str }} mode, mod_publication {{/ str }}:</strong> {{{mode}}}</div>
+        <div><strong>{{# str }} mode, mod_publication {{/ str }}:</strong> {{{mode}}}</div>
     {{/mode}}
 </div>

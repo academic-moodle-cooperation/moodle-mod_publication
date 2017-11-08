@@ -49,27 +49,27 @@ class mod_publication_generator extends testing_module_generator {
 
         $timecreated = time();
 
-        $defaultsettings = array(
-            'name' => 'publication',
-            'intro' => 'Introtext',
-            'introformat' => 1,
-            'alwaysshowdescription' => 1,
-            'timecreated' => $timecreated,
-            'timemodified' => $timecreated,
-            'duedate' => $timecreated + 604800, // 1 week later!
-            'allowsubmissionsfromdate' => $timecreated,
-            'cutoffdate' => 0,
-            'mode' => 0, // Equals PUBLICATION_MODE_UPLOAD!
-            'importfrom' => -1,
-            'autoimport' => 1,
-            'obtainstudentapproval' => 1,
-            'groupapproval' => 0, // Equals PUBLICATION_APPROVAL_ALL!
-            'maxfiles' => 5,
-            'maxbytes' => 2,
-            'allowedfiletypes' => '',
-            'obtainteacherapproval' => 1,
-            'groupmode' => SEPARATEGROUPS,
-        );
+        $defaultsettings = [
+                'name' => 'publication',
+                'intro' => 'Introtext',
+                'introformat' => 1,
+                'alwaysshowdescription' => 1,
+                'timecreated' => $timecreated,
+                'timemodified' => $timecreated,
+                'duedate' => $timecreated + 604800, // 1 week later!
+                'allowsubmissionsfromdate' => $timecreated,
+                'cutoffdate' => 0,
+                'mode' => 0, // Equals PUBLICATION_MODE_UPLOAD!
+                'importfrom' => -1,
+                'autoimport' => 1,
+                'obtainstudentapproval' => 1,
+                'groupapproval' => 0, // Equals PUBLICATION_APPROVAL_ALL!
+                'maxfiles' => 5,
+                'maxbytes' => 2,
+                'allowedfiletypes' => '',
+                'obtainteacherapproval' => 1,
+                'groupmode' => SEPARATEGROUPS,
+        ];
 
         foreach ($defaultsettings as $name => $value) {
             if (!isset($record->{$name})) {

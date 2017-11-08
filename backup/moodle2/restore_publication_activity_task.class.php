@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+
 require_once($CFG->dirroot . '/mod/publication/backup/moodle2/restore_publication_stepslib.php');
 
 /**
@@ -61,9 +63,9 @@ class restore_publication_activity_task extends restore_activity_task {
      * @return array
      */
     static public function define_decode_contents() {
-        $contents = array();
+        $contents = [];
 
-        $contents[] = new restore_decode_content('publication', array('intro'), 'publication');
+        $contents[] = new restore_decode_content('publication', ['intro'], 'publication');
 
         return $contents;
     }
@@ -75,14 +77,14 @@ class restore_publication_activity_task extends restore_activity_task {
      * @return array of restore_decode_rule
      */
     static public function define_decode_rules() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_decode_rule('PUBLICATIONVIEWBYID',
-                                           '/mod/publication/view.php?id=$1',
-                                           'course_module');
+                '/mod/publication/view.php?id=$1',
+                'course_module');
         $rules[] = new restore_decode_rule('PUBLICATIONINDEX',
-                                           '/mod/publication/index.php?id=$1',
-                                           'course_module');
+                '/mod/publication/index.php?id=$1',
+                'course_module');
 
         return $rules;
 
@@ -97,7 +99,7 @@ class restore_publication_activity_task extends restore_activity_task {
      * @return array of restore_log_rule
      */
     static public function define_restore_log_rules() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_log_rule('publication', 'add', 'view.php?id={course_module}', '{publication}');
         $rules[] = new restore_log_rule('publication', 'update', 'view.php?id={course_module}', '{publication}');
@@ -119,7 +121,7 @@ class restore_publication_activity_task extends restore_activity_task {
      * @return array
      */
     static public function define_restore_log_rules_for_course() {
-        $rules = array();
+        $rules = [];
 
         return $rules;
     }

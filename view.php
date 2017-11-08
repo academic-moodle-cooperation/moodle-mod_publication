@@ -30,9 +30,9 @@ require_once($CFG->dirroot . '/mod/publication/mod_publication_files_form.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 
-$url = new moodle_url('/mod/publication/view.php', array('id' => $id));
+$url = new moodle_url('/mod/publication/view.php', ['id' => $id]);
 $cm = get_coursemodule_from_id('publication', $id, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
 require_login($course, true, $cm);
 $PAGE->set_url($url);
@@ -43,14 +43,14 @@ require_capability('mod/publication:view', $context);
 
 $publication = new publication($cm, $course, $context);
 
-$event = \mod_publication\event\course_module_viewed::create(array(
+$event = \mod_publication\event\course_module_viewed::create([
         'objectid' => $PAGE->cm->instance,
         'context' => $PAGE->context,
-));
+]);
 $event->add_record_snapshot('course', $PAGE->course);
 $event->trigger();
 
-$pagetitle = strip_tags($course->shortname.': '.format_string($publication->get_instance()->name));
+$pagetitle = strip_tags($course->shortname . ': ' . format_string($publication->get_instance()->name));
 $action = optional_param('action', 'view', PARAM_ALPHA);
 $savevisibility = optional_param('savevisibility', false, PARAM_RAW);
 
@@ -62,19 +62,19 @@ if ($download > 0) {
 if ($savevisibility) {
     require_capability('mod/publication:approve', $context);
 
-    $files = optional_param_array('files', array(), PARAM_INT);
+    $files = optional_param_array('files', [], PARAM_INT);
 
-    $params = array();
+    $params = [];
 
     $params['pubid'] = $publication->get_instance()->id;
 
     foreach ($files as $fileid => $val) {
         $val = $val - 1;
-        if ($val == - 1) {
+        if ($val == -1) {
             $val = null;
         }
 
-        $DB->set_field('publication_file', 'teacherapproval', $val, array('fileid' => $fileid));
+        $DB->set_field('publication_file', 'teacherapproval', $val, ['fileid' => $fileid]);
     }
 
 } else if ($action == "zip") {
@@ -98,7 +98,7 @@ if ($savevisibility) {
 
         echo $OUTPUT->header();
         echo $OUTPUT->heading(format_string($publication->get_instance()->name), 1);
-        echo $OUTPUT->confirm($message, 'view.php?id='.$id.'&action=import&confirm=1', 'view.php?id='.$id);
+        echo $OUTPUT->confirm($message, 'view.php?id=' . $id . '&action=import&confirm=1', 'view.php?id=' . $id);
         echo $OUTPUT->footer();
         exit;
     }
@@ -107,11 +107,11 @@ if ($savevisibility) {
 } else if ($action == "grantextension") {
     require_capability('mod/publication:grantextension', $context);
 
-    $users = optional_param_array('selectedeuser', array(), PARAM_INT);
+    $users = optional_param_array('selectedeuser', [], PARAM_INT);
     $users = array_keys($users);
 
     if (count($users) > 0) {
-        $url = new moodle_url('/mod/publication/grantextension.php', array('id' => $cm->id));
+        $url = new moodle_url('/mod/publication/grantextension.php', ['id' => $cm->id]);
         foreach ($users as $idx => $u) {
             $url->param('userids[' . $idx . ']', $u);
         }
@@ -122,7 +122,7 @@ if ($savevisibility) {
 } else if ($action == "approveusers" || $action == "rejectusers") {
     require_capability('mod/publication:approve', $context);
 
-    $users = optional_param_array('selectedeuser', array(), PARAM_INT);
+    $users = optional_param_array('selectedeuser', [], PARAM_INT);
     $users = array_keys($users);
 
     if (count($users) > 0) {
@@ -130,33 +130,33 @@ if ($savevisibility) {
         list($usersql, $params) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
         $approval = ($action == "approveusers") ? 1 : 0;
         $params['pubid'] = $publication->get_instance()->id;
-        $select = ' publication=:pubid AND userid '.$usersql;
+        $select = ' publication=:pubid AND userid ' . $usersql;
 
         $DB->set_field_select('publication_file', 'teacherapproval', $approval, $select, $params);
     }
 } else if ($action == "resetstudentapproval") {
     require_capability('mod/publication:approve', $context);
 
-    $users = optional_param_array('selectedeuser', array(), PARAM_INT);
+    $users = optional_param_array('selectedeuser', [], PARAM_INT);
     $users = array_keys($users);
 
     if (count($users) > 0) {
 
         list($usersql, $params) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
-        $select = ' publication=:pubid AND userid '.$usersql;
+        $select = ' publication=:pubid AND userid ' . $usersql;
         $params['pubid'] = $publication->get_instance()->id;
 
         $DB->set_field_select('publication_file', 'studentapproval', null, $select, $params);
 
         if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-                && $DB->get_field('assign', 'teamsubmission', array('id' => $publication->get_instance()->importfrom))) {
+                && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
             $fileids = $DB->get_fieldset_select('publication_file', 'id', $select, $params);
             if (count($fileids) == 0) {
-                $fileids = array(-1);
+                $fileids = [-1];
             }
 
             $groups = $users;
-            $users = array();
+            $users = [];
             foreach ($groups as $cur) {
                 $members = $publication->get_submissionmembers($cur);
                 $users = array_merge($users, array_keys($members));
@@ -164,7 +164,7 @@ if ($savevisibility) {
             if (count($users) > 0) { // Attention, now we have real users! Above they may be groups!
                 list($usersql, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
                 list($filesql, $fileparams) = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
-                $select = ' fileid '.$filesql.' AND userid '.$usersql;
+                $select = ' fileid ' . $filesql . ' AND userid ' . $usersql;
                 $params = $fileparams + $userparams;
                 $DB->set_field_select('publication_groupapproval', 'approval', null, $select, $params);
             }
@@ -175,24 +175,24 @@ if ($savevisibility) {
 $submissionid = $USER->id;
 
 $filesform = new mod_publication_files_form(null,
-        array('publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment'));
+        ['publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment']);
 
 if ($data = $filesform->get_data() && $publication->is_open()) {
     $datasubmitted = $filesform->get_submitted_data();
 
     if (isset($datasubmitted->gotoupload)) {
         redirect(new moodle_url('/mod/publication/upload.php',
-        array('id' => $publication->get_instance()->id, 'cmid' => $cm->id)));
+                ['id' => $publication->get_instance()->id, 'cmid' => $cm->id]));
     }
 
-    $studentapproval = optional_param_array('studentapproval', array(), PARAM_INT);
+    $studentapproval = optional_param_array('studentapproval', [], PARAM_INT);
 
-    $conditions = array();
+    $conditions = [];
     $conditions['publication'] = $publication->get_instance()->id;
     $conditions['userid'] = $USER->id;
 
-    $pubfileids = $DB->get_records_menu('publication_file', array('publication' => $publication->get_instance()->id),
-                                        'id ASC', 'fileid, id');
+    $pubfileids = $DB->get_records_menu('publication_file', ['publication' => $publication->get_instance()->id],
+            'id ASC', 'fileid, id');
 
     // Update records.
     foreach ($studentapproval as $idx => $approval) {
@@ -201,7 +201,7 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
         $approval = ($approval >= 1) ? $approval - 1 : null;
 
         if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-                && $DB->get_field('assign', 'teamsubmission', array('id' => $publication->get_instance()->importfrom))) {
+                && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
             /* We have to deal with group approval! The method sets group approval for the specified user
              * and returns current cumulated group approval (and it also sets it in publication_file table)! */
             $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
@@ -212,7 +212,7 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
 }
 
 $filesform = new mod_publication_files_form(null,
-        array('publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment'));
+        ['publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment']);
 
 // Print the page header.
 $PAGE->set_title($pagetitle);
@@ -222,9 +222,9 @@ echo $OUTPUT->header();
 // Print the main part of the page.
 echo $OUTPUT->heading(format_string($publication->get_instance()->name), 1);
 
-echo $publication->display_intro();
-echo $publication->display_availability();
-echo $publication->display_importlink();
+$publication->display_intro();
+$publication->display_availability();
+$publication->display_importlink();
 
 $filesform->display();
 

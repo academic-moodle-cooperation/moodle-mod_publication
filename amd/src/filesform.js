@@ -23,9 +23,9 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- /**
-  * @module mod_publication/filesform
-  */
+/**
+ * @module mod_publication/filesform
+ */
 define(['jquery', 'core/log'], function($, log) {
 
     /**
@@ -33,15 +33,15 @@ define(['jquery', 'core/log'], function($, log) {
      * @alias module:mod_publication/modform
      */
     var Filesform = function() {
-        this.form = $("#fastg");
-        this.menuaction = $("#menuaction");
-        this.usersel = $(".userselection");
+        this.form = $('#fastg');
+        this.menuaction = $('#menuaction');
+        this.usersel = $('.userselection');
     };
 
     var instance = new Filesform();
 
     instance.initializer = function() {
-        log.info("Initialize filesform JS!", "mod_publication");
+        log.info('Initialize filesform JS!', 'mod_publication');
         instance.form.on('submit', function() {
             if (instance.menuaction.val() === 'zipusers') {
                 setTimeout(function() {

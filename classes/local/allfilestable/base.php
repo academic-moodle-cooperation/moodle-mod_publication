@@ -22,13 +22,16 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_publication\local\allfilestable;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/publication/locallib.php');
-require_once($CFG->libdir.'/tablelib.php');
+global $CFG;
+
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/publication/locallib.php');
+require_once($CFG->libdir . '/tablelib.php');
 
 /**
  * Base class for tables showing all (public) files (upload or import)
@@ -58,8 +61,28 @@ class base extends \table_sql {
     /** @var string[] of cached itemnames */
     protected $itemnames = [];
 
+    /** @var int activity's groupmode */
+    protected $groupmode = 0;
+    /** @var int current group if group mode is active */
+    protected $currentgroup = 0;
+    /** @var string valid pix-icon */
+    protected $valid = '';
+    /** @var string questionmark pix-icon */
+    protected $questionmark = '';
+    /** @var string invalid pix-icon */
+    protected $invalid = '';
+    /** @var string student visible pix-icon */
+    protected $studvisibleyes = '';
+    /** @var string student not visible pix-icon */
+    protected $studvisibleno = '';
+    /** @var string[] select box options */
+    protected $options = [];
+    /** @var int[] $users */
+    protected $users = [];
+
     /**
      * constructor
+     *
      * @param string $uniqueid a string identifying this table.Used as a key in session  vars.
      *                         It gets set automatically with the helper methods!
      * @param \publication $publication publication object
@@ -81,7 +104,8 @@ class base extends \table_sql {
         $this->define_headers($headers);
         $this->define_help_for_headers($helpicons);
 
-        $this->define_baseurl($CFG->wwwroot.'/mod/publication/view.php?id='.$this->cm->id.'&amp;currentgroup='.$this->currentgroup);
+        $this->define_baseurl($CFG->wwwroot . '/mod/publication/view.php?id=' . $this->cm->id . '&amp;currentgroup=' .
+                $this->currentgroup);
 
         $this->sortable(true, 'lastname'); // Sorted by lastname by default.
         $this->collapsible(true);
@@ -116,8 +140,10 @@ class base extends \table_sql {
         $this->studvisibleyes = $OUTPUT->pix_icon('i/valid', get_string('visibleforstudents_yes', 'publication'));
         $this->studvisibleno = $OUTPUT->pix_icon('i/invalid', get_string('visibleforstudents_no', 'publication'));
 
-        $this->options = array(2 => get_string('yes'),
-                               1 => get_string('no'));
+        $this->options = [
+                2 => get_string('yes'),
+                1 => get_string('no')
+        ];
     }
 
     /**
@@ -140,17 +166,19 @@ class base extends \table_sql {
      * @return array Array with column names, column headers and help icons
      */
     protected function get_columns() {
-        $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', array('id'      => 'selectallnone',
-                                                                                         'onClick' => 'toggle_userselection()'));
+        $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', [
+                'id' => 'selectallnone',
+                'onClick' => 'toggle_userselection()'
+        ]);
 
-        $columns = array('selection', 'picture', 'fullname');
-        $headers = array($selectallnone, '', get_string('fullnameuser'));
-        $helpicons = array(null, null, null);
+        $columns = ['selection', 'picture', 'fullname'];
+        $headers = [$selectallnone, '', get_string('fullnameuser')];
+        $helpicons = [null, null, null];
 
         $useridentity = get_extra_user_fields($this->context);
         foreach ($useridentity as $cur) {
             if (!(get_config('publication', 'hideidnumberfromstudents') && $cur == "idnumber" &&
-                    !has_capability('mod/publication:approve', $this->context))
+                            !has_capability('mod/publication:approve', $this->context))
                     && !($cur != "idnumber" && !has_capability('mod/publication:approve', $this->context))) {
                 $columns[] = $cur;
                 $headers[] = ($cur == 'phone1') ? get_string('phone') : get_string($cur);
@@ -162,7 +190,7 @@ class base extends \table_sql {
         $headers[] = get_string('lastmodified');
 
         // Import and upload tables will enhance this list! Import from teamassignments will overwrite it!
-        return array($columns, $headers, $helpicons);
+        return [$columns, $headers, $helpicons];
     }
 
     /**
@@ -180,11 +208,11 @@ class base extends \table_sql {
     protected function init_sql() {
         global $DB;
 
-        $params = array();
+        $params = [];
         $ufields = \user_picture::fields('u');
         $useridentityfields = get_extra_user_fields_sql($this->context, 'u');
 
-        $fields = $ufields.' '.$useridentityfields.', u.username,
+        $fields = $ufields . ' ' . $useridentityfields . ', u.username,
                                 COUNT(*) filecount,
                                 SUM(files.studentapproval) AS studentapproval,
                                 NULL AS teacherapproval,
@@ -193,16 +221,16 @@ class base extends \table_sql {
         // Also filters out users according to set activitygroupmode & current activitygroup!
         $users = $this->publication->get_users();
         list($sqluserids, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
-        $params = $params + $userparams + array('publication' => $this->cm->instance);
+        $params = $params + $userparams + ['publication' => $this->cm->instance];
 
-        $from = '{user} u '.
-           'LEFT JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ';
+        $from = '{user} u ' .
+                'LEFT JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ';
 
-        $where = "u.id ".$sqluserids;
-        $groupby = $ufields.' '.$useridentityfields.', u.username ';
+        $where = "u.id " . $sqluserids;
+        $groupby = $ufields . ' ' . $useridentityfields . ', u.username ';
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
-        $this->set_count_sql("SELECT COUNT(u.id) FROM ".$from." WHERE ".$where, $params);
+        $this->set_count_sql("SELECT COUNT(u.id) FROM " . $from . " WHERE " . $where, $params);
 
     }
 
@@ -230,11 +258,11 @@ class base extends \table_sql {
      * @param bool $useinitialsbar do you want to use the initials bar. Bar
      * will only be used if there is a fullname column defined for the table.
      */
-    public function query_db($pagesize, $useinitialsbar=true) {
+    public function query_db($pagesize, $useinitialsbar = true) {
         global $DB;
         if (!$this->is_downloading()) {
             if ($this->countsql === null) {
-                $this->countsql = 'SELECT COUNT(1) FROM '.$this->sql->from.' WHERE '.$this->sql->where;
+                $this->countsql = 'SELECT COUNT(1) FROM ' . $this->sql->from . ' WHERE ' . $this->sql->where;
                 $this->countparams = $this->sql->params;
             }
             $grandtotal = $DB->count_records_sql($this->countsql, $this->countparams);
@@ -244,13 +272,13 @@ class base extends \table_sql {
 
             list($wsql, $wparams) = $this->get_sql_where();
             if ($wsql) {
-                $this->countsql .= ' AND '.$wsql;
+                $this->countsql .= ' AND ' . $wsql;
                 $this->countparams = array_merge($this->countparams, $wparams);
 
-                $this->sql->where .= ' AND '.$wsql;
+                $this->sql->where .= ' AND ' . $wsql;
                 $this->sql->params = array_merge($this->sql->params, $wparams);
 
-                $total  = $DB->count_records_sql($this->countsql, $this->countparams);
+                $total = $DB->count_records_sql($this->countsql, $this->countparams);
             } else {
                 $total = $grandtotal;
             }
@@ -266,7 +294,7 @@ class base extends \table_sql {
         $sql = "SELECT {$this->sql->fields}
                   FROM {$this->sql->from}
                  WHERE {$this->sql->where}
-               ".($this->sql->groupby ? "GROUP BY {$this->sql->groupby}" : "")."
+               " . ($this->sql->groupby ? "GROUP BY {$this->sql->groupby}" : "") . "
                {$sort}";
         if (!$this->is_downloading()) {
             $this->rawdata = $DB->get_records_sql($sql, $this->sql->params, $this->get_page_start(), $this->get_page_size());
@@ -284,15 +312,15 @@ class base extends \table_sql {
     public function get_files($itemid) {
         if (($itemid === $this->itemid) && (($this->files !== null) || ($this->resources !== null))) {
             // We cache just the current files, to use less memory!
-            return array($this->itemid, $this->files, $this->resources);
+            return [$this->itemid, $this->files, $this->resources];
         }
 
         $contextid = $this->publication->get_context()->id;
         $filearea = 'attachment';
 
         $this->itemid = $itemid;
-        $this->files = array();
-        $this->resources = array();
+        $this->files = [];
+        $this->resources = [];
 
         $files = $this->fs->get_area_files($contextid, 'mod_publication', $filearea, $this->itemid, 'timemodified', false);
 
@@ -304,7 +332,7 @@ class base extends \table_sql {
             }
         }
 
-        return array($this->itemid, $this->files, $this->resources);
+        return [$this->itemid, $this->files, $this->resources];
     }
 
     /**
@@ -341,26 +369,32 @@ class base extends \table_sql {
         global $DB, $OUTPUT;
         // This method does nothing here!
         // Get file data/record!
-        $conditions = array('publication' => $this->cm->instance,
-                            'userid'      => $itemid,
-                            'fileid'      => $fileid,
-                            'type'        => PUBLICATION_MODE_ONLINETEXT);
-        if (!$DB->record_exists('publication_file', $conditions, '*')) {
+        $conditions = [
+                'publication' => $this->cm->instance,
+                'userid' => $itemid,
+                'fileid' => $fileid,
+                'type' => PUBLICATION_MODE_ONLINETEXT
+        ];
+        if (!$DB->record_exists('publication_file', $conditions)) {
             return '';
         }
 
         $itemname = $this->get_itemname($itemid);
 
-        $url = new \moodle_url('/mod/publication/onlinepreview.php', array('id'       => $this->cm->id,
-                                                                           'itemid'   => $itemid,
-                                                                           'itemname' => $itemname));
+        $url = new \moodle_url('/mod/publication/onlinepreview.php', [
+                'id' => $this->cm->id,
+                'itemid' => $itemid,
+                'itemname' => $itemname
+        ]);
 
-        $detailsattr = array('class'         => 'onlinetextpreview',
-                             'data-itemid'   => $itemid,
-                             'data-itemname' => $itemname);
+        $detailsattr = [
+                'class' => 'onlinetextpreview',
+                'data-itemid' => $itemid,
+                'data-itemname' => $itemname
+        ];
         $symbol = \html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('preview')), $detailsattr);
 
-        return \html_writer::link($url, $symbol, array('target' => '_blank'));
+        return \html_writer::link($url, $symbol, ['target' => '_blank']);
     }
 
     /**
@@ -373,7 +407,7 @@ class base extends \table_sql {
         global $DB;
 
         if (!array_key_exists($itemid, $this->itemnames)) {
-            $user = $DB->get_record('user', array('id' => $itemid));
+            $user = $DB->get_record('user', ['id' => $itemid]);
             $this->itemnames[$itemid] = fullname($user);
         }
 
@@ -389,15 +423,15 @@ class base extends \table_sql {
      * XXX value.
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return XXX.
+     * @return string Return XXX.
      */
     public function col_selection($values) {
         // If the data is being downloaded than we don't want to show HTML.
         if ($this->is_downloading()) {
             return '';
         } else {
-            return \html_writer::checkbox('selectedeuser['.$values->id .']', 'selected', false, null,
-                                          array('class' => 'userselection'));
+            return \html_writer::checkbox('selectedeuser[' . $values->id . ']', 'selected', false, null,
+                    ['class' => 'userselection']);
         }
     }
 
@@ -406,7 +440,7 @@ class base extends \table_sql {
      * user's name with link and optional extension date.
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return user fullname.
+     * @return string Return user fullname.
      */
     public function col_fullname($values) {
         // Saves DB access in \mod_publication\local\allfilestable::get_itemname()!
@@ -417,18 +451,20 @@ class base extends \table_sql {
         $extension = $this->publication->user_extensionduedate($values->id);
         if ($extension) {
             if (has_capability('mod/publication:grantextension', $this->context) ||
-                has_capability('mod/publication:approve', $this->context)) {
-                $extensiontxt = \html_writer::empty_tag('br')."\n".
-                                 get_string('extensionto', 'publication').': '.userdate($extension);
+                    has_capability('mod/publication:approve', $this->context)) {
+                $extensiontxt = \html_writer::empty_tag('br') . "\n" .
+                        get_string('extensionto', 'publication') . ': ' . userdate($extension);
+            } else {
+                $extensiontxt = '';
             }
         } else {
             $extensiontxt = '';
         }
 
         if ($this->is_downloading()) {
-            return strip_tags(parent::col_fullname($values).$extensiontxt);
+            return strip_tags(parent::col_fullname($values) . $extensiontxt);
         } else {
-            return parent::col_fullname($values).$extensiontxt;
+            return parent::col_fullname($values) . $extensiontxt;
         }
     }
 
@@ -438,7 +474,7 @@ class base extends \table_sql {
      * group. Also caches group name in itemnames for onlinetext-preview!
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return group's name.
+     * @return string Return group's name.
      */
     public function col_groupname($values) {
         // Saves DB access in \mod_publication\local\allfilestable::get_itemname()!
@@ -454,7 +490,7 @@ class base extends \table_sql {
      * user picture.
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return user picture markup.
+     * @return string Return user picture markup.
      */
     public function col_picture($values) {
         global $OUTPUT;
@@ -471,7 +507,7 @@ class base extends \table_sql {
      * user's groups.
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return user groups.
+     * @return string Return user groups.
      */
     public function col_groups($values) {
         $groups = groups_get_all_groups($this->publication->get_instance()->course, $values->id, 0, 'g.name');
@@ -483,15 +519,15 @@ class base extends \table_sql {
                 }
                 $values->groups .= $group->name;
             }
-            if ($this->is_downloading() || $this->format == self::FORMAT_DOWNLOAD) {
+            if ($this->is_downloading()) {
                 return $values->groups;
             } else {
-                return \html_writer::tag('div', $values->groups, array('id' => 'gr'.$values->id));
+                return \html_writer::tag('div', $values->groups, ['id' => 'gr' . $values->id]);
             }
-        } else if ($this->is_downloading() || $this->format == self::FORMAT_DOWNLOAD) {
+        } else if ($this->is_downloading()) {
             return '';
         } else {
-            return \html_writer::tag('div', '-', array('id' => 'gr'.$values->id));
+            return \html_writer::tag('div', '-', ['id' => 'gr' . $values->id]);
         }
     }
 
@@ -500,7 +536,7 @@ class base extends \table_sql {
      * user's submission time.
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return user time of submission.
+     * @return string Return user time of submission.
      */
     public function col_timemodified($values) {
         global $OUTPUT;
@@ -508,23 +544,22 @@ class base extends \table_sql {
         list(, $files, ) = $this->get_files($values->id);
 
         $filetable = new \html_table();
-        $filetable->attributes = array('class' => 'filetable');
+        $filetable->attributes = ['class' => 'filetable'];
 
         foreach ($files as $file) {
             if (has_capability('mod/publication:approve', $this->context)
                     || $this->publication->has_filepermission($file->get_id())) {
-                $filerow = array();
+                $filerow = [];
                 $filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
 
-                $url = new \moodle_url('/mod/publication/view.php', array('id' => $this->cm->id, 'download' => $file->get_id()));
-                $filerow[] = \html_writer::link($url, $file->get_filename()).
-                             $this->add_onlinetext_preview($values->id, $file->get_id());
+                $url = new \moodle_url('/mod/publication/view.php', ['id' => $this->cm->id, 'download' => $file->get_id()]);
+                $filerow[] = \html_writer::link($url, $file->get_filename()) .
+                        $this->add_onlinetext_preview($values->id, $file->get_id());
 
                 $filetable->data[] = $filerow;
             }
         }
 
-        $lastmodified = "";
         if ($this->totalfiles === null) {
             $this->totalfiles = 0;
         }
@@ -545,13 +580,13 @@ class base extends \table_sql {
      * file status.
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return user time of submission.
+     * @return string Return user time of submission.
      */
     public function col_studentapproval($values) {
         list(, $files, ) = $this->get_files($values->id);
 
         $table = new \html_table();
-        $table->attributes = array('class' => 'statustable');
+        $table->attributes = ['class' => 'statustable'];
 
         foreach ($files as $file) {
             if (has_capability('mod/publication:approve', $this->context)
@@ -567,7 +602,7 @@ class base extends \table_sql {
                         $symbol = $this->questionmark;
                 }
                 $this->add_details_tooltip($symbol, $file);
-                $table->data[] = array($symbol);
+                $table->data[] = [$symbol];
             }
         }
 
@@ -583,14 +618,14 @@ class base extends \table_sql {
      * file permission.
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return user time of submission.
+     * @return string Return user time of submission.
      */
     public function col_teacherapproval($values) {
 
         list(, $files, ) = $this->get_files($values->id);
 
         $table = new \html_table();
-        $table->attributes = array('class' => 'permissionstable');
+        $table->attributes = ['class' => 'permissionstable'];
 
         foreach ($files as $file) {
             if ($this->publication->has_filepermission($file->get_id())
@@ -602,7 +637,7 @@ class base extends \table_sql {
                 $checked = ($checked === false || $checked === null) ? "" : $checked + 1;
 
                 $sel = \html_writer::select($this->options, 'files[' . $file->get_id() . ']', (string)$checked);
-                $table->data[] = array($sel);
+                $table->data[] = [$sel];
             }
         }
 
@@ -618,19 +653,19 @@ class base extends \table_sql {
      * file visibility.
      *
      * @param object $values Contains object with all the values of record.
-     * @return $string Return user time of submission.
+     * @return string Return user time of submission.
      */
     public function col_visibleforstudents($values) {
         list(, $files, ) = $this->get_files($values->id);
 
         $table = new \html_table();
-        $table->attributes = array('class' => 'statustable');
+        $table->attributes = ['class' => 'statustable'];
 
         foreach ($files as $file) {
             if ($this->publication->has_filepermission($file->get_id())) {
-                $table->data[] = array($this->studvisibleyes);
+                $table->data[] = [$this->studvisibleyes];
             } else {
-                $table->data[] = array($this->studvisibleno);
+                $table->data[] = [$this->studvisibleno];
             }
         }
 
@@ -647,9 +682,8 @@ class base extends \table_sql {
      * columns which do not have a *_cols function.
      *
      * @param string $colname Name of current column
-     * @param mixed[] $values Values of the current row
-     * @return string return processed value. Return NULL if no change has
-     *     been made.
+     * @param object $values Values of the current row
+     * @return string return processed value.
      */
     public function other_cols($colname, $values) {
         // Process user identity fields!
@@ -662,15 +696,17 @@ class base extends \table_sql {
                 if ($this->is_downloading()) {
                     return $values->$colname;
                 } else {
-                    return \html_writer::tag('div', $values->$colname, array('id' => 'u'.$colname.$values->id));
+                    return \html_writer::tag('div', $values->$colname, ['id' => 'u' . $colname . $values->id]);
                 }
             } else {
                 if ($this->is_downloading()) {
                     return '-';
                 } else {
-                    return \html_writer::tag('div', '-', array('id' => 'u'.$colname.$values->id));
+                    return \html_writer::tag('div', '-', ['id' => 'u' . $colname . $values->id]);
                 }
             }
         }
+
+        return $values->$colname;
     }
 }

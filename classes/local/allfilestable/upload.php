@@ -22,6 +22,7 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_publication\local\allfilestable;
 
 defined('MOODLE_INTERNAL') || die();
@@ -53,7 +54,7 @@ class upload extends base {
             $helpicons[] = null;
         }
 
-        return array($columns, $headers, $helpicons);
+        return [$columns, $headers, $helpicons];
     }
 
     /**

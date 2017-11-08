@@ -25,6 +25,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . "/mod/publication/locallib.php");
 
@@ -40,18 +42,20 @@ class mod_publication_external extends external_api {
 
     /**
      * Returns description of method parameters
+     *
      * @return external_function_parameters
      */
     public static function get_onlinetextpreview_parameters() {
         // Function get_onlinetextpreview_parameters() always return an external_function_parameters().
         // The external_function_parameters constructor expects an array of external_description.
         return new external_function_parameters(
-                // An external_description can be: external_value, external_single_structure or an external_multiple structure!
-                array('itemid' => new external_value(PARAM_INT, 'Group\'s or user\'s ID'),
-                      'cmid'   => new external_value(PARAM_INT, 'Coursemodule ID'))
+        // An external_description can be: external_value, external_single_structure or an external_multiple structure!
+                [
+                        'itemid' => new external_value(PARAM_INT, 'Group\'s or user\'s ID'),
+                        'cmid' => new external_value(PARAM_INT, 'Coursemodule ID')
+                ]
         );
     }
-
 
 
     /**
@@ -66,10 +70,12 @@ class mod_publication_external extends external_api {
 
         // Parameters validation!
         $params = self::validate_parameters(self::get_onlinetextpreview_parameters(),
-                array('itemid' => $itemid,
-                      'cmid'   => $cmid));
+                [
+                        'itemid' => $itemid,
+                        'cmid' => $cmid
+                ]);
         $cm = get_coursemodule_from_id('publication', $params['cmid'], 0, false, MUST_EXIST);
-        $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $context = context_module::instance($cm->id);
         self::validate_context($context);
         require_capability('mod/publication:view', $context);
@@ -82,6 +88,7 @@ class mod_publication_external extends external_api {
 
     /**
      * Returns description of method result value
+     *
      * @return external_description
      */
     public static function get_onlinetextpreview_returns() {

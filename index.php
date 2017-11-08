@@ -29,25 +29,25 @@ require_once($CFG->dirroot . '/mod/publication/locallib.php');
 
 $id = required_param('id', PARAM_INT);   // We need a course!
 
-if (!$course = $DB->get_record('course', array('id' => $id))) {
+if (!$course = $DB->get_record('course', ['id' => $id])) {
     print_error('invalidcourseid');
 }
 
 require_course_login($course);
 $PAGE->set_pagelayout('incourse');
 
-$event = \mod_publication\event\course_module_instance_list_viewed::create(array(
+$event = \mod_publication\event\course_module_instance_list_viewed::create([
         'context' => context_course::instance($course->id)
-));
+]);
 $event->trigger();
 
 $strmodulenameplural = get_string('modulenameplural', 'publication');
 $strmodulname = get_string('modulename', 'publication');
-$strsectionname  = get_string('sectionname', 'format_'.$course->format);
+$strsectionname = get_string('sectionname', 'format_' . $course->format);
 $strname = get_string('name');
 $strdesc = get_string('description');
 
-$PAGE->set_url('/mod/publication/index.php', array('id' => $course->id));
+$PAGE->set_url('/mod/publication/index.php', ['id' => $course->id]);
 $PAGE->navbar->add($strmodulenameplural);
 $PAGE->set_title($strmodulenameplural);
 $PAGE->set_heading($course->fullname);
@@ -62,6 +62,8 @@ if (!$cms = get_coursemodules_in_course('publication', $course->id, 'cm.idnumber
 $usesections = course_format_uses_sections($course->format);
 if ($usesections) {
     $sections = get_fast_modinfo($course->id)->get_section_info_all();
+} else {
+    $sections = [];
 }
 
 $timenow = time();
@@ -69,9 +71,9 @@ $timenow = time();
 $table = new html_table();
 
 if ($usesections) {
-    $table->head  = array ($strsectionname, $strname, $strdesc);
+    $table->head = [$strsectionname, $strname, $strdesc];
 } else {
-    $table->head  = array ($strname, $strdesc);
+    $table->head = [$strname, $strdesc];
 }
 
 $currentsection = '';
@@ -85,7 +87,7 @@ foreach ($modinfo->instances['publication'] as $cm) {
     // Show dimmed if the mod is hidden!
     $class = $cm->visible ? '' : 'dimmed';
 
-    $link = html_writer::tag('a', format_string($cm->name), array('href' => 'view.php?id='.$cm->id, 'class' => $class));
+    $link = html_writer::tag('a', format_string($cm->name), ['href' => 'view.php?id=' . $cm->id, 'class' => $class]);
 
     $printsection = '';
     if ($usesections) {
@@ -104,9 +106,9 @@ foreach ($modinfo->instances['publication'] as $cm) {
     $desc = $publication->get_instance()->intro;
 
     if ($usesections) {
-        $table->data[] = array ($printsection, $link, $desc);
+        $table->data[] = [$printsection, $link, $desc];
     } else {
-        $table->data[] = array ($link, $desc);
+        $table->data[] = [$link, $desc];
     }
 }
 
