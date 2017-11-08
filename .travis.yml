@@ -63,6 +63,8 @@ before_install:
 # This disables XDebug which should speed up the build.  One reason to remove this
 # line is if you are trying to generate code coverage with PHPUnit.
   - phpenv config-rm xdebug.ini
+  - nvm install 8.9
+  - nvm use 8.9
 # Currently we are inside of the clone of your repository.  We move up two
 # directories to build the project.
   - cd ../..
