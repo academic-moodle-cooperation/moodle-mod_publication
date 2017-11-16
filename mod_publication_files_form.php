@@ -48,49 +48,47 @@ class mod_publication_files_form extends moodleform {
         $publication = &$this->_customdata['publication'];
 
         $mform = $this->_form;
-        if (has_capability('mod/publication:upload', $publication->get_context())) {
 
-            if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
-                $table = new \mod_publication\local\filestable\upload($publication);
-                $headertext = get_string('myfiles', 'publication');
-                if ($publication->get_instance()->obtainteacherapproval) {
-                    $notice = get_string('notice_uploadrequireapproval', 'publication');
+        if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
+            $table = new \mod_publication\local\filestable\upload($publication);
+            $headertext = get_string('myfiles', 'publication');
+            if ($publication->get_instance()->obtainteacherapproval) {
+                $notice = get_string('notice_uploadrequireapproval', 'publication');
+            } else {
+                $notice = get_string('notice_uploadnoapproval', 'publication');
+            }
+        } else if ($DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
+            $table = new \mod_publication\local\filestable\group($publication);
+            $headertext = get_string('mygroupfiles', 'publication');
+            if ($publication->get_instance()->obtainstudentapproval) {
+                if ($publication->get_instance()->groupapproval == PUBLICATION_APPROVAL_ALL) {
+                    $notice = get_string('notice_groupimportrequireallapproval', 'publication');
                 } else {
-                    $notice = get_string('notice_uploadnoapproval', 'publication');
-                }
-            } else if ($DB->get_field('assign', 'teamsubmission', array('id' => $publication->get_instance()->importfrom))) {
-                $table = new \mod_publication\local\filestable\group($publication);
-                $headertext = get_string('mygroupfiles', 'publication');
-                if ($publication->get_instance()->obtainstudentapproval) {
-                    if ($publication->get_instance()->groupapproval == PUBLICATION_APPROVAL_ALL) {
-                        $notice = get_string('notice_groupimportrequireallapproval', 'publication');
-                    } else {
-                        $notice = get_string('notice_groupimportrequireoneapproval', 'publication');
-                    }
-                } else {
-                    $notice = get_string('notice_importnoapproval', 'publication');
+                    $notice = get_string('notice_groupimportrequireoneapproval', 'publication');
                 }
             } else {
-                $table = new \mod_publication\local\filestable\import($publication);
-                $headertext = get_string('myfiles', 'publication');
-                if ($publication->get_instance()->obtainstudentapproval) {
-                    $notice = get_string('notice_importrequireapproval', 'publication');
-                } else {
-                    $notice = get_string('notice_importnoapproval', 'publication');
-                }
+                $notice = get_string('notice_importnoapproval', 'publication');
             }
-
-            $mform->addElement('header', 'myfiles', $headertext);
-            $mform->setExpanded('myfiles');
-
-            $PAGE->requires->js_call_amd('mod_publication/filesform', 'initializer', array());
-
-            $noticehtml = html_writer::start_tag('div', array('class' => 'notice'));
-            $noticehtml .= get_string('notice', 'publication') . ' ' . $notice;
-            $noticehtml .= html_writer::end_tag('div');
-
-            $mform->addElement('html', $noticehtml);
+        } else {
+            $table = new \mod_publication\local\filestable\import($publication);
+            $headertext = get_string('myfiles', 'publication');
+            if ($publication->get_instance()->obtainstudentapproval) {
+                $notice = get_string('notice_importrequireapproval', 'publication');
+            } else {
+                $notice = get_string('notice_importnoapproval', 'publication');
+            }
         }
+
+        $mform->addElement('header', 'myfiles', $headertext);
+        $mform->setExpanded('myfiles');
+
+        $PAGE->requires->js_call_amd('mod_publication/filesform', 'initializer', array());
+
+        $noticehtml = html_writer::start_tag('div', array('class' => 'notice'));
+        $noticehtml .= get_string('notice', 'publication') . ' ' . $notice;
+        $noticehtml .= html_writer::end_tag('div');
+
+        $mform->addElement('html', $noticehtml);
 
         // Now we do all the table work and return 0 if there's no files to show!
         if ($table->init()) {

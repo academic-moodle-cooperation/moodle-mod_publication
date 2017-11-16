@@ -86,6 +86,10 @@ class base extends \html_table {
         $this->options[2] = get_string('student_approve', 'publication');
         $this->options[1] = get_string('student_reject', 'publication');
 
+        if (empty($files) || count($files) == 0) {
+            return 0;
+        }
+
         foreach ($files as $file) {
             $this->data[] = $this->add_file($file);
         }
