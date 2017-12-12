@@ -861,19 +861,38 @@ class publication {
         if ($allowed) {
             $fs = get_file_storage();
             $file = $fs->get_file_by_id($fileid);
+            $itemid = $file->get_itemid();
             if ($record->type == PUBLICATION_MODE_ONLINETEXT) {
                 global $CFG;
+
+                if ($this->get_instance()->importfrom == -1) {
+                    $teamsubmission = false;
+                } else {
+                    $teamsubmission = $DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom]);
+                }
+                if (!$teamsubmission) {
+                    // Get user firstname/lastname.
+                    $auser = $DB->get_record('user', ['id' => $itemid], get_all_user_name_fields(true));
+                    $itemname = str_replace(' ', '_', fullname($auser)).'_';
+                } else {
+                    if (empty($itemid)) {
+                        $itemname = get_string('defaultteam', 'assign').'_';
+                    } else {
+                        $itemname = $DB->get_field('groups', 'name', ['id' => $itemid]).'_';
+                    }
+                }
+
                 // Create path for new zip file.
                 $zipfile = tempnam($CFG->dataroot . '/temp/', 'publication_');
                 // Zip files.
-                $zipname = str_replace('.html', '.zip', $file->get_filename());
+                $filename = $itemname.$file->get_filename();
+                $zipname = str_replace('.html', '.zip', $filename);
                 $zipper = new zip_packer();
                 $filesforzipping = [];
-
-                $this->add_onlinetext_to_zipfiles($filesforzipping, $file, '', $file->get_filename(), $fs);
+                $this->add_onlinetext_to_zipfiles($filesforzipping, $file, '', $filename, $fs);
                 if (count($filesforzipping) == 1) {
                     // We can send the file directly, if it has no resources!
-                    send_file($file, $file->get_filename(), 'default', 0, false, true, $file->get_mimetype(), false);
+                    send_file($file, $filename, 'default', 0, false, true, $file->get_mimetype(), false);
                 } else if ($zipper->archive_to_pathname($filesforzipping, $zipfile)) {
                     send_temp_file($zipfile, $zipname); // Send file and delete after sending.
                 }
