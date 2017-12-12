@@ -60,7 +60,7 @@ class mod_publication_upload_form extends moodleform {
 
         $mform->addElement('static', 'guideline', get_string('guideline', 'publication'), $text);
 
-        $mform->addElement('filemanager', 'attachment_filemanager', '', null, $attachmentoptions);
+        $mform->addElement('filemanager', 'attachment_filemanager', get_string('myfiles', 'publication'), null, $attachmentoptions);
 
         // Add notice of allowed file types if they're restricted!
         if (!empty($attachmentoptions['accepted_types']) && $attachmentoptions['accepted_types'] !== '*') {
