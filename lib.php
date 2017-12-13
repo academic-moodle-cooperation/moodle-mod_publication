@@ -29,7 +29,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Adds a new publication instance
  *
- * @param publication $publication
+ * @param stdClass $publication data (from mod_publication_mod_form)
+ * @return int publication ID
  */
 function publication_add_instance($publication) {
     global $DB, $OUTPUT;
@@ -41,7 +42,7 @@ function publication_add_instance($publication) {
     try {
         $id = $DB->insert_record('publication', $publication);
     } catch (Exception $e) {
-        echo $OUTPUT->notification($e->message, 'error');
+        echo $OUTPUT->notification($e->getMessage(), 'error');
     }
 
     $DB->set_field('course_modules', 'instance', $id, ['id' => $cmid]);
@@ -98,7 +99,7 @@ function publication_supports($feature) {
 /**
  * updates an existing publication instance
  *
- * @param publication $publication
+ * @param stdClass $publication from mod_publication_mod_form
  * @return bool true
  */
 function publication_update_instance($publication) {

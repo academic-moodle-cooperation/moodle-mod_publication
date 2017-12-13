@@ -1098,7 +1098,7 @@ class publication {
      * @param object $assigncontext Assignment context object
      */
     protected function import_assign_files($assigncm, $assigncontext) {
-        global $DB, $CFG;
+        global $DB, $CFG, $OUTPUT;
 
         $records = $DB->get_records('assignsubmission_file', ['assignment' => $this->get_instance()->importfrom]);
 
@@ -1189,9 +1189,9 @@ class publication {
 
                     $DB->insert_record('publication_file', $dataobject);
                 } catch (Exception $e) {
-                    // File could not be copied, maybe it does allready exist.
+                    // File could not be copied, maybe it does already exist.
                     // Should not happen.
-                    echo $OUTPUT->box($OUTPUT->notification($e->message, 'notifyproblem'), 'generalbox');
+                    echo $OUTPUT->box($OUTPUT->notification($e->getMessage(), 'notifyproblem'), 'generalbox');
                 }
             }
         }
