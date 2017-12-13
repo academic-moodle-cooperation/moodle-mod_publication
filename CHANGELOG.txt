@@ -1,9 +1,13 @@
 CHANGELOG
 =========
-3.4-dev
+3.4.0 (2017-12-13)
 ------------------
 
-*
+* Moodle 3.4 compatible version
+* [CHANGED] #4849 use moodleform's hideIf-Method instead of custom JS
+* [CHANGED] #4621 prepend user's respectively group's name to onlinetext-file-downloads
+* [CHANGED] #4851 reformatted many lines of code (PHPDoc comments, coding style, properties, variables, etc.)
+* [CHANGED] added a label to filemanager for uploading files due to future behat tests using it
 
 
 3.3.2 (2017-11-16)
