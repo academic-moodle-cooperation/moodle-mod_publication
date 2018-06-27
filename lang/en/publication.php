@@ -200,6 +200,29 @@ $string['save_changes'] = 'Save changes';
 $string['total'] = 'total';
 $string['details'] = 'Details';
 
+// Privacy strings...
+$string['privacy:metadata:publicationperpage'] = 'How many entries should be displayed on a single table page!';
+$string['privacy:path:files'] = 'files';
+$string['privacy:path:resources'] = 'resources';
+$string['privacy:type:upload'] = 'uploaded file';
+$string['privacy:type:import'] = 'imported file';
+$string['privacy:type:onlinetext'] = 'imported onlinetext';
+$string['privacy:metadata:groupapproval'] = 'Stores information about group members\' approval or rejection of files imported from group\'s submission.';
+$string['privacy:metadata:publicationfileexplanation'] = 'Files and converted onlinetext-submissions for this plugin get stored via Moodle\'s file API.';
+$string['privacy:metadata:extduedates'] = 'Stores information about overridden/extended due dates for mod_publication.';
+$string['privacy:metadata:files'] = 'Stores information (identifier, whom it belongs, where it came from, hash of content, file name and if approved by teacher and/or student) about the files uploaded/imported into mod_publication.';
+$string['privacy:metadata:fileid'] = 'Identifier of the file.';
+$string['privacy:metadata:userid'] = 'Identifier of the user.';
+$string['privacy:metadata:timecreated'] = 'The time and date the data record was created.';
+$string['privacy:metadata:timemodified'] = 'The most recent time and date the data record got updated/modified.';
+$string['privacy:metadata:approval'] = 'Whether or not the group member approved or rejected the file.';
+$string['privacy:metadata:studentapproval'] = 'Whether or not the student approved or rejected the file.';
+$string['privacy:metadata:teacherapproval'] = 'Whether or not the teacher approved or rejected the file.';
+$string['privacy:metadata:type'] = 'Marks the origin of the file (uploaded by student, imported from assignment submission or converted onlinetext from assignment submission).';
+$string['privacy:metadata:contenthash'] = 'SHA1 hash of the file\'s content, used to determine if the file changed.';
+$string['privacy:metadata:filename'] = 'The file\'s name.';
+$string['privacy:metadata:extensionduedate'] = 'The due date effective for the user due to it being overridden/extended.';
+
 // Deprecated since Moodle 2.9!
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
