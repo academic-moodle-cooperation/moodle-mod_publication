@@ -1,5 +1,13 @@
 CHANGELOG
 =========
+3.5.0 (2018-07-18)
+------------------
+
+* Moodle 3.5 compatible version
+* [CHANGED] #5134 removed german lang file from repository
+* [FEATURE] #5386 implemented privacy API
+
+
 3.4.0 (2017-12-13)
 ------------------
 
