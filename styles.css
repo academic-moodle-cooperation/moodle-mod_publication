@@ -79,6 +79,10 @@
     position: absolute;
 }
 
+.path-mod-publication table.publications .onlinetextpreview {
+    padding-left: 0.5rem;
+}
+
 /* .. ie */
 .ie#page-mod-publication-view fieldset#id_allfiles {
     display: block;
