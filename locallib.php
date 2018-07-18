@@ -413,6 +413,8 @@ class publication {
 
     /**
      * Display form with table containing all files
+     *
+     * TODO: for Moodle 3.6 we should replace old form classes with a nice bootstrap based form layout!
      */
     public function display_allfilesform() {
         global $CFG, $DB;
@@ -494,8 +496,9 @@ class publication {
         }
 
         if (count($options) > 0) {
+            echo html_writer::start_div('form-row');
             if (has_capability('mod/publication:approve', $context)) {
-                echo html_writer::empty_tag('input', [
+                $buttons = html_writer::empty_tag('input', [
                         'type' => 'reset',
                         'name' => 'resetvisibility',
                         'value' => get_string('reset', 'publication'),
@@ -504,32 +507,35 @@ class publication {
 
                 if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
                         $this->get_instance()->obtainstudentapproval) {
-                    echo html_writer::empty_tag('input', [
+                    $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary'
+                            'class' => 'visibilitysaver btn btn-primary m-x-1'
                     ]);
                 } else {
-                    echo html_writer::empty_tag('input', [
+                    $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveteacherapproval', 'publication'),
                             'class' => 'visibilitysaver btn btn-primary'
                     ]);
                 }
+            } else {
+                $buttons = '';
             }
 
-            echo html_writer::start_div('withselection') .
-                    html_writer::span(get_string('withselected', 'publication')) .
-                    html_writer::select($options, 'action') .
-                    html_writer::empty_tag('input', [
-                            'type' => 'submit',
-                            'name' => 'submitgo',
-                            'value' => get_string('go', 'publication'),
-                            'class' => 'btn btn-primary'
-                    ]) .
-                    html_writer::end_div();
+            echo html_writer::start_div('withselection col-7').
+                 html_writer::span(get_string('withselected', 'publication')).
+                 html_writer::select($options, 'action').
+                 html_writer::empty_tag('input', [
+                    'type' => 'submit',
+                    'name' => 'submitgo',
+                    'value' => get_string('go', 'publication'),
+                    'class' => 'btn btn-primary'
+                 ]).html_writer::end_div().
+                 html_writer::div($buttons, 'col');
+
         }
 
         // Select all/none.
