@@ -36,6 +36,9 @@ use \core_privacy\local\request\writer;
 use \core_privacy\local\request\approved_contextlist;
 use \core_privacy\local\request\transform;
 use \core_privacy\local\request\helper;
+use core_privacy\local\request\core_userlist_provider;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
 
 require_once($CFG->dirroot . '/mod/publication/locallib.php');
 
@@ -47,7 +50,7 @@ require_once($CFG->dirroot . '/mod/publication/locallib.php');
  * @copyright  2018 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, preference_provider {
+class provider implements metadataprovider, pluginprovider, preference_provider, core_userlist_provider {
     /**
      * Provides meta data that is stored about a user with mod_publication
      *
@@ -128,7 +131,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
          * field to reference group-ids.
          * TODO: split {publication_file}.userid to a userid and a groupid field or rename it at least to itemid! */
         $sql = "
-   SELECT ctx.id
+   SELECT DISTINCT ctx.id
      FROM {course_modules} cm
      JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
      JOIN {publication} p ON cm.instance = p.id
@@ -142,12 +145,146 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
     WHERE ((p.importfrom > 0 AND a.teamsubmission > 0)
            AND ((gm.userid = :userid AND (ext.userid = gm.groupid OR f.userid = gm.groupid))
                OR (gm.userid IS NULL AND f.userid = 0 AND a.preventsubmissionnotingroup = 0 AND g.courseid $enrolsql)))
-           OR ((p.importfrom = 0 OR a.teamsubmission = 0) AND (ext.userid = :extuserid OR f.userid = :fuserid))";
+           OR ((p.importfrom <= 0 OR a.teamsubmission = 0) AND (ext.userid = :extuserid OR f.userid = :fuserid))";
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);
 
         return $contextlist;
     }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if ($context->contextlevel != CONTEXT_MODULE) {
+            return;
+        }
+
+        $params = [
+                'modulename' => 'publication',
+                'contextid' => $context->id,
+                'contextlevel' => CONTEXT_MODULE,
+                'upload' => PUBLICATION_MODE_UPLOAD
+        ];
+
+        // Get all who uploaded/have files imported!
+        // First get all regular uploads.
+        $sql = "SELECT f.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {publication} p ON p.id = cm.instance
+                  JOIN {publication_file} f ON p.id = f.publication
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel AND p.mode = :upload";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        unset($params['upload']);
+        $params['import'] = PUBLICATION_MODE_IMPORT;
+        // Second get all imported file's users.
+        $sql = "SELECT gm.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {publication} p ON p.id = cm.instance
+                  JOIN {publication_file} f ON p.id = f.publication
+             LEFT JOIN {assign} a ON p.importfrom = a.id
+             LEFT JOIN {groups} g ON g.courseid = p.course AND f.userid = g.id
+             LEFT JOIN {groups_members} gm ON g.id = gm.groupid
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel AND p.mode = :import
+                       AND (p.importfrom > 0 AND a.teamsubmission > 0)";
+        $userlist->add_from_sql('userid', $sql, $params);
+        $sql = "SELECT f.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {publication} p ON p.id = cm.instance
+                  JOIN {publication_file} f ON p.id = f.publication
+             LEFT JOIN {assign} a ON p.importfrom = a.id
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel AND p.mode = :import
+                       AND (p.importfrom > 0 AND a.teamsubmission = 0)";
+        $userlist->add_from_sql('userid', $sql, $params);
+        // TODO: std-Group-Members may be missing here!
+
+        // Get all who got an extension!
+        $sql = "SELECT e.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {publication} p ON p.id = cm.instance
+                  JOIN {publication_extduedates} e ON p.id = e.publication
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Get all who gave (group) approval!
+        $sql = "SELECT ga.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {publication} p ON p.id = cm.instance
+                  JOIN {publication_file} f ON p.id = f.publication
+                  JOIN {publication_groupapproval} ga ON p.id = ga.fileid
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
+        $userlist->add_from_sql('userid', $sql, $params);
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+
+        $context = $userlist->get_context();
+
+        if ($context->contextlevel == CONTEXT_MODULE) {
+            // Apparently we can't trust anything that comes via the context.
+            // Go go mega query to find out it we have an checkmark context that matches an existing checkmark.
+            $sql = "SELECT p.id
+                    FROM {publication} p
+                    JOIN {course_modules} cm ON p.id = cm.instance AND p.course = cm.course
+                    JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                    JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :contextmodule
+                    WHERE ctx.id = :contextid";
+            $params = ['modulename' => 'publication', 'contextmodule' => CONTEXT_MODULE, 'contextid' => $context->id];
+            $id = $DB->get_field_sql($sql, $params);
+            // If we have an id over zero then we can proceed.
+            if ($id > 0) {
+                $userids = $userlist->get_userids();
+                if (count($userids) <= 0) {
+                    return;
+                }
+
+                $fs = get_file_storage();
+
+                list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'usr');
+
+                // Delete users' files, extended due dates and groupapprovals for this publication!
+                $DB->delete_records_select('publication_extduedates', "publication = :id AND userid ".$usersql,
+                        ['id' => $id] + $userparams);
+                $files = $DB->get_records_select('publication_file', "publication = :id AND userid ".$usersql,
+                        ['id' => $id] + $userparams);
+
+                if ($files) {
+                    $fileids = array_keys($files);
+                    foreach ($files as $cur) {
+                        $file = $fs->get_file_by_id($cur->fileid);
+                        $file->delete();
+                    }
+                    list($filesql, $fileparams) = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
+                    $DB->delete_records_select('publication_groupapproval', "(fileid $filesql) AND (userid ".$usersql.")",
+                            $fileparams + $userparams);
+                    $DB->delete_records_list('publication_file', 'id', $fileids);
+                }
+
+            }
+        }
+    }
+
 
     /**
      * Write out the user data filtered by contexts.
