@@ -130,7 +130,7 @@ class mod_publication_files_form extends moodleform {
 
                 $buttonarray[] = &$mform->createElement('submit', 'gotoupload', $label);
                 $mform->addGroup($buttonarray, 'uploadgrp', '', [' '], false);
-            } else {
+            } else if (has_capability('mod/publication:upload', $publication->get_context())) {
                 $mform->addElement('static', 'edittimeover', '', get_string('edit_timeover', 'publication'));
             }
         }

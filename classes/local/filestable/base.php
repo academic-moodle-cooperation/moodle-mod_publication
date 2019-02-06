@@ -162,7 +162,8 @@ class base extends \html_table {
      * @return bool
      */
     public function changepossible() {
-        return $this->changepossible ? true : false;
+        return ($this->changepossible ? true : false) && has_capability('mod/publication:upload',
+                        $this->publication->get_context());
     }
 
 }

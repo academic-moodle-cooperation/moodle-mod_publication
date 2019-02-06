@@ -263,6 +263,10 @@ class publication {
     public function is_open() {
         global $USER;
 
+        if (!has_capability('mod/publication:upload', $this->get_context())) {
+            return false;
+        }
+
         $now = time();
 
         $from = $this->get_instance()->allowsubmissionsfromdate;
