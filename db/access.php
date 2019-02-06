@@ -50,7 +50,7 @@ $capabilities = [
         ],
 
         'mod/publication:upload' => [
-                'captype' => 'read',
+                'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
                 'archetypes' => [
                         'student' => CAP_ALLOW,
@@ -61,7 +61,7 @@ $capabilities = [
         ],
 
         'mod/publication:approve' => [
-                'captype' => 'read',
+                'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
                 'archetypes' => [
                         'teacher' => CAP_ALLOW,
