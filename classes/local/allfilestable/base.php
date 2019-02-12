@@ -188,6 +188,7 @@ class base extends \table_sql {
 
         $columns[] = 'timemodified';
         $headers[] = get_string('lastmodified');
+        $helpicons[] = null;
 
         // Import and upload tables will enhance this list! Import from teamassignments will overwrite it!
         return [$columns, $headers, $helpicons];
