@@ -22,10 +22,10 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace mod_publication;
-use \core\notification as notification;
-use \mod_assign\event\assessable_submitted as assessable_submitted;
+
+use core\notification;
+use mod_assign\event\assessable_submitted;
 
 defined('MOODLE_INTERNAL') || die;
 

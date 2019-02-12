@@ -22,9 +22,9 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace mod_publication\search;
-use \core_search\base_activity as base_activity;
+
+use core_search\base_activity as base_activity;
 
 defined('MOODLE_INTERNAL') || die();
 
