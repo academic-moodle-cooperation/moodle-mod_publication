@@ -96,8 +96,8 @@ $string['nonexistentfiletypes'] = 'The following file types were not recognised:
 
 $string['groupapprovalmode'] = 'Groupapproval mode';
 $string['groupapprovalmode_help'] = 'Here you decide if approval of all group members or just approval of at least one group member is required for files to be visible. The files will only be visible after approval by all group members or at least one group member.';
-$string['groupapprovalmode_all'] = '<strong>ALL</strong> members of the group have to approve';
-$string['groupapprovalmode_single'] = 'at least <strong>ONE</strong> member has to approve';
+$string['groupapprovalmode_all'] = 'ALL members of the group have to approve';
+$string['groupapprovalmode_single'] = 'at least ONE member has to approve';
 
 $string['warning_changefromobtainteacherapproval'] = 'After activating this setting, all uploaded files will be visible to other participants. All uploaded will become visible. You can manually make files invisible to certain students.';
 $string['warning_changetoobtainteacherapproval'] = 'After deactivating this setting uploaded files will not be visible to other participants automatically. You will have to determine which files are visible. Already visible files will become invisible.';
