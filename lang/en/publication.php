@@ -83,8 +83,8 @@ $string['modeupload'] = 'students can upload documents';
 $string['modeimport'] = 'take documents from an assignment';
 
 $string['courseuploadlimit'] = 'Course upload limit';
-$string['allowedfiletypes'] = 'Allowed filetypes (;)';
-$string['allowedfiletypes_help'] = 'Accepted file types can be restricted by entering a semicolon-separated list of mimetypes, e.g. \'video/mp4; audio/mp3; image/png; image/jpeg\', or file extensions including a dot, e.g. \'.png; .jpg\'. If the field is left empty, then all file types are allowed.';
+$string['allowedfiletypes'] = 'Accepted file types';
+$string['allowedfiletypes_help'] = 'Accepted file types can be restricted by entering a comma-separated list of mimetypes, e.g. \'video/mp4, audio/mp3, image/png, image/jpeg\', or file extensions including a dot, e.g. \'.png, .jpg\'. If the field is left empty, then all file types are allowed.';
 $string['allowedfiletypes_err'] = 'Check input! Invalid file extensions or seperators';
 $string['obtainteacherapproval_help'] = 'Decide if files will be made visible immediately upon upload or not: <br><ul><li> yes - all files will be visible to everyone right away</li><li> no - files will be published only after the teacher approved</li></ul>';
 $string['assignment'] = 'Assignment';
