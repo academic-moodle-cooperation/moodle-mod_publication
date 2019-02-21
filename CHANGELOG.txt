@@ -8,9 +8,12 @@ CHANGELOG
 * [FIXED] #6014 fix help icon related to column status being displayed the column before
 * [FEATURE] #5835 context locking now affects publication too (some capabilities were defined as reading instead of writing)!
 * [FEATURE] #5758 add new core_userlist_provider methods to privacy provider
+* [FEATURE] #6025 privacy API updates (#5758) are now covered by unit tests
 * [UPDATE] #5638 update .travis.yml
 * [UPDATE] #5952 update accepted file types help text and label
+* [UPDATE] #6029 update README.md
 * [CHANGED] #5638 strip leading slashes from namespaces and use statements
+* [CHANGED] #6025 reorganized unit tests
 
 
 3.5.0 (2018-07-18)

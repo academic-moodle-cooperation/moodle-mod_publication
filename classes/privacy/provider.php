@@ -130,7 +130,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
          * field to reference group-ids.
          * TODO: split {publication_file}.userid to a userid and a groupid field or rename it at least to itemid! */
         $sql = "
-   SELECT ctx.id
+   SELECT DISTINCT ctx.id
      FROM {course_modules} cm
      JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
      JOIN {publication} p ON cm.instance = p.id
@@ -144,7 +144,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
     WHERE ((p.importfrom > 0 AND a.teamsubmission > 0)
            AND ((gm.userid = :userid AND (ext.userid = gm.groupid OR f.userid = gm.groupid))
                OR (gm.userid IS NULL AND f.userid = 0 AND a.preventsubmissionnotingroup = 0 AND g.courseid $enrolsql)))
-           OR ((p.importfrom = 0 OR a.teamsubmission = 0) AND (ext.userid = :extuserid OR f.userid = :fuserid))";
+           OR ((p.importfrom <= 0 OR a.teamsubmission = 0) AND (ext.userid = :extuserid OR f.userid = :fuserid))";
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);
 
@@ -171,25 +171,25 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
         ];
 
         // Get all who uploaded/have files imported!
-        // First get all regular uploads:
+        // First get all regular uploads.
         $sql = "SELECT f.userid
                   FROM {context} ctx
                   JOIN {course_modules} cm ON cm.id = ctx.instanceid
                   JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
                   JOIN {publication} p ON p.id = cm.instance
-                  JOIN {publication_files} f ON p.id = f.publication
+                  JOIN {publication_file} f ON p.id = f.publication
                  WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel AND p.mode = :upload";
         $userlist->add_from_sql('userid', $sql, $params);
 
         unset($params['upload']);
         $params['import'] = PUBLICATION_MODE_IMPORT;
-        // Second get all imported file's users:
+        // Second get all imported file's users.
         $sql = "SELECT gm.userid
                   FROM {context} ctx
                   JOIN {course_modules} cm ON cm.id = ctx.instanceid
                   JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
                   JOIN {publication} p ON p.id = cm.instance
-                  JOIN {publication_files} f ON p.id = f.publication
+                  JOIN {publication_file} f ON p.id = f.publication
              LEFT JOIN {assign} a ON p.importfrom = a.id
              LEFT JOIN {groups} g ON g.courseid = p.course AND f.userid = g.id
              LEFT JOIN {groups_members} gm ON g.id = gm.groupid
@@ -201,7 +201,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                   JOIN {course_modules} cm ON cm.id = ctx.instanceid
                   JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
                   JOIN {publication} p ON p.id = cm.instance
-                  JOIN {publication_files} f ON p.id = f.publication
+                  JOIN {publication_file} f ON p.id = f.publication
              LEFT JOIN {assign} a ON p.importfrom = a.id
                  WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel AND p.mode = :import
                        AND (p.importfrom > 0 AND a.teamsubmission = 0)";
@@ -224,7 +224,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                   JOIN {course_modules} cm ON cm.id = ctx.instanceid
                   JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
                   JOIN {publication} p ON p.id = cm.instance
-                  JOIN {publication_files} f ON p.id = f.publication
+                  JOIN {publication_file} f ON p.id = f.publication
                   JOIN {publication_groupapproval} ga ON p.id = ga.fileid
                  WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
         $userlist->add_from_sql('userid', $sql, $params);
@@ -243,7 +243,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
         if ($context->contextlevel == CONTEXT_MODULE) {
             // Apparently we can't trust anything that comes via the context.
             // Go go mega query to find out it we have an checkmark context that matches an existing checkmark.
-            $sql = "SELECT c.id
+            $sql = "SELECT p.id
                     FROM {publication} p
                     JOIN {course_modules} cm ON p.id = cm.instance AND p.course = cm.course
                     JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
@@ -258,21 +258,28 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                     return;
                 }
 
+                $fs = get_file_storage();
+
                 list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'usr');
 
-                // Delete all publication's files, extendet due dates and groupapprovals!
+                // Delete users' files, extended due dates and groupapprovals for this publication!
                 $DB->delete_records_select('publication_extduedates', "publication = :id AND userid ".$usersql,
                         ['id' => $id] + $userparams);
-                if ($fileids = $DB->get_fieldset_select('publication_file', 'id', 'publication = :id', ['id' => $id])) {
-                    list($filesql, $fileparams) = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
-                    $DB->delete_records_select('publication_groupapproval', "(fileid = $filesql) AND (userid ".$usersql.")",
-                            $fileparams + $userparams);
-                }
-                $DB->delete_records_select('publication_file', "publication = :id AND userid ".$usersql,
+                $files = $DB->get_records_select('publication_file', "publication = :id AND userid ".$usersql,
                         ['id' => $id] + $userparams);
 
-                $DB->delete_records('checkmark_overrides', "checkmarkid = :id AND userid ".$usersql,
-                        ['id' => $id] + $userparams);
+                if ($files) {
+                    $fileids = array_keys($files);
+                    foreach ($files as $cur) {
+                        $file = $fs->get_file_by_id($cur->fileid);
+                        $file->delete();
+                    }
+                    list($filesql, $fileparams) = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
+                    $DB->delete_records_select('publication_groupapproval', "(fileid $filesql) AND (userid ".$usersql.")",
+                            $fileparams + $userparams);
+                    $DB->delete_records_list('publication_file', 'id', $fileids);
+                }
+
             }
         }
     }

@@ -46,15 +46,15 @@ define('PUBLICATION_APPROVAL_SINGLE', 1);
 class publication {
     // TODO replace $instance with proper properties + PHPDoc comments?!?
     /** @var object instance */
-    private $instance;
+    protected $instance;
     /** @var object context */
-    private $context;
+    protected $context;
     /** @var object course */
-    private $course;
+    protected $course;
     /** @var object coursemodule */
-    private $coursemodule;
+    protected $coursemodule;
     /** @var bool requiregroup if mode = import and group membership is required for submission in assign to import from */
-    private $requiregroup = 0;
+    protected $requiregroup = 0;
 
     /**
      * Constructor
