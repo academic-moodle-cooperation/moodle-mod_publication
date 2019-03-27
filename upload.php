@@ -140,7 +140,9 @@ if ($mform->is_cancelled()) {
             $dataobject->filename = $file->get_filename();
             $dataobject->type = PUBLICATION_MODE_UPLOAD;
 
-            $DB->insert_record('publication_file', $dataobject);
+            $dataobject->id = $DB->insert_record('publication_file', $dataobject);
+
+            \mod_publication\event\publication_file_uploaded::create_from_object($cm, $dataobject)->trigger();
         }
     }
 
@@ -155,6 +157,8 @@ if ($mform->is_cancelled()) {
         }
 
         if (!$found) {
+            $dataobject = $DB->get_record('publication_file', ['id' => $row->id]);
+            \mod_publication\event\publication_file_deleted::create_from_object($cm, $dataobject)->trigger();
             $DB->delete_records('publication_file', ['id' => $row->id]);
         }
     }
