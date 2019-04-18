@@ -462,7 +462,9 @@ class publication {
         echo html_writer::tag('div', $title, ['class' => 'legend']);
         echo html_writer::start_div('fcontainer clearfix');
 
-        echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
+        $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
+        $mf = new mod_publication_allfiles_form(null, array('form' => $f));
+        $mf->display();
 
         if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
             $table = new \mod_publication\local\allfilestable\upload('mod-publication-allfiles', $this);

@@ -27,6 +27,7 @@
 require_once('../../config.php');
 require_once($CFG->dirroot . '/mod/publication/locallib.php');
 require_once($CFG->dirroot . '/mod/publication/mod_publication_files_form.php');
+require_once($CFG->dirroot . '/mod/publication/mod_publication_allfiles_form.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 
