@@ -177,8 +177,7 @@ class base extends \table_sql {
 
         $useridentity = get_extra_user_fields($this->context);
         foreach ($useridentity as $cur) {
-            if (!($cur == "idnumber" && !has_capability('mod/publication:approve', $this->context))
-                    && !($cur != "idnumber" && !has_capability('mod/publication:approve', $this->context))) {
+            if (has_capability('mod/publication:approve', $this->context)) {
                 $columns[] = $cur;
                 $headers[] = ($cur == 'phone1') ? get_string('phone') : get_string($cur);
                 $helpicons[] = null;
