@@ -1,10 +1,14 @@
 CHANGELOG
 =========
+
+3.6.1 (unreleased)
+------------------
+* [FIXED] #6015 remove setting to show id
+
 3.6.0 (2019-02-01)
 ------------------
 
 * Moodle 3.6 compatible version
-* [FIXED] #6015 remove setting to show id
 * [FIXED] #5951 remove strong-tags in labels due to flexbox not displaying spaces around them
 * [FIXED] #6014 fix help icon related to column status being displayed the column before
 * [FEATURE] #5835 context locking now affects publication too (some capabilities were defined as reading instead of writing)!
