@@ -46,6 +46,13 @@ class publication_file_uploaded extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
+    /**
+     * Logs that a file was uploaded
+     * @param \stdClass $cm
+     * @param $do
+     * @return \core\event\base
+     * @throws \coding_exception
+     */
     public static function create_from_object(\stdClass $cm, $do) {
         // Trigger overview event.
         $event = self::create(array(
@@ -54,7 +61,6 @@ class publication_file_uploaded extends \core\event\base {
             'relateduserid' => $do->userid,
             'other'         => (Array)$do
         ));
-
         return $event;
     }
     // You might need to override get_url() and get_legacy_log_data() if view mode needs to be stored as well.

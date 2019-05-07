@@ -44,6 +44,13 @@ class publication_file_deleted extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
+    /**
+     * Logs deletion of publication
+     * @param \stdClass $cm
+     * @param $do
+     * @return \core\event\base
+     * @throws \coding_exception
+     */
     public static function create_from_object(\stdClass $cm, $do) {
         // Trigger overview event.
         $event = self::create(array(

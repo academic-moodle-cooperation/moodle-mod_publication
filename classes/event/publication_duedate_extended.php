@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class publication_duedate_extendet extends \core\event\base {
+class publication_duedate_extended extends \core\event\base {
     /**
      * Init event objecttable
      */
@@ -44,7 +44,14 @@ class publication_duedate_extendet extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
-    public static function duedate_extendet(\stdClass $cm, $do) {
+    /**
+     * Logs due-date extension
+     * @param \stdClass $cm
+     * @param $do
+     * @return \core\event\base
+     * @throws \coding_exception
+     */
+    public static function duedate_extended(\stdClass $cm, $do) {
         // Trigger overview event.
         $event = self::create(array(
             'objectid'      => (int)$do['publication'],
@@ -61,7 +68,7 @@ class publication_duedate_extendet extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The due-date of the publication with id '".$this->data['other']['publication']."' was extendet to "
+        return "The due-date of the publication with id '".$this->data['other']['publication']."' was extended to "
             .date_format_string($this->data['other']['extensionduedate'], "%d.%m.%Y")." by the user with id '"
             .$this->data['other']['userid']."'";
     }
@@ -72,7 +79,7 @@ class publication_duedate_extendet extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventpublicationduedateextendet', 'publication');
+        return get_string('eventpublicationduedateextended', 'publication');
     }
 
     /**
@@ -91,7 +98,7 @@ class publication_duedate_extendet extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'publication', 'duedate extendet '.$this->data['other']['extensionduedate'], $this->get_url(),
+        return array($this->courseid, 'publication', 'duedate extended '.$this->data['other']['extensionduedate'], $this->get_url(),
             $this->data['other']['publication'], $this->contextinstanceid);
     }
 

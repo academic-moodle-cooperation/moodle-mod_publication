@@ -44,6 +44,13 @@ class publication_file_imported extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
+    /**
+     * Logs that a file was imported
+     * @param \stdClass $cm
+     * @param $do
+     * @return \core\event\base
+     * @throws \coding_exception
+     */
     public static function file_added(\stdClass $cm, $do) {
         // Trigger overview event.
         $event = self::create(array(
