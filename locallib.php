@@ -33,6 +33,7 @@ define('PUBLICATION_MODE_ONLINETEXT', 2);
 
 define('PUBLICATION_APPROVAL_ALL', 0);
 define('PUBLICATION_APPROVAL_SINGLE', 1);
+require_once($CFG->dirroot . '/mod/publication/mod_publication_allfiles_form.php');
 
 /**
  * publication class contains much logic used in mod_publication
