@@ -44,6 +44,14 @@ class publication_approval_changed extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
+    /**
+     * Logs approval changes
+     * @param \stdClass $cm
+     * @param object $do
+     * @return \core\event\base
+     * @throws \coding_exception
+     *
+     */
     public static function approval_changed(\stdClass $cm, $do) {
         // Trigger overview event.
         $event = self::create(array(

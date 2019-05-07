@@ -47,7 +47,7 @@ class publication_file_imported extends \core\event\base {
     /**
      * Logs that a file was imported
      * @param \stdClass $cm
-     * @param $do
+     * @param object $do
      * @return \core\event\base
      * @throws \coding_exception
      */

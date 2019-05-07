@@ -47,7 +47,7 @@ class publication_file_deleted extends \core\event\base {
     /**
      * Logs deletion of publication
      * @param \stdClass $cm
-     * @param $do
+     * @param object $do additional data
      * @return \core\event\base
      * @throws \coding_exception
      */

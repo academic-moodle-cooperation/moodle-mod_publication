@@ -47,7 +47,7 @@ class publication_duedate_extended extends \core\event\base {
     /**
      * Logs due-date extension
      * @param \stdClass $cm
-     * @param $do
+     * @param object $do
      * @return \core\event\base
      * @throws \coding_exception
      */

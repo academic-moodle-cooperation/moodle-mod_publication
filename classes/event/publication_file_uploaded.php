@@ -49,17 +49,17 @@ class publication_file_uploaded extends \core\event\base {
     /**
      * Logs that a file was uploaded
      * @param \stdClass $cm
-     * @param $do
+     * @param object $dobj
      * @return \core\event\base
      * @throws \coding_exception
      */
-    public static function create_from_object(\stdClass $cm, $do) {
+    public static function create_from_object(\stdClass $cm, $dobj) {
         // Trigger overview event.
         $event = self::create(array(
-            'objectid'      => $do->id,
+            'objectid'      => $dobj->id,
             'context'       => \context_module::instance($cm->id),
-            'relateduserid' => $do->userid,
-            'other'         => (Array)$do
+            'relateduserid' => $dobj->userid,
+            'other'         => (Array)$dobj
         ));
         return $event;
     }
