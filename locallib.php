@@ -1587,4 +1587,41 @@ class publication {
         $posthtml .= '</font><hr />';
         return $posthtml;
     }
+
+    /**
+     * Creates the text content for emails to students
+     *
+     * @param object $info The info used by the 'emailteachermail' language string
+     * @return string Plain-Text snippet to use in messages
+     */
+    public function email_students_text($info) {
+        $posttext  = format_string($this->course->shortname).' -> '.
+            get_string('modulenameplural', 'publication').' -> '.
+            format_string($info->publication)."\n";
+        $posttext .= "---------------------------------------------------------------------\n";
+        $posttext .= get_string('emailstudentsmail', 'publication', $info)."\n";
+        $posttext .= "---------------------------------------------------------------------\n";
+        return $posttext;
+    }
+
+    /**
+     * Creates the html content for emails to students
+     *
+     * @param object $info The info used by the 'emailstudentsmailhtml' language string
+     * @return string HTML snippet to use in messages
+     */
+    public function email_students_html($info) {
+        global $CFG;
+        $posthtml  = '<p><span style="font-family: sans-serif; ">' .
+            '<a href="'.$CFG->wwwroot.'/course/view.php?id='.$this->course->id.'">'.
+            format_string($this->course->shortname).'</a> ->'.
+            '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.
+            $info->id.'">'.get_string('modulenameplural', 'publication').'</a> ->'.
+            '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.$info->id.'">'.
+            format_string($info->publication). '</a></span></p>';
+        $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
+        $posthtml .= '<p>'.get_string('emailstudentsmailhtml', 'publication', $info).'</p>';
+        $posthtml .= '</font><hr />';
+        return $posthtml;
+    }
 }

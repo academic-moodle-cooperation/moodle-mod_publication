@@ -44,8 +44,8 @@ require_capability('mod/publication:view', $context);
 $publication = new publication($cm, $course, $context);
 
 $event = \mod_publication\event\course_module_viewed::create([
-        'objectid' => $PAGE->cm->instance,
-        'context' => $PAGE->context,
+    'objectid' => $PAGE->cm->instance,
+    'context' => $PAGE->context,
 ]);
 $event->add_record_snapshot('course', $PAGE->course);
 $event->trigger();
@@ -69,12 +69,49 @@ if ($savevisibility) {
     $params['pubid'] = $publication->get_instance()->id;
 
     foreach ($files as $fileid => $val) {
-        $val = $val - 1;
-        if ($val == -1) {
-            $val = null;
-        }
+        $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "userid,teacherapproval,filename");
 
-        $DB->set_field('publication_file', 'teacherapproval', $val, ['fileid' => $fileid]);
+        $val = $val == 0 ? null : ($val != 1);
+        $oldval = isset($x->teacherapproval) ? $x->teacherapproval != 0 : null;
+
+        if ($val !== $oldval) {
+            $user = $DB->get_record('user', array('id' => $x->userid));
+            $DB->set_field('publication_file', 'teacherapproval', isset($val) ? ($val ? 1 : 0) : null, ['fileid' => $fileid]);
+
+
+            $strsubmitted = get_string('approvalchange', 'publication');
+
+            $info = new stdClass();
+            $info->username = fullname($USER);
+            $info->publication = format_string($cm->name, true);
+            $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $id;
+            $info->id = $id;
+            $info->filename = $x->filename;
+            $info->apstatus = ($val || (!isset($val) && !$publication->get_instance()->obtainteacherapproval)) ? '' : 'not';
+            $info->dayupdated = userdate(time(), get_string('strftimedate'));
+            $info->timeupdated = userdate(time(), get_string('strftimetime'));
+
+            $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
+            $posttext = $publication->email_students_text($info);
+            $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
+
+            $message = new \core\message\message();
+            $message->component = 'mod_publication';
+            $message->name = 'publication_updates';
+            $message->courseid = $cm->course;
+            $message->userfrom = $USER;
+            $message->userto = $user;
+            $message->subject = $postsubject;
+            $message->fullmessage = $posttext;
+            $message->fullmessageformat = FORMAT_HTML;
+            $message->fullmessagehtml = $posthtml;
+            $message->smallmessage = $postsubject;
+            $message->notification = 1;
+            $message->contexturl = $info->url;
+            $message->contexturlname = $info->publication;
+
+            message_send($message);
+        }
     }
 
 } else if ($action == "zip") {
@@ -149,7 +186,7 @@ if ($savevisibility) {
         $DB->set_field_select('publication_file', 'studentapproval', null, $select, $params);
 
         if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-                && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
+            && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
             $fileids = $DB->get_fieldset_select('publication_file', 'id', $select, $params);
             if (count($fileids) == 0) {
                 $fileids = [-1];
@@ -175,14 +212,14 @@ if ($savevisibility) {
 $submissionid = $USER->id;
 
 $filesform = new mod_publication_files_form(null,
-        ['publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment']);
+    ['publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment']);
 
 if ($data = $filesform->get_data() && $publication->is_open()) {
     $datasubmitted = $filesform->get_submitted_data();
 
     if (isset($datasubmitted->gotoupload)) {
         redirect(new moodle_url('/mod/publication/upload.php',
-                ['id' => $publication->get_instance()->id, 'cmid' => $cm->id]));
+            ['id' => $publication->get_instance()->id, 'cmid' => $cm->id]));
     }
 
     $studentapproval = optional_param_array('studentapproval', [], PARAM_INT);
@@ -192,7 +229,7 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
     $conditions['userid'] = $USER->id;
 
     $pubfileids = $DB->get_records_menu('publication_file', ['publication' => $publication->get_instance()->id],
-            'id ASC', 'fileid, id');
+        'id ASC', 'fileid, id');
 
     // Update records.
     foreach ($studentapproval as $idx => $approval) {
@@ -201,7 +238,7 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
         $approval = ($approval >= 1) ? $approval - 1 : null;
 
         if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-                && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
+            && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
             /* We have to deal with group approval! The method sets group approval for the specified user
              * and returns current cumulated group approval (and it also sets it in publication_file table)! */
             $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
@@ -212,7 +249,7 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
 }
 
 $filesform = new mod_publication_files_form(null,
-        ['publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment']);
+    ['publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment']);
 
 // Print the page header.
 $PAGE->set_title($pagetitle);

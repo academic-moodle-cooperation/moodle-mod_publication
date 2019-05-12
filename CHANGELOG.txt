@@ -3,6 +3,8 @@ CHANGELOG
 
 3.6.1 (unreleased)
 ------------------
+
+* [FEATURE] #4995 notification on file-status change for student
 * [FEATURE] #4730 notification on file-upload for teacher
 
 3.6.0 (2019-02-01)
