@@ -39,6 +39,24 @@ $string['publication:approve'] = 'Decide if files should be visible for every st
 $string['publication:grantextension'] = 'Grant extension';
 $string['search:activity'] = 'Student folder - activity information';
 
+$string['messageprovider:publication_updates'] = 'Publication notifications';
+
+$string['notifications'] = 'Notifications';
+$string['notifyteacher'] = 'Notify graders about uploads';
+$string['notifyteacher_help'] = 'If enabled, graders (usually teachers) receive a message whenever a student uploads a file. Message methods are configurable.';
+$string['uploaded'] = 'Uploaded';
+
+$string['emailteachermail'] = '{$a->username} has uploaded \'{$a->filename}\'
+for \'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}.
+
+It is available here:
+
+    {$a->url}';
+
+$string['emailteachermailhtml'] = '{$a->username} has uploaded \'{$a->filename}\'
+for <i>\'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}</i><br /><br />
+It is <a href="{$a->url}">available on the web site</a>.';
+
 $string['name'] = 'Student folder name';
 $string['obtainstudentapproval'] = 'Obtain approval';
 $string['saveapproval'] = 'save approval';

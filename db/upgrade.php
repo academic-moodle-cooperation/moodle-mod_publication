@@ -36,6 +36,21 @@ function xmldb_publication_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
+    if ($oldversion < 2019020101) {
+
+        // Define field notifyteacher to be added to publication.
+        $table = new xmldb_table('publication');
+        $field = new xmldb_field('notifyteacher', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'groupapproval');
+
+        // Conditionally launch add field notifyteacher.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2019020101, 'publication');
+    }
+
     if ($oldversion < 2014032201) {
         $table = new xmldb_table('publication_file');
 
