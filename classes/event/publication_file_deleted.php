@@ -27,11 +27,11 @@ namespace mod_publication\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Course module has been viewed for this event
+ * A file was deleted for this event
  *
  * @package       mod_publication
  * @author        Hannes Laimer
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @copyright     2019 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class publication_file_deleted extends \core\event\base {

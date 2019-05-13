@@ -29,11 +29,11 @@ use phpDocumentor\Reflection\Types\Object_;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Course module has been viewed for this event
+ * A file was uploaded for this event
  *
  * @package       mod_publication
  * @author        Hannes Laimer
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @copyright     2019 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class publication_file_uploaded extends \core\event\base {
@@ -101,15 +101,5 @@ class publication_file_uploaded extends \core\event\base {
     protected function get_legacy_logdata() {
         return array($this->courseid, 'publication', 'file uploaded', $this->get_url(),
             $this->data['other']['publication'], $this->contextinstanceid);
-    }
-
-    /**
-     * Custom validation.
-     *
-     * @throws \coding_exception
-     * @return void
-     */
-    protected function validate_data() {
-        parent::validate_data();
     }
 }
