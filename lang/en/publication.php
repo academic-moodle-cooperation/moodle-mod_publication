@@ -46,12 +46,12 @@ $string['notifyteacher'] = 'Notify graders about uploads';
 $string['notifyteacher_help'] = 'If enabled, graders (usually teachers) receive a message whenever a student uploads a file. Message methods are configurable.';
 $string['uploaded'] = 'Uploaded';
 
-$string['emailteachermail'] = '{$a->username} has uploaded \'{$a->filename}\'
+$string['emailteachermail'] = "---------------------------------------------------------------------\n".'{$a->username} has uploaded \'{$a->filename}\'
 for \'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}.
 
 It is available here:
 
-    {$a->url}';
+    {$a->url}'."---------------------------------------------------------------------\n";
 
 $string['emailteachermailhtml'] = '{$a->username} has uploaded \'{$a->filename}\'
 for <i>\'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}</i><br /><br />

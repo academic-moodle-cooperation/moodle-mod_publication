@@ -1561,9 +1561,7 @@ class publication {
         $posttext  = format_string($this->course->shortname).' -> '.
             get_string('modulenameplural', 'publication').' -> '.
             format_string($info->publication)."\n";
-        $posttext .= "---------------------------------------------------------------------\n";
         $posttext .= get_string('emailteachermail', 'publication', $info)."\n";
-        $posttext .= "---------------------------------------------------------------------\n";
         return $posttext;
     }
 
