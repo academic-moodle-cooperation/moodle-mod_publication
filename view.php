@@ -74,16 +74,16 @@ if ($savevisibility) {
         if ($val == 0) {  // "Choose..." selected
             $val = null;
         } else if ($val == 1) {  // "No" selected
-            $val = False;
+            $val = false;
         } else {  // "Yes" selected (usually 2)
-            $val = True;
+            $val = true;
         }
 
         if (isset($x->teacherapproval)) {
             if ($x->teacherapproval == 0) {
-                $oldval = False;  // was set to no in DB
+                $oldval = false;  // was set to no in DB
             } else {
-                $oldval = True;  // was set to yes in DB
+                $oldval = true;  // was set to yes in DB
             }
         } else {
             $oldval = null; // was not set in DB
