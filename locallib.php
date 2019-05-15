@@ -33,6 +33,7 @@ define('PUBLICATION_MODE_ONLINETEXT', 2);
 
 define('PUBLICATION_APPROVAL_ALL', 0);
 define('PUBLICATION_APPROVAL_SINGLE', 1);
+require_once($CFG->dirroot . '/mod/publication/mod_publication_allfiles_form.php');
 
 /**
  * publication class contains much logic used in mod_publication
@@ -462,7 +463,9 @@ class publication {
         echo html_writer::tag('div', $title, ['class' => 'legend']);
         echo html_writer::start_div('fcontainer clearfix');
 
-        echo groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
+        $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
+        $mf = new mod_publication_allfiles_form(null, array('form' => $f));
+        $mf->display();
 
         if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
             $table = new \mod_publication\local\allfilestable\upload('mod-publication-allfiles', $this);
