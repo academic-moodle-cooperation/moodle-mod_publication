@@ -30,4 +30,4 @@ $plugin->version = 2019020101;
 $plugin->requires = 2018120300;
 $plugin->component = 'mod_publication';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = "v3.6.0";
+$plugin->release = "v3.6.1";
