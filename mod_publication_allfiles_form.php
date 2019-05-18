@@ -15,19 +15,39 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Contains form class for approving publication files
  *
  * @package       mod_publication
- * @author        Philipp Hager
- * @author        Andreas Windbichler
+ * @author        Hannes Laimer
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2019020101;
-$plugin->requires = 2018120300;
-$plugin->component = 'mod_publication';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = "v3.6.1";
+global $CFG;
+
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/publication/locallib.php');
+
+/**
+ * Form for displaying and changing approval for publication files
+ *
+ * @package       mod_publication
+ * @author        Hannes Laimer
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class mod_publication_allfiles_form extends moodleform {
+
+    /**
+     * Form definition. Abstract method - always override!
+     */
+    protected function definition() {
+        global $CFG;
+
+        $mform = $this->_form;
+        $generatedform = str_replace('<select', '<select onchange=\'this.form.submit()\'', $this->_customdata['form']);
+        $mform->addElement('html', $generatedform);
+    }
+}
