@@ -72,22 +72,22 @@ if ($savevisibility) {
     foreach ($files as $fileid => $val) {
         $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "userid,teacherapproval,filename");
 
-        if ($val == 0) {  // "Choose..." selected
+        if ($val == 0) {  // Choose...  selected.
             $val = null;
-        } else if ($val == 1) {  // "No" selected
+        } else if ($val == 1) {  // No  selected.
             $val = false;
-        } else {  // "Yes" selected (usually 2)
+        } else {  // Yes  selected (usually 2).
             $val = true;
         }
 
         if (isset($x->teacherapproval)) {
             if ($x->teacherapproval == 0) {
-                $oldval = false;  // was set to no in DB
+                $oldval = false;  // Was set to no in DB.
             } else {
-                $oldval = true;  // was set to yes in DB
+                $oldval = true;  // Was set to yes in DB.
             }
         } else {
-            $oldval = null; // was not set in DB
+            $oldval = null; // Was not set in DB.
         }
 
         if ($val !== $oldval) {
