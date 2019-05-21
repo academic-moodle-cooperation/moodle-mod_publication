@@ -3,7 +3,10 @@ CHANGELOG
 
 3.6.1 (unreleased)
 ------------------
+
 * [FIXED] #6015 remove setting to show id
+* [FIXED] #6035 auto-reload on groupfilter-change
+
 
 3.6.0 (2019-02-01)
 ------------------
