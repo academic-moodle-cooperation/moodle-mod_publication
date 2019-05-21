@@ -168,7 +168,7 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017071200, 'publication');
     }
 
-    if ($oldversion < 2019020101) {
+    if ($oldversion < 2019052100) {
 
         // Define field notifyteacher to be added to publication.
         $table = new xmldb_table('publication');
@@ -184,7 +184,7 @@ function xmldb_publication_upgrade($oldversion) {
         }
 
         // Publication savepoint reached.
-        upgrade_mod_savepoint(true, 2019020101, 'publication');
+        upgrade_mod_savepoint(true, 2019052100, 'publication');
     }
 
     return true;
