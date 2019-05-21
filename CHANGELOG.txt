@@ -2,6 +2,8 @@ CHANGELOG
 =========
 3.7.0 (unreleased)
 ------------------
+
+* [FEATURE] #4995 notification on file-status change for student
 * [FEATURE] #4730 notification on file-upload for teacher
 
 

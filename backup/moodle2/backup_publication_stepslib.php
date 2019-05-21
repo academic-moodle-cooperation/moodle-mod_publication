@@ -64,7 +64,8 @@ class backup_publication_activity_structure_step extends backup_activity_structu
                 'maxbytes',
                 'allowedfiletypes',
                 'obtainteacherapproval',
-                'notifyteacher'
+                'notifyteacher',
+                'notifystudents'
         ]);
 
         $extduedates = new backup_nested_element('extduedates');

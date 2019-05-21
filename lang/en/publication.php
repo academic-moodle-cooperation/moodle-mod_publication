@@ -43,8 +43,12 @@ $string['messageprovider:publication_updates'] = 'Publication notifications';
 
 $string['notifications'] = 'Notifications';
 $string['notifyteacher'] = 'Notify graders about uploads';
+$string['notifystudents'] = 'Notify students about approval changes';
 $string['notifyteacher_help'] = 'If enabled, graders (usually teachers) receive a message whenever a student uploads a file. Message methods are configurable.';
+$string['notifystudents_help'] = 'If enabled, students recieve a message whenever the approval status of one of their uploads changes. Message methods are configurable.';
+
 $string['uploaded'] = 'Uploaded';
+$string['approvalchange'] = 'Approval status changed';
 
 $string['emailteachermail'] = "---------------------------------------------------------------------\n".'{$a->username} has uploaded \'{$a->filename}\'
 for \'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}.
@@ -55,6 +59,17 @@ It is available here:
 
 $string['emailteachermailhtml'] = '{$a->username} has uploaded \'{$a->filename}\'
 for <i>\'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}</i><br /><br />
+It is <a href="{$a->url}">available on the web site</a>.';
+
+$string['emailstudentsmail'] = '{$a->username} has changed the approval status of \'{$a->filename}\'
+for \'{$a->publication}\' to {$a->apstatus} approved on {$a->dayupdated} at {$a->timeupdated}.
+
+It is available here:
+
+    {$a->url}';
+
+$string['emailstudentsmailhtml'] = '{$a->username} has changed the approval status of \'{$a->filename}\'
+for <i>\'{$a->publication}\'</i> to <b>{$a->apstatus} approved</b> on {$a->dayupdated} at {$a->timeupdated}</i><br /><br />
 It is <a href="{$a->url}">available on the web site</a>.';
 
 $string['name'] = 'Student folder name';

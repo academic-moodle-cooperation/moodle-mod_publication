@@ -173,10 +173,14 @@ function xmldb_publication_upgrade($oldversion) {
         // Define field notifyteacher to be added to publication.
         $table = new xmldb_table('publication');
         $field = new xmldb_field('notifyteacher', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'groupapproval');
+        $field2 = new xmldb_field('notifystudents', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'notifyteacher');
 
         // Conditionally launch add field notifyteacher.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
+        }
+        if (!$dbman->field_exists($table, $field2)) {
+            $dbman->add_field($table, $field2);
         }
 
         // Publication savepoint reached.
