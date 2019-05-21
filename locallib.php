@@ -1166,7 +1166,9 @@ class publication {
                     }
 
                     $conditions['id'] = $oldpubfile->id;
-
+                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']->id]);
+                    $cm = $this->coursemodule;
+                    \mod_publication\event\publication_file_deleted::create_from_object($cm, $dataobject)->trigger();
                     $DB->delete_records('publication_file', $conditions);
                 }
             }
@@ -1188,9 +1190,11 @@ class publication {
 
                     $dataobject = new stdClass();
                     $dataobject->publication = $this->get_instance()->id;
+                    $importtype = 'user';
                     if (empty($assignment->get_instance()->teamsubmission)) {
                         $dataobject->userid = $submission->userid;
                     } else {
+                        $importtype = 'group';
                         $dataobject->userid = $submission->groupid;
                     }
                     $dataobject->timecreated = time();
@@ -1200,7 +1204,9 @@ class publication {
                     $dataobject->contenthash = "666";
                     $dataobject->type = PUBLICATION_MODE_IMPORT;
 
-                    $DB->insert_record('publication_file', $dataobject);
+                    $dataobject->id = $DB->insert_record('publication_file', $dataobject);
+                    $dataobject->typ = $importtype;
+                    \mod_publication\event\publication_file_imported::file_added($assigncm, $dataobject)->trigger();
                 } catch (Exception $e) {
                     // File could not be copied, maybe it does already exist.
                     // Should not happen.
@@ -1256,6 +1262,7 @@ class publication {
         foreach ($records as $record) {
             $submission = $DB->get_record('assign_submission', ['id' => $record->submission]);
             $itemid = empty($teamsubmission) ? $submission->userid : $submission->groupid;
+            $importtype = empty($teamsubmission) ? 'user' : 'group';
 
             // First we fetch the resource files (embedded files in text!)
             $fsfiles = $fs->get_area_files($assigncontext->id,
@@ -1330,6 +1337,8 @@ class publication {
                 $file = $fs->get_file_by_hash($pathhash);
                 if (empty($formattedtext)) {
                     // The onlinetext was empty, delete the file!
+                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']->id]);
+                    \mod_publication\event\publication_file_deleted::create_from_object($assigncm, $dataobject)->trigger();
                     $DB->delete_records('publication_file', $conditions);
                     $file->delete();
                 } else if (($file->get_timemodified() < $submission->timemodified)
@@ -1374,9 +1383,18 @@ class publication {
                 $pubfile->filename = $filename;
                 $pubfile->contenthash = $newfile->get_contenthash();
                 if (!empty($pubfile->id)) {
+                    $dataobject = $pubfile;
+                    $dataobject->typ = $importtype;
+                    $dataobject->itemid = $itemid;
+                    $dataobject->update = true;
+                    \mod_publication\event\publication_file_imported::file_added($assigncm, $dataobject)->trigger();
                     $DB->update_record('publication_file', $pubfile);
                 } else {
-                    $DB->insert_record('publication_file', $pubfile);
+                    $dataobject = $pubfile;
+                    $dataobject->id = $DB->insert_record('publication_file', $pubfile);
+                    $dataobject->typ = $importtype;
+                    $dataobject->itemid = $itemid;
+                    \mod_publication\event\publication_file_imported::file_added($assigncm, $dataobject)->trigger();
                 }
             }
         }

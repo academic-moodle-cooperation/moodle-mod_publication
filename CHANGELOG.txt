@@ -5,6 +5,7 @@ CHANGELOG
 
 * [FEATURE] #4995 notification on file-status change for student
 * [FEATURE] #4730 notification on file-upload for teacher
+* [FEATURE] #4731 extended logs
 
 
 3.6.1 (2019-05-15)

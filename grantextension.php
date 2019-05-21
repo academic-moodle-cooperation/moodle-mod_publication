@@ -78,6 +78,7 @@ if ($mform->is_cancelled()) {
         if ($data->extensionduedate > 0) {
             // Create new record.
             $dataobject['extensionduedate'] = $data->extensionduedate;
+            \mod_publication\event\publication_duedate_extended::duedate_extended($cm, $dataobject)->trigger();
             $DB->insert_record('publication_extduedates', (object)$dataobject);
         }
     }

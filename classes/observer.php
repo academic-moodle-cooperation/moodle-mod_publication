@@ -86,6 +86,7 @@ class observer {
         $assignfileids = [];
         $assignfiles = [];
         $itemid = empty($assign->get_instance()->teamsubmission) ? $submission->userid : $submission->groupid;
+        $importtype = empty($assign->get_instance()->teamsubmission) ? 'user' : 'group';
 
         foreach ($publications as $curpub) {
             $cm = get_coursemodule_from_instance('publication', $curpub->id, 0, false, MUST_EXIST);
@@ -127,7 +128,10 @@ class observer {
                         }
 
                         $conditions['id'] = $oldpubfile->id;
-
+                        $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']]);
+                        $dataobject->typ = $importtype;
+                        $dataobject->itemid = $itemid;
+                        \mod_publication\event\publication_file_deleted::create_from_object($cm, $dataobject)->trigger();
                         $DB->delete_records('publication_file', $conditions);
                     }
                 }
@@ -167,8 +171,10 @@ class observer {
                         $dataobject->filename = $newfile->get_filename();
                         $dataobject->contenthash = "666";
                         $dataobject->type = \PUBLICATION_MODE_IMPORT;
-
                         $DB->insert_record('publication_file', $dataobject);
+                        $dataobject->typ = $importtype;
+                        $dataobject->itemid = $itemid;
+                        \mod_publication\event\publication_file_imported::file_added($cm, $dataobject)->trigger();
                     } catch (\Exception $ex) {
                         // File could not be copied, maybe it does allready exist.
                         // Should not happen.

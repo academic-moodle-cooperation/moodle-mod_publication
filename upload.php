@@ -140,11 +140,11 @@ if ($mform->is_cancelled()) {
             $dataobject->filename = $file->get_filename();
             $dataobject->type = PUBLICATION_MODE_UPLOAD;
 
-            $DB->insert_record('publication_file', $dataobject);
+            $dataobject->id = $DB->insert_record('publication_file', $dataobject);
 
             if ($publication->get_instance()->notifyteacher) {
 
-                $strsubmitted  = get_string('uploaded', 'publication');
+                $strsubmitted = get_string('uploaded', 'publication');
 
                 $graders = $publication->get_graders($USER);
 
@@ -152,34 +152,36 @@ if ($mform->is_cancelled()) {
                     $info = new stdClass();
                     $info->username = fullname($USER);
                     $info->publication = format_string($cm->name, true);
-                    $info->url = $CFG->wwwroot.'/mod/publication/view.php?id='.$cm->id;
+                    $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id;
                     $info->id = $cm->id;
                     $info->filename = $file->get_filename();
                     $info->dayupdated = userdate(time(), get_string('strftimedate'));
                     $info->timeupdated = userdate(time(), get_string('strftimetime'));
 
-                    $postsubject = $strsubmitted.': '.$info->username.' -> '.$info->publication;
+                    $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $info->publication;
                     $posttext = $publication->email_teachers_text($info);
                     $posthtml = ($teacher->mailformat == 1) ? $publication->email_teachers_html($info) : '';
 
                     $message = new \core\message\message();
-                    $message->component         = 'mod_publication';
-                    $message->name              = 'publication_updates';
-                    $message->courseid          = $cm->course;
-                    $message->userfrom          = $USER;
-                    $message->userto            = $teacher;
-                    $message->subject           = $postsubject;
-                    $message->fullmessage       = $posttext;
+                    $message->component = 'mod_publication';
+                    $message->name = 'publication_updates';
+                    $message->courseid = $cm->course;
+                    $message->userfrom = $USER;
+                    $message->userto = $teacher;
+                    $message->subject = $postsubject;
+                    $message->fullmessage = $posttext;
                     $message->fullmessageformat = FORMAT_HTML;
-                    $message->fullmessagehtml   = $posthtml;
-                    $message->smallmessage      = $postsubject;
-                    $message->notification      = 1;
-                    $message->contexturl        = $info->url;
-                    $message->contexturlname    = $info->publication;
+                    $message->fullmessagehtml = $posthtml;
+                    $message->smallmessage = $postsubject;
+                    $message->notification = 1;
+                    $message->contexturl = $info->url;
+                    $message->contexturlname = $info->publication;
 
                     message_send($message);
                 }
             }
+
+            \mod_publication\event\publication_file_uploaded::create_from_object($cm, $dataobject)->trigger();
         }
     }
 
@@ -194,6 +196,8 @@ if ($mform->is_cancelled()) {
         }
 
         if (!$found) {
+            $dataobject = $DB->get_record('publication_file', ['id' => $row->id]);
+            \mod_publication\event\publication_file_deleted::create_from_object($cm, $dataobject)->trigger();
             $DB->delete_records('publication_file', ['id' => $row->id]);
         }
     }

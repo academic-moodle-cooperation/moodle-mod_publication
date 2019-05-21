@@ -30,6 +30,13 @@ $string['modulename_help'] = 'The student folder offers the following features:
 
 * Participants can upload documents that are available to other participants immediately or after you have checked the documents and given your consent.
 * An assignment can be chosen as a basis for a student folder. The teacher can decide which documents of the assignment are visible for all participants. Teachers can also let the participants decide whether their documents should be visible to others.';
+
+$string['eventpublicationfiledeleted'] = 'Publication file delete';
+$string['eventpublicationfileuploaded'] = 'Publication file upload';
+$string['eventpublicationfileimported'] = 'Publication file import';
+$string['eventpublicationduedateextended'] = 'Publication due-date extendet';
+$string['eventpublicationapprovalchanged'] = 'Publication file approval changed';
+
 $string['modulenameplural'] = 'Student folders';
 $string['pluginadministration'] = 'Student folder administration';
 $string['publication:addinstance'] = 'Add a new student folder';
