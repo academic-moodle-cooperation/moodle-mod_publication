@@ -1505,4 +1505,87 @@ class publication {
 
         return array_keys($nonexistent);
     }
+
+    /**
+     * Returns a list of teachers that should be notified of the file-upload
+     *
+     * @param object $user
+     * @return array Array of users able to grade
+     */
+    public function get_graders($user) {
+        // Get potential graders!
+        $potgraders = get_users_by_capability($this->context, 'mod/publication:recieveteachernotification', '', '', '',
+            '', '', '', false, false);
+
+        $graders = array();
+        if (groups_get_activity_groupmode($this->coursemodule) == SEPARATEGROUPS) {
+            // Separate groups are being used!
+            if ($groups = groups_get_all_groups($this->course->id, $user->id)) {
+                // Try to find all groups!
+                foreach ($groups as $group) {
+                    foreach ($potgraders as $t) {
+                        if ($t->id == $user->id) {
+                            continue; // Do not send self!
+                        }
+                        if (groups_is_member($group->id, $t->id)) {
+                            $graders[$t->id] = $t;
+                        }
+                    }
+                }
+            } else {
+                // User not in group, try to find graders without group!
+                foreach ($potgraders as $t) {
+                    if ($t->id == $user->id) {
+                        continue; // Do not send to one self!
+                    }
+                    if (!groups_get_all_groups($this->course->id, $t->id)) { // Ugly hack!
+                        $graders[$t->id] = $t;
+                    }
+                }
+            }
+        } else {
+            foreach ($potgraders as $t) {
+                if ($t->id == $user->id) {
+                    continue; // Do not send to one self!
+                }
+                $graders[$t->id] = $t;
+            }
+        }
+        return $graders;
+    }
+
+    /**
+     * Creates the text content for emails to teachers
+     *
+     * @param object $info The info used by the 'emailteachermail' language string
+     * @return string Plain-Text snippet to use in messages
+     */
+    public function email_teachers_text($info) {
+        $posttext  = format_string($this->course->shortname).' -> '.
+            get_string('modulenameplural', 'publication').' -> '.
+            format_string($info->publication)."\n";
+        $posttext .= get_string('emailteachermail', 'publication', $info)."\n";
+        return $posttext;
+    }
+
+    /**
+     * Creates the html content for emails to teachers
+     *
+     * @param object $info The info used by the 'emailteachermailhtml' language string
+     * @return string HTML snippet to use in messages
+     */
+    public function email_teachers_html($info) {
+        global $CFG;
+        $posthtml  = '<p><span style="font-family: sans-serif; ">' .
+            '<a href="'.$CFG->wwwroot.'/course/view.php?id='.$this->course->id.'">'.
+            format_string($this->course->shortname).'</a> ->'.
+            '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.
+            $info->id.'">'.get_string('modulenameplural', 'publication').'</a> ->'.
+            '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.$info->id.'">'.
+            format_string($info->publication). '</a></span></p>';
+        $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
+        $posthtml .= '<p>'.get_string('emailteachermailhtml', 'publication', $info).'</p>';
+        $posthtml .= '</font><hr />';
+        return $posthtml;
+    }
 }

@@ -1,7 +1,11 @@
 CHANGELOG
 =========
+3.7.0 (unreleased)
+------------------
+* [FEATURE] #4730 notification on file-upload for teacher
 
-3.6.1 (unreleased)
+
+3.6.1 (2019-05-15)
 ------------------
 
 * [FIXED] #6015 remove setting to show id
