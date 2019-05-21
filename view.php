@@ -91,7 +91,17 @@ if ($savevisibility) {
         }
 
         if ($val !== $oldval) {
+            $newstatus = ($val || (!isset($val) && !$publication->get_instance()->obtainteacherapproval)) ? '' : 'not';
             $user = $DB->get_record('user', array('id' => $x->userid));
+
+            $dataforlog->publication = $params['pubid'];
+            $dataforlog->approval = $newstatus." approved";
+            $dataforlog->userid = $USER->id;
+            $dataforlog->reluser = $user->id;
+            $dataforlog->fileid = $fileid;
+
+            \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
+
             $DB->set_field('publication_file', 'teacherapproval', isset($val) ? ($val ? 1 : 0) : null, ['fileid' => $fileid]);
 
 
@@ -103,7 +113,7 @@ if ($savevisibility) {
             $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $id;
             $info->id = $id;
             $info->filename = $x->filename;
-            $info->apstatus = ($val || (!isset($val) && !$publication->get_instance()->obtainteacherapproval)) ? '' : 'not';
+            $info->apstatus = $newstatus;
             $info->dayupdated = userdate(time(), get_string('strftimedate'));
             $info->timeupdated = userdate(time(), get_string('strftimetime'));
 
@@ -184,10 +194,6 @@ if ($savevisibility) {
         $approval = ($action == "approveusers") ? 1 : 0;
         $params['pubid'] = $publication->get_instance()->id;
         $select = ' publication=:pubid AND userid ' . $usersql;
-        $dataforlog->publication = $params['pubid'];
-        $dataforlog->approval = $approval;
-        $dataforlog->userid = 2;
-        \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
         $DB->set_field_select('publication_file', 'teacherapproval', $approval, $select, $params);
     }
 } else if ($action == "resetstudentapproval") {
@@ -260,16 +266,8 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
             && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
             /* We have to deal with group approval! The method sets group approval for the specified user
              * and returns current cumulated group approval (and it also sets it in publication_file table)! */
-            $dataforlog = $conditions;
-            $dataforlog['approval'] = $approval;
-            $dataforlog['group'] = true;
-            \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
             $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
         } else {
-            $dataforlog = $conditions;
-            $dataforlog['approval'] = $approval;
-            $dataforlog['group'] = false;
-            \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
             $DB->set_field('publication_file', 'studentapproval', $approval, $conditions);
         }
     }

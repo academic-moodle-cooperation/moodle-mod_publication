@@ -55,9 +55,9 @@ class publication_approval_changed extends \core\event\base {
     public static function approval_changed(\stdClass $cm, $do) {
         // Trigger overview event.
         $event = self::create(array(
-            'objectid'      => (int)$do['publication'],
+            'objectid'      => $do->publication,
             'context'       => \context_module::instance($cm->id),
-            'relateduserid' => null,
+            'relateduserid' => $do->reluser,
             'other'         => (Array)$do
         ));
         return $event;
@@ -69,11 +69,10 @@ class publication_approval_changed extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        $t = ($this->data['other']['group']) ? "(group)" : "";
-        return "Approval for file with id '".$this->data['other']['fileid']."' in publication with id '"
-            .$this->data['other']['publication']."' has been changed to ".
-            (empty($this->data['other']['approval']) ? " 0 " : $this->data['other']['approval'])." by the user with id '"
-            .$this->data['other']['userid']."' ".$t.".";
+        return "Approval for file with id '".$this->data['other']['fileid']
+            ."' in publication with id '" .$this->data['other']['publication']
+            ."' has been changed to '".$this->data['other']['approval']
+            ."' by the user with id '" .$this->data['other']['userid']."'.";
     }
 
     /**
