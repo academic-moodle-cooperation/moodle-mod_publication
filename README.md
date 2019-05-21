@@ -3,7 +3,7 @@ Student Folder Module
 
 This file is part of the mod_publication plugin for Moodle - <http://moodle.org/>
 
-*Author:*    Philipp Hager, Andreas Windbichler
+*Author:*    Hannes Laimer, Philipp Hager, Andreas Windbichler
 
 *Copyright:* 2014 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
@@ -30,7 +30,7 @@ individual students to release documents.
 Requirements
 ------------
 
-The plugin is available for Moodle 2.7+. This version is for Moodle 3.6.
+The plugin is available for Moodle 2.7+. This version is for Moodle 3.7.
 
 
 Installation
