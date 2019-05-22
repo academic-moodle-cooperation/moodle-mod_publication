@@ -3,6 +3,7 @@ CHANGELOG
 3.7.0 (unreleased)
 ------------------
 
+* [FEATURE] #6126 added support for report-editdates
 * [FEATURE] #4995 notification on file-status change for student
 * [FEATURE] #4730 notification on file-upload for teacher
 * [FEATURE] #4731 extended logs
