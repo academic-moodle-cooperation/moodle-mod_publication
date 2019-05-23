@@ -35,11 +35,11 @@ defined('MOODLE_INTERNAL') || die;
  * @copyright     2019 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_editdates_mod_publication_date_extractor
+class mod_publication_report_editdates_integration
 extends report_editdates_mod_date_extractor {
 
     /**
-     * report_editdates_mod_publication_date_extractor constructor.
+     * mod_publication_report_editdates_integration constructor.
      * @param object $course the course
      */
     public function __construct($course) {
