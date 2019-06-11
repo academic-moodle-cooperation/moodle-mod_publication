@@ -95,7 +95,7 @@ if ($savevisibility) {
             $user = $DB->get_record('user', array('id' => $x->userid));
 
             if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-                && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])){
+                && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
                 $newstatus = $newstatus." (Teacher) ";
             }
 
@@ -254,10 +254,6 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
 
     $studentapproval = optional_param_array('studentapproval', [], PARAM_INT);
 
-
-    var_dump("LOLOLOLOLOLOLOL");
-    $a['3']=2;
-    $s = $a['a'];
     $conditions = [];
     $conditions['publication'] = $publication->get_instance()->id;
     $conditions['userid'] = $USER->id;
@@ -271,7 +267,7 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
 
         $approval = ($approval >= 1) ? $approval - 1 : null;
 
-        $dataforlog->approval = $approval==1?'approved':'rejected';
+        $dataforlog->approval = $approval == 1 ? 'approved' : 'rejected';
 
         if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
             && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
