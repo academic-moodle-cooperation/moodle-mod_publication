@@ -658,7 +658,9 @@ class publication {
      * @param null|int $approval 0 if rejected, 1 if approved and 'null' if not set!
      * @param int $pubfileid ID of publication file entry in DB
      * @param int $userid ID of user to set approval/rejection for
-     * @return null|int cumulated approval for specified file
+     * @return array cumulated approval for specified file, approving and needed count
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function set_group_approval($approval, $pubfileid, $userid) {
         global $DB;
@@ -692,6 +694,7 @@ class publication {
 
         // Get group members!
         $groupmembers = $this->get_submissionmembers($filerec->userid);
+        $stats = array();
         if (!empty($groupmembers)) {
             list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
             $select = "fileid = :fileid AND approval = :approval AND userid " . $usersql;
@@ -715,6 +718,8 @@ class publication {
                     $approving = $DB->count_records_sql("SELECT count(DISTINCT userid)
                                                            FROM {publication_groupapproval}
                                                           WHERE fileid = :fileid AND approval = 1 AND userid " . $usersql, $params);
+                    $stats['approving'] = $approving;
+                    $stats['needed'] = count($userparams);
                     if ($approving < count($userparams)) {
                         // Rejected if not every group member has approved the file!
                         $approval = null;
@@ -731,8 +736,8 @@ class publication {
         // Update approval value and return it!
         $filerec->studentapproval = $approval;
         $DB->update_record('publication_file', $filerec);
-
-        return $approval;
+        $stats['approval'] = $approval;
+        return $stats;
     }
 
     /**
