@@ -211,7 +211,7 @@ class mod_publication_mod_form extends moodleform_mod {
         $name = get_string('notifyteacher', 'publication');
         $mform->addElement('selectyesno', 'notifyteacher', $name);
         $mform->addHelpButton('notifyteacher', 'notifyteacher', 'publication');
-        $mform->setDefault('notifyteacher', 1);
+        $mform->setDefault('notifyteacher', 0);
 
         $name = get_string('notifystudents', 'publication');
         $mform->addElement('selectyesno', 'notifystudents', $name);
