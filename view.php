@@ -94,6 +94,11 @@ if ($savevisibility) {
             $newstatus = ($val || (!isset($val) && !$publication->get_instance()->obtainteacherapproval)) ? '' : 'not';
             $user = $DB->get_record('user', array('id' => $x->userid));
 
+            if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
+                && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])){
+                $newstatus = $newstatus." (Teacher) ";
+            }
+
             $dataforlog->publication = $params['pubid'];
             $dataforlog->approval = $newstatus." approved";
             $dataforlog->userid = $USER->id;
@@ -249,6 +254,10 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
 
     $studentapproval = optional_param_array('studentapproval', [], PARAM_INT);
 
+
+    var_dump("LOLOLOLOLOLOLOL");
+    $a['3']=2;
+    $s = $a['a'];
     $conditions = [];
     $conditions['publication'] = $publication->get_instance()->id;
     $conditions['userid'] = $USER->id;
@@ -262,14 +271,25 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
 
         $approval = ($approval >= 1) ? $approval - 1 : null;
 
+        $dataforlog->approval = $approval==1?'approved':'rejected';
+
         if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
             && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
             /* We have to deal with group approval! The method sets group approval for the specified user
              * and returns current cumulated group approval (and it also sets it in publication_file table)! */
-            $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
+            $stats = $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
+
+            $dataforlog->approval = '(Students '.$stats['approving'].' out of '.$stats['needed'].') '.$dataforlog->approval;
         } else {
             $DB->set_field('publication_file', 'studentapproval', $approval, $conditions);
         }
+
+        $dataforlog->publication = $conditions['publication'];
+        $dataforlog->userid = $USER->id;
+        $dataforlog->reluser = $USER->id;
+        $dataforlog->fileid = $idx;
+
+        \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
     }
 }
 
