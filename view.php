@@ -110,38 +110,40 @@ if ($savevisibility) {
             $DB->set_field('publication_file', 'teacherapproval', isset($val) ? ($val ? 1 : 0) : null, ['fileid' => $fileid]);
 
 
-            $strsubmitted = get_string('approvalchange', 'publication');
+            if ($publication->get_instance()->notifystudents) {
+                $strsubmitted = get_string('approvalchange', 'publication');
 
-            $info = new stdClass();
-            $info->username = fullname($USER);
-            $info->publication = format_string($cm->name, true);
-            $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $id;
-            $info->id = $id;
-            $info->filename = $x->filename;
-            $info->apstatus = $newstatus;
-            $info->dayupdated = userdate(time(), get_string('strftimedate'));
-            $info->timeupdated = userdate(time(), get_string('strftimetime'));
+                $info = new stdClass();
+                $info->username = fullname($USER);
+                $info->publication = format_string($cm->name, true);
+                $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $id;
+                $info->id = $id;
+                $info->filename = $x->filename;
+                $info->apstatus = $newstatus;
+                $info->dayupdated = userdate(time(), get_string('strftimedate'));
+                $info->timeupdated = userdate(time(), get_string('strftimetime'));
 
-            $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
-            $posttext = $publication->email_students_text($info);
-            $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
+                $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
+                $posttext = $publication->email_students_text($info);
+                $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
 
-            $message = new \core\message\message();
-            $message->component = 'mod_publication';
-            $message->name = 'publication_updates';
-            $message->courseid = $cm->course;
-            $message->userfrom = $USER;
-            $message->userto = $user;
-            $message->subject = $postsubject;
-            $message->fullmessage = $posttext;
-            $message->fullmessageformat = FORMAT_HTML;
-            $message->fullmessagehtml = $posthtml;
-            $message->smallmessage = $postsubject;
-            $message->notification = 1;
-            $message->contexturl = $info->url;
-            $message->contexturlname = $info->publication;
+                $message = new \core\message\message();
+                $message->component = 'mod_publication';
+                $message->name = 'publication_updates';
+                $message->courseid = $cm->course;
+                $message->userfrom = $USER;
+                $message->userto = $user;
+                $message->subject = $postsubject;
+                $message->fullmessage = $posttext;
+                $message->fullmessageformat = FORMAT_HTML;
+                $message->fullmessagehtml = $posthtml;
+                $message->smallmessage = $postsubject;
+                $message->notification = 1;
+                $message->contexturl = $info->url;
+                $message->contexturlname = $info->publication;
 
-            message_send($message);
+                message_send($message);
+            }
         }
     }
 
