@@ -70,7 +70,7 @@ if ($savevisibility) {
     $params['pubid'] = $publication->get_instance()->id;
 
     foreach ($files as $fileid => $val) {
-        $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "userid,teacherapproval,filename");
+        $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,filename");
 
         if ($val == 0) {  // Choose...  selected.
             $val = null;
@@ -92,15 +92,18 @@ if ($savevisibility) {
 
         if ($val !== $oldval) {
             $newstatus = ($val || (!isset($val) && !$publication->get_instance()->obtainteacherapproval)) ? '' : 'not';
+            $logstatus = $newstatus;
             $user = $DB->get_record('user', array('id' => $x->userid));
+            $group = false;
 
             if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
                 && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
-                $newstatus = $newstatus." (Teacher) ";
+                $logstatus = $newstatus." (Teacher) ";
+                $group = $x->userid;
             }
 
             $dataforlog->publication = $params['pubid'];
-            $dataforlog->approval = $newstatus." approved";
+            $dataforlog->approval = $logstatus." approved";
             $dataforlog->userid = $USER->id;
             $dataforlog->reluser = $user->id;
             $dataforlog->fileid = $fileid;
@@ -109,40 +112,78 @@ if ($savevisibility) {
 
             $DB->set_field('publication_file', 'teacherapproval', isset($val) ? ($val ? 1 : 0) : null, ['fileid' => $fileid]);
 
-
             if ($publication->get_instance()->notifystudents) {
                 $strsubmitted = get_string('approvalchange', 'publication');
 
-                $info = new stdClass();
-                $info->username = fullname($USER);
-                $info->publication = format_string($cm->name, true);
-                $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $id;
-                $info->id = $id;
-                $info->filename = $x->filename;
-                $info->apstatus = $newstatus;
-                $info->dayupdated = userdate(time(), get_string('strftimedate'));
-                $info->timeupdated = userdate(time(), get_string('strftimetime'));
+                if($group){
+                    $select = 'groupid = :id';
+                    $params = array('id' => $group);
+                    $usersingroup = $DB->get_records_select('groups_members', $select, $params, '', 'userid');
+                    foreach($usersingroup as $u){
+                        $user = $DB->get_record('user', array('id' => $u->userid));
+                        $info = new stdClass();
+                        $info->username = fullname($USER);
+                        $info->publication = format_string($cm->name, true);
+                        $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $id;
+                        $info->id = $id;
+                        $info->filename = $x->filename;
+                        $info->apstatus = $newstatus;
+                        $info->dayupdated = userdate(time(), get_string('strftimedate'));
+                        $info->timeupdated = userdate(time(), get_string('strftimetime'));
 
-                $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
-                $posttext = $publication->email_students_text($info);
-                $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
+                        $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
+                        $posttext = $publication->email_students_text($info);
+                        $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
 
-                $message = new \core\message\message();
-                $message->component = 'mod_publication';
-                $message->name = 'publication_updates';
-                $message->courseid = $cm->course;
-                $message->userfrom = $USER;
-                $message->userto = $user;
-                $message->subject = $postsubject;
-                $message->fullmessage = $posttext;
-                $message->fullmessageformat = FORMAT_HTML;
-                $message->fullmessagehtml = $posthtml;
-                $message->smallmessage = $postsubject;
-                $message->notification = 1;
-                $message->contexturl = $info->url;
-                $message->contexturlname = $info->publication;
+                        $message = new \core\message\message();
+                        $message->component = 'mod_publication';
+                        $message->name = 'publication_updates';
+                        $message->courseid = $cm->course;
+                        $message->userfrom = $USER;
+                        $message->userto = $user;
+                        $message->subject = $postsubject;
+                        $message->fullmessage = $posttext;
+                        $message->fullmessageformat = FORMAT_HTML;
+                        $message->fullmessagehtml = $posthtml;
+                        $message->smallmessage = $postsubject;
+                        $message->notification = 1;
+                        $message->contexturl = $info->url;
+                        $message->contexturlname = $info->publication;
 
-                message_send($message);
+                        message_send($message);
+                    }
+                } else {
+                    $info = new stdClass();
+                    $info->username = fullname($USER);
+                    $info->publication = format_string($cm->name, true);
+                    $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $id;
+                    $info->id = $id;
+                    $info->filename = $x->filename;
+                    $info->apstatus = $newstatus;
+                    $info->dayupdated = userdate(time(), get_string('strftimedate'));
+                    $info->timeupdated = userdate(time(), get_string('strftimetime'));
+
+                    $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
+                    $posttext = $publication->email_students_text($info);
+                    $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
+
+                    $message = new \core\message\message();
+                    $message->component = 'mod_publication';
+                    $message->name = 'publication_updates';
+                    $message->courseid = $cm->course;
+                    $message->userfrom = $USER;
+                    $message->userto = $user;
+                    $message->subject = $postsubject;
+                    $message->fullmessage = $posttext;
+                    $message->fullmessageformat = FORMAT_HTML;
+                    $message->fullmessagehtml = $posthtml;
+                    $message->smallmessage = $postsubject;
+                    $message->notification = 1;
+                    $message->contexturl = $info->url;
+                    $message->contexturlname = $info->publication;
+
+                    message_send($message);
+                }
             }
         }
     }
