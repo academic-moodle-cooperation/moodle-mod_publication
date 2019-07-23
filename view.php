@@ -102,6 +102,7 @@ if ($savevisibility) {
                 $group = $x->userid;
             }
 
+            $dataforlog = new stdClass();
             $dataforlog->publication = $params['pubid'];
             $dataforlog->approval = $logstatus." approved";
             $dataforlog->userid = $USER->id;
