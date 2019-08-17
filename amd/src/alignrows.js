@@ -38,11 +38,12 @@ define(['jquery'], function($) {
     var instance = new Alignrows();
     instance.initializer = function() {
         $("#attempts").ready(function () {
-            var maxHeight = Math.max.apply(null, $("#attempts > tbody > tr > td > table > tbody > tr > td").map(function ()
-            {
+            var alltds = $("#attempts > tbody > tr > td > table > tbody > tr > td");
+            var maxHeight = Math.max.apply(null, alltds.map(function () {
                 return $(this).height();
             }).get());
-            $("#attempts > tbody > tr > td > table > tbody > tr > td").height(maxHeight).css('vertical-align', 'middle');
+            alltds.height(maxHeight).css('vertical-align', 'middle');
+            $(".permissionstable > tbody > tr > td").removeClass('c0');
         });
     };
     return instance;

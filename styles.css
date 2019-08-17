@@ -142,9 +142,13 @@
     height: 30px;
 }
 
-#page-mod-publication-view table.statustable,
-#page-mod-publication-view table.permissionstable {
+#page-mod-publication-view table.statustable {
     text-align: center;
+    width: 100%;
+}
+
+#page-mod-publication-view table.permissionstable {
+    text-align: left;
     width: 100%;
 }
 
