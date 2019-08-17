@@ -1,6 +1,13 @@
 CHANGELOG
 =========
-3.7.0 (unreleased)
+
+3.7.1 (2019-08-17)
+------------------
+
+* [FIXED] #6205 list of files and approval select boxes are now aligned
+
+
+3.7.0 (2019-08-07)
 ------------------
 
 * [FEATURE] #6126 added support for report-editdates

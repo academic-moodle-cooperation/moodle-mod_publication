@@ -18,6 +18,7 @@
  * Version information
  *
  * @package       mod_publication
+ * @author        Hannes Laimer
  * @author        Philipp Hager
  * @author        Andreas Windbichler
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -26,8 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2019052100;
+$plugin->version = 2019081701;
 $plugin->requires = 2019052000;
 $plugin->component = 'mod_publication';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = "v3.7.0";
+$plugin->maturity = MATURITY_ALPHA;
+$plugin->release = "v3.7.1-dev";

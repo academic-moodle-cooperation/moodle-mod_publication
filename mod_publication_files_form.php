@@ -35,6 +35,7 @@ require_once($CFG->dirroot . '/mod/publication/locallib.php');
  * Form for displaying and changing approval for publication files
  *
  * @package       mod_publication
+ * @author        Hannes Laiemr
  * @author        Philipp Hager
  * @author        Andreas Windbichler
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -85,6 +86,7 @@ class mod_publication_files_form extends moodleform {
         $mform->setExpanded('myfiles');
 
         $PAGE->requires->js_call_amd('mod_publication/filesform', 'initializer', []);
+        $PAGE->requires->js_call_amd('mod_publication/alignrows', 'initializer', []);
 
         $noticehtml = html_writer::start_tag('div', ['class' => 'notice']);
         $noticehtml .= get_string('notice', 'publication') . ' ' . $notice;
