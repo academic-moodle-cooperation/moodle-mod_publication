@@ -12,6 +12,8 @@ CHANGELOG
 3.7.0 (2019-08-07)
 ------------------
 
+* [BUG] #6207 publication layout bug after changing approval fixed
+* [BUG] #6206 notifications with groups fixed
 * [FEATURE] #6126 added support for report-editdates
 * [FEATURE] #4995 notification on file-status change for student
 * [FEATURE] #4730 notification on file-upload for teacher

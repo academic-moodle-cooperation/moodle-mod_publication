@@ -57,12 +57,12 @@ $string['notifystudents_help'] = 'If enabled, students recieve a message wheneve
 $string['uploaded'] = 'Uploaded';
 $string['approvalchange'] = 'Approval status changed';
 
-$string['emailteachermail'] = "---------------------------------------------------------------------\n".'{$a->username} has uploaded \'{$a->filename}\'
+$string['emailteachermail'] = '---------------------------------------------------------------------\n{$a->username} has uploaded \'{$a->filename}\'
 for \'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}.
 
 It is available here:
 
-    {$a->url}'."---------------------------------------------------------------------\n";
+    {$a->url}---------------------------------------------------------------------\n';
 
 $string['emailteachermailhtml'] = '{$a->username} has uploaded \'{$a->filename}\'
 for <i>\'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}</i><br /><br />

@@ -18,7 +18,6 @@
  * Version information
  *
  * @package       mod_publication
- * @author        Hannes Laimer
  * @author        Philipp Hager
  * @author        Andreas Windbichler
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
