@@ -525,7 +525,7 @@ class publication {
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveteacherapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary'
+                            'class' => 'visibilitysaver btn btn-primary m-x-1'
                     ]);
                 }
             } else {
