@@ -1213,44 +1213,10 @@ class publication {
                     $dataobject->typ = $importtype;
                     \mod_publication\event\publication_file_imported::file_added($assigncm, $dataobject)->trigger();
 
-                    $pubcm = get_coursemodule_from_instance('publication', $this->get_instance()->id, 0, false, MUST_EXIST);
                     if ($this->get_instance()->notifyteacher) {
-
-                        $strsubmitted = get_string('uploaded', 'publication');
+                        $cm = get_coursemodule_from_instance('publication', $this->get_instance()->id, 0, false, MUST_EXIST);
                         $user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST);
-                        $graders = $this->get_graders($user);
-
-                        foreach ($graders as $teacher) {
-                            $info = new stdClass();
-                            $info->username = fullname($user);
-                            $info->publication = format_string($pubcm->name, true);
-                            $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $pubcm->id;
-                            $info->id = $pubcm->id;
-                            $info->filename = $file->get_filename();
-                            $info->dayupdated = userdate(time(), get_string('strftimedate'));
-                            $info->timeupdated = userdate(time(), get_string('strftimetime'));
-
-                            $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $info->publication;
-                            $posttext = $this->email_teachers_text($info);
-                            $posthtml = ($teacher->mailformat == 1) ? $this->email_teachers_html($info) : '';
-
-                            $message = new \core\message\message();
-                            $message->component = 'mod_publication';
-                            $message->name = 'publication_updates';
-                            $message->courseid = $pubcm->course;
-                            $message->userfrom = $user;
-                            $message->userto = $teacher;
-                            $message->subject = $postsubject;
-                            $message->fullmessage = $posttext;
-                            $message->fullmessageformat = FORMAT_HTML;
-                            $message->fullmessagehtml = $posthtml;
-                            $message->smallmessage = $postsubject;
-                            $message->notification = 1;
-                            $message->contexturl = $info->url;
-                            $message->contexturlname = $info->publication;
-
-                            message_send($message);
-                        }
+                        self::send_teacher_notification_uploaded($cm, $newfile, $user);
                     }
 
                 } catch (Exception $e) {
@@ -1287,7 +1253,7 @@ class publication {
      * @param int $submissionid (optional) If set, only process this submission, else process all submissions
      */
     public static function update_assign_onlinetext($assigncm, $assigncontext, $publicationid, $contextid, $submissionid = 0) {
-        global $DB, $CFG;
+        global $USER, $DB, $CFG;
 
         $fs = get_file_storage();
 
@@ -1446,45 +1412,118 @@ class publication {
                 $cm = get_coursemodule_from_instance('publication', $publicationid, 0, false, MUST_EXIST);
                 $publication = new publication($cm);
                 if ($publication->get_instance()->notifyteacher) {
-
-                    $strsubmitted = get_string('uploaded', 'publication');
-                    $user = $DB->get_record('user', ['id' => $itemid], '*', MUST_EXIST);
-                    $graders = $publication->get_graders($user);
-
-                    foreach ($graders as $teacher) {
-                        $info = new stdClass();
-                        $info->username = fullname($user);
-                        $info->publication = format_string($cm->name, true);
-                        $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id;
-                        $info->id = $cm->id;
-                        $info->filename = $file->get_filename();
-                        $info->dayupdated = userdate(time(), get_string('strftimedate'));
-                        $info->timeupdated = userdate(time(), get_string('strftimetime'));
-
-                        $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $info->publication;
-                        $posttext = $publication->email_teachers_text($info);
-                        $posthtml = ($teacher->mailformat == 1) ? $publication->email_teachers_html($info) : '';
-
-                        $message = new \core\message\message();
-                        $message->component = 'mod_publication';
-                        $message->name = 'publication_updates';
-                        $message->courseid = $cm->course;
-                        $message->userfrom = $user;
-                        $message->userto = $teacher;
-                        $message->subject = $postsubject;
-                        $message->fullmessage = $posttext;
-                        $message->fullmessageformat = FORMAT_HTML;
-                        $message->fullmessagehtml = $posthtml;
-                        $message->smallmessage = $postsubject;
-                        $message->notification = 1;
-                        $message->contexturl = $info->url;
-                        $message->contexturlname = $info->publication;
-
-                        message_send($message);
-                    }
+                    self::send_teacher_notification_uploaded($cm, $newfile);
                 }
 
             }
+        }
+    }
+
+    /**
+     * Send a notification about the change of the approval status to a student
+     * @param stdClass $cm coursemodule
+     * @param object $user the where the notification should go
+     * @param object $userfrom who cahnged the approval status
+     * @param string $newstatus whats the new status
+     * @param object $pubfile the publication-file on which the status change took place
+     * @param string $pubid id of the publication
+     * @param null|stdClass $publication the publication instance
+     * @throws coding_exception
+     */
+    public static function send_student_notification_approval_changed($cm, $user, $userfrom, $newstatus, $pubfile,
+                                                                      $pubid, $publication=null) {
+        global $CFG;
+        $strsubmitted = get_string('approvalchange', 'publication');
+
+        if (!$publication) {
+            $publication = new publication($cm);
+        }
+
+        $info = new stdClass();
+        $info->username = fullname($userfrom);
+        $info->publication = format_string($cm->name, true);
+        $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $pubid;
+        $info->id = $pubid;
+        $info->filename = $pubfile->filename;
+        $info->apstatus = $newstatus;
+        $info->dayupdated = userdate(time(), get_string('strftimedate'));
+        $info->timeupdated = userdate(time(), get_string('strftimetime'));
+
+        $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
+        $posttext = $publication->email_students_text($info);
+        $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
+
+        $message = new \core\message\message();
+        $message->component = 'mod_publication';
+        $message->name = 'publication_updates';
+        $message->courseid = $cm->course;
+        $message->userfrom = $userfrom;
+        $message->userto = $user;
+        $message->subject = $postsubject;
+        $message->fullmessage = $posttext;
+        $message->fullmessageformat = FORMAT_HTML;
+        $message->fullmessagehtml = $posthtml;
+        $message->smallmessage = $postsubject;
+        $message->notification = 1;
+        $message->contexturl = $info->url;
+        $message->contexturlname = $info->publication;
+
+        try {
+            message_send($message);
+        } catch (coding_exception $e) {
+            throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Sends a notification to assigned grades
+     * @param object $cm course module
+     * @param stdClass $user the user
+     * @param stored_file $file the file
+     * @param null stdClass $publication object the publication, if available
+     * @throws coding_exception
+     */
+    public static function send_teacher_notification_uploaded($cm, $file, $user=null, $publication=null) {
+        global $CFG, $USER;
+        $strsubmitted = get_string('uploaded', 'publication');
+        if (!$publication) {
+            $publication = new publication($cm);
+        }
+        if (!$user) {
+            $user = $USER;
+        }
+        $graders = $publication->get_graders($user);
+
+        foreach ($graders as $teacher) {
+            $info = new stdClass();
+            $info->username = fullname($user);
+            $info->publication = format_string($publication->get_instance()->name, true);
+            $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id;
+            $info->id = $cm->id;
+            $info->filename = $file->get_filename();
+            $info->dayupdated = userdate(time(), get_string('strftimedate'));
+            $info->timeupdated = userdate(time(), get_string('strftimetime'));
+
+            $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $info->publication;
+            $posttext = $publication->email_teachers_text($info);
+            $posthtml = ($teacher->mailformat == 1) ? $publication->email_teachers_html($info) : '';
+
+            $message = new \core\message\message();
+            $message->component = 'mod_publication';
+            $message->name = 'publication_updates';
+            $message->courseid = $cm->course;
+            $message->userfrom = $user;
+            $message->userto = $teacher;
+            $message->subject = $postsubject;
+            $message->fullmessage = $posttext;
+            $message->fullmessageformat = FORMAT_HTML;
+            $message->fullmessagehtml = $posthtml;
+            $message->smallmessage = $postsubject;
+            $message->notification = 1;
+            $message->contexturl = $info->url;
+            $message->contexturlname = $info->publication;
+
+            message_send($message);
         }
     }
 
