@@ -143,7 +143,7 @@ if ($mform->is_cancelled()) {
             $dataobject->id = $DB->insert_record('publication_file', $dataobject);
 
             if ($publication->get_instance()->notifyteacher) {
-                publication::send_teacher_notification_uploaded($USER, $newfile, $cm, $publication);
+                publication::send_teacher_notification_uploaded($cm, $file, null, $publication);
             }
 
             \mod_publication\event\publication_file_uploaded::create_from_object($cm, $dataobject)->trigger();

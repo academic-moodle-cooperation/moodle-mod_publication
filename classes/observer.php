@@ -180,8 +180,7 @@ class observer {
 
                         $publication = new publication($cm);
                         if ($publication->get_instance()->notifyteacher) {
-                            $user = $DB->get_record('user', ['id' => $itemid], '*', MUST_EXIST);
-                            publication::send_teacher_notification_uploaded($cm, $newfile, $user);
+                            publication::send_teacher_notification_uploaded($cm, $newfile, null, $publication);
                         }
 
                     } catch (\Exception $ex) {

@@ -1216,7 +1216,7 @@ class publication {
                     if ($this->get_instance()->notifyteacher) {
                         $cm = get_coursemodule_from_instance('publication', $this->get_instance()->id, 0, false, MUST_EXIST);
                         $user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST);
-                        self::send_teacher_notification_uploaded($cm, $user, $newfile);
+                        self::send_teacher_notification_uploaded($cm, $newfile, $user);
                     }
 
                 } catch (Exception $e) {
@@ -1412,12 +1412,7 @@ class publication {
                 $cm = get_coursemodule_from_instance('publication', $publicationid, 0, false, MUST_EXIST);
                 $publication = new publication($cm);
                 if ($publication->get_instance()->notifyteacher) {
-                    if ($importtype == 'group') {
-                        $user = $USER;
-                    } else if ($importtype == 'user') {
-                        $user = $DB->get_record('user', array('id' => $itemid), '*', MUST_EXIST);
-                    }
-                    self::send_teacher_notification_uploaded($cm, $user, $newfile);
+                    self::send_teacher_notification_uploaded($cm, $newfile);
                 }
 
             }
@@ -1425,25 +1420,84 @@ class publication {
     }
 
     /**
+     * Send a notification about the change of the approval status to a student
+     * @param stdClass $cm coursemodule
+     * @param object $user the where the notification should go
+     * @param object $userfrom who cahnged the approval status
+     * @param string $newstatus whats the new status
+     * @param object $pubfile the publication-file on which the status change took place
+     * @param string $pubid id of the publication
+     * @param null|stdClass $publication the publication instance
+     * @throws coding_exception
+     */
+    public static function send_student_notification_approval_changed($cm, $user, $userfrom, $newstatus, $pubfile,
+                                                                      $pubid, $publication=null) {
+        global $CFG;
+        $strsubmitted = get_string('approvalchange', 'publication');
+
+        if (!$publication) {
+            $publication = new publication($cm);
+        }
+
+        $info = new stdClass();
+        $info->username = fullname($userfrom);
+        $info->publication = format_string($cm->name, true);
+        $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $pubid;
+        $info->id = $pubid;
+        $info->filename = $pubfile->filename;
+        $info->apstatus = $newstatus;
+        $info->dayupdated = userdate(time(), get_string('strftimedate'));
+        $info->timeupdated = userdate(time(), get_string('strftimetime'));
+
+        $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
+        $posttext = $publication->email_students_text($info);
+        $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
+
+        $message = new \core\message\message();
+        $message->component = 'mod_publication';
+        $message->name = 'publication_updates';
+        $message->courseid = $cm->course;
+        $message->userfrom = $userfrom;
+        $message->userto = $user;
+        $message->subject = $postsubject;
+        $message->fullmessage = $posttext;
+        $message->fullmessageformat = FORMAT_HTML;
+        $message->fullmessagehtml = $posthtml;
+        $message->smallmessage = $postsubject;
+        $message->notification = 1;
+        $message->contexturl = $info->url;
+        $message->contexturlname = $info->publication;
+
+        try {
+            message_send($message);
+        } catch (coding_exception $e) {
+            throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+        }
+    }
+
+    /**
      * Sends a notification to assigned grades
-     * @param stdClass $cm course module
+     * @param object $cm course module
      * @param stdClass $user the user
-     * @param stdClass $file the file
+     * @param stored_file $file the file
      * @param null stdClass $publication object the publication, if available
      * @throws coding_exception
      */
-    public static function send_teacher_notification_uploaded($cm, $user, $file, $publication=null) {
-        global $CFG;
+    public static function send_teacher_notification_uploaded($cm, $file, $user=null, $publication=null) {
+        global $CFG, $USER;
         $strsubmitted = get_string('uploaded', 'publication');
         if (!$publication) {
             $publication = new publication($cm);
+        }
+        if (!$user) {
+            $user = $USER;
         }
         $graders = $publication->get_graders($user);
 
         foreach ($graders as $teacher) {
             $info = new stdClass();
             $info->username = fullname($user);
-            $info->publication = format_string($cm->name, true);
+            $info->publication = format_string($publication->get_instance()->name, true);
             $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id;
             $info->id = $cm->id;
             $info->filename = $file->get_filename();

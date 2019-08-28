@@ -109,81 +109,27 @@ if ($savevisibility) {
             $dataforlog->reluser = $user->id;
             $dataforlog->fileid = $fileid;
 
-            \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
+            try {
+                \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
+            } catch (coding_exception $e) {
+                throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+            }
 
             $DB->set_field('publication_file', 'teacherapproval', isset($val) ? ($val ? 1 : 0) : null, ['fileid' => $fileid]);
 
             if ($publication->get_instance()->notifystudents) {
                 $strsubmitted = get_string('approvalchange', 'publication');
 
-                if($group){
+                if ($group) {
                     $select = 'groupid = :id';
                     $params = array('id' => $group);
                     $usersingroup = $DB->get_records_select('groups_members', $select, $params, '', 'userid');
-                    foreach($usersingroup as $u){
+                    foreach ($usersingroup as $u) {
                         $user = $DB->get_record('user', array('id' => $u->userid));
-                        $info = new stdClass();
-                        $info->username = fullname($USER);
-                        $info->publication = format_string($cm->name, true);
-                        $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $id;
-                        $info->id = $id;
-                        $info->filename = $x->filename;
-                        $info->apstatus = $newstatus;
-                        $info->dayupdated = userdate(time(), get_string('strftimedate'));
-                        $info->timeupdated = userdate(time(), get_string('strftimetime'));
-
-                        $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
-                        $posttext = $publication->email_students_text($info);
-                        $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
-
-                        $message = new \core\message\message();
-                        $message->component = 'mod_publication';
-                        $message->name = 'publication_updates';
-                        $message->courseid = $cm->course;
-                        $message->userfrom = $USER;
-                        $message->userto = $user;
-                        $message->subject = $postsubject;
-                        $message->fullmessage = $posttext;
-                        $message->fullmessageformat = FORMAT_HTML;
-                        $message->fullmessagehtml = $posthtml;
-                        $message->smallmessage = $postsubject;
-                        $message->notification = 1;
-                        $message->contexturl = $info->url;
-                        $message->contexturlname = $info->publication;
-
-                        message_send($message);
+                        $publication::send_student_notification_approval_changed($cm, $u, $USER, $newstatus, $x, $id, $publication);
                     }
                 } else {
-                    $info = new stdClass();
-                    $info->username = fullname($USER);
-                    $info->publication = format_string($cm->name, true);
-                    $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $id;
-                    $info->id = $id;
-                    $info->filename = $x->filename;
-                    $info->apstatus = $newstatus;
-                    $info->dayupdated = userdate(time(), get_string('strftimedate'));
-                    $info->timeupdated = userdate(time(), get_string('strftimetime'));
-
-                    $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
-                    $posttext = $publication->email_students_text($info);
-                    $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
-
-                    $message = new \core\message\message();
-                    $message->component = 'mod_publication';
-                    $message->name = 'publication_updates';
-                    $message->courseid = $cm->course;
-                    $message->userfrom = $USER;
-                    $message->userto = $user;
-                    $message->subject = $postsubject;
-                    $message->fullmessage = $posttext;
-                    $message->fullmessageformat = FORMAT_HTML;
-                    $message->fullmessagehtml = $posthtml;
-                    $message->smallmessage = $postsubject;
-                    $message->notification = 1;
-                    $message->contexturl = $info->url;
-                    $message->contexturlname = $info->publication;
-
-                    message_send($message);
+                    $publication::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $id, $publication);
                 }
             }
         }
