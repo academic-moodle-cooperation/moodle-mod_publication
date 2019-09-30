@@ -44,8 +44,6 @@ class mod_publication_allfiles_form extends moodleform {
      * Form definition. Abstract method - always override!
      */
     protected function definition() {
-        global $CFG;
-
         $mform = $this->_form;
         $generatedform = str_replace('<select', '<select onchange=\'this.form.submit()\'', $this->_customdata['form']);
         $mform->addElement('html', $generatedform);
