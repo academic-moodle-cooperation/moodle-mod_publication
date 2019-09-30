@@ -1478,9 +1478,9 @@ class publication {
     /**
      * Sends a notification to assigned grades
      * @param object $cm course module
-     * @param stdClass $user the user
      * @param stored_file $file the file
-     * @param null stdClass $publication object the publication, if available
+     * @param stdClass|null $user the user
+     * @param stdClass|null $publication object the publication, if available
      * @throws coding_exception
      */
     public static function send_teacher_notification_uploaded($cm, $file, $user=null, $publication=null) {

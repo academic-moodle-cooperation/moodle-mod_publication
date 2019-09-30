@@ -436,7 +436,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
             ]);
         }
 
-        foreach ($rs as $id => $cur) {
+        foreach ($rs as $cur) {
             $filepath = array_merge($path, [get_string('privacy:path:files', 'mod_publication'), $cur->filename]);
             switch ($cur->type) {
                 case PUBLICATION_MODE_ONLINETEXT:
@@ -569,7 +569,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                 'publication' => $pub->get_instance()->id
         ]);
 
-        foreach ($rs as $id => $cur) {
+        foreach ($rs as $cur) {
             static::export_groupapproval($context, $cur, $path);
         }
 
