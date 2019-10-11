@@ -1660,7 +1660,7 @@ class publication {
      */
     public function get_graders($user) {
         // Get potential graders!
-        $potgraders = get_users_by_capability($this->context, 'mod/publication:recieveteachernotification', '', '', '',
+        $potgraders = get_users_by_capability($this->context, 'mod/publication:receiveteachernotification', '', '', '',
             '', '', '', false, false);
 
         $graders = array();
