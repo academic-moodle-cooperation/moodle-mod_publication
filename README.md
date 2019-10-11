@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/academic-moodle-cooperation/moodle-mod_publication.svg?branch=master)](https://travis-ci.org/academic-moodle-cooperation/moodle-mod_publication)
+
 Student Folder Module
 =====================
 
