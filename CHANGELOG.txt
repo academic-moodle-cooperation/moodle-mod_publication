@@ -1,9 +1,11 @@
 CHANGELOG
 =========
 
-3.7.1 (2019-08-18)
+3.7.1 (2019-10-04)
 ------------------
 
+* [FIXED] #6333 Images are now shown in the description
+* [FIXED] #6250 Fix typo in 'extended' [github pull #32 @germanvaleroelizondo]
 * [FIXED] #6209 space added between save approval and revert button
 * [FEATURE] #6208 approval select boxes are now left of column instead of center
 * [FIXED] #6205 list of files and approval select boxes are now aligned

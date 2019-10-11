@@ -34,7 +34,7 @@ $string['modulename_help'] = 'The student folder offers the following features:
 $string['eventpublicationfiledeleted'] = 'Publication file delete';
 $string['eventpublicationfileuploaded'] = 'Publication file upload';
 $string['eventpublicationfileimported'] = 'Publication file import';
-$string['eventpublicationduedateextended'] = 'Publication due-date extendet';
+$string['eventpublicationduedateextended'] = 'Publication due-date extended';
 $string['eventpublicationapprovalchanged'] = 'Publication file approval changed';
 
 $string['modulenameplural'] = 'Student folders';
