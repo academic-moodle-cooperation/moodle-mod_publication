@@ -114,7 +114,7 @@ class publication {
         if ($this->show_intro()) {
             if ($this->instance->intro) {
                 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
-                echo $this->instance->intro;
+                echo format_module_intro('publication', $this->instance, $this->coursemodule->id);
                 echo $OUTPUT->box_end();
             }
         } else {
@@ -1234,6 +1234,7 @@ class publication {
      *
      * @param object $assigncm Assignment coursemodule object
      * @param object $assigncontext Assignment context object
+     * @throws coding_exception
      */
     protected function import_assign_onlinetexts($assigncm, $assigncontext) {
         if ($this->get_instance()->mode != PUBLICATION_MODE_IMPORT) {
@@ -1659,7 +1660,7 @@ class publication {
      */
     public function get_graders($user) {
         // Get potential graders!
-        $potgraders = get_users_by_capability($this->context, 'mod/publication:recieveteachernotification', '', '', '',
+        $potgraders = get_users_by_capability($this->context, 'mod/publication:receiveteachernotification', '', '', '',
             '', '', '', false, false);
 
         $graders = array();
