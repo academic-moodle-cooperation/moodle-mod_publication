@@ -80,7 +80,7 @@ $capabilities = [
                 ]
         ],
 
-        'mod/publication:recieveteachernotification' => [
+        'mod/publication:receiveteachernotification' => [
             'captype' => 'read',
             'contextlevel' => CONTEXT_MODULE,
             'archetypes' => [
