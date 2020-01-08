@@ -72,26 +72,10 @@ if ($savevisibility) {
     foreach ($files as $fileid => $val) {
         $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,filename");
 
-        if ($val == 0) {  // Choose...  selected.
-            $val = null;
-        } else if ($val == 1) {  // No  selected.
-            $val = false;
-        } else {  // Yes  selected (usually 2).
-            $val = true;
-        }
+        $oldval = $x->teacherapproval;
 
-        if (isset($x->teacherapproval)) {
-            if ($x->teacherapproval == 0) {
-                $oldval = false;  // Was set to no in DB.
-            } else {
-                $oldval = true;  // Was set to yes in DB.
-            }
-        } else {
-            $oldval = null; // Was not set in DB.
-        }
-
-        if ($val !== $oldval) {
-            $newstatus = ($val || (!isset($val) && !$publication->get_instance()->obtainteacherapproval)) ? '' : 'not';
+        if ($val != $oldval) {
+            $newstatus = ($val == 2 || ($val == 3 && !$publication->get_instance()->obtainteacherapproval)) ? '' : 'not';
             $logstatus = $newstatus;
             $user = $DB->get_record('user', array('id' => $x->userid));
             $group = false;
@@ -115,7 +99,7 @@ if ($savevisibility) {
                 throw new Exception("Coding exception while sending notification: " . $e->getMessage());
             }
 
-            $DB->set_field('publication_file', 'teacherapproval', isset($val) ? ($val ? 1 : 0) : null, ['fileid' => $fileid]);
+            $DB->set_field('publication_file', 'teacherapproval', $val, ['fileid' => $fileid]);
 
             if ($publication->get_instance()->notifystudents) {
                 $strsubmitted = get_string('approvalchange', 'publication');

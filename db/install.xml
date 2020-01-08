@@ -46,7 +46,7 @@
                 <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="3" SEQUENCE="false"/>
                 <FIELD NAME="studentapproval" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"
                        COMMENT="Holds the student approval or a cached cumulated state for approval in case of group approval"/>
             </FIELDS>

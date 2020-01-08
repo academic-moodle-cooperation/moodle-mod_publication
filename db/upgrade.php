@@ -187,5 +187,20 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2019052100, 'publication');
     }
 
+    if ($oldversion < 2020010500) {
+
+        // Changing the default of field teacherapproval on table publication_file to 3.
+        $table = new xmldb_table('publication_file');
+        $field = new xmldb_field('teacherapproval', XMLDB_TYPE_INTEGER, '2', null, null, null, '3', 'type');
+
+        $DB->set_field('publication_file', 'teacherapproval', 3, ['teacherapproval' => null]);
+
+        // Launch change of default for field teacherapproval.
+        $dbman->change_field_default($table, $field);
+
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2020010500, 'publication');
+    }
+
     return true;
 }
