@@ -44,7 +44,7 @@ $string['publication:view'] = 'View student folder';
 $string['publication:upload'] = 'Upload files to a student folder';
 $string['publication:approve'] = 'Decide if files should be visible for every student';
 $string['publication:grantextension'] = 'Grant extension';
-$string['publication:receiveteachernotification'] = 'Recieve notifications for teachers';
+$string['publication:receiveteachernotification'] = 'Receive notifications for teachers';
 $string['search:activity'] = 'Student folder - activity information';
 
 $string['messageprovider:publication_updates'] = 'Publication notifications';
