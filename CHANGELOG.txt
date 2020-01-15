@@ -1,9 +1,10 @@
 CHANGELOG
 =========
 
-3.8.0 (2019-11-20)
+3.8.0 (2020-01-05)
 ------------------
 
+* [FEATURE] #4641 table is now sortable by approval selection
 * [FIXED] #6381 Fix typo in receiveteachernotification langstring
 
 

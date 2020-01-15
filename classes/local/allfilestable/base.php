@@ -125,7 +125,7 @@ class base extends \table_sql {
 
         $this->no_sorting('studentapproval');
         $this->no_sorting('selection');
-        $this->no_sorting('teacherapproval');
+
         $this->no_sorting('visibleforstudents');
 
         $this->init_sql();
@@ -141,8 +141,8 @@ class base extends \table_sql {
         $this->studvisibleno = $OUTPUT->pix_icon('i/invalid', get_string('visibleforstudents_no', 'publication'));
 
         $this->options = [
-                2 => get_string('yes'),
-                1 => get_string('no')
+                1 => get_string('yes'),
+                2 => get_string('no')
         ];
     }
 
@@ -214,7 +214,7 @@ class base extends \table_sql {
         $fields = $ufields . ' ' . $useridentityfields . ', u.username,
                                 COUNT(*) filecount,
                                 SUM(files.studentapproval) AS studentapproval,
-                                NULL AS teacherapproval,
+                                SUM(files.teacherapproval) AS teacherapproval,
                                 MAX(files.timecreated) AS timemodified ';
 
         // Also filters out users according to set activitygroupmode & current activitygroup!
@@ -631,9 +631,9 @@ class base extends \table_sql {
                     || has_capability('mod/publication:approve', $this->context)) {
 
                 $checked = $this->publication->teacher_approval($file);
-                // Null if none found, 1 if DB-entry is 0 (= no) and 2 if DB entry is 1 (= yes)!
+                // Null if none found, DB-entry otherwise!
                 // TODO change that conversions and queue the real values! Everywhere!
-                $checked = ($checked === false || $checked === null) ? "" : $checked + 1;
+                $checked = ($checked === false || $checked === null) ? "" : $checked;
 
                 $sel = \html_writer::select($this->options, 'files[' . $file->get_id() . ']', (string)$checked);
                 $table->data[] = [$sel];
