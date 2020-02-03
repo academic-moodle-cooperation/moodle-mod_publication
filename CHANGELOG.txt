@@ -4,6 +4,7 @@ CHANGELOG
 3.8.0 (2020-01-05)
 ------------------
 
+* [BUG] #6492 fixed bug which caused fatal error when opening reports / dates
 * [FEATURE] #4641 table is now sortable by approval selection
 * [FIXED] #6381 Fix typo in receiveteachernotification langstring
 
