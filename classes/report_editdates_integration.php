@@ -70,11 +70,12 @@ extends report_editdates_mod_date_extractor {
 
     /**
      * Validates dates
+     * @param cm_info $cm
      * @param array $dates
      * @return array
      * @throws coding_exception
      */
-    public function validate_dates(array $dates) {
+    public function validate_dates(cm_info $cm, array $dates) {
         $errors = array();
         if ($dates['allowsubmissionsfromdate'] && $dates['duedate']
                 && $dates['duedate'] < $dates['allowsubmissionsfromdate']) {
