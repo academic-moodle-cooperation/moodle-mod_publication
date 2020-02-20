@@ -430,7 +430,7 @@ class publication {
         $updatepref = optional_param('updatepref', 0, PARAM_BOOL);
         if ($updatepref) {
             $perpage = optional_param('perpage', 10, PARAM_INT);
-            $perpage = ($perpage <= 0) ? 10 : $perpage;
+            $perpage = ($perpage < 0) ? 10 : $perpage;
             $filter = optional_param('filter', 0, PARAM_INT);
             set_user_preference('publication_perpage', $perpage);
         }
@@ -575,9 +575,14 @@ class publication {
 
         $mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'publication'));
 
-        $mform->addElement('text', 'perpage', get_string('entiresperpage', 'publication'), ['size' => 1]);
+        $mform->addElement('select', 'perpage', get_string('entiresperpage', 'publication'), [
+            0 => get_string('all'),
+            10 => 10,
+            20 => 20,
+            50 => 50,
+            100 => 100
+        ]);
         $mform->setDefault('perpage', $perpage);
-
         $mform->addElement('submit', 'savepreferences', get_string('savepreferences'));
 
         $mform->display();
