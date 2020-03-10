@@ -4,7 +4,7 @@ CHANGELOG
 3.8.1 (2020-02-18)
 ------------------
 
-* [BUG] #6594 uploaded files are noe approved automatically, if specified in the settings
+* [BUG] #6594 uploaded files are now approved automatically, if specified in the settings
 * [BUG] #6380 pagination now fixed to predefined values (all/10/20/50/100)
 
 
