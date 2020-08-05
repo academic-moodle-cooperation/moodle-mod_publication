@@ -90,7 +90,11 @@ if ($savevisibility) {
             $dataforlog->publication = $params['pubid'];
             $dataforlog->approval = $logstatus." approved";
             $dataforlog->userid = $USER->id;
-            $dataforlog->reluser = $user->id;
+            if ($user && !empty($user->id)) {
+                $dataforlog->reluser = $user->id;
+            } else {
+                $dataforlog->reluser = 0;
+            }
             $dataforlog->fileid = $fileid;
 
             try {

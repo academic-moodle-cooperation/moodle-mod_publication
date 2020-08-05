@@ -295,13 +295,11 @@ class base extends \table_sql {
                  WHERE {$this->sql->where}
                " . ($this->sql->groupby ? "GROUP BY {$this->sql->groupby}" : "") . "
                {$sort}";
-        $DB->set_debug(true);
         if (!$this->is_downloading()) {
             $this->rawdata = $DB->get_records_sql($sql, $this->sql->params, $this->get_page_start(), $this->get_page_size());
         } else {
             $this->rawdata = $DB->get_records_sql($sql, $this->sql->params);
         }
-        $DB->set_debug(false);
     }
 
     /**
