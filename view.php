@@ -70,7 +70,7 @@ if ($savevisibility) {
     $params['pubid'] = $publication->get_instance()->id;
 
     foreach ($files as $fileid => $val) {
-        $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "id,fileid,userid,teacherapproval,filename");
+        $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,filename");
 
         $oldval = $x->teacherapproval;
 

@@ -290,7 +290,7 @@ class base extends \table_sql {
         if ($sort) {
             $sort = "ORDER BY $sort";
         }
-        $sql = "SELECT {$this->sql->fields}
+        $sql = "SELECT DISTINCT {$this->sql->fields}
                   FROM {$this->sql->from}
                  WHERE {$this->sql->where}
                " . ($this->sql->groupby ? "GROUP BY {$this->sql->groupby}" : "") . "
