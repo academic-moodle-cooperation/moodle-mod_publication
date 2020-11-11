@@ -5,6 +5,7 @@ CHANGELOG
 ------------------
 * Moodle 3.10.0 compatible version
 * [FIXED] GitHub #38 - merge Pull request #39 by Christian Wolters - Omit manager in recieveteachernotification cap
+* [FIXED] GitHub #41 - remove hardcoded "not approved"
 
 3.9.0 (2020-06-15)
 ------------------

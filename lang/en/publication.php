@@ -70,14 +70,14 @@ for <i>\'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}</i><br /><
 It is <a href="{$a->url}">available on the web site</a>.';
 
 $string['emailstudentsmail'] = '{$a->username} has changed the approval status of \'{$a->filename}\'
-for \'{$a->publication}\' to {$a->apstatus} approved on {$a->dayupdated} at {$a->timeupdated}.
+for \'{$a->publication}\' to {$a->apstatus} on {$a->dayupdated} at {$a->timeupdated}.
 
 It is available here:
 
     {$a->url}';
 
 $string['emailstudentsmailhtml'] = '{$a->username} has changed the approval status of \'{$a->filename}\'
-for <i>\'{$a->publication}\'</i> to <b>{$a->apstatus} approved</b> on {$a->dayupdated} at {$a->timeupdated}</i><br /><br />
+for <i>\'{$a->publication}\'</i> to <b>{$a->apstatus}</b> on {$a->dayupdated} at {$a->timeupdated}</i><br /><br />
 It is <a href="{$a->url}">available on the web site</a>.';
 
 $string['name'] = 'Student folder name';
@@ -196,6 +196,8 @@ $string['student_rejected'] = 'rejected';
 $string['rejected'] = 'Rejected';
 $string['visible'] = 'visible';
 $string['hidden'] = 'hidden';
+$string['status:approved'] = 'approved';
+$string['status:approvednot'] = 'rejected';
 
 $string['allfiles'] = 'All files';
 $string['publicfiles'] = 'Public files';
