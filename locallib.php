@@ -1451,7 +1451,7 @@ class publication {
         $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $pubid;
         $info->id = $pubid;
         $info->filename = $pubfile->filename;
-        $info->apstatus = $newstatus;
+        $info->apstatus = get_string('status:approved' . $newstatus, 'mod_publication');
         $info->dayupdated = userdate(time(), get_string('strftimedate'));
         $info->timeupdated = userdate(time(), get_string('strftimetime'));
 
