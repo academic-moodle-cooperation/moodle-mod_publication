@@ -32,7 +32,7 @@ individual students to release documents.
 Requirements
 ------------
 
-The plugin is available for Moodle 2.7+. This version is for Moodle 3.9.
+The plugin is available for Moodle 2.7+. This version is for Moodle 3.10.
 
 
 Installation
