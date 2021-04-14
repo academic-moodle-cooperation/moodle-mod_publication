@@ -92,18 +92,6 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         // Delete importfrom after restore.
         $data->importfrom = -1;
 
-        // Convert pre v3.3 file-type-restrictions to the new format!
-        if (!empty($data->allowedfiletypes) && preg_match('/^([\.A-Za-z0-9]+([ ]*[,][ ]*[\.A-Za-z0-9]+)*)$/',
-                        $data->allowedfiletypes)) {
-            $allowedfiletypes = preg_split('([ ]*[,][ ]*)', $data->allowedfiletypes);
-            array_walk($allowedfiletypes, function (&$type) {
-                if ((strpos($type, '.') === false) || (strpos($type, '.') !== 0)) {
-                    $type = '.' . $type;
-                }
-            });
-            $data->allowedfiletypes = implode('; ', $allowedfiletypes);
-        }
-
         $newitemid = $DB->insert_record('publication', $data);
 
         $this->apply_activity_instance($newitemid);
