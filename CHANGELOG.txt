@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.10.1 (2021-04-14)
+-------------------
+* [FIXED] #6838 - fix wrong-restored allowedfiletypes
+
 3.10.0 (2020-11-11)
 ------------------
 * Moodle 3.10.0 compatible version
