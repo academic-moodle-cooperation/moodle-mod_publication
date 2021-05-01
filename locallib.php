@@ -33,6 +33,8 @@ define('PUBLICATION_MODE_ONLINETEXT', 2);
 
 define('PUBLICATION_APPROVAL_ALL', 0);
 define('PUBLICATION_APPROVAL_SINGLE', 1);
+
+define('PUBLICATION_EVENT_TYPE_DUE', 'due');
 require_once($CFG->dirroot . '/mod/publication/mod_publication_allfiles_form.php');
 
 /**
@@ -1769,5 +1771,49 @@ class publication {
         $posthtml .= '<p>'.get_string('emailstudentsmailhtml', 'publication', $info).'</p>';
         $posthtml .= '</font><hr />';
         return $posthtml;
+    }
+
+    /**
+     * Handles calendar events for publications with a due date
+     * This will create, update and delete an event when necessary
+     */
+    public function update_calendar_event() {
+        global $DB, $CFG;
+        require_once($CFG->dirroot . '/calendar/lib.php');
+
+        $instance = $this->get_instance();
+
+        // Check whether the publication already has a event
+        $result = $DB->get_record('event', ['modulename' => 'publication', 'instance' => $instance->id]);
+
+        if ($result) {
+            // Check whether the publication still has a due date, if not delete the event
+            if ($instance->duedate == null || $instance->duedate == 0) {
+                $DB->delete_records('event', ['modulename' => 'publication', 'instance' => $instance->id]);
+            } else {
+                $result->name = $instance->name;
+                $result->timestart = $instance->duedate;
+                $result->timesort = $instance->duedate;
+
+                $DB->update_record('event', $result);
+            }
+        } else if ($instance->duedate != null && $instance->duedate != 0) {
+            $event = new stdClass();
+            $event->eventtype = PUBLICATION_EVENT_TYPE_DUE;
+            $event->type = CALENDAR_EVENT_TYPE_ACTION; // Necessary to enable this event in block_myoverview
+            $event->name = $instance->name;
+            $event->description = "";
+            $event->courseid = $instance->course;
+            $event->groupid = 0;
+            $event->userid = 0;
+            $event->modulename = 'publication';
+            $event->instance = $instance->id;
+            $event->visible = instance_is_visible('publication', $this->instance);
+            $event->timestart = $instance->duedate;
+            $event->timesort = $instance->duedate; // Necessary for block_myoverview
+            $event->timeduration = 0;
+
+            calendar_event::create($event);
+        }
     }
 }
