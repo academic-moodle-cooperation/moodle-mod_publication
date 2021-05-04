@@ -241,3 +241,8 @@
     max-width: 100%;
     overflow: auto;
 }
+
+
+.path-mod-publication table#attempts tr.needs-approval > td {
+    background-color: var(--warning);
+}
