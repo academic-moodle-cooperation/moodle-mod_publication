@@ -70,6 +70,9 @@ class import extends base {
                 case 1:
                     $data[] = get_string('teacher_approved', 'publication');
                     break;
+                case 3:
+                    $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
+                    break;
                 default:
                     $data[] = get_string('student_pending', 'publication');
             }

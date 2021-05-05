@@ -54,6 +54,8 @@ class upload extends base {
                 $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
             } else if ($teacherapproval == 1) {
                 $data[] = get_string('visible', 'publication');
+            } else if ($teacherapproval == 3) {
+                $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
             } else {
                 $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_rejected', 'publication') . ')';
             }
