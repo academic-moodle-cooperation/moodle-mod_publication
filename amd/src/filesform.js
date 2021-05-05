@@ -52,7 +52,6 @@ define(['jquery', 'core/log'], function($, log) {
             }
         });
         if (this.attemptstable.length > 0) {
-            log.info('Some random test!', 'mod_publication');
             var $rows = this.attemptstable.children('tbody').children('tr');
             $rows.each(function() {
                 var $this = $(this);
