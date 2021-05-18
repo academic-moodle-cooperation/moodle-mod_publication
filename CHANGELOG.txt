@@ -1,8 +1,9 @@
 CHANGELOG
 =========
 
-3.11.0 (2021-??-??)
+3.11.0 (2021-05-18)
 -------------------
+* Moodle 3.11.0 compatible version
 * [FEATURE] #6834 - add one more file status for students - "pending approval"
 
 3.10.1 (2021-04-14)
