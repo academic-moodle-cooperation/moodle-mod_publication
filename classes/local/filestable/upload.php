@@ -50,7 +50,7 @@ class upload extends base {
         $teacherapproval = $this->publication->teacher_approval($file);
         if ($this->publication->get_instance()->obtainteacherapproval) {
             // Teacher has to approve: show all status.
-            if (is_null($teacherapproval)) {
+            if (is_null($teacherapproval) || $teacherapproval == 0) {
                 $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
             } else if ($teacherapproval == 1) {
                 $data[] = get_string('visible', 'publication');
@@ -61,7 +61,7 @@ class upload extends base {
             }
         } else {
             // Teacher doenst have to approve: only show when rejected.
-            if (is_null($teacherapproval)) {
+            if (is_null($teacherapproval) || $teacherapproval == 0) {
                 $data[] = get_string('visible', 'publication');
             } else if ($teacherapproval == 1) {
                 $data[] = get_string('visible', 'publication');
