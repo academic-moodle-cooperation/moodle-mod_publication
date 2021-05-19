@@ -175,7 +175,8 @@ class base extends \table_sql {
         $headers = [$selectallnone, '', get_string('fullnameuser')];
         $helpicons = [null, null, null];
 
-        $useridentity = get_extra_user_fields($this->context);
+        $fields = \core_user\fields::for_identity($this->context, false);
+        $useridentity = $fields->get_required_fields();
         foreach ($useridentity as $cur) {
             if (has_capability('mod/publication:approve', $this->context)) {
                 $columns[] = $cur;
@@ -208,8 +209,12 @@ class base extends \table_sql {
         global $DB;
 
         $params = [];
-        $ufields = \user_picture::fields('u');
-        $useridentityfields = get_extra_user_fields_sql($this->context, 'u');
+        $userfields = \core_user\fields::for_userpic();
+        $selects = $userfields->get_sql('u', false, '', 'id', false)->selects;
+        $ufields = str_replace(', ', ',', $selects);
+
+        $fields = \core_user\fields::for_identity($this->context, false);
+        $useridentityfields = $fields->get_sql('u')->selects;
 
         $fields = $ufields . ' ' . $useridentityfields . ', u.username,
                                 COUNT(*) filecount,
@@ -686,7 +691,8 @@ class base extends \table_sql {
      */
     public function other_cols($colname, $values) {
         // Process user identity fields!
-        $useridentity = get_extra_user_fields($this->context);
+        $fields = \core_user\fields::for_identity($this->context, false);
+        $useridentity = $fields->get_required_fields();
         if ($colname === 'phone') {
             $colname = 'phone1';
         }
