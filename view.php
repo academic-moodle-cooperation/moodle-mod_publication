@@ -75,7 +75,8 @@ if ($savevisibility) {
         $oldval = $x->teacherapproval;
 
         if ($val != $oldval) {
-            $newstatus = ($val == 2 || ($val == 3 && !$publication->get_instance()->obtainteacherapproval)) ? '' : 'not';
+            $newstatus = ($publication->get_instance()->obtainteacherapproval && $val == 1 ||
+                          $publication->get_instance()->obtainteacherapproval && $val != 2) ? '' : 'not';
             $logstatus = $newstatus;
             $user = $DB->get_record('user', array('id' => $x->userid));
             $group = false;
