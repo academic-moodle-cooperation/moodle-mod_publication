@@ -87,7 +87,7 @@ if ($savevisibility) {
             }
 
             $dataforlog = new stdClass();
-            $dataforlog->publication = $params['pubid'];
+            $dataforlog->publication = $publication->get_instance()->id;
             $dataforlog->approval = $logstatus." approved";
             $dataforlog->userid = $USER->id;
             if ($user && !empty($user->id)) {
@@ -114,7 +114,7 @@ if ($savevisibility) {
                     $usersingroup = $DB->get_records_select('groups_members', $select, $params, '', 'userid');
                     foreach ($usersingroup as $u) {
                         $user = $DB->get_record('user', array('id' => $u->userid));
-                        $publication::send_student_notification_approval_changed($cm, $u, $USER, $newstatus, $x, $id, $publication);
+                        $publication::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $id, $publication);
                     }
                 } else {
                     $publication::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $id, $publication);
