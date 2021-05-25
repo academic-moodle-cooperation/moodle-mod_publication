@@ -1,10 +1,11 @@
 CHANGELOG
 =========
 
-3.11.0 (2021-05-18)
+3.11.0 (2021-05-25)
 -------------------
 * Moodle 3.11.0 compatible version
 * [FEATURE] #6834 - add one more file status for students - "pending approval"
+* [FIXED] #6877 - add indexes for db table publication_file, fields publication and userid - github #47
 
 3.10.1 (2021-04-14)
 -------------------
