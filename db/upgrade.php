@@ -202,5 +202,27 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020010500, 'publication');
     }
 
+    if ($oldversion < 2021052500) {
+
+        // Define field id to be added to publication_file.
+        $table = new xmldb_table('publication_file');
+        $index = new xmldb_index('publication', XMLDB_INDEX_NOTUNIQUE, ['publication']);
+
+        // Conditionally launch add index publication.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+
+        // Conditionally launch add index userid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2021052500, 'publication');
+    }
+
     return true;
 }

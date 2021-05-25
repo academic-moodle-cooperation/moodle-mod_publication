@@ -51,18 +51,6 @@ define(['jquery', 'core/log'], function($, log) {
                 }, 100);
             }
         });
-        if (this.attemptstable.length > 0) {
-            var $rows = this.attemptstable.children('tbody').children('tr');
-            $rows.each(function() {
-                var $this = $(this);
-                var $checkbox = $this.find('.permissionstable select.custom-select');
-                if ($checkbox.length > 0) {
-                    if ($checkbox.val() === '') {
-                        $this.addClass('needs-approval');
-                    }
-                }
-            });
-        }
     };
 
     return instance;
