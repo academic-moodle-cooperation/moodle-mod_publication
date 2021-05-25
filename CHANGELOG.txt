@@ -5,6 +5,7 @@ CHANGELOG
 -------------------
 * Moodle 3.11.0 compatible version
 * [FEATURE] #6834 - add one more file status for students - "pending approval"
+* [FIXED] #6912 - fix buttons margins - github merge request #49 by Luca Bösch
 
 3.10.1 (2021-04-14)
 -------------------
