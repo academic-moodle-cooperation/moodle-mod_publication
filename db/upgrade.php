@@ -224,6 +224,5 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021052500, 'publication');
     }
 
-
     return true;
 }
