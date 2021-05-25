@@ -5,6 +5,7 @@ CHANGELOG
 -------------------
 * Moodle 3.11.0 compatible version
 * [FEATURE] #6834 - add one more file status for students - "pending approval"
+* [FIXED] #6924 - fix showing deleted assignments (pending deletion) in the dropdown
 
 3.10.1 (2021-04-14)
 -------------------
