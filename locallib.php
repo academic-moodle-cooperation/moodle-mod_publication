@@ -509,7 +509,7 @@ class publication {
                         'type' => 'reset',
                         'name' => 'resetvisibility',
                         'value' => get_string('reset', 'publication'),
-                        'class' => 'visibilitysaver btn btn-secondary'
+                        'class' => 'visibilitysaver btn btn-secondary ml-1'
                 ]);
 
                 if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
@@ -518,14 +518,14 @@ class publication {
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary m-x-1'
+                            'class' => 'visibilitysaver btn btn-primary'
                     ]);
                 } else {
                     $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveteacherapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary m-x-1'
+                            'class' => 'visibilitysaver btn btn-primary'
                     ]);
                 }
             } else {
