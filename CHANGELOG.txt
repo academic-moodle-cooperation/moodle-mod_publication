@@ -1,10 +1,11 @@
 CHANGELOG
 =========
 
-3.11.0 (2021-05-18)
+3.11.0 (2021-05-25)
 -------------------
 * Moodle 3.11.0 compatible version
 * [FEATURE] #6834 - add one more file status for students - "pending approval"
+* [FIXED] #6877 - add indexes for db table publication_file, fields publication and userid - github #47
 * [FIXED] #6922 - remove warning that appears sometimes during listing of files of groups
 * [FIXED] #6923 - fix bug when sending approval-changed notifications to groups
 * [FIXED] #6924 - fix showing deleted assignments (pending deletion) in the dropdown
