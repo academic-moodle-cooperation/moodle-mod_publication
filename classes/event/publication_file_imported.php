@@ -68,7 +68,7 @@ class publication_file_imported extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The ".$this->data['other']['typ']." with id '".$this->data['other']['itemid'].
+        return "The ".$this->data['other']['typ']." with id '".$this->data['relateduserid'].
             "' added a file with id '".$this->data['other']['fileid'].
             "' which was imported to publication with id '".$this->data['other']['publication']."'";
     }
