@@ -1439,7 +1439,8 @@ class publication {
     public static function send_student_notification_approval_changed($cm, $user, $userfrom, $newstatus, $pubfile,
                                                                       $pubid, $publication=null) {
         global $CFG;
-        $strsubmitted = get_string('approvalchange', 'publication');
+        $sm = get_string_manager();
+        $strsubmitted = $sm->get_string('approvalchange', 'publication', null, $user->lang);
 
         if (!$publication) {
             $publication = new publication($cm);
@@ -1451,13 +1452,13 @@ class publication {
         $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $pubid;
         $info->id = $pubid;
         $info->filename = $pubfile->filename;
-        $info->apstatus = get_string('status:approved' . $newstatus, 'mod_publication');
-        $info->dayupdated = userdate(time(), get_string('strftimedate'));
-        $info->timeupdated = userdate(time(), get_string('strftimetime'));
+        $info->apstatus = $sm->get_string('status:approved' . $newstatus, 'mod_publication', null, $user->lang);
+        $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $user->lang));
+        $info->timeupdated = userdate(time(), $sm->get_string('strftimetime', 'core_langconfig', null, $user->lang));
 
         $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
-        $posttext = $publication->email_students_text($info);
-        $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info) : '';
+        $posttext = $publication->email_students_text($info, $user->lang);
+        $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info, $user->lang) : '';
 
         $message = new \core\message\message();
         $message->component = 'mod_publication';
@@ -1491,28 +1492,30 @@ class publication {
      */
     public static function send_teacher_notification_uploaded($cm, $file, $user=null, $publication=null) {
         global $CFG, $USER;
-        $strsubmitted = get_string('uploaded', 'publication');
-        if (!$publication) {
-            $publication = new publication($cm);
-        }
+        $sm = get_string_manager();
         if (!$user) {
             $user = $USER;
+        }
+        if (!$publication) {
+            $publication = new publication($cm);
         }
         $graders = $publication->get_graders($user);
 
         foreach ($graders as $teacher) {
+            $strsubmitted = $sm->get_string('uploaded', 'publication', null, $teacher->lang);
+
             $info = new stdClass();
             $info->username = fullname($user);
             $info->publication = format_string($publication->get_instance()->name, true);
             $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id;
             $info->id = $cm->id;
             $info->filename = $file->get_filename();
-            $info->dayupdated = userdate(time(), get_string('strftimedate'));
-            $info->timeupdated = userdate(time(), get_string('strftimetime'));
+            $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $teacher->lang));
+            $info->timeupdated = userdate(time(), $sm->get_string('strftimetime', 'core_langconfig', null, $teacher->lang));
 
             $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $info->publication;
-            $posttext = $publication->email_teachers_text($info);
-            $posthtml = ($teacher->mailformat == 1) ? $publication->email_teachers_html($info) : '';
+            $posttext = $publication->email_teachers_text($info, $teacher->lang);
+            $posthtml = ($teacher->mailformat == 1) ? $publication->email_teachers_html($info, $teacher->lang) : '';
 
             $message = new \core\message\message();
             $message->component = 'mod_publication';
@@ -1711,11 +1714,12 @@ class publication {
      * @param object $info The info used by the 'emailteachermail' language string
      * @return string Plain-Text snippet to use in messages
      */
-    public function email_teachers_text($info) {
+    public function email_teachers_text($info, $lang) {
+        $sm = get_string_manager();
         $posttext  = format_string($this->course->shortname).' -> '.
-            get_string('modulenameplural', 'publication').' -> '.
+            $sm->get_string('modulenameplural', 'publication', null, $lang).' -> '.
             format_string($info->publication)."\n";
-        $posttext .= get_string('emailteachermail', 'publication', $info)."\n";
+        $posttext .= $sm->get_string('emailteachermail', 'publication', $info, $lang)."\n";
         return $posttext;
     }
 
@@ -1725,17 +1729,18 @@ class publication {
      * @param object $info The info used by the 'emailteachermailhtml' language string
      * @return string HTML snippet to use in messages
      */
-    public function email_teachers_html($info) {
+    public function email_teachers_html($info, $lang) {
         global $CFG;
+        $sm = get_string_manager();
         $posthtml  = '<p><span style="font-family: sans-serif; ">' .
             '<a href="'.$CFG->wwwroot.'/course/view.php?id='.$this->course->id.'">'.
             format_string($this->course->shortname).'</a> ->'.
             '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.
-            $info->id.'">'.get_string('modulenameplural', 'publication').'</a> ->'.
+            $info->id.'">'.$sm->get_string('modulenameplural', 'publication', null, $lang).'</a> ->'.
             '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.$info->id.'">'.
             format_string($info->publication). '</a></span></p>';
         $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
-        $posthtml .= '<p>'.get_string('emailteachermailhtml', 'publication', $info).'</p>';
+        $posthtml .= '<p>'.$sm->get_string('emailteachermailhtml', 'publication', $info, $lang).'</p>';
         $posthtml .= '</font><hr />';
         return $posthtml;
     }
@@ -1746,12 +1751,13 @@ class publication {
      * @param object $info The info used by the 'emailteachermail' language string
      * @return string Plain-Text snippet to use in messages
      */
-    public function email_students_text($info) {
+    public function email_students_text($info, $lang) {
+        $sm = get_string_manager();
         $posttext  = format_string($this->course->shortname).' -> '.
-            get_string('modulenameplural', 'publication').' -> '.
+            $sm->get_string('modulenameplural', 'publication', null, $lang).' -> '.
             format_string($info->publication)."\n";
         $posttext .= "---------------------------------------------------------------------\n";
-        $posttext .= get_string('emailstudentsmail', 'publication', $info)."\n";
+        $posttext .= $sm->get_string('emailstudentsmail', 'publication', $info, $lang)."\n";
         $posttext .= "---------------------------------------------------------------------\n";
         return $posttext;
     }
@@ -1762,17 +1768,18 @@ class publication {
      * @param object $info The info used by the 'emailstudentsmailhtml' language string
      * @return string HTML snippet to use in messages
      */
-    public function email_students_html($info) {
+    public function email_students_html($info, $lang) {
         global $CFG;
+        $sm = get_string_manager();
         $posthtml  = '<p><span style="font-family: sans-serif; ">' .
             '<a href="'.$CFG->wwwroot.'/course/view.php?id='.$this->course->id.'">'.
             format_string($this->course->shortname).'</a> ->'.
             '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.
-            $info->id.'">'.get_string('modulenameplural', 'publication').'</a> ->'.
+            $info->id.'">'.$sm->get_string('modulenameplural', 'publication', null, $lang).'</a> ->'.
             '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.$info->id.'">'.
             format_string($info->publication). '</a></span></p>';
         $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
-        $posthtml .= '<p>'.get_string('emailstudentsmailhtml', 'publication', $info).'</p>';
+        $posthtml .= '<p>'.$sm->get_string('emailstudentsmailhtml', 'publication', $info, $lang).'</p>';
         $posthtml .= '</font><hr />';
         return $posthtml;
     }

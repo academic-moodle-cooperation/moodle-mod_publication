@@ -21,7 +21,8 @@
  * @author        Hannes Laimer
  * @author        Philipp Hager
  * @author        Andreas Windbichler
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @author        Simeon Naydenov
+ * @copyright     2021 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
