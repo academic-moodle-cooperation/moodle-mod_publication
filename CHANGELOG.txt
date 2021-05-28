@@ -10,6 +10,8 @@ CHANGELOG
 * [FIXED] #6922 - remove warning that appears sometimes during listing of files of groups
 * [FIXED] #6923 - fix bug when sending approval-changed notifications to groups
 * [FIXED] #6924 - fix showing deleted assignments (pending deletion) in the dropdown
+* [FIXED] #6921 - fix approval status in notification text/log entry
+* [FIXED] #6929 - fix language of notifications to match that of the receiver 
 
 3.10.1 (2021-04-14)
 -------------------

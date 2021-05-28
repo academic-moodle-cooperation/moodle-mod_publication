@@ -5,7 +5,7 @@ Student Folder Module
 
 This file is part of the mod_publication plugin for Moodle - <http://moodle.org/>
 
-*Author:*    Hannes Laimer, Philipp Hager, Andreas Windbichler
+*Author:*    Hannes Laimer, Philipp Hager, Andreas Windbichler, Simeon Naydenov
 
 *Copyright:* 2014 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
