@@ -47,7 +47,7 @@ class upload extends base {
         if (has_capability('mod/publication:approve', $this->context)) {
             $columns[] = 'teacherapproval';
             $headers[] = get_string('teacherapproval', 'publication');
-            $helpicons[] = null;
+            $helpicons[] = new \help_icon('teacherapproval', 'publication');
 
             $columns[] = 'visibleforstudents';
             $headers[] = get_string('visibleforstudents', 'publication');
