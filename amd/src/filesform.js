@@ -51,6 +51,27 @@ define(['jquery', 'core/log'], function($, log) {
                 }, 100);
             }
         });
+        if (this.attemptstable.length > 0) {
+            var $rows = this.attemptstable.children('tbody').children('tr');
+            var needsapprovalcount = 0;
+            $rows.each(function() {
+                var $this = $(this);
+                var $checkbox = $this.find('.permissionstable select.custom-select');
+                if ($checkbox.length > 0) {
+                    $checkbox.each(function() {
+                         var $c = $(this);
+                         if ($c.val() === '') {
+                            $c.addClass('needs-approval');
+                             needsapprovalcount++;
+                         }
+                    });
+                }
+            });
+            if (needsapprovalcount > 0) {
+                $('.needsapproval-legend').removeClass('d-none');
+            }
+        }
+
     };
 
     return instance;
