@@ -243,6 +243,6 @@
 }
 
 
-.path-mod-publication table#attempts tr.needs-approval > td {
-    background-color: var(--warning);
+.path-mod-publication table#attempts select.needs-approval {
+    border: 0.2rem solid var(--info);
 }

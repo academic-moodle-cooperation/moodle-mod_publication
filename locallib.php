@@ -484,7 +484,9 @@ class publication {
                 get_string('downloadall', 'publication'));
         echo html_writer::tag('div', $link, ['class' => 'mod-publication-download-link']);
 
+        echo html_writer::tag('div', get_string('currentlynotapproved', 'publication'), ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
         $table->out($perpage, true); // Print the whole table.
+        echo html_writer::tag('div', get_string('currentlynotapproved', 'publication'), ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
 
         $options = [];
         $options['zipusers'] = get_string('zipusers', 'publication');
