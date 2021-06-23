@@ -74,7 +74,7 @@ class import extends base {
             } else {
                 $headers[] = get_string('teacherapproval', 'publication');
             }
-            $helpicons[] = null;
+            $helpicons[] = new \help_icon('teacherapproval', 'publication');
 
             $columns[] = 'visibleforstudents';
             $headers[] = get_string('visibleforstudents', 'publication');
