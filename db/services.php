@@ -46,4 +46,23 @@ $functions = [
            'type' => 'read', // Database rights of the WS-function (read, write).
            'ajax' => true,
         ],
+
+    'mod_publication_get_publications_by_courses' => [
+        'classname'     => 'mod_publication_external',
+        'methodname'    => 'get_publications_by_courses',
+        'classpath'     => 'mod/publication/externallib.php',
+        'description'   => 'Get all publications for the given courses',
+        'type'          => 'read',
+        'services'      => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
+
+    'mod_publication_get_publication' => [
+        'classname'     => 'mod_publication_external',
+        'methodname'    => 'get_publication',
+        'classpath'     => 'mod/publication/externallib.php',
+        'description'   => 'Get the publication with the given id',
+        'type'          => 'read',
+        'services'      => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
+
 ];
