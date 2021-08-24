@@ -233,6 +233,8 @@ function xmldb_publication_upgrade($oldversion) {
         $dbman->change_field_default($table, $field);
         $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, true, null, '0', 'timecreated');
         $dbman->change_field_default($table, $field);
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2021052501, 'publication');
     }
 
     return true;
