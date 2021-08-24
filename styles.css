@@ -246,3 +246,9 @@
 .path-mod-publication table#attempts select.needs-approval {
     border: 0.2rem solid var(--info);
 }
+
+.path-mod-publication table#attempts .needs-approval-asterisk {
+    font-size: 1.2rem;
+    display: inline-block;
+    margin-left: 0.2rem;
+}

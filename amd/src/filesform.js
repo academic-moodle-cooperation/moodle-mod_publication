@@ -61,8 +61,11 @@ define(['jquery', 'core/log'], function($, log) {
                     $checkbox.each(function() {
                          var $c = $(this);
                          if ($c.val() === '') {
-                            $c.addClass('needs-approval');
-                             needsapprovalcount++;
+                             if (!$c.hasClass('needs-approval')) {
+                                 $c.addClass('needs-approval');
+                                 needsapprovalcount++;
+                                 $c.after('<span class="needs-approval-asterisk">*</span>');
+                             }
                          }
                     });
                 }
