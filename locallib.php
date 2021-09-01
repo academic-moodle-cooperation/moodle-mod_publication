@@ -484,9 +484,14 @@ class publication {
                 get_string('downloadall', 'publication'));
         echo html_writer::tag('div', $link, ['class' => 'mod-publication-download-link']);
 
-        echo html_writer::tag('div', get_string('currentlynotapproved', 'publication'), ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
+        $settingsurl = new moodle_url('/course/modedit.php', [
+            'update' => $this->coursemodule->id,
+            'return' => 'zip'
+        ], 'id_allowedfiletypes');
+        $settingslink = html_writer::link($settingsurl,  get_string('currentlynotapproved', 'publication'));
+        echo html_writer::tag('div', $settingslink, ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
         $table->out($perpage, true); // Print the whole table.
-        echo html_writer::tag('div', get_string('currentlynotapproved', 'publication'), ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
+        echo html_writer::tag('div', $settingslink, ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
 
         $options = [];
         $options['zipusers'] = get_string('zipusers', 'publication');
