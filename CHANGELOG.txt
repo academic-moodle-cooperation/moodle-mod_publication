@@ -4,6 +4,7 @@ CHANGELOG
 3.11.1 (2021-06-23)
 -------------------
 * [FEATURE] #6879 - make files that need approval more visible and add infotext
+* [BUG] #6975 - fix wrong referenced table in install.xml - github issue #53
 
 
 3.11.0 (2021-05-25)
