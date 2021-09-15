@@ -1,11 +1,12 @@
 CHANGELOG
 =========
 
-3.11.1 (2021-06-23)
+3.11.1 (2021-09-15)
 -------------------
 * [FEATURE] #6879 - make files that need approval more visible and add infotext
 * [BUG] #6967 - fix wrong default value for db fields in table publication_groupapproval - github issue #52
 * [BUG] #6975 - fix wrong referenced table in install.xml - github issue #53
+* [FIXED] #6929 - fix language of notifications to match that of the receiver 
 
 3.11.0 (2021-05-25)
 -------------------
@@ -17,7 +18,6 @@ CHANGELOG
 * [FIXED] #6923 - fix bug when sending approval-changed notifications to groups
 * [FIXED] #6924 - fix showing deleted assignments (pending deletion) in the dropdown
 * [FIXED] #6921 - fix approval status in notification text/log entry
-* [FIXED] #6929 - fix language of notifications to match that of the receiver 
 
 3.10.1 (2021-04-14)
 -------------------
