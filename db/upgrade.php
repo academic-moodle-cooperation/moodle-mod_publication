@@ -224,5 +224,18 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021052500, 'publication');
     }
 
+    if ($oldversion < 2021052501) {
+
+        $table = new xmldb_table('publication_groupapproval');
+        $DB->set_field('publication_groupapproval', 'timecreated', 0, ['timecreated' => null]);
+        $DB->set_field('publication_groupapproval', 'timemodified', 0, ['timemodified' => null]);
+        $field = new xmldb_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, true, null, '0', 'approval');
+        $dbman->change_field_default($table, $field);
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, true, null, '0', 'timecreated');
+        $dbman->change_field_default($table, $field);
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2021052501, 'publication');
+    }
+
     return true;
 }
