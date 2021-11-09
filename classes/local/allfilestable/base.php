@@ -418,9 +418,9 @@ class base extends \table_sql {
         return $this->itemnames[$itemid];
     }
 
-    /***************************************************************
-     *** COLUMN OUTPUT METHODS *************************************
-     **************************************************************/
+    /**
+     * COLUMN OUTPUT METHODS
+     */
 
     /**
      * This function is called for each data row to allow processing of the

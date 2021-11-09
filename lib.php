@@ -288,17 +288,17 @@ function mod_publication_pluginfile($course, $cm, context $context, $filearea, $
 
 /**
  * Callback for block_myoverview which will decide whether it will be shown in the overview
- * 
+ *
  * @param event
  * @param factory
  */
 function mod_publication_core_calendar_provide_event_action(calendar_event $event, \core_calendar\action_factory $factory) {
     global $CFG, $USER, $DB;
-    require_once ($CFG->dirroot . '/mod/publication/locallib.php');
+    require_once($CFG->dirroot . '/mod/publication/locallib.php');
 
     // Get the instance of the publication with the way recommended by the docs.
-    $course_instance = get_fast_modinfo($event->courseid)->instances['publication'][$event->instance]; 
-    $instance = new publication($course_instance);
+    $courseinstance = get_fast_modinfo($event->courseid)->instances['publication'][$event->instance];
+    $instance = new publication($courseinstance);
 
     // Only show this instance if it's open
     if ($instance->is_open()) {
@@ -311,7 +311,7 @@ function mod_publication_core_calendar_provide_event_action(calendar_event $even
 
         return $factory->create_instance(
             get_string('add_uploads', 'publication'), // Name of the action button
-            new \moodle_url('/mod/publication/view.php', ['id' => $course_instance->id]), // URL of the instance
+            new \moodle_url('/mod/publication/view.php', ['id' => $courseinstance->id]), // URL of the instance
             1, // Count of necessary actions
             true // Whether the user can take action on this folder.
         );
