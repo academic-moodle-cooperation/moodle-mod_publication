@@ -292,6 +292,7 @@ class base extends \table_sql {
 
         // Fetch the attempts!
         $sort = $this->get_sql_sort();
+        $sort = preg_replace('/(?<=\W)?(email)(?=\W)/', 'u.\1', $sort);
         if ($sort) {
             $sort = "ORDER BY $sort";
         }
