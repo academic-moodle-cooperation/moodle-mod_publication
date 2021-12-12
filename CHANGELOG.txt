@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 
+3.11.2 (2021-11-??)
+* [FEATURE] #6946 - Add events in calendar - github pull request #48 from Henry Brink
+
 3.11.1 (2021-09-15)
 -------------------
 * [FEATURE] #6879 - make files that need approval more visible and add infotext

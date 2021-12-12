@@ -57,6 +57,8 @@ function publication_add_instance($publication) {
     $context = context_module::instance($cm->id);
     $instance = new publication($cm, $course, $context);
 
+    $instance->update_calendar_event();
+
     if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT
             && !empty($instance->get_instance()->autoimport)) {
         // Fetch all files right now!
@@ -116,6 +118,8 @@ function publication_update_instance($publication) {
     $context = context_module::instance($cm->id);
     $instance = new publication($cm, $course, $context);
 
+    $instance->update_calendar_event();
+
     if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT
             && !empty($instance->get_instance()->autoimport)) {
         // Fetch all files right now!
@@ -145,6 +149,8 @@ function publication_delete_instance($id) {
     $fs->delete_area_files($publication->id, 'mod_publication', 'attachment');
 
     $DB->delete_records('publication_file', ['publication' => $publication->id]);
+
+    $DB->delete_records('event', ['modulename' => 'publication', 'instance' => $publication->id]);
 
     $result = true;
     if (!$DB->delete_records('publication', ['id' => $publication->id])) {
@@ -278,4 +284,36 @@ function mod_publication_pluginfile($course, $cm, context $context, $filearea, $
 
     // Wont be reached!
     return false;
+}
+
+/**
+ * Callback for block_myoverview which will decide whether it will be shown in the overview
+ *
+ * @param event
+ * @param factory
+ */
+function mod_publication_core_calendar_provide_event_action(calendar_event $event, \core_calendar\action_factory $factory) {
+    global $CFG, $USER, $DB;
+    require_once($CFG->dirroot . '/mod/publication/locallib.php');
+
+    // Get the instance of the publication with the way recommended by the docs.
+    $courseinstance = get_fast_modinfo($event->courseid)->instances['publication'][$event->instance];
+    $instance = new publication($courseinstance);
+
+    // Only show this instance if it's open
+    if ($instance->is_open()) {
+        // Also don't show this instance when the user already uploaded one or more files
+        $files = $DB->count_records('publication_file', ['publication' => $event->instance, 'userid' => $USER->id]);
+
+        if ($files >= 1) {
+            return null;
+        }
+
+        return $factory->create_instance(
+            get_string('add_uploads', 'publication'), // Name of the action button
+            new \moodle_url('/mod/publication/view.php', ['id' => $courseinstance->id]), // URL of the instance
+            1, // Count of necessary actions
+            true // Whether the user can take action on this folder.
+        );
+    }
 }
