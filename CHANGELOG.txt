@@ -1,8 +1,8 @@
 CHANGELOG
 =========
 
-3.11.? (2022??????)
--------------------
+3.11.2 (2021-12-22)
+* [FEATURE] #6946 - Add events in calendar - github pull request #48 from Henry Brink
 * [BUG] #7091 - fix Ambiguous column name 'email' github issue #55 from mrkskwsnck
 
 3.11.1 (2021-09-15)
