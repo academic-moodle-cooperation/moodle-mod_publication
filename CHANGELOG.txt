@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.11.? (2022??????)
+-------------------
+* [BUG] #7091 - fix Ambiguous column name 'email' github issue #55 from mrkskwsnck
+
 3.11.1 (2021-09-15)
 -------------------
 * [FEATURE] #6879 - make files that need approval more visible and add infotext
