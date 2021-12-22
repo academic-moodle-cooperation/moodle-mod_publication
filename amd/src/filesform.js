@@ -16,6 +16,7 @@
 /**
  * Resets checked checkboxes after ZIP file was loaded!
  *
+ * @module        mod_publication/filesform
  * @package
  * @author        Philipp Hager
  * @author        Hannes Laimer

@@ -292,6 +292,7 @@ class base extends \table_sql {
 
         // Fetch the attempts!
         $sort = $this->get_sql_sort();
+        $sort = preg_replace('/(?<=\W)?(email)(?=\W)/', 'u.\1', $sort);
         if ($sort) {
             $sort = "ORDER BY $sort";
         }
@@ -417,10 +418,6 @@ class base extends \table_sql {
 
         return $this->itemnames[$itemid];
     }
-
-    /**
-     * COLUMN OUTPUT METHODS
-     */
 
     /**
      * This function is called for each data row to allow processing of the

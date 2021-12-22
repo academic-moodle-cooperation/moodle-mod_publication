@@ -16,6 +16,7 @@
 /**
  * JS showing detailed infos about user's approval status for group approvals in a modal window
  *
+ * @module        mod_publication/onlinetextpreview
  * @package
  * @author        Philipp Hager
  * @copyright     2020 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
