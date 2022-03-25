@@ -359,7 +359,7 @@ class publication {
         $customusers = '';
 
         if (is_array($users) && count($users) > 0) {
-            $customusers = " and u.id IN (" . implode($users, ', ') . ") ";
+            $customusers = " and u.id IN (" . implode(', ', $users) . ") ";
         } else if ($users === false) {
             return [];
         }
