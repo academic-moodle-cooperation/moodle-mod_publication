@@ -4,6 +4,7 @@ CHANGELOG
 3.11.3 (2022-04-05)
 -------------------
 * [BUG] #7142 - fix typo in locallib.php
+* [BUG] #7149 - fix error when manually updating files - github issue #59
 
 3.11.2 (2021-12-22)
 -------------------

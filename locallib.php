@@ -1185,7 +1185,7 @@ class publication {
                     }
 
                     $conditions['id'] = $oldpubfile->id;
-                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']->id]);
+                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']]);
                     $cm = $this->coursemodule;
                     \mod_publication\event\publication_file_deleted::create_from_object($cm, $dataobject)->trigger();
                     $DB->delete_records('publication_file', $conditions);
@@ -1364,7 +1364,7 @@ class publication {
                 $file = $fs->get_file_by_hash($pathhash);
                 if (empty($formattedtext)) {
                     // The onlinetext was empty, delete the file!
-                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']->id]);
+                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']]);
                     \mod_publication\event\publication_file_deleted::create_from_object($assigncm, $dataobject)->trigger();
                     $DB->delete_records('publication_file', $conditions);
                     $file->delete();
