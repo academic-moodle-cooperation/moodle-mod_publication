@@ -100,7 +100,7 @@ class publication {
      */
     public function show_intro() {
         if ($this->get_instance()->alwaysshowdescription ||
-                time() > $this->get_instance()->allowsubmissionfromdate) {
+                time() > $this->get_instance()->allowsubmissionsfromdate) {
             return true;
         }
 
