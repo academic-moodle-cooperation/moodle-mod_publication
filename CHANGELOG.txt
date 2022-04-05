@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
+3.11.3 (2022-04-05)
+-------------------
+* [BUG] #7142 - fix typo in locallib.php
+
 3.11.2 (2021-12-22)
+-------------------
 * [FEATURE] #6931 - Add events in calendar - github pull request #48 from Henry Brink
 * [BUG] #7091 - fix Ambiguous column name 'email' github issue #55 from mrkskwsnck
 
