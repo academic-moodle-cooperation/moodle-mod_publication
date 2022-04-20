@@ -5,6 +5,7 @@ CHANGELOG
 -------------------
 * [BUG] #7142 - fix typo in locallib.php
 * [BUG] #7149 - fix error when manually updating files - github issue #59
+* [FEATURE] #7143 - show availability dates on course page when showactivitydates is set to true
 
 3.11.2 (2021-12-22)
 -------------------
