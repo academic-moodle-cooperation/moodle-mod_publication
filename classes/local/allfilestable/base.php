@@ -234,7 +234,7 @@ class base extends \table_sql {
         $groupby = $ufields . ' ' . $useridentityfields . ', u.username ';
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
-        $this->set_count_sql("SELECT COUNT(u.id) FROM " . $from . " WHERE " . $where, $params);
+        $this->set_count_sql("SELECT COUNT(a.uid) FROM (SELECT DISTINCT u.id AS uid FROM " . $from . " WHERE " . $where . ') a', $params);
 
     }
 
