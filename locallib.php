@@ -458,11 +458,11 @@ class publication {
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'page', 'value' => $page]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
 
-        echo html_writer::start_tag('div', ['id' => 'id_allfiles', 'class' => 'clearfix', 'aria-live' => 'polite']);
+        echo html_writer::start_tag('fieldset', ['class' => 'clearfix collapsible', 'id' => 'id_allfiles']);
         $allfiles = get_string('allfiles', 'publication');
         $publicfiles = get_string('publicfiles', 'publication');
         $title = (has_capability('mod/publication:approve', $context)) ? $allfiles : $publicfiles;
-        echo html_writer::tag('div', $title, ['class' => 'legend']);
+        echo html_writer::tag('legend', $title, ['class' => 'ftoggler text-primary']);
         echo html_writer::start_div('fcontainer clearfix');
 
         $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
@@ -572,7 +572,7 @@ class publication {
             </script>" .
                 html_writer::end_div() .
                 html_writer::end_div() .
-                html_writer::end_div() .
+                html_writer::end_tag('fieldset') .
                 html_writer::end_tag('form');
 
         // Mini form for setting user preference.

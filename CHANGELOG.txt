@@ -8,6 +8,7 @@ CHANGELOG
 * [FEATURE] #7143 - show availability dates on course page when showactivitydates is set to true
 * [BUG] #7119 - fix pagination functionality for individual users and groups
 * [FEATURE] #7145 - fix order of implode parameters (php 8) - github pull request #61 - Nick Phillips
+* [FEATURE] #7176 - UX improvements for "teacher view" - github issue #44
 
 3.11.2 (2021-12-22)
 -------------------
