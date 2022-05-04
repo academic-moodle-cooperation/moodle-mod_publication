@@ -492,6 +492,9 @@ class publication {
         ], 'id_allowedfiletypes');
         $settingslink = html_writer::link($settingsurl,  get_string('currentlynotapproved', 'publication'));
         echo html_writer::tag('div', $settingslink, ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
+        if ($perpage == 0) {
+            echo '<style> nav.pagination ul.pagination li:only-child { display: none} </style>';
+        }
         $table->out($perpage, true); // Print the whole table.
         echo html_writer::tag('div', $settingslink, ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
 
