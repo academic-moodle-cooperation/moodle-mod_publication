@@ -4,6 +4,7 @@ CHANGELOG
 4.0.0. (2022-05-04)
 -------------------
 * Moodle 4.0.0 compatible version
+* [FEATURE] Add idnumber support
 
 3.11.3 (2022-04-05)
 -------------------
