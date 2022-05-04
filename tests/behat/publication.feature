@@ -21,7 +21,6 @@ Feature: Create publication instance
     And I add a "Student folder" to section "1" and I fill the form with:
       | Student folder name | Test studentfolder name |
       | Description         | Test description        |
-    And I am on "Course 1" course homepage
-    And I follow "Test studentfolder name"
+    And I am on the "Test studentfolder name" Activity page
     And I press "edit/upload files"
     Then I should see "Own files"
