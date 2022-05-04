@@ -62,7 +62,7 @@ class restore_publication_activity_task extends restore_activity_task {
      *
      * @return array
      */
-    static public function define_decode_contents() {
+    public static function define_decode_contents() {
         $contents = [];
 
         $contents[] = new restore_decode_content('publication', ['intro'], 'publication');
@@ -76,7 +76,7 @@ class restore_publication_activity_task extends restore_activity_task {
      *
      * @return array of restore_decode_rule
      */
-    static public function define_decode_rules() {
+    public static function define_decode_rules() {
         $rules = [];
 
         $rules[] = new restore_decode_rule('PUBLICATIONVIEWBYID',
@@ -98,7 +98,7 @@ class restore_publication_activity_task extends restore_activity_task {
      *
      * @return array of restore_log_rule
      */
-    static public function define_restore_log_rules() {
+    public static function define_restore_log_rules() {
         $rules = [];
 
         $rules[] = new restore_log_rule('publication', 'add', 'view.php?id={course_module}', '{publication}');
@@ -120,7 +120,7 @@ class restore_publication_activity_task extends restore_activity_task {
      *
      * @return array
      */
-    static public function define_restore_log_rules_for_course() {
+    public static function define_restore_log_rules_for_course() {
         $rules = [];
 
         return $rules;

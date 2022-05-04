@@ -82,8 +82,7 @@ class group extends base {
         $groupby = " g.id ";
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
-        $this->set_count_sql("SELECT COUNT(g.id) FROM " . $from . " WHERE " . $where, $params);
-
+        $this->set_count_sql("SELECT COUNT(a.gid) FROM (SELECT DISTINCT g.id AS gid  FROM " . $from . " WHERE " . $where . ') a', $params);
     }
 
     /**

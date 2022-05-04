@@ -16,7 +16,8 @@
 /**
  * JS showing detailed infos about user's approval status for group approvals in a modal window
  *
- * @package       mod_publication
+ * @module        mod_publication/groupapprovalstatus
+ * @package
  * @author        Philipp Hager
  * @copyright     2020 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

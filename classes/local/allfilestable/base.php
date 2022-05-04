@@ -234,7 +234,7 @@ class base extends \table_sql {
         $groupby = $ufields . ' ' . $useridentityfields . ', u.username ';
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
-        $this->set_count_sql("SELECT COUNT(u.id) FROM " . $from . " WHERE " . $where, $params);
+        $this->set_count_sql("SELECT COUNT(a.uid) FROM (SELECT DISTINCT u.id AS uid FROM " . $from . " WHERE " . $where . ') a', $params);
 
     }
 
@@ -292,6 +292,7 @@ class base extends \table_sql {
 
         // Fetch the attempts!
         $sort = $this->get_sql_sort();
+        $sort = preg_replace('/(?<=\W)?(email)(?=\W)/', 'u.\1', $sort);
         if ($sort) {
             $sort = "ORDER BY $sort";
         }
@@ -417,10 +418,6 @@ class base extends \table_sql {
 
         return $this->itemnames[$itemid];
     }
-
-    /***************************************************************
-     *** COLUMN OUTPUT METHODS *************************************
-     **************************************************************/
 
     /**
      * This function is called for each data row to allow processing of the

@@ -16,7 +16,8 @@
 /**
  * Javascript to align rows
  *
- * @package   mod_publication
+ * @module    mod_publication/alignrows
+ * @package
  * @author    Hannes Laimer
  * @copyright 2020 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
