@@ -91,7 +91,7 @@ function publication_supports($feature) {
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_IDNUMBER:
-            return false;
+            return true;
 
         default:
             return null;
