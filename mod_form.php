@@ -256,7 +256,7 @@ class mod_publication_mod_form extends moodleform_mod {
         }
 
         if ($data['mode'] == PUBLICATION_MODE_IMPORT) {
-            if ($data['importfrom'] == "0") {
+            if ($data['importfrom'] == "0" || $data['importfrom'] == '-1') {
                 $errors['importfrom'] = get_string('importfrom_err', 'publication');
             }
         }
