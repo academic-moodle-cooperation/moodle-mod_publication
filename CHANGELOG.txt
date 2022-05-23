@@ -15,6 +15,7 @@ CHANGELOG
 * [FEATURE] #7145 - fix order of implode parameters (php 8) - github pull request #61 - Nick Phillips
 * [FEATURE] #7176 - UX improvements for "teacher view" - github issue #44
 * [BUG] #7204 - fix required assignment field when "Import" selected
+* [HOTFIX] #7208 - fix sql query when filters applied
 
 3.11.2 (2021-12-22)
 -------------------

@@ -276,7 +276,11 @@ class base extends \table_sql {
 
             list($wsql, $wparams) = $this->get_sql_where();
             if ($wsql) {
-                $this->countsql .= ' AND ' . $wsql;
+                if (strrpos($this->countsql, ') a') == (strlen($this->countsql) - 3)) {
+                    $this->countsql = substr($this->countsql, 0, -3) .  ' AND ' . $wsql . ') a';
+                } else {
+                    $this->countsql .= ' AND ' . $wsql;
+                }
                 $this->countparams = array_merge($this->countparams, $wparams);
 
                 $this->sql->where .= ' AND ' . $wsql;
