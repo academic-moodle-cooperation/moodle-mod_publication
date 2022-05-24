@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.11.4 (2022-05-24)
+-------------------
+* [HOTFIX] #7208 - fix sql query when filters applied
+
 3.11.3 (2022-04-05)
 -------------------
 * [BUG] #7142 - fix typo in locallib.php
@@ -10,7 +14,6 @@ CHANGELOG
 * [FEATURE] #7145 - fix order of implode parameters (php 8) - github pull request #61 - Nick Phillips
 * [FEATURE] #7176 - UX improvements for "teacher view" - github issue #44
 * [BUG] #7204 - fix required assignment field when "Import" selected
-* [HOTFIX] #7208 - fix sql query when filters applied
 
 3.11.2 (2021-12-22)
 -------------------
