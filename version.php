@@ -32,4 +32,4 @@ $plugin->version = 2021052504;
 $plugin->requires = 2021051700;
 $plugin->component = 'mod_publication';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = "v3.11.3";
+$plugin->release = "v3.11.4";
