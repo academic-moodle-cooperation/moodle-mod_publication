@@ -6,6 +6,7 @@ CHANGELOG
 * Moodle 4.0.0 compatible version
 * [FEATURE] Add idnumber support
 * [HOTFIX] #7208 - fix sql query when filters applied
+* [FEATURE] #7173 - update icon to monologo
 
 3.11.3 (2022-04-05)
 -------------------
