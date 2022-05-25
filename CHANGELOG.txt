@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.11.4 (2022-05-24)
+-------------------
+* [HOTFIX] #7208 - fix sql query when filters applied
+
 3.11.3 (2022-04-05)
 -------------------
 * [BUG] #7142 - fix typo in locallib.php
