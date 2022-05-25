@@ -92,7 +92,8 @@ function publication_supports($feature) {
             return true;
         case FEATURE_IDNUMBER:
             return true;
-
+        case FEATURE_MOD_PURPOSE:
+            return MOD_PURPOSE_CONTENT;
         default:
             return null;
     }
