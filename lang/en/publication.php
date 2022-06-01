@@ -50,9 +50,9 @@ $string['search:activity'] = 'Student folder - activity information';
 $string['messageprovider:publication_updates'] = 'Publication notifications';
 
 $string['notifications'] = 'Notifications';
-$string['notifyteacher'] = 'Notify graders about uploads';
+$string['notifyteacher'] = 'Notify teachers about uploads';
 $string['notifystudents'] = 'Notify students about approval changes';
-$string['notifyteacher_help'] = 'If enabled, graders (usually teachers) receive a message whenever a student uploads a file. Message methods are configurable.';
+$string['notifyteacher_help'] = 'If enabled, teachers receive a message whenever a student uploads a file. Message methods are configurable.';
 $string['notifystudents_help'] = 'If enabled, students recieve a message whenever the approval status of one of their uploads changes. Message methods are configurable.';
 
 $string['uploaded'] = 'Uploaded';
@@ -82,7 +82,7 @@ It is <a href="{$a->url}">available on the web site</a>.';
 
 $string['name'] = 'Student folder name';
 $string['obtainstudentapproval'] = 'Obtain approval';
-$string['saveapproval'] = 'save approval';
+$string['saveapproval'] = 'Save approval';
 $string['configobtainstudentapproval'] = 'Documents are visible after the student´s consent.';
 $string['obtainteacherapproval'] = 'Approved by default';
 $string['configobtainteacherapproval'] = 'Documents of students are by default visible for all other participants.';
@@ -94,18 +94,18 @@ $string['configmaxbytes'] = 'Default maximum size for all files in the student f
 $string['reset_userdata'] = 'All data';
 
 // Strings from the File  mod_form.
-$string['autoimport'] = 'Sync automatically with Assignment';
-$string['autoimport_help'] = 'If activated, new submissions will in corresponding Assigment will be imported automatically into student folder module. (Optional) Studentapproval has to be obtained again for the new files.';
+$string['autoimport'] = 'Sync automatically with assignment';
+$string['autoimport_help'] = 'If activated, new submissions will in corresponding assigment will be imported automatically into student folder module. (Optional) Student approval has to be obtained again for the new files.';
 $string['configautoimport'] = 'If you prefer to have student submissions be automatically imported into student folder instances. This feature can be enabled/disabled for each student folder instance separately.';
-$string['availability'] = 'Timeslot for Upload/Approval';
+$string['availability'] = 'Timeslot for upload/approval';
 
 $string['allowsubmissionsfromdate'] = 'from';
-$string['allowsubmissionsfromdateh'] = 'Timeslot for Upload/Approval';
+$string['allowsubmissionsfromdateh'] = 'Timeslot for upload/approval';
 $string['allowsubmissionsfromdateh_help'] = 'You can determine the period of time during which students can upload files or give their approval for file publication. During this time period students can edit their files and can also withdraw their approval for publication.';
 $string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
 $string['alwaysshowdescription'] = 'Always show description';
-$string['alwaysshowdescription_help'] = 'If disabled, the Assignment Description above will only become visible to students at the "Allow submissions from" date.';
+$string['alwaysshowdescription_help'] = 'If disabled, the assignment description above will only become visible to students at the "Upload/Approval from" date.';
 
 $string['duedate'] = 'to';
 $string['duedate_help'] = 'This is when the assignment is due. Submissions will still be allowed after this date but any assignments submitted after this date are marked as late. To prevent submissions after a certain date - set the assignment cut off date.';
@@ -118,29 +118,29 @@ $string['cutoffdatefromdatevalidation'] = 'Cut-off date must be after the allow 
 
 $string['mode'] = 'Mode';
 $string['mode_help'] = 'Choose whether students can upload documents in the folder or documents of an assignment are the source of it.';
-$string['modeupload'] = 'students can upload documents';
-$string['modeimport'] = 'take documents from an assignment';
+$string['modeupload'] = 'Students can upload documents';
+$string['modeimport'] = 'Take documents from an assignment';
 
 $string['courseuploadlimit'] = 'Course upload limit';
 $string['allowedfiletypes'] = 'Accepted file types';
 $string['allowedfiletypes_help'] = 'Accepted file types can be restricted by entering a comma-separated list of mimetypes, e.g. \'video/mp4, audio/mp3, image/png, image/jpeg\', or file extensions including a dot, e.g. \'.png, .jpg\'. If the field is left empty, then all file types are allowed.';
 $string['allowedfiletypes_err'] = 'Check input! Invalid file extensions or seperators';
-$string['obtainteacherapproval_help'] = 'Decide if files will be made visible immediately upon upload or not: <br><ul><li> yes - all files will be visible to everyone right away</li><li> no - files will be published only after the teacher approved</li></ul>';
+$string['obtainteacherapproval_help'] = 'Decide if files will be made visible immediately upon upload or not: <br><ul><li> Yes - all files will be visible to everyone right away</li><li> No - files will be published only after the teacher approved</li></ul>';
 
 $string['currentlynotapproved'] = '* Currently not approved or disapproved.';
 
 $string['teacherapproval_help'] = 'Current decision on files, to be visible to all participants: <br /><ul><li>Choose... - not approved or disapproved yet, the files are not visible.</li><li>Yes - approved, the files are visible.</li><li>No - disapproved, the files are not visible.</li></ul>';
 $string['assignment'] = 'Assignment';
 $string['assignment_help'] = 'Choose the assignment to import files from. In the moment group-assignments are not supported and therefore not selectable.';
-$string['obtainstudentapproval_help'] = 'Decide if students approval will be obtained: <br><ul><li> yes - files will be visible to all only after the student approved. The teacher may select individual students/files to ask for approval.</li><li> no - the student’s approval will not be obtained via Moodle. The file’s visibility is solely the teacher’s desicion.</li></ul>';
-$string['choose'] = 'please choose ...';
+$string['obtainstudentapproval_help'] = 'Decide if students approval will be obtained: <br><ul><li> Yes - files will be visible to all only after the student approved. The teacher may select individual students/files to ask for approval.</li><li> No - the student’s approval will not be obtained via Moodle. The file’s visibility is solely the teacher’s decision.</li></ul>';
+$string['choose'] = 'Please choose ...';
 $string['importfrom_err'] = 'You have to choose an assignment you want to import from.';
 $string['nonexistentfiletypes'] = 'The following file types were not recognised: {$a}';
 
 $string['groupapprovalmode'] = 'Groupapproval mode';
 $string['groupapprovalmode_help'] = 'Here you decide if approval of all group members or just approval of at least one group member is required for files to be visible. The files will only be visible after approval by all group members or at least one group member.';
 $string['groupapprovalmode_all'] = 'ALL members of the group have to approve';
-$string['groupapprovalmode_single'] = 'at least ONE member has to approve';
+$string['groupapprovalmode_single'] = 'At least ONE member has to approve';
 
 $string['warning_changefromobtainteacherapproval'] = 'After activating this setting, all uploaded files will be visible to other participants. All uploaded will become visible. You can manually make files invisible to certain students.';
 $string['warning_changetoobtainteacherapproval'] = 'After deactivating this setting uploaded files will not be visible to other participants automatically. You will have to determine which files are visible. Already visible files will become invisible.';
@@ -157,11 +157,11 @@ $string['extensionnotafterfromdate'] = 'Extension date must be after the allow s
 $string['nopublicationsincourse'] = 'There are no student folder instances in this course.';
 
 // Strings from the File  view.php.
-$string['allowsubmissionsfromdate_upload'] = 'Upload possibility from';
+$string['allowsubmissionsfromdate_upload'] = 'Upload from';
 $string['allowsubmissionsfromdate_import'] = 'Approval from';
-$string['duedate_upload'] = 'Upload possibility to';
+$string['duedate_upload'] = 'Upload to';
 $string['duedate_import'] = 'Approval to';
-$string['cutoffdate_upload'] = 'Last upload posssibility to';
+$string['cutoffdate_upload'] = 'Last upload to';
 $string['cutoffdate_import'] = 'Last approval to';
 $string['extensionto'] = 'Extension to';
 $string['filedetails'] = 'Details';
@@ -172,13 +172,13 @@ $string['updatefileswarning'] = 'Files from an individual student in the student
 $string['myfiles'] = 'Own files';
 $string['mygroupfiles'] = 'My group\'s files';
 $string['add_uploads'] = 'Add files';
-$string['edit_uploads'] = 'edit/upload files';
+$string['edit_uploads'] = 'Edit/upload files';
 $string['edit_timeover'] = 'Files can only be edited during the changeperiod.';
 $string['approval_timeover'] = 'You can only change your approval during the changeperiod.';
 $string['noentries'] = 'No entries';
 $string['nofiles'] = 'No files available';
-$string['nothing_to_show_users'] = 'nothing to display - no students available';
-$string['nothing_to_show_groups'] = 'nothing to display - no group available';
+$string['nothing_to_show_users'] = 'Nothing to display - no students available';
+$string['nothing_to_show_groups'] = 'Nothing to display - no group available';
 $string['notice'] = 'Notice:';
 $string['notice_uploadrequireapproval'] = 'All uploaded files will be made visible only after the teacher’s review';
 $string['notice_uploadnoapproval'] = 'All files will be immediately visible to everyone upon upload. The teacher reserves the right to hide published files at any time.';
@@ -186,22 +186,22 @@ $string['notice_groupimportrequireallapproval'] = 'Decide whether your files are
 $string['notice_groupimportrequireoneapproval'] = 'Decide whether your files are available for everyone. A single group member\'s approval is enough for the file to be visible. Please discuss group internally if your file should be visible or not before approving it!';
 $string['notice_importrequireapproval'] = 'Decide whether your files are available for everyone.';
 $string['notice_importnoapproval'] = 'The following files are visible to all.';
-$string['teacher_pending'] = 'confirmation pending';
-$string['teacher_approved'] = 'visible (approved)';
+$string['teacher_pending'] = 'Confirmation pending';
+$string['teacher_approved'] = 'Visible (approved)';
 $string['teacher_rejected'] = 'declined';
 $string['approved'] = 'Approved';
 $string['show_details'] = 'Show details';
-$string['student_approve'] = 'approve';
-$string['student_approved'] = 'approved';
-$string['student_pending'] = 'not visible (not approved)';
+$string['student_approve'] = 'Approve';
+$string['student_approved'] = 'Approved';
+$string['student_pending'] = 'Not visible (not approved)';
 $string['pending'] = 'Pending';
-$string['student_reject'] = 'reject';
-$string['student_rejected'] = 'rejected';
+$string['student_reject'] = 'Reject';
+$string['student_rejected'] = 'Rejected';
 $string['rejected'] = 'Rejected';
-$string['visible'] = 'visible';
-$string['hidden'] = 'hidden';
-$string['status:approved'] = 'approved';
-$string['status:approvednot'] = 'rejected';
+$string['visible'] = 'Visible';
+$string['hidden'] = 'Hidden';
+$string['status:approved'] = 'Approved';
+$string['status:approvednot'] = 'Rejected';
 
 $string['allfiles'] = 'All files';
 $string['publicfiles'] = 'Public files';
@@ -218,40 +218,40 @@ $string['studentapproval_help'] = 'The column status represents the students rep
 * ✓ - approval given
 * ✖ - approval declined';
 $string['teacherapproval'] = 'Approval';
-$string['visibility'] = 'visible for all';
-$string['visibleforstudents'] = 'visible to all';
-$string['visibleforstudents_yes'] = 'Stundets can see this file';
+$string['visibility'] = 'Visible for all';
+$string['visibleforstudents'] = 'Visible to all';
+$string['visibleforstudents_yes'] = 'Students can see this file';
 $string['visibleforstudents_no'] = 'This file is NOT visible to students';
 $string['resetstudentapproval'] = 'Reset status'; // Previous 'Reset student approval'.
-$string['savestudentapprovalwarning'] = 'Are you sure you want to save these changes? You can not change the status once is it set.';
+$string['savestudentapprovalwarning'] = 'Are you sure you want to save these changes? You can not change the status once it is set.';
 
 $string['go'] = 'Go';
 $string['withselected'] = 'With selected...';
 $string['zipusers'] = "Download as ZIP";
-$string['approveusers'] = "visible for all";
-$string['rejectusers'] = "invisible for all";
-$string['grantextension'] = 'grant extension';
-$string['saveteacherapproval'] = 'save approval';
+$string['approveusers'] = "Visible for all";
+$string['rejectusers'] = "Invisible for all";
+$string['grantextension'] = 'Grant extension';
+$string['saveteacherapproval'] = 'Save approval';
 $string['reset'] = 'Revert';
 
 // Strings from the File  upload.php.
 $string['filesofthesetypes'] = 'Files of these types may be added:';
-$string['guideline'] = 'visible for everybody:';
-$string['published_immediately'] = 'yes immediately, without approval by a teacher';
-$string['published_aftercheck'] = 'no, only after approval by a teacher';
+$string['guideline'] = 'Visible for everybody:';
+$string['published_immediately'] = 'Yes immediately, without approval by a teacher';
+$string['published_aftercheck'] = 'No, only after approval by a teacher';
 $string['save_changes'] = 'Save changes';
 
 // Strings for JS...
-$string['total'] = 'total';
+$string['total'] = 'Total';
 $string['details'] = 'Details';
 
 // Privacy strings...
 $string['privacy:metadata:publicationperpage'] = 'How many entries should be displayed on a single table page!';
-$string['privacy:path:files'] = 'files';
-$string['privacy:path:resources'] = 'resources';
-$string['privacy:type:upload'] = 'uploaded file';
-$string['privacy:type:import'] = 'imported file';
-$string['privacy:type:onlinetext'] = 'imported onlinetext';
+$string['privacy:path:files'] = 'Files';
+$string['privacy:path:resources'] = 'Resources';
+$string['privacy:type:upload'] = 'Uploaded file';
+$string['privacy:type:import'] = 'Imported file';
+$string['privacy:type:onlinetext'] = 'Imported onlinetext';
 $string['privacy:metadata:groupapproval'] = 'Stores information about group members\' approval or rejection of files imported from group\'s submission.';
 $string['privacy:metadata:publicationfileexplanation'] = 'Files and converted onlinetext-submissions for this plugin get stored via Moodle\'s file API.';
 $string['privacy:metadata:extduedates'] = 'Stores information about overridden/extended due dates for mod_publication.';
