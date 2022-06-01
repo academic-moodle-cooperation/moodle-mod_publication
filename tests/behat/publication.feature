@@ -22,5 +22,5 @@ Feature: Create publication instance
       | Student folder name | Test studentfolder name |
       | Description         | Test description        |
     And I am on the "Test studentfolder name" "publication activity" page
-    And I press "edit/upload files"
+    And I press "Edit/upload files"
     Then I should see "Own files"
