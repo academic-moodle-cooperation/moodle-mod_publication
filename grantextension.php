@@ -90,10 +90,6 @@ if ($mform->is_cancelled()) {
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(format_string($publication->get_instance()->name));
-
-$publication->display_intro();
-
 $mform->display();
 
 echo $OUTPUT->footer();
