@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.11.5 (2022-06-08)
+-------------------
+* [BUG] #7214 - remove deprecated string from list of deprecated strings - github pull request #65 - hdagheda
+
 3.11.4 (2022-05-24)
 -------------------
 * [HOTFIX] #7208 - fix sql query when filters applied
