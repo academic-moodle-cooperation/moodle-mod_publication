@@ -276,11 +276,6 @@ $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
-// Print the main part of the page.
-echo $OUTPUT->heading(format_string($publication->get_instance()->name), 1);
-
-$publication->display_intro();
-$publication->display_availability();
 $publication->display_importlink();
 
 $filesform->display();

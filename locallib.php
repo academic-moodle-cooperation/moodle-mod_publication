@@ -462,8 +462,8 @@ class publication {
         $allfiles = get_string('allfiles', 'publication');
         $publicfiles = get_string('publicfiles', 'publication');
         $title = (has_capability('mod/publication:approve', $context)) ? $allfiles : $publicfiles;
-        echo html_writer::tag('legend', $title, ['class' => 'ftoggler text-primary']);
-        echo html_writer::start_div('fcontainer clearfix');
+        echo html_writer::tag('legend', $title, ['class' => 'ftoggler h3']);
+        echo html_writer::start_div('fcontainer clearfix mb-3');
 
         $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
         $mf = new mod_publication_allfiles_form(null, array('form' => $f));
