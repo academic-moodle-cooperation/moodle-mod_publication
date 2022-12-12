@@ -7,7 +7,7 @@ This file is part of the mod_publication plugin for Moodle - <http://moodle.org/
 
 *Author:*    Hannes Laimer, Philipp Hager, Andreas Windbichler, Simeon Naydenov
 
-*Copyright:* 2014 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
+*Copyright:* 2022 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
 *License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
 

@@ -1466,7 +1466,7 @@ class publication {
         $info->filename = $pubfile->filename;
         $info->apstatus = $sm->get_string('status:approved' . $newstatus, 'mod_publication', null, $user->lang);
         $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $user->lang));
-        $info->timeupdated = userdate(time(), $sm->get_string('strftimetime', 'core_langconfig', null, $user->lang));
+        $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $user->lang));
 
         $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
         $posttext = $publication->email_students_text($info, $user->lang);
@@ -1523,7 +1523,7 @@ class publication {
             $info->id = $cm->id;
             $info->filename = $file->get_filename();
             $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $teacher->lang));
-            $info->timeupdated = userdate(time(), $sm->get_string('strftimetime', 'core_langconfig', null, $teacher->lang));
+            $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $teacher->lang));
 
             $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $info->publication;
             $posttext = $publication->email_teachers_text($info, $teacher->lang);
