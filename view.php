@@ -245,7 +245,7 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
         $conditions['fileid'] = $idx;
 
         $approval = ($approval >= 1) ? $approval - 1 : null;
-
+        $dataforlog = new stdClass();
         $dataforlog->approval = $approval == 1 ? 'approved' : 'rejected';
 
         if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)

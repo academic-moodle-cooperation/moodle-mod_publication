@@ -1,7 +1,13 @@
 CHANGELOG
 =========
 
-4.0.0. (2022-05-04)
+4.1.0 (2022-12-12)
+-------------------
+* Moodle 4.1.0 compatible version
+* [BUG] #7405 - fix fatal error on student approval
+* [BUG] #7408 - remove german word in approval notification
+
+4.0.0 (2022-05-04)
 -------------------
 * Moodle 4.0.0 compatible version
 * [FEATURE] Add idnumber support
