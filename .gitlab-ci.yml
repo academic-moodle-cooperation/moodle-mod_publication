@@ -52,12 +52,12 @@ variables:
     - moodle-plugin-ci phpunit
     - moodle-plugin-ci behat
 
-code_checker_pgsql:
-  extends: .postgres
-  <<: *job_definition
-  image: amcdev/moodle-plugin-ci:7.4-n.16
-  variables:
-    MOODLE_BRANCH: "MOODLE_401_STABLE"
+#code_checker_pgsql:
+#  extends: .postgres
+#  <<: *job_definition
+#  image: amcdev/moodle-plugin-ci:7.4-n.16
+#  variables:
+#    MOODLE_BRANCH: "MOODLE_401_STABLE"
 
 code_checker_mariadb:
   extends: .mariadb
