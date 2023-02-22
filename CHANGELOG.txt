@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.9.1 (2023-02-22)
+------------------
+* [BUG] fix error when manually updating entries from assignment - github issue #66
+
 3.9.0 (2020-06-15)
 ------------------
 
