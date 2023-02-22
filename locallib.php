@@ -1176,10 +1176,10 @@ class publication {
                     }
 
                     $conditions['id'] = $oldpubfile->id;
-                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']->id]);
+                    $dataobject = $DB->get_record('publication_file', ['id' => $oldpubfile->id]);
                     $cm = $this->coursemodule;
                     \mod_publication\event\publication_file_deleted::create_from_object($cm, $dataobject)->trigger();
-                    $DB->delete_records('publication_file', $conditions);
+                    $DB->delete_records('publication_file', ['id' => $oldpubfile->id]);
                 }
             }
 
@@ -1355,9 +1355,9 @@ class publication {
                 $file = $fs->get_file_by_hash($pathhash);
                 if (empty($formattedtext)) {
                     // The onlinetext was empty, delete the file!
-                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']->id]);
+                    $dataobject = $DB->get_record('publication_file', ['id' => $pubfile->id]);
                     \mod_publication\event\publication_file_deleted::create_from_object($assigncm, $dataobject)->trigger();
-                    $DB->delete_records('publication_file', $conditions);
+                    $DB->delete_records('publication_file', ['id' => $pubfile->id]);
                     $file->delete();
                 } else if (($file->get_timemodified() < $submission->timemodified)
                         && ($file->get_contenthash() != sha1($submissioncontent))) {
