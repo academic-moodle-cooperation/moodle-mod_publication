@@ -62,6 +62,7 @@ if ($download > 0) {
 
 if ($savevisibility) {
     require_capability('mod/publication:approve', $context);
+    require_sesskey();
 
     $files = optional_param_array('files', [], PARAM_INT);
 
@@ -145,7 +146,7 @@ if ($savevisibility) {
 
         echo $OUTPUT->header();
         echo $OUTPUT->heading(format_string($publication->get_instance()->name), 1);
-        echo $OUTPUT->confirm($message, 'view.php?id=' . $id . '&action=import&confirm=1', 'view.php?id=' . $id);
+        echo $OUTPUT->confirm($message, 'view.php?id=' . $id . '&action=import&confirm=1&sesskey=' . sesskey(), 'view.php?id=' . $id);
         echo $OUTPUT->footer();
         exit;
     }
@@ -153,6 +154,7 @@ if ($savevisibility) {
     $publication->importfiles();
 } else if ($action == "grantextension") {
     require_capability('mod/publication:grantextension', $context);
+    require_sesskey();
 
     $users = optional_param_array('selectedeuser', [], PARAM_INT);
     $users = array_keys($users);
@@ -168,6 +170,7 @@ if ($savevisibility) {
     }
 } else if ($action == "approveusers" || $action == "rejectusers") {
     require_capability('mod/publication:approve', $context);
+    require_sesskey();
 
     $users = optional_param_array('selectedeuser', [], PARAM_INT);
     $users = array_keys($users);
@@ -182,6 +185,7 @@ if ($savevisibility) {
     }
 } else if ($action == "resetstudentapproval") {
     require_capability('mod/publication:approve', $context);
+    require_sesskey();
 
     $users = optional_param_array('selectedeuser', [], PARAM_INT);
     $users = array_keys($users);

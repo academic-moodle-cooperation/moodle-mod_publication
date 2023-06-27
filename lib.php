@@ -280,7 +280,7 @@ function mod_publication_pluginfile($course, $cm, context $context, $filearea, $
         return false;
     }
 
-    send_stored_file($file, 0, 0, $forcedownload, $options);
+    send_stored_file($file, 0, 0, true, $options);
 
     // Wont be reached!
     return false;
