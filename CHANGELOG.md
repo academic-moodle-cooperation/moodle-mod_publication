@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.1.1 (2023-06-27)
+-----------------
+* [HOTFIX] #7628 - force download plugin files, add missing require_sesskey() in view.php
+
 4.1.0 (2022-12-12)
 -------------------
 * Moodle 4.1.0 compatible version
