@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.11.6 (2023-06-27)
+-------------------
+* [HOTFIX] #7628 - force download plugin files, add missing require_sesskey() in view.php
+
 3.11.5 (2022-06-08)
 -------------------
 * [BUG] #7214 - remove deprecated string from list of deprecated strings - github pull request #65 - hdagheda
