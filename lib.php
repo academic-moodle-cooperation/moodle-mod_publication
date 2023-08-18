@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once(__DIR__.'/locallib.php');
+
 /**
  * Adds a new publication instance
  *
@@ -59,8 +61,7 @@ function publication_add_instance($publication) {
 
     $instance->update_calendar_event();
 
-    if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT
-            && !empty($instance->get_instance()->autoimport)) {
+    if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT) {
         // Fetch all files right now!
         $instance->importfiles();
     }
@@ -84,6 +85,10 @@ function publication_supports($feature) {
             return true;
         case FEATURE_GRADE_HAS_GRADE:
             return false;
+        case FEATURE_COMPLETION_HAS_RULES:
+            return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return true;
         case FEATURE_GRADE_OUTCOMES:
             return false;
         case FEATURE_BACKUP_MOODLE2:
@@ -121,8 +126,7 @@ function publication_update_instance($publication) {
 
     $instance->update_calendar_event();
 
-    if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT
-            && !empty($instance->get_instance()->autoimport)) {
+    if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT) {
         // Fetch all files right now!
         $instance->importfiles();
     }
@@ -171,7 +175,7 @@ function publication_get_coursemodule_info($coursemodule) {
     global $DB;
 
     $dbparams = ['id' => $coursemodule->instance];
-    $fields = 'id, name, alwaysshowdescription, allowsubmissionsfromdate, intro, introformat';
+    $fields = 'id, name, alwaysshowdescription, allowsubmissionsfromdate, intro, introformat, completionupload';
     if (!$publication = $DB->get_record('publication', $dbparams, $fields)) {
         return false;
     }
@@ -183,6 +187,11 @@ function publication_get_coursemodule_info($coursemodule) {
             // Convert intro to html. Do not filter cached version, filters run at display time.
             $result->content = format_module_intro('publication', $publication, $coursemodule->id, false);
         }
+    }
+
+    // Populate the custom completion rules as key => value pairs, but only if the completion mode is 'automatic'.
+    if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
+        $result->customdata['customcompletionrules']['completionupload'] = $publication->completionupload;
     }
 
     return $result;
@@ -245,6 +254,51 @@ function publication_reset_userdata($data) {
 
 }
 
+
+/**
+ * extend an assigment navigation settings
+ *
+ * @param settings_navigation $settings
+ * @param navigation_node $navref
+ * @return void
+ */
+function publication_extend_settings_navigation(settings_navigation $settings, navigation_node $navref) {
+    global $DB;
+
+    // We want to add these new nodes after the Edit settings node, and before the
+    // Locally assigned roles node. Of course, both of those are controlled by capabilities.
+    $keys = $navref->get_children_key_list();
+    $beforekey = null;
+    $i = array_search('modedit', $keys);
+    if ($i === false and array_key_exists(0, $keys)) {
+        $beforekey = $keys[0];
+    } else if (array_key_exists($i + 1, $keys)) {
+        $beforekey = $keys[$i + 1];
+    }
+
+    $cm = $settings->get_page()->cm;
+    if (!$cm) {
+        return;
+    }
+
+    $context = $cm->context;
+    $course = $settings->get_page()->course;
+
+    if (!$course) {
+        return;
+    }
+
+    if (has_capability('mod/publication:addinstance', $settings->get_page()->cm->context)) {
+        $url = new moodle_url('/mod/publication/view.php', ['id' => $settings->get_page()->cm->id, 'allfilespage' => '1']);
+
+        $node = navigation_node::create(get_string('allfiles', 'publication'),
+            $url,
+            navigation_node::TYPE_SETTING, null, 'mod_publication_allfiles');
+        $navref->add_node($node, $beforekey);
+    }
+
+}
+
 /**
  * Serves resource files.
  *
@@ -281,7 +335,7 @@ function mod_publication_pluginfile($course, $cm, context $context, $filearea, $
         return false;
     }
 
-    send_stored_file($file, 0, 0, $forcedownload, $options);
+    send_stored_file($file, 0, 0, true, $options);
 
     // Wont be reached!
     return false;
@@ -318,3 +372,33 @@ function mod_publication_core_calendar_provide_event_action(calendar_event $even
         );
     }
 }
+
+
+/**
+ * Callback which returns human-readable strings describing the active completion custom rules for the module instance.
+ *
+ * @param cm_info|stdClass $cm object with fields ->completion and ->customdata['customcompletionrules']
+ * @return array $descriptions the array of descriptions for the custom rules.
+ */
+function mod_publication_get_completion_active_rule_descriptions($cm) {
+    // Values will be present in cm_info, and we assume these are up to date.
+    if (empty($cm->customdata['customcompletionrules'])
+        || $cm->completion != COMPLETION_TRACKING_AUTOMATIC) {
+        return [];
+    }
+
+    $descriptions = [];
+    foreach ($cm->customdata['customcompletionrules'] as $key => $val) {
+        switch ($key) {
+            case 'completionupload':
+                if (!empty($val)) {
+                    $descriptions[] = get_string('completionupload', 'publication');
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return $descriptions;
+}
+

@@ -46,22 +46,21 @@ class mod_publication_files_form extends moodleform {
      * Form definition method_exists
      */
     public function definition() {
-        global $DB, $PAGE;
+        global $DB, $PAGE, $OUTPUT;
 
         $publication = &$this->_customdata['publication'];
 
         $mform = $this->_form;
 
-        if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
-            $table = new \mod_publication\local\filestable\upload($publication);
+        $mode = $publication->get_mode();
+        if ($mode == PUBLICATION_MODE_FILEUPLOAD) {
             $headertext = get_string('myfiles', 'publication');
             if ($publication->get_instance()->obtainteacherapproval) {
                 $notice = get_string('notice_uploadrequireapproval', 'publication');
             } else {
                 $notice = get_string('notice_uploadnoapproval', 'publication');
             }
-        } else if ($DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
-            $table = new \mod_publication\local\filestable\group($publication);
+        } else if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
             $headertext = get_string('mygroupfiles', 'publication');
             if ($publication->get_instance()->obtainstudentapproval) {
                 if ($publication->get_instance()->groupapproval == PUBLICATION_APPROVAL_ALL) {
@@ -73,7 +72,6 @@ class mod_publication_files_form extends moodleform {
                 $notice = get_string('notice_importnoapproval', 'publication');
             }
         } else {
-            $table = new \mod_publication\local\filestable\import($publication);
             $headertext = get_string('myfiles', 'publication');
             if ($publication->get_instance()->obtainstudentapproval) {
                 $notice = get_string('notice_importrequireapproval', 'publication');
@@ -81,6 +79,7 @@ class mod_publication_files_form extends moodleform {
                 $notice = get_string('notice_importnoapproval', 'publication');
             }
         }
+        $table = $publication->get_filestable();
 
         $mform->addElement('header', 'myfiles', $headertext);
         $mform->setExpanded('myfiles');
@@ -88,18 +87,37 @@ class mod_publication_files_form extends moodleform {
         $PAGE->requires->js_call_amd('mod_publication/filesform', 'initializer', []);
         $PAGE->requires->js_call_amd('mod_publication/alignrows', 'initializer', []);
 
-        $noticehtml = html_writer::start_tag('div', ['class' => 'notice']);
+        $noticehtml = html_writer::start_tag('div', ['class' => 'alert alert-info']);
         $noticehtml .= get_string('notice', 'publication') . ' ' . $notice;
         $noticehtml .= html_writer::end_tag('div');
 
         $mform->addElement('html', $noticehtml);
 
         // Now we do all the table work and return 0 if there's no files to show!
-        if ($table->init()) {
-            $mform->addElement('html', \html_writer::table($table));
-        } else {
-            $mform->addElement('static', 'nofiles', '', get_string('nofiles', 'publication'));
+        $table->init();
+
+        $mode = $publication->get_mode();
+        $timeremaining = false;
+        $publicationinstance = $publication->get_instance();
+        if ($publicationinstance->duedate > 0) {
+            $timeremainingdiff = $publicationinstance->duedate - time();
+            if ($timeremainingdiff > 0) {
+                $timeremaining = format_time($publicationinstance->duedate - time());
+            } else {
+                $timeremaining = get_string('overdue', 'publication');
+            }
         }
+        $tablecontext = [
+            'myfiles' => $table->data,
+            'hasmyfiles' => !empty($table->data),
+            'timeremaining' => $timeremaining,
+            'lastmodified' => userdate($table->lastmodified),
+            'assign' => $publication->get_importlink(),
+            'myfilestitle' => $mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION ? get_string('mygroupfiles', 'publication') : get_string('myfiles', 'publication')
+        ];
+        $myfilestable = $OUTPUT->render_from_template('mod_publication/myfiles', $tablecontext);
+        $myfilestable = '<table class="table table-striped w-100">' . $myfilestable . '</table>';
+        $mform->addElement('html', $myfilestable);
 
         // Display submit buttons if necessary.
         if (!empty($table) && $table->changepossible()) {
@@ -109,9 +127,9 @@ class mod_publication_files_form extends moodleform {
                 $onclick = 'return confirm("' . get_string('savestudentapprovalwarning', 'publication') . '")';
 
                 $buttonarray[] = &$mform->createElement('submit', 'submitbutton',
-                        get_string('savechanges'), ['onClick' => $onclick]);
+                    get_string('savechanges'), ['onClick' => $onclick]);
                 $buttonarray[] = &$mform->createElement('reset', 'resetbutton', get_string('revert'),
-                        ['class' => 'btn btn-secondary']);
+                    ['class' => 'btn btn-secondary']);
 
                 $mform->addGroup($buttonarray, 'submitgrp', '', [' '], false);
             } else {
@@ -120,7 +138,7 @@ class mod_publication_files_form extends moodleform {
         }
 
         if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD
-                && has_capability('mod/publication:upload', $publication->get_context())) {
+            && has_capability('mod/publication:upload', $publication->get_context())) {
             if ($publication->is_open()) {
                 $buttonarray = [];
 
@@ -139,5 +157,7 @@ class mod_publication_files_form extends moodleform {
 
         $mform->addElement('hidden', 'id', $publication->get_coursemodule()->id);
         $mform->setType('id', PARAM_INT);
+
+        $mform->disable_form_change_checker();
     }
 }

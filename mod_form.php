@@ -111,27 +111,13 @@ class mod_publication_mod_form extends moodleform_mod {
         $mform->addHelpButton('importfrom', 'assignment', 'publication');
         $mform->hideIf('importfrom', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
 
-        $mform->addElement('advcheckbox', 'autoimport', get_string('autoimport', 'publication'));
-        $mform->setDefault('autoimport', get_config('publication', 'autoimport'));
-        $mform->addHelpButton('autoimport', 'autoimport', 'publication');
-        $mform->hideIf('autoimport', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
-
         $attributes = [];
-        if (isset($this->current->id) && isset($this->current->obtainstudentapproval)) {
-            if ($this->current->obtainstudentapproval) {
-                $message = get_string('warning_changefromobtainstudentapproval', 'publication');
-                $showwhen = "0";
-            } else {
-                $message = get_string('warning_changetoobtainstudentapproval', 'publication');
-                $showwhen = "1";
-            }
+        $options = [
+            '0' => get_string('obtainstudentapproval_teacher', 'publication'),
+            '1' => get_string('obtainstudentapproval_participant', 'publication')
+        ];
 
-            $message = trim(preg_replace('/\s+/', ' ', $message));
-            $message = str_replace('\'', '\\\'', $message);
-            $attributes['onChange'] = "if (this.value==" . $showwhen . ") {alert('" . $message . "')}";
-        }
-
-        $mform->addElement('selectyesno', 'obtainstudentapproval', get_string('obtainstudentapproval', 'publication'), $attributes);
+        $mform->addElement('select', 'obtainstudentapproval', get_string('obtainstudentapproval', 'publication'), $options, $attributes);
         $mform->setDefault('obtainstudentapproval', get_config('publication', 'obtainstudentapproval'));
         $mform->addHelpButton('obtainstudentapproval', 'obtainstudentapproval', 'publication');
         $mform->hideIf('obtainstudentapproval', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
@@ -146,6 +132,7 @@ class mod_publication_mod_form extends moodleform_mod {
         $mform->addHelpButton('groupapprovalarray', 'groupapprovalmode', 'publication');
         $mform->setDefault('groupapproval', PUBLICATION_APPROVAL_ALL);
         $mform->hideIf('groupapprovalarray', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
+        $mform->hideIf('groupapprovalarray', 'obtainstudentapproval', 'eq', 0);
         foreach ($notteamassigns as $cur) {
             $mform->hideIf('groupapprovalarray', 'importfrom', 'eq', $cur);
         }
@@ -171,24 +158,40 @@ class mod_publication_mod_form extends moodleform_mod {
         $mform->hideIf('allowedfiletypes', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
 
         $attributes = [];
-        if (isset($this->current->id) && isset($this->current->obtainteacherapproval)) {
-            if (!$this->current->obtainteacherapproval) {
-                $message = get_string('warning_changefromobtainteacherapproval', 'publication');
-                $showwhen = "1";
-            } else {
-                $message = get_string('warning_changetoobtainteacherapproval', 'publication');
-                $showwhen = "0";
-            }
 
-            $message = trim(preg_replace('/\s+/', ' ', $message));
-            $attributes['onChange'] = "if (this.value==" . $showwhen . ") {alert('" . $message . "')}";
-        }
+        $options = [
+            '0' => get_string('obtainteacherapproval_no', 'publication'),
+            '1' => get_string('obtainteacherapproval_yes', 'publication')
+        ];
 
-        $mform->addElement('selectyesno', 'obtainteacherapproval',
-                get_string('obtainteacherapproval', 'publication'), $attributes);
+        $mform->addElement('select', 'obtainteacherapproval',
+                get_string('obtainteacherapproval', 'publication'), $options, $attributes);
         $mform->setDefault('obtainteacherapproval', get_config('publication', 'obtainteacherapproval'));
         $mform->addHelpButton('obtainteacherapproval', 'obtainteacherapproval', 'publication');
         $mform->hideIf('obtainteacherapproval', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
+
+        $infostrings = [
+            'notice_obtainapproval_import_both',
+            'notice_obtainapproval_import_studentonly',
+            'notice_obtainapproval_upload_teacher',
+            'notice_obtainapproval_upload_automatic'
+        ];
+        foreach ($infostrings as $infostring) {
+            $infohtml = html_writer::start_tag('div', ['class' => 'alert alert-info']);
+            $infohtml .= get_string($infostring, 'publication');
+            $infohtml .= html_writer::end_tag('div');
+            $infogroupimport =& $mform->createElement('static', $infostring, '', $infohtml);
+            $mform->addGroup([$infogroupimport], $infostring . '_group', '', ' ', false);
+        }
+        $mform->hideIf('notice_obtainapproval_import_both_group', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
+        $mform->hideIf('notice_obtainapproval_import_both_group', 'obtainstudentapproval', 'neq', '1');
+        $mform->hideIf('notice_obtainapproval_import_studentonly_group', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
+        $mform->hideIf('notice_obtainapproval_import_studentonly_group', 'obtainstudentapproval', 'neq', '0');
+
+        $mform->hideIf('notice_obtainapproval_upload_teacher_group', 'obtainteacherapproval', 'neq', '0');
+        $mform->hideIf('notice_obtainapproval_upload_teacher_group', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
+        $mform->hideIf('notice_obtainapproval_upload_automatic_group', 'obtainteacherapproval', 'neq', '1');
+        $mform->hideIf('notice_obtainapproval_upload_automatic_group', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
 
         // Availability.
         $mform->addElement('header', 'availability', get_string('availability', 'publication'));
@@ -227,6 +230,37 @@ class mod_publication_mod_form extends moodleform_mod {
 
         // Buttons.
         $this->add_action_buttons();
+    }
+
+
+    /**
+     * Add any custom completion rules to the form.
+     *
+     * @return array Contains the names of the added form elements
+     */
+    public function add_completion_rules() {
+        $mform =& $this->_form;
+
+        $mform->addElement('advcheckbox', 'completionupload', '', get_string('completionupload', 'publication'));
+        // Enable this completion rule by default.
+        $mform->setDefault('completionupload', 1);
+        $mform->hideIf('completionupload', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
+        return array('completionupload');
+    }
+
+
+    public function completion_rule_enabled($data) {
+        if ($data['mode'] == PUBLICATION_MODE_UPLOAD && !empty($data['completionupload'])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function data_postprocessing($data) {
+        parent::data_postprocessing($data);
+        if ($data->mode != PUBLICATION_MODE_UPLOAD) {
+            $data->completionupload = 0;
+        }
     }
 
     /**

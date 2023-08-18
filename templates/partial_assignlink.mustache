@@ -1,0 +1,13 @@
+<tr>
+    <th>{{#str}}assignment,publication{{/str}}</th>
+
+        {{#notset}}
+            <td class="alert-warning">{{#str}}assignment_notset,publication{{/str}}</td>
+        {{/notset}}
+        {{#notfound}}
+            <td class="alert-warning">{{#str}}assignment_notfound,publication{{/str}}</td>
+        {{/notfound}}
+        {{#assign}}
+            <td><a href="{{url}}">{{name}}</a></td>
+        {{/assign}}
+</tr>

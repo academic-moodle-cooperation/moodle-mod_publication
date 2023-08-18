@@ -43,32 +43,42 @@ class upload extends base {
      * @return string[] Array of table cell contents
      */
     public function add_file(\stored_file $file) {
+        global $OUTPUT;
         // The common columns!
         $data = parent::add_file($file);
 
+        $templatecontext = new \stdClass;
         // Now add the specific data to the table!
         $teacherapproval = $this->publication->teacher_approval($file);
         if ($this->publication->get_instance()->obtainteacherapproval) {
             // Teacher has to approve: show all status.
             if (is_null($teacherapproval) || $teacherapproval == 0) {
-                $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
+                $templatecontext->icon = $this->questionmark;
+                $templatecontext->hint = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
             } else if ($teacherapproval == 1) {
-                $data[] = get_string('visible', 'publication');
+                $templatecontext->icon = $this->valid;
+                $templatecontext->hint = get_string('visible', 'publication');
             } else if ($teacherapproval == 3) {
-                $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
+                $templatecontext->icon = $this->questionmark;
+                $templatecontext->hint = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
             } else {
-                $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_rejected', 'publication') . ')';
+                $templatecontext->icon = $this->invalid;
+                $templatecontext->hint = get_string('hidden', 'publication') . ' (' . get_string('teacher_rejected', 'publication') . ')';
             }
         } else {
             // Teacher doenst have to approve: only show when rejected.
             if (is_null($teacherapproval) || $teacherapproval == 0) {
-                $data[] = get_string('visible', 'publication');
+                $templatecontext->icon = $this->valid;
+                $templatecontext->hint = get_string('visible', 'publication');
             } else if ($teacherapproval == 1) {
-                $data[] = get_string('visible', 'publication');
+                $templatecontext->icon = $this->valid;
+                $templatecontext->hint = get_string('visible', 'publication');
             } else {
-                $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_rejected', 'publication') . ')';
+                $templatecontext->icon = $this->invalid;
+                $templatecontext->hint = get_string('hidden', 'publication') . ' (' . get_string('teacher_rejected', 'publication') . ')';
             }
         }
+        $data[] = $OUTPUT->render_from_template('mod_publication/approval_icon', $templatecontext);
 
         return $data;
     }

@@ -237,5 +237,19 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021052501, 'publication');
     }
 
+    if ($oldversion < 2023081000) {
+
+        // Define field completionupload to be added to publication.
+        $table = new xmldb_table('publication');
+        $field = new xmldb_field('completionupload', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'allowsubmissionsfromdate');
+
+        // Conditionally launch add field completionupload.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2023081000, 'publication');
+    }
     return true;
 }

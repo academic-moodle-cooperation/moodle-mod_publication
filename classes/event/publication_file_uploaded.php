@@ -92,14 +92,4 @@ class publication_file_uploaded extends \core\event\base {
         $moduleid = get_coursemodule_from_instance('publication', $this->data['other']['publication'])->id;
         return new \moodle_url("/mod/publication/view.php", array('id'  => $moduleid));
     }
-
-    /**
-     * Return the legacy event log data.
-     *
-     * @return array|null
-     */
-    protected function get_legacy_logdata() {
-        return array($this->courseid, 'publication', 'file uploaded', $this->get_url(),
-            $this->data['other']['publication'], $this->contextinstanceid);
-    }
 }

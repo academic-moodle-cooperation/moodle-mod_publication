@@ -54,6 +54,10 @@ class base extends \html_table {
     protected $changepossible = false;
     /** @var string[] select options */
     protected $options = [];
+    protected $valid = '';
+    protected $questionmark = '';
+    protected $invalid = '';
+    public $lastmodified = 0;
 
     /**
      * constructor
@@ -61,11 +65,17 @@ class base extends \html_table {
      * @param \publication $publication publication object
      */
     public function __construct(\publication $publication) {
+        global $OUTPUT;
+
         parent::__construct();
 
         $this->publication = $publication;
 
         $this->fs = get_file_storage();
+
+        $this->valid = \mod_publication\local\allfilestable\base::approval_icon('check', 'text-success', get_string('student_approved', 'publication'));
+        $this->questionmark = \mod_publication\local\allfilestable\base::approval_icon('question', 'text-warning', get_string('student_pending', 'publication'));
+        $this->invalid = \mod_publication\local\allfilestable\base::approval_icon('times', 'text-danger', get_string('student_rejected', 'publication'));
     }
 
     /**
@@ -151,6 +161,9 @@ class base extends \html_table {
             } else {
                 $this->files[] = $file;
             }
+            if ($this->lastmodified < $file->get_timemodified()) {
+                $this->lastmodified = $file->get_timemodified();
+            }
         }
 
         return $this->files;
@@ -162,8 +175,9 @@ class base extends \html_table {
      * @return bool
      */
     public function changepossible() {
-        return ($this->changepossible ? true : false) && has_capability('mod/publication:upload',
+        $result = ($this->changepossible ? true : false) && has_capability('mod/publication:upload',
                         $this->publication->get_context());
+        return $result;
     }
 
 }

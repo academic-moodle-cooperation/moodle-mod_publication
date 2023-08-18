@@ -93,16 +93,6 @@ class publication_file_imported extends \core\event\base {
     }
 
     /**
-     * Return the legacy event log data.
-     *
-     * @return array|null
-     */
-    protected function get_legacy_logdata() {
-        return array($this->courseid, 'publication', 'file imported '.$this->data['other']['typ'], $this->get_url(),
-            $this->data['other']['publication'], $this->contextinstanceid);
-    }
-
-    /**
      * Custom validation.
      *
      * @throws \coding_exception

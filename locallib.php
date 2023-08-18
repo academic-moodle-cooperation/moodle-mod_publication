@@ -35,6 +35,19 @@ define('PUBLICATION_APPROVAL_ALL', 0);
 define('PUBLICATION_APPROVAL_SINGLE', 1);
 
 define('PUBLICATION_EVENT_TYPE_DUE', 'due');
+
+
+define('PUBLICATION_FILTER_NOFILTER', 'nofilter');
+define('PUBLICATION_FILTER_ALLFILES', 'allfiles');
+define('PUBLICATION_FILTER_APPROVED', 'approved');
+define('PUBLICATION_FILTER_REJECTED', 'rejected');
+define('PUBLICATION_FILTER_APPROVALREQUIRED', 'approvalrequired');
+define('PUBLICATION_FILTER_NOFILES', 'nofiles');
+
+define('PUBLICATION_MODE_FILEUPLOAD', 'fileupload');
+define('PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION', 'teamsubmission');
+define('PUBLICATION_MODE_ASSIGN_IMPORT', 'import');
+
 require_once($CFG->dirroot . '/mod/publication/mod_publication_allfiles_form.php');
 
 /**
@@ -58,6 +71,10 @@ class publication {
     protected $coursemodule;
     /** @var bool requiregroup if mode = import and group membership is required for submission in assign to import from */
     protected $requiregroup = 0;
+
+    protected $mode;
+
+    protected $allfilespage = false;
 
     /**
      * Constructor
@@ -90,6 +107,14 @@ class publication {
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
             $cond = ['id' => $this->instance->importfrom];
             $this->requiregroup = $DB->get_field('assign', 'preventsubmissionnotingroup', $cond);
+        }
+
+        if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
+            $this->mode = PUBLICATION_MODE_FILEUPLOAD;
+        } else if ($DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom])) {
+            $this->mode = PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION;
+        } else {
+            $this->mode = PUBLICATION_MODE_ASSIGN_IMPORT;
         }
     }
 
@@ -167,14 +192,14 @@ class publication {
      * If the mode is set to import then the link to the corresponding
      * assignment will be displayed
      */
-    public function display_importlink() {
+    public function get_importlink() {
         global $DB, $OUTPUT;
 
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
-            echo html_writer::start_div('assignurl');
+            $context = new stdClass;
 
             if ($this->get_instance()->importfrom == -1) {
-                echo get_string('assignment_notset', 'publication');
+                $context->notset = true;
             } else {
                 $assign = $DB->get_record('assign', ['id' => $this->instance->importfrom]);
 
@@ -191,24 +216,18 @@ class publication {
                 }
                 if ($assign && $assigncm) {
                     $assignurl = new moodle_url('/mod/assign/view.php', ['id' => $assigncm->id]);
-                    echo get_string('assignment', 'publication') . ': ' . html_writer::link($assignurl, $assign->name);
-
-                    if (has_capability('mod/publication:addinstance', $this->context)) {
-                        $url = new moodle_url('/mod/publication/view.php',
-                                ['id' => $this->coursemodule->id, 'sesskey' => sesskey(), 'action' => 'import']);
-                        $label = get_string('updatefiles', 'publication');
-
-                        echo $OUTPUT->single_button($url, $label);
-                    }
-
+                    $context->assign = true;
+                    $context->name = $assign->name;
+                    $context->url = $assignurl->out(false);
                 } else {
-                    echo $OUTPUT->notification(get_string('assignment_notfound', 'publication'), 'warning');
+                    $context->notfound = true;
                 }
             }
-            echo html_writer::end_div();
+            return $OUTPUT->render_from_template('mod_publication/partial_assignlink', $context);
         }
-
+        return null;
     }
+
 
     /**
      * Display Link to upload form if submission date is open
@@ -256,6 +275,14 @@ class publication {
         }
 
         return $extensionduedate;
+    }
+
+    public function set_allfilespage($allfilespage) {
+        $this->allfilespage = $allfilespage;
+    }
+
+    public function get_allfilespage() {
+        return $this->allfilespage;
     }
 
     /**
@@ -353,7 +380,7 @@ class publication {
      * @param int[] $users (optional) user ids for which the returned user ids have to filter
      * @return int[] array of userids
      */
-    public function get_users($users = []) {
+    public function get_users($users = [], $ignoreallfilespage = false) {
         global $DB;
 
         $customusers = '';
@@ -370,8 +397,9 @@ class publication {
         // Get all ppl that are allowed to submit assignments.
         list($esql, $params) = get_enrolled_sql($this->context, 'mod/publication:view', $currentgroup);
 
-        if (has_capability('mod/publication:approve', $this->context)
-                || has_capability('mod/publication:grantextension', $this->context)) {
+        $allfilespage = $ignoreallfilespage || $this->allfilespage;
+        if ($allfilespage && (has_capability('mod/publication:approve', $this->context)
+                || has_capability('mod/publication:grantextension', $this->context))) {
             // We can skip the approval-checks for teachers!
             $sql = 'SELECT u.id FROM {user} u ' .
                     'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
@@ -395,6 +423,7 @@ class publication {
                     $where = '(files.teacherapproval = 1 OR files.teacherapproval IS NULL)';
                 }
             } else {
+                // TODO group mode!
                 // Mode import.
                 if (!$this->get_instance()->obtainstudentapproval) {
                     // No need to ask student and teacher has approved.
@@ -418,6 +447,41 @@ class publication {
         return $users;
     }
 
+    public function get_mode() {
+        return $this->mode;
+    }
+
+    public function get_allfilestable($filter, $ignoreallfilespage = false) {
+        global $DB;
+        $mode = $this->get_mode();
+        $oldallfilespage = $this->allfilespage;
+        if ($ignoreallfilespage) {
+            $this->allfilespage = true;
+        }
+        if ($mode == PUBLICATION_MODE_FILEUPLOAD) {
+            $table = new \mod_publication\local\allfilestable\upload('mod-publication-allfiles', $this, $filter);
+        } else if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+            $table = new \mod_publication\local\allfilestable\group('mod-publication-allgroupfiles', $this, $filter);
+        } else {
+            $table = new \mod_publication\local\allfilestable\import('mod-publication-allfiles', $this, $filter);
+        }
+        $this->allfilespage = $oldallfilespage;
+        return $table;
+    }
+
+    public function get_filestable() {
+        global $DB;
+        $mode = $this->get_mode();
+        if ($mode == PUBLICATION_MODE_FILEUPLOAD) {
+            $table = new \mod_publication\local\filestable\upload($this);
+        } else if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+            $table = new \mod_publication\local\filestable\group($this);
+        } else {
+            $table = new \mod_publication\local\filestable\import($this);
+        }
+        return $table;
+    }
+
     /**
      * Display form with table containing all files
      *
@@ -425,6 +489,7 @@ class publication {
      */
     public function display_allfilesform() {
         global $CFG, $DB;
+        $output = '';
 
         $cm = $this->coursemodule;
         $context = $this->context;
@@ -433,90 +498,82 @@ class publication {
         if ($updatepref) {
             $perpage = optional_param('perpage', 10, PARAM_INT);
             $perpage = ($perpage < 0) ? 10 : $perpage;
-            $filter = optional_param('filter', 0, PARAM_INT);
             set_user_preference('publication_perpage', $perpage);
         }
 
         // Next we get perpage param from database!
         $perpage = get_user_preferences('publication_perpage', 10);
-        $filter = get_user_preferences('publicationfilter', 0);
+
+        $filter = optional_param('filter', PUBLICATION_FILTER_NOFILTER, PARAM_ALPHANUMEXT);
 
         $page = optional_param('page', 0, PARAM_INT);
 
         $formattrs = [];
-        $formattrs['action'] = new moodle_url('/mod/publication/view.php');
+        $formattrs['action'] = new moodle_url('/mod/publication/view.php', ['allfilespage' => $this->allfilespage]);
         $formattrs['id'] = 'fastg';
         $formattrs['method'] = 'post';
         $formattrs['class'] = 'mform';
 
-        echo html_writer::start_tag('form', $formattrs) .
+        $output .= html_writer::start_tag('form', $formattrs) .
                 html_writer::empty_tag('input', [
                         'type' => 'hidden',
                         'name' => 'id',
                         'value' => $this->get_coursemodule()->id
                 ]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'page', 'value' => $page]) .
-                html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+                html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]) .
+                html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'filter', 'value' => $filter]);
 
-        echo html_writer::start_tag('fieldset', ['class' => 'clearfix collapsible', 'id' => 'id_allfiles']);
+        $output .= html_writer::start_tag('fieldset', ['class' => 'clearfix collapsible', 'id' => 'id_allfiles']);
         $allfiles = get_string('allfiles', 'publication');
         $publicfiles = get_string('publicfiles', 'publication');
-        $title = (has_capability('mod/publication:approve', $context)) ? $allfiles : $publicfiles;
-        echo html_writer::tag('legend', $title, ['class' => 'ftoggler h3']);
-        echo html_writer::start_div('fcontainer clearfix mb-3');
+        $title = (has_capability('mod/publication:approve', $context)  && $this->allfilespage) ? $allfiles : $publicfiles;
+        $output .= html_writer::tag('legend', $title, ['class' => 'ftoggler h3']);
+        $output .= html_writer::start_div('fcontainer clearfix mb-3');
 
         $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id, true);
         $mf = new mod_publication_allfiles_form(null, array('form' => $f));
-        $mf->display();
+        $output .= $mf->render();
 
-        if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
-            $table = new \mod_publication\local\allfilestable\upload('mod-publication-allfiles', $this);
-        } else {
-            if ($DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom])) {
-                $table = new \mod_publication\local\allfilestable\group('mod-publication-allgroupfiles', $this);
-            } else {
-                $table = new \mod_publication\local\allfilestable\import('mod-publication-allfiles', $this);
-            }
-        }
+        $table = $this->get_allfilestable($filter);
 
         $link = html_writer::link(new moodle_url('/mod/publication/view.php', [
                 'id' => $this->coursemodule->id,
                 'action' => 'zip'
-        ]),
-                get_string('downloadall', 'publication'));
-        echo html_writer::tag('div', $link, ['class' => 'mod-publication-download-link']);
+            ]),
+            get_string('downloadall', 'publication'),
+            ['class' => 'btn btn-secondary mb-2 btn-sm']
+        );
+        $output .= html_writer::tag('div', $link, ['class' => 'mod-publication-download-link']);
 
-        $settingsurl = new moodle_url('/course/modedit.php', [
-            'update' => $this->coursemodule->id,
-            'return' => 'zip'
-        ], 'id_allowedfiletypes');
-        $settingslink = html_writer::link($settingsurl,  get_string('currentlynotapproved', 'publication'));
-        echo html_writer::tag('div', $settingslink, ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
         if ($perpage == 0) {
-            echo '<style> nav.pagination ul.pagination li:only-child { display: none} </style>';
+            $output .= '<style> nav.pagination ul.pagination li:only-child { display: none} </style>';
         }
+
+        ob_start();
         $table->out($perpage, true); // Print the whole table.
-        echo html_writer::tag('div', $settingslink, ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
+        $output .= ob_get_contents();
+        ob_end_clean();
 
         $options = [];
         $options['zipusers'] = get_string('zipusers', 'publication');
 
-        if (has_capability('mod/publication:approve', $context) && $table->totalfiles() > 0) {
+        if (has_capability('mod/publication:approve', $context) && $table->totalfiles() > 0  && $this->allfilespage) {
             $options['approveusers'] = get_string('approveusers', 'publication');
             $options['rejectusers'] = get_string('rejectusers', 'publication');
 
             if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
-                    $this->get_instance()->obtainstudentapproval) {
+                $this->get_instance()->obtainstudentapproval) {
                 $options['resetstudentapproval'] = get_string('resetstudentapproval', 'publication');
             }
         }
-        if (has_capability('mod/publication:grantextension', $this->get_context())) {
+        if (has_capability('mod/publication:grantextension', $this->get_context()) && $this->allfilespage) {
             $options['grantextension'] = get_string('grantextension', 'publication');
         }
 
         if (count($options) > 0) {
-            echo html_writer::start_div('form-row');
-            if (has_capability('mod/publication:approve', $context)) {
+            $output .= html_writer::start_div('form-row');
+            if (has_capability('mod/publication:approve', $context) && $this->allfilespage) {
                 $buttons = html_writer::empty_tag('input', [
                         'type' => 'reset',
                         'name' => 'resetvisibility',
@@ -544,7 +601,7 @@ class publication {
                 $buttons = '';
             }
 
-            echo html_writer::start_div('withselection col-7').
+            $output .= html_writer::start_div('withselection col-7').
                  html_writer::span(get_string('withselected', 'publication')).
                  html_writer::select($options, 'action').
                  html_writer::empty_tag('input', [
@@ -558,7 +615,7 @@ class publication {
         }
 
         // Select all/none.
-        echo html_writer::start_tag('div', ['class' => 'checkboxcontroller']) . "
+        $output .= html_writer::start_tag('div', ['class' => 'checkboxcontroller']) . "
             <script type=\"text/javascript\">
                 function toggle_userselection() {
                     var checkboxes = document.getElementsByClassName('userselection');
@@ -579,8 +636,12 @@ class publication {
                 html_writer::end_tag('form');
 
         // Mini form for setting user preference.
-        $formaction = new moodle_url('/mod/publication/view.php', ['id' => $this->coursemodule->id]);
+        $formaction = new moodle_url('/mod/publication/view.php', ['id' => $this->coursemodule->id, 'allfilespage' => $this->allfilespage]);
         $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', ['class' => 'optionspref']);
+
+        $attributes = [];
+
+        $attributes['onChange'] = "$('form.optionspref').submit();";
 
         $mform->addElement('hidden', 'updatepref');
         $mform->setDefault('updatepref', 1);
@@ -589,21 +650,36 @@ class publication {
 
         $mform->addElement('select', 'perpage', get_string('entiresperpage', 'publication'), [
             0 => get_string('all'),
+            3 => 3,
             10 => 10,
             20 => 20,
             50 => 50,
             100 => 100
-        ]);
+        ], $attributes);
         $mform->setDefault('perpage', $perpage);
-        $mform->addElement('submit', 'savepreferences', get_string('savepreferences'));
 
-        $mform->display();
+        if (has_capability('mod/publication:approve', $context) && $this->allfilespage) {
+            $filteroptions = [
+                PUBLICATION_FILTER_NOFILTER => get_string('filter:' . PUBLICATION_FILTER_NOFILTER, 'publication'),
+                PUBLICATION_FILTER_ALLFILES => get_string('filter:' . PUBLICATION_FILTER_ALLFILES, 'publication'),
+                PUBLICATION_FILTER_APPROVED => get_string('filter:' . PUBLICATION_FILTER_APPROVED, 'publication'),
+                PUBLICATION_FILTER_REJECTED => get_string('filter:' . PUBLICATION_FILTER_REJECTED, 'publication'),
+                PUBLICATION_FILTER_APPROVALREQUIRED => get_string('filter:' . PUBLICATION_FILTER_APPROVALREQUIRED, 'publication'),
+                PUBLICATION_FILTER_NOFILES => get_string('filter:' . PUBLICATION_FILTER_NOFILES, 'publication')
+            ];
+            $mform->addElement('select', 'filter', get_string('filter', 'publication'), $filteroptions, $attributes);
+            $mform->setDefault('filter', $filter);
+        }
+        $mform->disable_form_change_checker();
+
+        $output .= $mform->toHtml();
+        return $output;
     }
 
     /**
      * Returns if a user has the permission to view a file
      *
-     * @param unknown $fileid
+     * @param int $fileid
      * @param number $userid use for custom user, if 0 then if public visible
      * @return boolean
      */
@@ -712,6 +788,8 @@ class publication {
         // Get group members!
         $groupmembers = $this->get_submissionmembers($filerec->userid);
         $stats = array();
+        $stats['approving'] = 0;
+        $stats['needed'] = count($groupmembers);
         if (!empty($groupmembers)) {
             list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
             $select = "fileid = :fileid AND approval = :approval AND userid " . $usersql;
@@ -907,7 +985,7 @@ class publication {
                 }
                 if (!$teamsubmission) {
                     // Get user firstname/lastname.
-                    $auser = $DB->get_record('user', ['id' => $itemid], get_all_user_name_fields(true));
+                    $auser = $DB->get_record('user', ['id' => $itemid]);
                     $itemname = str_replace(' ', '_', fullname($auser)).'_';
                 } else {
                     if (empty($itemid)) {
@@ -918,7 +996,6 @@ class publication {
                 }
 
                 // Create path for new zip file.
-                $zipfile = tempnam($CFG->dataroot . '/temp/', 'publication_');
                 // Zip files.
                 $filename = $itemname.$file->get_filename();
                 $zipname = str_replace('.html', '.zip', $filename);
@@ -928,8 +1005,11 @@ class publication {
                 if (count($filesforzipping) == 1) {
                     // We can send the file directly, if it has no resources!
                     send_file($file, $filename, 'default', 0, false, true, $file->get_mimetype(), false);
-                } else if ($zipper->archive_to_pathname($filesforzipping, $zipfile)) {
-                    send_temp_file($zipfile, $zipname); // Send file and delete after sending.
+                } else {
+                    $zipfile = tempnam($CFG->dataroot . '/temp/', 'publication_');
+                    if ($zipper->archive_to_pathname($filesforzipping, $zipfile)) {
+                        send_temp_file($zipfile, $zipname); // Send file and delete after sending.
+                    }
                 }
             } else {
                 send_file($file, $file->get_filename(), 'default', 0, false, true, $file->get_mimetype(), false);
@@ -1262,7 +1342,7 @@ class publication {
     }
 
     /**
-     * Updates the online-submission(s) of a single assignment used for manual import and autoimport via event observer
+     * Updates the online-submission(s) of a single assignment used via event observer
      *
      * @param stdClass $assigncm Assign's coursemodule object
      * @param stdClass $assigncontext Assign's context object
@@ -1301,6 +1381,7 @@ class publication {
                     $submission->id,
                     'timemodified',
                     false);
+
             foreach ($fsfiles as $file) {
                 $filerecord = new \stdClass();
                 $filerecord->contextid = $contextid;
@@ -1324,7 +1405,6 @@ class publication {
                     $fs->create_file_from_storedfile($filerecord, $file);
                 }
             }
-
             // Now we delete old resource-files, which are no longer present!
             $resources = $fs->get_directory_files($contextid,
                     'mod_publication',
@@ -1367,9 +1447,10 @@ class publication {
                 $file = $fs->get_file_by_hash($pathhash);
                 if (empty($formattedtext)) {
                     // The onlinetext was empty, delete the file!
-                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']]);
-                    \mod_publication\event\publication_file_deleted::create_from_object($assigncm, $dataobject)->trigger();
-                    $DB->delete_records('publication_file', $conditions);
+                    if ($pubfile) {
+                        \mod_publication\event\publication_file_deleted::create_from_object($assigncm, $pubfile)->trigger();
+                        $DB->delete_records('publication_file', $conditions);
+                    }
                     $file->delete();
                 } else if (($file->get_timemodified() < $submission->timemodified)
                         && ($file->get_contenthash() != sha1($submissioncontent))) {
@@ -1589,7 +1670,7 @@ class publication {
             $content = str_replace($search, $replace, $content);
         }
         $content = file_rewrite_pluginfile_urls($content, 'pluginfile.php', $contextid, 'mod_publication', 'attachment',
-                $itemid, ['forcehttps' => true]);
+                $itemid);
 
         // Get only the body part!
         $start = strpos($content, '<body>');
@@ -1630,7 +1711,7 @@ class publication {
     public static function get_typesets($types) {
         $sets = [];
         if (!empty($types)) {
-            $sets = preg_split('/[\s,;:"\']+/', $types, null, PREG_SPLIT_NO_EMPTY);
+            $sets = preg_split('/[\s,;:"\']+/', $types, -1, PREG_SPLIT_NO_EMPTY);
         }
 
         return $sets;

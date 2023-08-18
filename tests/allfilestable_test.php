@@ -70,10 +70,7 @@ class allfilestable_testcase extends base {
         ]);
 
         // Exercise SUT!
-        ob_start();
-        $publication->display_allfilesform();
-        $output = ob_get_contents();
-        ob_end_clean();
+        $output = $publication->display_allfilesform();
         self::assertFalse(strpos($output, "Nothing to display"));
 
         // Teardown fixture!
@@ -99,10 +96,7 @@ class allfilestable_testcase extends base {
         ]);
 
         // Exercise SUT!
-        ob_start();
-        $publication->display_allfilesform();
-        $output = ob_get_contents();
-        ob_end_clean();
+        $output = $publication->display_allfilesform();
         self::assertFalse(strpos($output, "Nothing to display"));
 
         // Teardown fixture!
@@ -128,10 +122,7 @@ class allfilestable_testcase extends base {
         ]);
 
         // Exercise SUT!
-        ob_start();
-        $publication->display_allfilesform();
-        $output = ob_get_contents();
-        ob_end_clean();
+        $output = $publication->display_allfilesform();
         self::assertFalse(strpos($output, "Nothing to display"));
 
         // Teardown fixture!
