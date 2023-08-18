@@ -43,6 +43,4 @@ if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configselect('publication/maxbytes', get_string('maxbytes', 'publication'),
                 get_string('configmaxbytes', 'publication'), 5242880, get_max_upload_sizes($CFG->maxbytes)));
     }
-    $settings->add(new admin_setting_configcheckbox('publication/autoimport',
-            get_string('autoimport', 'publication'), get_string('configautoimport', 'publication'), 0));
 }

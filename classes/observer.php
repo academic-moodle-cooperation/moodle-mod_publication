@@ -73,7 +73,7 @@ class observer {
 
         $sql = "SELECT pub.id, pub.course
                   FROM {publication} pub
-                 WHERE (pub.mode = ?) AND (pub.importfrom = ?) AND (pub.autoimport = 1)";
+                 WHERE (pub.mode = ?) AND (pub.importfrom = ?)";
         $params = [\PUBLICATION_MODE_IMPORT, $assignid];
         if (!$publications = $DB->get_records_sql($sql, $params)) {
             return true;
@@ -85,118 +85,118 @@ class observer {
         ]);
         $fs = get_file_storage();
 
-        $assignfileids = [];
-        $assignfiles = [];
+        $allassignfileids = [];
+        $allassignfiles = [];
         $itemid = empty($assign->get_instance()->teamsubmission) ? $submission->userid : $submission->groupid;
         $importtype = empty($assign->get_instance()->teamsubmission) ? 'user' : 'group';
+
+        foreach ($subfilerecords as $record) {
+            $files = $fs->get_area_files($assigncontext->id,
+                "assignsubmission_file",
+                "submission_files",
+                $record->submission,
+                "id",
+                false);
+
+            foreach ($files as $file) {
+                $allassignfiles[$file->get_id()] = $file;
+                $allassignfileids[$file->get_id()] = $file->get_id();
+            }
+        }
 
         foreach ($publications as $curpub) {
             $cm = get_coursemodule_from_instance('publication', $curpub->id, 0, false, MUST_EXIST);
             $context = \context_module::instance($cm->id);
-            foreach ($subfilerecords as $record) {
-                if ($assignfileids == []) {
-                    $files = $fs->get_area_files($assigncontext->id,
-                            "assignsubmission_file",
-                            "submission_files",
-                            $record->submission,
-                            "id",
-                            false);
 
-                    foreach ($files as $file) {
-                        $assignfiles[$file->get_id()] = $file;
-                        $assignfileids[$file->get_id()] = $file->get_id();
+            $conditions = [];
+            $conditions['publication'] = $curpub->id;
+            $conditions['userid'] = $itemid;
+            // We look for regular imported files here!
+            $conditions['type'] = PUBLICATION_MODE_IMPORT;
+
+            $oldpubfiles = $DB->get_records('publication_file', $conditions);
+
+            $assignfileids = $allassignfileids;
+            $assignfiles = $allassignfiles;
+
+            foreach ($oldpubfiles as $oldpubfile) {
+
+                if (in_array($oldpubfile->filesourceid, $assignfileids)) {
+                    // File was in assign and is still there.
+                    unset($assignfileids[$oldpubfile->filesourceid]);
+
+                } else {
+                    // File has been removed from assign.
+                    // Remove from publication (file and db entry).
+                    if ($file = $fs->get_file_by_id($oldpubfile->fileid)) {
+                        $file->delete();
                     }
+
+                    $conditions['id'] = $oldpubfile->id;
+                    $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']]);
+                    $dataobject->typ = $importtype;
+                    $dataobject->itemid = $itemid;
+                    \mod_publication\event\publication_file_deleted::create_from_object($cm, $dataobject)->trigger();
+                    $DB->delete_records('publication_file', $conditions);
                 }
+            }
 
-                $conditions = [];
-                $conditions['publication'] = $curpub->id;
-                $conditions['userid'] = $itemid;
-                // We look for regular imported files here!
-                $conditions['type'] = PUBLICATION_MODE_IMPORT;
+            // Add new files to publication.
+            foreach ($assignfileids as $assignfileid) {
+                $newfilerecord = new \stdClass();
+                $newfilerecord->contextid = $context->id;
+                $newfilerecord->component = 'mod_publication';
+                $newfilerecord->filearea = 'attachment';
+                $newfilerecord->itemid = $itemid;
 
-                $oldpubfiles = $DB->get_records('publication_file', $conditions);
-
-                foreach ($oldpubfiles as $oldpubfile) {
-
-                    if (in_array($oldpubfile->filesourceid, $assignfileids)) {
-                        // File was in assign and is still there.
-                        unset($assignfileids[$oldpubfile->filesourceid]);
-
-                    } else {
-                        // File has been removed from assign.
-                        // Remove from publication (file and db entry).
-                        if ($file = $fs->get_file_by_id($oldpubfile->fileid)) {
-                            $file->delete();
-                        }
-
-                        $conditions['id'] = $oldpubfile->id;
-                        $dataobject = $DB->get_record('publication_file', ['id' => $conditions['id']]);
-                        $dataobject->typ = $importtype;
-                        $dataobject->itemid = $itemid;
-                        \mod_publication\event\publication_file_deleted::create_from_object($cm, $dataobject)->trigger();
-                        $DB->delete_records('publication_file', $conditions);
-                    }
-                }
-
-                // Add new files to publication.
-                foreach ($assignfileids as $assignfileid) {
-                    $newfilerecord = new \stdClass();
-                    $newfilerecord->contextid = $context->id;
-                    $newfilerecord->component = 'mod_publication';
-                    $newfilerecord->filearea = 'attachment';
-                    $newfilerecord->itemid = $itemid;
-
-                    try {
-                        if ($fs->file_exists($newfilerecord->contextid,
+                try {
+                    if ($fs->file_exists($newfilerecord->contextid,
+                            $newfilerecord->component,
+                            $newfilerecord->filearea,
+                            $newfilerecord->itemid,
+                            $assignfiles[$assignfileid]->get_filepath(),
+                            $assignfiles[$assignfileid]->get_filename())) {
+                        notification::info($OUTPUT->box('File existed, skipped creation!', 'generalbox'));
+                        $newfile = $fs->get_file($newfilerecord->contextid,
                                 $newfilerecord->component,
                                 $newfilerecord->filearea,
                                 $newfilerecord->itemid,
                                 $assignfiles[$assignfileid]->get_filepath(),
-                                $assignfiles[$assignfileid]->get_filename())) {
-                            notification::info($OUTPUT->box('File existed, skipped creation!', 'generalbox'));
-                            $newfile = $fs->get_file($newfilerecord->contextid,
-                                    $newfilerecord->component,
-                                    $newfilerecord->filearea,
-                                    $newfilerecord->itemid,
-                                    $assignfiles[$assignfileid]->get_filepath(),
-                                    $assignfiles[$assignfileid]->get_filename());
-                        } else {
-                            $newfile = $fs->create_file_from_storedfile($newfilerecord, $assignfiles[$assignfileid]);
-                        }
-
-                        $dataobject = new \stdClass();
-                        $dataobject->publication = $curpub->id;
-                        $dataobject->userid = $itemid;
-                        $dataobject->timecreated = time();
-                        $dataobject->fileid = $newfile->get_id();
-                        $dataobject->filesourceid = $assignfileid;
-                        $dataobject->filename = $newfile->get_filename();
-                        $dataobject->contenthash = "666";
-                        $dataobject->type = \PUBLICATION_MODE_IMPORT;
-                        $DB->insert_record('publication_file', $dataobject);
-                        $dataobject->typ = $importtype;
-                        $dataobject->itemid = $itemid;
-                        \mod_publication\event\publication_file_imported::file_added($cm, $dataobject)->trigger();
-
-                        $publication = new publication($cm);
-                        if ($publication->get_instance()->notifyteacher) {
-                            publication::send_teacher_notification_uploaded($cm, $newfile, null, $publication);
-                        }
-
-                    } catch (\Exception $ex) {
-                        // File could not be copied, maybe it does allready exist.
-                        // Should not happen.
-                        notification::error($OUTPUT->box($ex->getMessage(), 'generalbox'));
+                                $assignfiles[$assignfileid]->get_filename());
+                    } else {
+                        $newfile = $fs->create_file_from_storedfile($newfilerecord, $assignfiles[$assignfileid]);
                     }
+
+                    $dataobject = new \stdClass();
+                    $dataobject->publication = $curpub->id;
+                    $dataobject->userid = $itemid;
+                    $dataobject->timecreated = time();
+                    $dataobject->fileid = $newfile->get_id();
+                    $dataobject->filesourceid = $assignfileid;
+                    $dataobject->filename = $newfile->get_filename();
+                    $dataobject->contenthash = "666";
+                    $dataobject->type = \PUBLICATION_MODE_IMPORT;
+                    $DB->insert_record('publication_file', $dataobject);
+                    $dataobject->typ = $importtype;
+                    $dataobject->itemid = $itemid;
+                    \mod_publication\event\publication_file_imported::file_added($cm, $dataobject)->trigger();
+
+                    $publication = new publication($cm);
+                    if ($publication->get_instance()->notifyteacher) {
+                        publication::send_teacher_notification_uploaded($cm, $newfile, null, $publication);
+                    }
+
+                } catch (\Exception $ex) {
+                    // File could not be copied, maybe it does allready exist.
+                    // Should not happen.
+                    notification::error($OUTPUT->box($ex->getMessage(), 'generalbox'));
                 }
 
             }
 
             // And now the same for online texts!
             \publication::update_assign_onlinetext($assigncm, $assigncontext, $curpub->id, $context->id, $submission->id);
-
         }
-
         return true;
     }
 

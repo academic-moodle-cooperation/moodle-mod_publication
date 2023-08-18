@@ -1,0 +1,30 @@
+{{#assign}}
+    {{{.}}}
+{{/assign}}
+{{#timeremaining}}
+    <tr>
+        <th>{{#str}}timeremaining,assign{{/str}}</th>
+        <td>{{.}}</td>
+    </tr>
+{{/timeremaining}}
+{{#hasmyfiles}}
+    <tr>
+        <th>{{#str}}lastmodified{{/str}}</th>
+        <td>{{lastmodified}}</td>
+    </tr>
+{{/hasmyfiles}}
+<tr>
+    <th>{{myfilestitle}}</th>
+    <td>
+        {{#hasmyfiles}}
+            {{#myfiles}}
+                {{#.}}
+                    {{{.}}}
+                {{/.}} <br />
+            {{/myfiles}}
+        {{/hasmyfiles}}
+        {{^hasmyfiles}}
+            {{#str}}nofiles,publication{{/str}}
+        {{/hasmyfiles}}
+    </td>
+</tr>

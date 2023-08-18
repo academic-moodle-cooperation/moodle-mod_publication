@@ -79,6 +79,8 @@ class base extends \table_sql {
     protected $options = [];
     /** @var int[] $users */
     protected $users = [];
+    protected $filter = PUBLICATION_FILTER_NOFILTER;
+    protected $allfilespage = false;
 
     /**
      * constructor
@@ -87,9 +89,10 @@ class base extends \table_sql {
      *                         It gets set automatically with the helper methods!
      * @param \publication $publication publication object
      */
-    public function __construct($uniqueid, \publication $publication) {
+    public function __construct($uniqueid, \publication $publication, $filter) {
         global $CFG, $OUTPUT;
 
+        $this->allfilespage = $publication->get_allfilespage();
         parent::__construct($uniqueid);
 
         $this->fs = get_file_storage();
@@ -98,6 +101,11 @@ class base extends \table_sql {
         $this->context = \context_module::instance($this->cm->id);
         $this->groupmode = groups_get_activity_groupmode($this->cm);
         $this->currentgroup = groups_get_activity_group($this->cm, true);
+        if (!$this->allfilespage) {
+            $this->filter = PUBLICATION_FILTER_APPROVED;
+        } else {
+            $this->filter = $filter;
+        }
 
         list($columns, $headers, $helpicons) = $this->get_columns();
         $this->define_columns($columns);
@@ -105,13 +113,12 @@ class base extends \table_sql {
         $this->define_help_for_headers($helpicons);
 
         $this->define_baseurl($CFG->wwwroot . '/mod/publication/view.php?id=' . $this->cm->id . '&amp;currentgroup=' .
-                $this->currentgroup);
+                $this->currentgroup . '&amp;filter=' . $this->filter . '&amp;allfilespage=' . intval($this->allfilespage));
 
         $this->sortable(true, 'lastname'); // Sorted by lastname by default.
         $this->collapsible(true);
         $this->initialbars(true);
 
-        $this->column_suppress('picture');
         $this->column_suppress('fullname');
         $this->column_suppress('group');
 
@@ -125,6 +132,8 @@ class base extends \table_sql {
 
         $this->no_sorting('studentapproval');
         $this->no_sorting('selection');
+        $this->no_sorting('publicationstatus');
+        $this->no_sorting('files');
 
         $this->no_sorting('visibleforstudents');
 
@@ -133,17 +142,16 @@ class base extends \table_sql {
         // Save status of table(s) persistent as user preference!
         $this->is_persistent(true);
 
-        $this->valid = $OUTPUT->pix_icon('i/valid', get_string('student_approved', 'publication'));
-        $this->questionmark = $OUTPUT->pix_icon('questionmark', get_string('student_pending', 'publication'), 'mod_publication');
-        $this->invalid = $OUTPUT->pix_icon('i/invalid', get_string('student_rejected', 'publication'));
+        $this->valid = self::approval_icon('check', 'text-success', get_string('student_approved', 'publication'));
+        $this->questionmark = self::approval_icon('question', 'text-warning', get_string('student_pending', 'publication'));
+        $this->invalid = self::approval_icon('times', 'text-danger', get_string('student_rejected', 'publication'));
 
-        $this->studvisibleyes = $OUTPUT->pix_icon('i/valid', get_string('visibleforstudents_yes', 'publication'));
-        $this->studvisibleno = $OUTPUT->pix_icon('i/invalid', get_string('visibleforstudents_no', 'publication'));
+        $this->studvisibleyes = self::approval_icon('check', 'text-success', get_string('visibleforstudents_yes', 'publication'));
+        $this->studvisibleno = self::approval_icon('times', 'text-danger', get_string('visibleforstudents_no', 'publication'));
 
-        $this->options = [
-                1 => get_string('yes'),
-                2 => get_string('no')
-        ];
+        $this->options = [];
+        $this->options[1] = get_string('teacher_approve', 'publication');
+        $this->options[2] = get_string('teacher_reject', 'publication');
     }
 
     /**
@@ -157,7 +165,7 @@ class base extends \table_sql {
 
         $this->print_initials_bar();
 
-        echo $OUTPUT->box(get_string('nothing_to_show_users', 'publication'), 'font-italic');
+        echo $OUTPUT->box(get_string('nofilestodisplay', 'publication'), 'font-italic');
     }
 
     /**
@@ -171,14 +179,14 @@ class base extends \table_sql {
                 'onClick' => 'toggle_userselection()'
         ]);
 
-        $columns = ['selection', 'picture', 'fullname'];
-        $headers = [$selectallnone, '', get_string('fullnameuser')];
-        $helpicons = [null, null, null];
+        $columns = ['selection', 'fullname'];
+        $headers = [$selectallnone, get_string('fullnameuser')];
+        $helpicons = [null, null];
 
         $fields = \core_user\fields::for_identity($this->context, false);
         $useridentity = $fields->get_required_fields();
         foreach ($useridentity as $cur) {
-            if (has_capability('mod/publication:approve', $this->context)) {
+            if (has_capability('mod/publication:approve', $this->context) && $this->allfilespage) {
                 $columns[] = $cur;
                 $headers[] = ($cur == 'phone1') ? get_string('phone') : get_string($cur);
                 $helpicons[] = null;
@@ -187,6 +195,9 @@ class base extends \table_sql {
 
         $columns[] = 'timemodified';
         $headers[] = get_string('lastmodified');
+        $helpicons[] = null;
+        $columns[] = 'files';
+        $headers[] = get_string('files');
         $helpicons[] = null;
 
         // Import and upload tables will enhance this list! Import from teamassignments will overwrite it!
@@ -202,6 +213,11 @@ class base extends \table_sql {
         $this->users = $users;
     }
 
+    public function get_count() {
+        global $DB;
+        $grandtotal = $DB->count_records_sql($this->countsql, $this->countparams);
+        return $grandtotal;
+    }
     /**
      * Sets the predefined SQL for this table
      */
@@ -227,14 +243,45 @@ class base extends \table_sql {
         list($sqluserids, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
         $params = $params + $userparams + ['publication' => $this->cm->instance];
 
-        $from = '{user} u ' .
+        $having = '';
+        if ($this->filter == PUBLICATION_FILTER_NOFILTER) {
+            $from = '{user} u ' .
                 'LEFT JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ';
+        } else if ($this->filter == PUBLICATION_FILTER_ALLFILES) {
+            $from = '{user} u ' .
+                'JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ';
+        } else if ($this->filter == PUBLICATION_FILTER_APPROVED) {
+            $from = '{user} u ' .
+                'JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ' .
+                'AND files.teacherapproval = 1 ';
+        } else if ($this->filter == PUBLICATION_FILTER_REJECTED) {
+            $from = '{user} u ' .
+                'JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ' .
+                'AND files.teacherapproval = 2 ';
+        } else if ($this->filter == PUBLICATION_FILTER_APPROVALREQUIRED) {
+            $from = '{user} u ' .
+                'JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ' .
+                'AND (files.teacherapproval = 3 OR files.teacherapproval IS NULL OR files.teacherapproval = 0) ';
+        } else if ($this->filter == PUBLICATION_FILTER_NOFILES) {
+            $from = '{user} u ' .
+                'LEFT JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ';
+            $having = ' HAVING timemodified IS NULL ';
+        }
 
         $where = "u.id " . $sqluserids;
-        $groupby = $ufields . ' ' . $useridentityfields . ', u.username ';
+        $groupby = $ufields . ' ' . $useridentityfields . ', u.username ' . $having;
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
-        $this->set_count_sql("SELECT COUNT(a.uid) FROM (SELECT DISTINCT u.id AS uid FROM " . $from . " WHERE " . $where . ') a', $params);
+        if ($this->filter != PUBLICATION_FILTER_NOFILES) {
+            $this->set_count_sql("SELECT COUNT(a.uid) FROM (SELECT DISTINCT u.id AS uid FROM $from WHERE $where) a", $params);
+        } else {
+            $this->set_count_sql(
+                "SELECT
+    COUNT(a.uid)
+FROM
+    (SELECT u.id AS uid, MAX(files.timecreated) AS timemodified FROM $from WHERE $where GROUP BY u.id) a WHERE a.timemodified IS NULL",
+                $params);
+        }
 
     }
 
@@ -278,6 +325,8 @@ class base extends \table_sql {
             if ($wsql) {
                 if (strrpos($this->countsql, ') a') == (strlen($this->countsql) - 3)) {
                     $this->countsql = substr($this->countsql, 0, -3) .  ' AND ' . $wsql . ') a';
+                } else if (strpos($this->countsql, 'GROUP BY u.id) a' !== false)) {
+                    $this->countsql = str_replace('GROUP BY u.id) a', ' AND ' . $wsql . ' GROUP BY u.id) a', $this->countsql);
                 } else {
                     $this->countsql .= ' AND ' . $wsql;
                 }
@@ -319,6 +368,7 @@ class base extends \table_sql {
      * @return array Array with itemid, files-array and resources-array as items
      */
     public function get_files($itemid) {
+        global $DB;
         if (($itemid === $this->itemid) && (($this->files !== null) || ($this->resources !== null))) {
             // We cache just the current files, to use less memory!
             return [$this->itemid, $this->files, $this->resources];
@@ -332,8 +382,32 @@ class base extends \table_sql {
         $this->resources = [];
 
         $files = $this->fs->get_area_files($contextid, 'mod_publication', $filearea, $this->itemid, 'timemodified', false);
+        $modeimport = $this->publication->get_instance()->mode == PUBLICATION_MODE_IMPORT;
+        $obtainstudentapproval = $modeimport && $this->publication->get_instance()->obtainstudentapproval;
 
+        $dbfiles = $DB->get_records('publication_file', ['userid' => $itemid], '', 'fileid, teacherapproval, studentapproval');
         foreach ($files as $file) {
+            if (isset($dbfiles[intval($file->get_id())])) {
+                $dbfile = $dbfiles[intval($file->get_id())];
+                if ($this->filter == PUBLICATION_FILTER_APPROVED) {
+                    if ($obtainstudentapproval) {
+                        if ($dbfile->studentapproval != 1) {
+                            continue;
+                        }
+                    }
+                    if ($dbfile->teacherapproval != 1) {
+                        continue;
+                    }
+                } else if ($this->filter == PUBLICATION_FILTER_REJECTED) {
+                    if ($dbfile->teacherapproval != 2) {
+                        continue;
+                    }
+                } else if ($this->filter == PUBLICATION_FILTER_APPROVALREQUIRED) {
+                    if ($dbfile->teacherapproval == 1 || $dbfile->teacherapproval == 2) {
+                        continue;
+                    }
+                }
+            }
             if ($file->get_filepath() == '/resources/') {
                 $this->resources[] = $file;
             } else {
@@ -448,6 +522,7 @@ class base extends \table_sql {
      * @return string Return user fullname.
      */
     public function col_fullname($values) {
+        global $OUTPUT;
         // Saves DB access in \mod_publication\local\allfilestable::get_itemname()!
         if (!array_key_exists($values->id, $this->itemnames)) {
             $this->itemnames[$values->id] = fullname($values);
@@ -455,8 +530,8 @@ class base extends \table_sql {
 
         $extension = $this->publication->user_extensionduedate($values->id);
         if ($extension) {
-            if (has_capability('mod/publication:grantextension', $this->context) ||
-                    has_capability('mod/publication:approve', $this->context)) {
+            if ((has_capability('mod/publication:grantextension', $this->context) ||
+                    has_capability('mod/publication:approve', $this->context)) && $this->allfilespage) {
                 $extensiontxt = \html_writer::empty_tag('br') . "\n" .
                         get_string('extensionto', 'publication') . ': ' . userdate($extension);
             } else {
@@ -469,7 +544,8 @@ class base extends \table_sql {
         if ($this->is_downloading()) {
             return strip_tags(parent::col_fullname($values) . $extensiontxt);
         } else {
-            return parent::col_fullname($values) . $extensiontxt;
+
+            return  $OUTPUT->user_picture($values) .  parent::col_fullname($values) . $extensiontxt;
         }
     }
 
@@ -490,22 +566,6 @@ class base extends \table_sql {
         return $values->groupname;
     }
 
-    /**
-     * This function is called for each data row to allow processing of the
-     * user picture.
-     *
-     * @param object $values Contains object with all the values of record.
-     * @return string Return user picture markup.
-     */
-    public function col_picture($values) {
-        global $OUTPUT;
-        // If the data is being downloaded than we don't want to show HTML.
-        if ($this->is_downloading()) {
-            return '';
-        } else {
-            return $OUTPUT->user_picture($values);
-        }
-    }
 
     /**
      * This function is called for each data row to allow processing of the
@@ -568,15 +628,43 @@ class base extends \table_sql {
         if ($this->totalfiles === null) {
             $this->totalfiles = 0;
         }
+        $lastmodified = '';
         if (count($filetable->data) > 0) {
-            $lastmodified = \html_writer::table($filetable);
-            $lastmodified .= \html_writer::span(userdate($values->timemodified), "timemodified");
-            $this->totalfiles += count($filetable->data);
-        } else {
-            $lastmodified = get_string('nofiles', 'publication');
+            $lastmodified = \html_writer::span(userdate($values->timemodified), "timemodified");
         }
 
         // TODO: download without tags?
+        return $lastmodified;
+    }
+
+    public function col_files($values) {
+        list(, $files, ) = $this->get_files($values->id);
+        global $OUTPUT;
+        $filetable = new \html_table();
+        $filetable->attributes = ['class' => 'filetable'];
+
+        foreach ($files as $file) {
+            if ((has_capability('mod/publication:approve', $this->context))
+                || $this->publication->has_filepermission($file->get_id())) {
+                $filerow = [];
+                $filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
+
+                $url = new \moodle_url('/mod/publication/view.php', ['id' => $this->cm->id, 'download' => $file->get_id()]);
+                $filerow[] = \html_writer::link($url, $file->get_filename()) .
+                    $this->add_onlinetext_preview($values->id, $file->get_id());
+
+                $filetable->data[] = $filerow;
+            }
+        }
+
+        if ($this->totalfiles === null) {
+            $this->totalfiles = 0;
+        }
+        $lastmodified = '';
+        if (count($filetable->data) > 0) {
+            $lastmodified = \html_writer::table($filetable);
+            $this->totalfiles += count($filetable->data);
+        }
         return $lastmodified;
     }
 
@@ -682,6 +770,68 @@ class base extends \table_sql {
         }
     }
 
+    public function col_publicationstatus($values) {
+
+        list(, $files, ) = $this->get_files($values->id);
+
+        $table = new \html_table();
+        $table->attributes = ['class' => 'statustable'];
+
+        foreach ($files as $file) {
+            $row = [];
+            // studentapproval!
+            /*
+            if (!($this instanceof \mod_publication\local\allfilestable\upload)) {
+                if (has_capability('mod/publication:approve', $this->context)
+                    || $this->publication->has_filepermission($file->get_id())) {
+                    switch ($this->publication->student_approval($file)) {
+                        case 2:
+                            $symbol = $this->valid;
+                            break;
+                        case 1:
+                            $symbol = $this->invalid;
+                            break;
+                        default:
+                            $symbol = $this->questionmark;
+                    }
+                    $this->add_details_tooltip($symbol, $file);
+                    $row[] = $symbol;
+
+                }
+            }
+            */
+
+            // teacherapproval!
+
+            if ($this->publication->has_filepermission($file->get_id())
+                || has_capability('mod/publication:approve', $this->context)) {
+
+                $checked = $this->publication->teacher_approval($file);
+                // Null if none found, DB-entry otherwise!
+                // TODO change that conversions and queue the real values! Everywhere!
+                $checked = ($checked === false || $checked === null) ? "" : $checked;
+
+                $sel = \html_writer::select($this->options, 'files[' . $file->get_id() . ']', (string)$checked);
+                $row[] = $sel;
+            }
+            // visibleforstudents
+
+            if ($this->publication->has_filepermission($file->get_id())) {
+                $row[] = $this->studvisibleyes;
+            } else {
+                $row[] = $this->studvisibleno;
+            }
+            $table->data[] = $row;
+        }
+
+        // TODO: download without tags?
+        if (count($table->data) > 0) {
+            return \html_writer::table($table);
+        } else {
+            return '';
+        }
+    }
+
     /**
      * This function is called for each data row to allow processing of
      * columns which do not have a *_cols function.
@@ -712,7 +862,16 @@ class base extends \table_sql {
                 }
             }
         }
-
         return $values->$colname;
+    }
+
+    public static function approval_icon($fontawesomeicon, $bootsrapcolor, $title) {
+        global $OUTPUT;
+        $templatecontext = [
+            'fontawesomeicon' => $fontawesomeicon,
+            'bootsrapcolor' => $bootsrapcolor,
+            'title' => $title
+        ];
+        return $OUTPUT->render_from_template('mod_publication/approval_icon_fontawesome', $templatecontext);
     }
 }

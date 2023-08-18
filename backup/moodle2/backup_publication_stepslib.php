@@ -56,6 +56,7 @@ class backup_publication_activity_structure_step extends backup_activity_structu
                 'duedate',
                 'allowsubmissionsfromdate',
                 'timemodified',
+                'completionupload',
                 'cutoffdate',
                 'mode',
                 'importfrom',

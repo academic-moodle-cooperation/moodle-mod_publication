@@ -46,10 +46,11 @@ class group extends base {
      * @return string[] Array of table cell contents
      */
     public function add_file(\stored_file $file) {
-        global $USER, $DB;
+        global $USER, $DB, $OUTPUT;
 
         // The common columns!
         $data = parent::add_file($file);
+        $templatecontext = new \stdClass;
 
         // Now add the specific data to the table!
         $teacherapproval = $this->publication->teacher_approval($file);
@@ -67,12 +68,15 @@ class group extends base {
                 } else {
                     $checked = $approvaldetails[$USER->id]->approval === null ? 0 : $approvaldetails[$USER->id]->approval + 1;
                 }
+                $templatecontext = false;
                 $data[] = \html_writer::select($this->options, 'studentapproval[' . $file->get_id() . ']', $checked);
             } else {
                 if ($studentapproval === null) {
-                    $data[] = get_string('student_pending', 'publication');
+                    $templatecontext->icon = $this->questionmark;
+                    $templatecontext->hint = get_string('student_pending', 'publication');
                 } else if ($studentapproval) {
-                    $data[] = get_string('student_approved', 'publication');
+                    $templatecontext->icon = $this->valid;
+                    $templatecontext->hint = get_string('student_approved', 'publication');
                 } else {
                     $rejected = [];
                     $pending = [];
@@ -94,21 +98,27 @@ class group extends base {
                     } else {
                         $rejected = '';
                     }
-                    $data[] = \html_writer::tag('span', get_string('student_rejected', 'publication'),
-                            ['title' => $rejected]);
+                    $templatecontext->icon = $this->invalid;
+                    $templatecontext->hint = get_string('student_rejected', 'publication') . '<br />' . $rejected;
                 }
             }
         } else {
             switch ($teacherapproval) {
                 case 1:
-                    $data[] = get_string('teacher_approved', 'publication');
+                    $templatecontext->icon = $this->valid;
+                    $templatecontext->hint = get_string('teacher_approved', 'publication');
                     break;
                 case 3:
-                    $data[] = get_string('teacher_pending', 'publication');
+                    $templatecontext->icon = $this->questionmark;
+                    $templatecontext->hint = get_string('teacher_pending', 'publication');
                     break;
                 default:
-                    $data[] = get_string('student_pending', 'publication');
+                    $templatecontext->icon = $this->questionmark;
+                    $templatecontext->hint = get_string('student_pending', 'publication');
             }
+        }
+        if ($templatecontext) {
+            $data[] = $OUTPUT->render_from_template('mod_publication/approval_icon', $templatecontext);
         }
 
         return $data;
@@ -152,6 +162,9 @@ class group extends base {
                     $this->resources[] = $file;
                 } else {
                     $this->files[] = $file;
+                }
+                if ($this->lastmodified < $file->get_timemodified()) {
+                    $this->lastmodified = $file->get_timemodified();
                 }
             }
         }

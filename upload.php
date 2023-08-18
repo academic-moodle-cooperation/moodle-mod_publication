@@ -118,6 +118,7 @@ if ($mform->is_cancelled()) {
         $values[] = $file->get_id();
     }
 
+    $filescount = count($values);
     $rows = $DB->get_records('publication_file', ['publication' => $publication->get_instance()->id, 'userid' => $USER->id]);
 
     // Find new files and store in db.
@@ -165,6 +166,17 @@ if ($mform->is_cancelled()) {
             $dataobject = $DB->get_record('publication_file', ['id' => $row->id]);
             \mod_publication\event\publication_file_deleted::create_from_object($cm, $dataobject)->trigger();
             $DB->delete_records('publication_file', ['id' => $row->id]);
+        }
+    }
+
+    // Update competion status - if filescount == 0 => activity not completed, else => activity completed
+
+    $completion = new completion_info($course);
+    if ($completion->is_enabled($cm) && $publication->get_instance()->completionupload) {
+        if ($filescount == 0) {
+            $completion->update_state($cm, COMPLETION_INCOMPLETE, $USER->id);
+        } else {
+            $completion->update_state($cm, COMPLETION_COMPLETE, $USER->id);
         }
     }
 

@@ -43,10 +43,10 @@ class import extends base {
      *                         It gets set automatically with the helper methods!
      * @param \publication $publication publication object
      */
-    public function __construct($uniqueid, \publication $publication) {
+    public function __construct($uniqueid, \publication $publication, $filter) {
         global $PAGE;
 
-        parent::__construct($uniqueid, $publication);
+        parent::__construct($uniqueid, $publication, $filter);
 
         $params = new \stdClass();
         $cm = get_coursemodule_from_instance('publication', $publication->get_instance()->id);
@@ -62,12 +62,13 @@ class import extends base {
     public function get_columns() {
         list($columns, $headers, $helpicons) = parent::get_columns();
 
-        if (has_capability('mod/publication:approve', $this->context)) {
+        if (has_capability('mod/publication:approve', $this->context) && $this->allfilespage) {
             if ($this->publication->get_instance()->obtainstudentapproval) {
                 $columns[] = 'studentapproval';
                 $headers[] = get_string('studentapproval', 'publication');
                 $helpicons[] = new \help_icon('studentapproval', 'publication');
             }
+            /*
             $columns[] = 'teacherapproval';
             if ($this->publication->get_instance()->obtainstudentapproval) {
                 $headers[] = get_string('obtainstudentapproval', 'publication');
@@ -78,7 +79,10 @@ class import extends base {
 
             $columns[] = 'visibleforstudents';
             $headers[] = get_string('visibleforstudents', 'publication');
-            $helpicons[] = null;
+            $helpicons[] = null;*/
+            $columns[] = 'publicationstatus';
+            $headers[] = get_string('publicationstatus', 'publication');
+            $helpicons[] = new \help_icon('publicationstatus', 'publication');
         }
 
         return [$columns, $headers, $helpicons];

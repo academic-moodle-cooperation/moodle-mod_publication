@@ -44,14 +44,18 @@ class upload extends base {
     public function get_columns() {
         list($columns, $headers, $helpicons) = parent::get_columns();
 
-        if (has_capability('mod/publication:approve', $this->context)) {
+        if (has_capability('mod/publication:approve', $this->context) && $this->allfilespage) {
+            /*
             $columns[] = 'teacherapproval';
             $headers[] = get_string('teacherapproval', 'publication');
             $helpicons[] = new \help_icon('teacherapproval', 'publication');
 
             $columns[] = 'visibleforstudents';
             $headers[] = get_string('visibleforstudents', 'publication');
-            $helpicons[] = null;
+            $helpicons[] = null;*/
+            $columns[] = 'publicationstatus';
+            $headers[] = get_string('publicationstatus', 'publication');
+            $helpicons[] = new \help_icon('publicationstatus', 'publication');
         }
 
         return [$columns, $headers, $helpicons];

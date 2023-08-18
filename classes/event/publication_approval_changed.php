@@ -95,16 +95,6 @@ class publication_approval_changed extends \core\event\base {
     }
 
     /**
-     * Return the legacy event log data.
-     *
-     * @return array|null
-     */
-    protected function get_legacy_logdata() {
-        return array($this->courseid, 'publication', 'approval changed '.$this->data['other']['approval'], $this->get_url(),
-            $this->data['other']['publication'], $this->contextinstanceid);
-    }
-
-    /**
      * Custom validation.
      *
      * @throws \coding_exception

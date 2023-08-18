@@ -43,9 +43,11 @@ class import extends base {
      * @return string[] Array of table cell contents
      */
     public function add_file(\stored_file $file) {
+        global $OUTPUT;
         // The common columns!
         $data = parent::add_file($file);
 
+        $templatecontext = new \stdClass;
         // Now add the specific data to the table!
         $teacherapproval = $this->publication->teacher_approval($file);
         if ($teacherapproval && $this->publication->get_instance()->obtainstudentapproval) {
@@ -53,29 +55,40 @@ class import extends base {
             if ($this->publication->is_open() && $studentapproval == 0) {
                 $this->changepossible = true;
                 $data[] = \html_writer::select($this->options, 'studentapproval[' . $file->get_id() . ']', $studentapproval);
+                $templatecontext = false;
             } else {
                 switch ($studentapproval) {
                     case 2:
-                        $data[] = get_string('student_approved', 'publication');
+                        $templatecontext->icon = $this->valid;
+                        $templatecontext->hint = get_string('student_approved', 'publication');
                         break;
                     case 1:
-                        $data[] = get_string('student_rejected', 'publication');
+                        $templatecontext->icon = $this->invalid;
+                        $templatecontext->hint = get_string('student_rejected', 'publication');
                         break;
                     default:
-                        $data[] = get_string('student_pending', 'publication');
+                        $templatecontext->icon = $this->questionmark;
+                        $templatecontext->hint = get_string('student_pending', 'publication');
                 }
             }
         } else {
             switch ($teacherapproval) {
                 case 1:
-                    $data[] = get_string('teacher_approved', 'publication');
+                    $templatecontext->icon = $this->valid;
+                    $templatecontext->hint = get_string('teacher_approved', 'publication');
                     break;
                 case 3:
-                    $data[] = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
+                    $templatecontext->icon = $this->questionmark;
+                    $templatecontext->hint = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
                     break;
                 default:
-                    $data[] = get_string('student_pending', 'publication');
+                    $templatecontext->icon = $this->questionmark;
+                    $templatecontext->hint = get_string('student_pending', 'publication');
             }
+        }
+
+        if ($templatecontext) {
+            $data[] = $OUTPUT->render_from_template('mod_publication/approval_icon', $templatecontext);
         }
 
         return $data;

@@ -1,0 +1,49 @@
+
+{{#isteacher}}
+    {{#showapprovalrequired}}
+        <a href="{{viewall_approvalneeded_url}}" class="btn btn-primary">{{#str}}giveapproval,publication{{/str}}</a>
+    {{/showapprovalrequired}}
+{{/isteacher}}
+{{^isteacher}}
+    {{{myfilesform}}}
+{{/isteacher}}
+<div class="my-3">
+    {{#isteacher}}
+        <h3>{{#str}}overview,publication{{/str}}</h3>
+
+    {{/isteacher}}
+    <table class="table table-striped w-100">
+
+        {{#isteacher}}
+            <tr>
+                <th>{{#str}}mode,publication{{/str}}</th>
+                <td>{{mode}}</td>
+            </tr>
+            {{#assign}}
+                {{{.}}}
+            {{/assign}}
+            <tr>
+                <th>{{#str}}obtainteacherapproval,publication{{/str}}</th>
+                <td>{{obtainapproval}}</td>
+            </tr>
+            <tr>
+                <th>{{#str}}participants{{/str}}</th>
+                <td>{{studentcount}}</td>
+            </tr>
+            <tr>
+                <th>{{#str}}submitted,assign{{/str}}</th>
+                <td>{{allfilescount}}</td>
+            </tr>
+            {{#showapprovalrequired}}
+                <tr>
+                    <th>{{#str}}approval_required,publication{{/str}}</th>
+                    <td><a href="{{viewall_approvalneeded_url}}">{{approvalrequiredcount}}</a></td>
+                </tr>
+            {{/showapprovalrequired}}
+        {{/isteacher}}
+
+    </table>
+</div>
+{{#isteacher}}
+    {{{myfilesform}}}
+{{/isteacher}}

@@ -30,8 +30,9 @@ require_once($CFG->dirroot . '/mod/publication/mod_publication_files_form.php');
 require_once($CFG->dirroot . '/mod/publication/mod_publication_allfiles_form.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
+$allfilespage = optional_param('allfilespage', 0, PARAM_BOOL);
 
-$url = new moodle_url('/mod/publication/view.php', ['id' => $id]);
+$url = new moodle_url('/mod/publication/view.php', ['id' => $id, 'allfilespage' => $allfilespage]);
 $cm = get_coursemodule_from_id('publication', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
@@ -42,7 +43,13 @@ $context = context_module::instance($cm->id);
 
 require_capability('mod/publication:view', $context);
 
+if ($allfilespage) {
+    require_capability('mod/publication:approve', $context);
+}
+
 $publication = new publication($cm, $course, $context);
+
+$publication->set_allfilespage($allfilespage);
 
 $event = \mod_publication\event\course_module_viewed::create([
     'objectid' => $PAGE->cm->instance,
@@ -50,6 +57,9 @@ $event = \mod_publication\event\course_module_viewed::create([
 ]);
 $event->add_record_snapshot('course', $PAGE->course);
 $event->trigger();
+
+$completion = new completion_info($course);
+$completion->set_module_viewed($cm);
 
 $pagetitle = strip_tags($course->shortname . ': ' . format_string($publication->get_instance()->name));
 $action = optional_param('action', 'view', PARAM_ALPHA);
@@ -62,6 +72,7 @@ if ($download > 0) {
 
 if ($savevisibility) {
     require_capability('mod/publication:approve', $context);
+    require_sesskey();
 
     $files = optional_param_array('files', [], PARAM_INT);
 
@@ -145,7 +156,7 @@ if ($savevisibility) {
 
         echo $OUTPUT->header();
         echo $OUTPUT->heading(format_string($publication->get_instance()->name), 1);
-        echo $OUTPUT->confirm($message, 'view.php?id=' . $id . '&action=import&confirm=1', 'view.php?id=' . $id);
+        echo $OUTPUT->confirm($message, 'view.php?id=' . $id . '&action=import&confirm=1&sesskey=' . sesskey(), 'view.php?id=' . $id);
         echo $OUTPUT->footer();
         exit;
     }
@@ -153,6 +164,7 @@ if ($savevisibility) {
     $publication->importfiles();
 } else if ($action == "grantextension") {
     require_capability('mod/publication:grantextension', $context);
+    require_sesskey();
 
     $users = optional_param_array('selectedeuser', [], PARAM_INT);
     $users = array_keys($users);
@@ -168,6 +180,7 @@ if ($savevisibility) {
     }
 } else if ($action == "approveusers" || $action == "rejectusers") {
     require_capability('mod/publication:approve', $context);
+    require_sesskey();
 
     $users = optional_param_array('selectedeuser', [], PARAM_INT);
     $users = array_keys($users);
@@ -182,6 +195,7 @@ if ($savevisibility) {
     }
 } else if ($action == "resetstudentapproval") {
     require_capability('mod/publication:approve', $context);
+    require_sesskey();
 
     $users = optional_param_array('selectedeuser', [], PARAM_INT);
     $users = array_keys($users);
@@ -247,6 +261,7 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
         $approval = ($approval >= 1) ? $approval - 1 : null;
         $dataforlog = new stdClass();
         $dataforlog->approval = $approval == 1 ? 'approved' : 'rejected';
+        $stats = null;
 
         if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
             && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
@@ -254,11 +269,12 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
              * and returns current cumulated group approval (and it also sets it in publication_file table)! */
             $stats = $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
 
-            $dataforlog->approval = '(Students '.$stats['approving'].' out of '.$stats['needed'].') '.$dataforlog->approval;
         } else {
             $DB->set_field('publication_file', 'studentapproval', $approval, $conditions);
         }
-
+        if (is_array($stats)) {
+            $dataforlog->approval = '(Students '.$stats['approving'].' out of '.$stats['needed'].') '.$dataforlog->approval;
+        }
         $dataforlog->publication = $conditions['publication'];
         $dataforlog->userid = $USER->id;
         $dataforlog->reluser = $USER->id;
@@ -274,12 +290,66 @@ $filesform = new mod_publication_files_form(null,
 // Print the page header.
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
+if (!$allfilespage) {
+    $PAGE->add_body_class('limitedwidth');
+} else {
+    $PAGE->add_body_class('allfilespage');
+}
 echo $OUTPUT->header();
 
-$publication->display_importlink();
+$allfilesform = $publication->display_allfilesform();
 
-$filesform->display();
+$publicationinstance = $publication->get_instance();
+$templatecontext = new stdClass;
+if ($publicationinstance->mode == PUBLICATION_MODE_UPLOAD) {
+    $templatecontext->mode = get_string('modeupload', 'publication');
+    $templatecontext->obtainapproval = $publicationinstance->obtainteacherapproval != 1 ?
+        get_string('obtainteacherapproval_yes', 'publication') : get_string('obtainteacherapproval_no', 'publication');
+} else {
+    $templatecontext->mode = get_string('modeimport', 'publication');
+    $templatecontext->obtainapproval = $publicationinstance->obtainstudentapproval != 1 ?
+        get_string('obtainstudentapproval_teacher', 'publication') : get_string('obtainstudentapproval_participant', 'publication');
+}
+$publicationinstance->mode == PUBLICATION_MODE_UPLOAD ?
+    get_string('modeupload', 'publication') : get_string('modeimport', 'publication');
 
-$publication->display_allfilesform();
+
+if ($publicationinstance->duedate > 0) {
+    $timeremainingdiff = $publicationinstance->duedate - time();
+    if ($timeremainingdiff > 0) {
+        $templatecontext->timeremaining = format_time($publicationinstance->duedate - time());
+    } else {
+        $templatecontext->timeremaining = get_string('overdue', 'publication');
+    }
+}
+$templatecontext->isteacher = false;
+if (has_capability('mod/publication:approve', $context)) {
+    $templatecontext->isteacher = true;
+    $templatecontext->studentcount = count($publication->get_users([], true));
+    $allfilestable = $publication->get_allfilestable(PUBLICATION_FILTER_ALLFILES, true);
+    $templatecontext->allfilescount = $allfilestable->get_count();
+    $templatecontext->assign = $publication->get_importlink();
+    if ($publicationinstance->obtainteacherapproval == 1) {
+        $templatecontext->viewall_approvalneeded_url = (new moodle_url('/mod/publication/view.php',
+            ['id' => $cm->id, 'filter' => PUBLICATION_FILTER_APPROVALREQUIRED, 'allfilespage' => 1]))->out(false);
+        $templatecontext->showapprovalrequired = true;
+        $notapprovedtable = $publication->get_allfilestable(PUBLICATION_FILTER_APPROVALREQUIRED, true);
+        $templatecontext->approvalrequiredcount = $notapprovedtable->get_count();
+    }
+}
+
+$mode = $publication->get_mode();
+$templatecontext->myfilestitle = $mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION ? get_string('mygroupfiles', 'publication') : get_string('myfiles', 'publication');
+$filestable = $publication->get_filestable();
+$filestable->init();
+$templatecontext->myfiles = $filestable->data;
+$templatecontext->hasmyfiles = count($templatecontext->myfiles) > 0;
+$templatecontext->myfilesform = $filesform->render();
+if (!$allfilespage) {
+    echo $OUTPUT->render_from_template('mod_publication/overview', $templatecontext);
+}
+
+
+echo $allfilesform;
 
 echo $OUTPUT->footer();

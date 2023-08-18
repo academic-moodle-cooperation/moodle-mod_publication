@@ -85,6 +85,10 @@ $string['obtainstudentapproval'] = 'Obtain approval';
 $string['saveapproval'] = 'Save approval';
 $string['configobtainstudentapproval'] = 'Documents are visible after the student´s consent.';
 $string['obtainteacherapproval'] = 'Approved by default';
+$string['obtainteacherapproval_no'] = 'No, approval from teacher required';
+$string['obtainteacherapproval_yes'] = 'Yes, automatically approved';
+$string['obtainstudentapproval_teacher'] = 'No, ONLY approval by trainers required';
+$string['obtainstudentapproval_participant'] = 'No, consent of the participants is required AND approval by trainers required';
 $string['configobtainteacherapproval'] = 'Documents of students are by default visible for all other participants.';
 $string['maxfiles'] = 'Maximum number of attachments';
 $string['configmaxfiles'] = 'Default maximum number of attachments allowed per user.';
@@ -141,12 +145,16 @@ $string['groupapprovalmode'] = 'Groupapproval mode';
 $string['groupapprovalmode_help'] = 'Here you decide if approval of all group members or just approval of at least one group member is required for files to be visible. The files will only be visible after approval by all group members or at least one group member.';
 $string['groupapprovalmode_all'] = 'ALL members of the group have to approve';
 $string['groupapprovalmode_single'] = 'At least ONE member has to approve';
+$string['groupapprovalmode_title'] = 'Approval from group';
 
 $string['warning_changefromobtainteacherapproval'] = 'After activating this setting, all uploaded files will be visible to other participants. All uploaded will become visible. You can manually make files invisible to certain students.';
 $string['warning_changetoobtainteacherapproval'] = 'After deactivating this setting uploaded files will not be visible to other participants automatically. You will have to determine which files are visible. Already visible files will become invisible.';
 
 $string['warning_changefromobtainstudentapproval'] = 'If you perform this change, only you can decide which files are visible to all students. The students are not asked for their approval. All files marked as approved will become visible to all students independent of the students\' decisions.';
 $string['warning_changetoobtainstudentapproval'] = 'If you perform this change, the students are asked for their approval for all files marked as visible. Files will only become visible after the students\' approval.';
+
+$string['completionupload'] = 'Student must upload a file';
+$string['completiondetail:upload'] = 'Upload a file';
 
 // Strings from the File  mod_publication_grantextension_form.php.
 $string['extensionduedate'] = 'Extension due date';
@@ -186,9 +194,19 @@ $string['notice_groupimportrequireallapproval'] = 'Decide whether your files are
 $string['notice_groupimportrequireoneapproval'] = 'Decide whether your files are available for everyone. A single group member\'s approval is enough for the file to be visible. Please discuss group internally if your file should be visible or not before approving it!';
 $string['notice_importrequireapproval'] = 'Decide whether your files are available for everyone.';
 $string['notice_importnoapproval'] = 'The following files are visible to all.';
+// approval lang strings
+$string['notice_obtainteacherapproval_studentsapproval'] = 'In terms of copyright, we ask you to request permission for the publication of files from participants in a separate way.';
+
+$string['notice_obtainapproval_import_both'] = 'In terms of copyright, we ask you to request permission for the publication of files from participants in a separate way. [IMPORT] [BOTH NEEDED]';
+$string['notice_obtainapproval_import_studentonly'] = 'In terms of copyright, we ask you to request permission for the publication of files from participants in a separate way. [IMPORT] [TEACHER ONLY]';
+$string['notice_obtainapproval_upload_teacher'] = 'In terms of copyright, we ask you to request permission for the publication of files from participants in a separate way. [UPLOAD] [TEACHER]';
+$string['notice_obtainapproval_upload_automatic'] = 'In terms of copyright, we ask you to request permission for the publication of files from participants in a separate way. [UPLOAD] [AUTOMATIC]';
+
 $string['teacher_pending'] = 'Confirmation pending';
 $string['teacher_approved'] = 'Visible (approved)';
 $string['teacher_rejected'] = 'declined';
+$string['teacher_approve'] = 'Approve';
+$string['teacher_reject'] = 'Reject';
 $string['approved'] = 'Approved';
 $string['show_details'] = 'Show details';
 $string['student_approve'] = 'Approve';
@@ -202,6 +220,15 @@ $string['visible'] = 'Visible';
 $string['hidden'] = 'Hidden';
 $string['status:approved'] = 'Approved';
 $string['status:approvednot'] = 'Rejected';
+$string['giveapproval'] = 'Give approval';
+$string['overdue'] = 'Deadline passed';
+$string['approval_required'] = 'Approval required';
+$string['publicationstatus'] = 'Publication status (final)';
+$string['publicationstatus_help'] = '
+The column status represents the teachers approval and final availability status:
+
+* <i class="fa fa-check text-success fa-fw"></i>  - File is visible and available for students
+* <i class="fa fa-times text-danger fa-fw"></i> - File is <strong>not visible</strong> (approval is either pending or rejected)';
 
 $string['allfiles'] = 'All files';
 $string['publicfiles'] = 'Public files';
@@ -209,14 +236,15 @@ $string['downloadall'] = 'Download all files as ZIP';
 $string['optionalsettings'] = 'Options';
 $string['entiresperpage'] = 'Participants shown per page';
 $string['nothingtodisplay'] = 'No entries to display';
+$string['nofilestodisplay'] = 'Currently, there are no available files';
 $string['nofilestozip'] = 'No files to zip';
 $string['status'] = 'Status';
-$string['studentapproval'] = 'Status'; // Previous 'Student approval'.
+$string['studentapproval'] = 'Student approval'; // Previous 'Student approval'.
 $string['studentapproval_help'] = 'The column status represents the students reply of the approval:
 
-* ? - approval pending
-* ✓ - approval given
-* ✖ - approval declined';
+* <i class="fa fa-question text-warning fa-fw"></i> - approval pending
+* <i class="fa fa-check text-success fa-fw"></i> - approval given
+* <i class="fa fa-times text-danger fa-fw"></i> - approval declined';
 $string['teacherapproval'] = 'Approval';
 $string['visibility'] = 'Visible for all';
 $string['visibleforstudents'] = 'Visible to all';
@@ -240,6 +268,8 @@ $string['guideline'] = 'Visible for everybody:';
 $string['published_immediately'] = 'Yes immediately, without approval by a teacher';
 $string['published_aftercheck'] = 'No, only after approval by a teacher';
 $string['save_changes'] = 'Save changes';
+
+$string['overview'] = 'Overview';
 
 // Strings for JS...
 $string['total'] = 'Total';
@@ -268,6 +298,19 @@ $string['privacy:metadata:contenthash'] = 'SHA1 hash of the file\'s content, use
 $string['privacy:metadata:filename'] = 'The file\'s name.';
 $string['privacy:metadata:extensionduedate'] = 'The due date effective for the user due to it being overridden/extended.';
 
+// filters
+$string['filter'] = 'Filter';
+$string['filter:nofilter'] = 'No filter';
+$string['filter:allfiles'] = 'All files';
+$string['filter:approved'] = 'Only approved files';
+$string['filter:rejected'] = 'Only rejected files';
+$string['filter:approvalrequired'] = 'Only files that require approval';
+$string['filter:nofiles'] = 'Students without files';
+
+
+
 // Deprecated since Moodle 2.9!
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
+
+

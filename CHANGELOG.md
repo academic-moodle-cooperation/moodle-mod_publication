@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+4.2.0 (2023-08-10)
+-------------------
+* Moodle 4.2.0 compatible version
+* [HOTFIX] #7628 - force download plugin files, add missing require_sesskey() in view.php
+* [FEATURE] #7307 - add support for activity completion
+
 4.1.0 (2022-12-12)
 -------------------
 * Moodle 4.1.0 compatible version
