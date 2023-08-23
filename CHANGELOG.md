@@ -8,7 +8,8 @@ CHANGELOG
 * [BUG] #7352 - add locallib require - github pull request #70 - matthewhilton
 * [UPDATE] #7357 - new navigation structure
 * [HOTFIX] #7628 - force download plugin files, add missing require_sesskey() in view.php
-
+* [BUG] #7653 - fix error when participants try to download files
+* [BUG] #7654 - fix warning message of publication, shown in assignment if online text is empty
 
 4.1.0 (2022-12-12)
 -------------------
