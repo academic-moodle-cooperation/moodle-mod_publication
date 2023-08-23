@@ -75,8 +75,8 @@ $string['obtainstudentapproval'] = 'Publication of file submissions';
 $string['saveapproval'] = 'Save changes';
 $string['configobtainstudentapproval'] = 'Files will only be published (made visible to all) after student\'s and teacher\'s approval.';
 $string['obtainteacherapproval'] = 'Publication of file submissions';
+$string['obtainteacherapproval_help'] = 'Decide if files will be made visible immediately upon upload or not: <br><ul><li> Yes - all files will be visible to everyone right away</li><li> No - files will be published only after the teacher approved</li></ul>';
 $string['obtainteacherapproval_yes'] = 'Approve automatically';
-$string['obtainteacherapproval_yes'] = 'Yes, automatically approved';
 $string['obtainstudentapproval_teacher'] = 'Approval from teachers required';
 $string['obtainstudentapproval_participant'] = 'Approval from students and teachers required';
 $string['configobtainteacherapproval'] = 'Documents of students are by default visible for all other participants.';
@@ -88,7 +88,6 @@ $string['configmaxbytes'] = 'Default maximum size for all files in the student f
 $string['reset_userdata'] = 'All data';
 
 // Strings from the File  mod_form.
-$string['autoimport'] = 'Sync automatically with assignment';
 $string['configautoimport'] = 'If you prefer to have student submissions be automatically imported into student folder instances. This feature can be enabled/disabled for each student folder instance separately.';
 $string['availability'] = 'Editing period (upload or approval)';
 
@@ -119,11 +118,10 @@ $string['courseuploadlimit'] = 'Course upload limit';
 $string['allowedfiletypes'] = 'Accepted file types';
 $string['allowedfiletypes_help'] = 'Accepted file types can be restricted by entering a comma-separated list of mimetypes, e.g. \'video/mp4, audio/mp3, image/png, image/jpeg\', or file extensions including a dot, e.g. \'.png, .jpg\'. If the field is left empty, then all file types are allowed.';
 $string['allowedfiletypes_err'] = 'Check input! Invalid file extensions or seperators';
-$string['teacherapproval_help'] = 'Current approval/rejection of files, i.e. whether they are visible to all participants: <br><ul><li><strong>Choose...</strong> - decision pending/no approval given or rejected, these files are not visible.</li><li><strong>Approve</strong> - approval granted, these files are published and therefore visible to all.</li><li><strong>Reject</strong> - no approval given, these files are not published and therefore not visible.</li></ul>';
 
 $string['currentlynotapproved'] = '* Currently not approved or rejected to publication.';
 
-$string['teacherapproval_help'] = 'Current decision on files, to be visible to all participants: <br /><ul><li>Choose... - not approved or disapproved yet, the files are not visible.</li><li>Yes - approved, the files are visible.</li><li>No - disapproved, the files are not visible.</li></ul>';
+$string['teacherapproval_help'] = 'Current approval/rejection of files, i.e. whether they are visible to all participants: <br><ul><li><strong>Choose...</strong> - decision pending/no approval given or rejected, these files are not visible.</li><li><strong>Approve</strong> - approval granted, these files are published and therefore visible to all.</li><li><strong>Reject</strong> - no approval given, these files are not published and therefore not visible.</li></ul>';
 $string['assignment'] = 'Assignment';
 $string['assignment_help'] = 'Choose the assignment to import files from individual or group submissions.';
 $string['obtainstudentapproval_no'] = 'Approval from teachers required';
