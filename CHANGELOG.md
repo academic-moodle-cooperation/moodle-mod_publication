@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.2.1 (2023-09-20)
+-------------------
+* [BUG] #7699 - update langstrings
+
 4.2.0 (2023-08-10)
 -------------------
 * Moodle 4.2.0 compatible version
