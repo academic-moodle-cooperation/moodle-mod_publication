@@ -80,6 +80,7 @@ $string['obtainteacherapproval_yes'] = 'Approve automatically';
 $string['obtainteacherapproval_no'] = 'Approval from teachers required';
 $string['obtainstudentapproval_teacher'] = 'Approval from teachers required';
 $string['obtainstudentapproval_participant'] = 'Approval from students and teachers required';
+$string['obtainstudentapproval_yes'] = 'Approval from students and teachers required';
 $string['configobtainteacherapproval'] = 'Documents of students are by default visible for all other participants.';
 $string['maxfiles'] = 'Maximum number of attachments';
 $string['configmaxfiles'] = 'Default maximum number of attachments allowed per user.';
@@ -136,6 +137,7 @@ $string['groupapprovalmode_all'] = 'required from ALL members';
 $string['groupapprovalmode_single'] = 'required from at least ONE member';
 $string['groupapprovalmode_title'] = 'Group approval';
 
+$string['warning_changefromobtainteacherapproval'] = 'After activating this setting, all uploaded files will be visible to other participants. All uploaded will become visible. You can manually make files invisible to certain students.';
 $string['warning_changetoobtainteacherapproval'] = 'After deactivating this setting uploaded files will not be visible to other participants automatically. You will have to determine which files are visible. Already visible files will become invisible.';
 
 $string['warning_changefromobtainstudentapproval'] = 'If you perform this change, only you can decide which files are visible to all students. The students are not asked for their approval. All files marked as approved will become visible to all students independent of the students\' decisions.';
@@ -187,7 +189,7 @@ $string['notice_importnoapproval'] = 'All files you upload here will be publishe
 // approval lang strings
 $string['notice_obtainteacherapproval_studentsapproval'] = 'In the spirit of copyright law, we ask that you request approval to publish files from participants in a separate way.';
 
-$string['notice_obtainapproval_import_both'] = 'In terms of copyright, we ask you to request permission for the publication of files from participants in a separate way. [IMPORT] [BOTH NEEDED]';
+$string['notice_obtainapproval_import_both'] = 'As a teacher, you can reject approval for publication at any time, if a file not meets the defined requirements.';
 $string['notice_obtainapproval_import_studentonly'] = 'In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.<br>
 As a teacher, you can reject approval for publication at any time, if a file not meets the defined requirements.';
 $string['notice_obtainapproval_upload_teacher'] = 'In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.<br>
