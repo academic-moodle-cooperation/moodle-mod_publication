@@ -265,7 +265,7 @@ class base extends \table_sql {
                 $this->countparams = $this->sql->params;
             }
             $grandtotal = $DB->count_records_sql($this->countsql, $this->countparams);
-            if ($useinitialsbar && !$this->is_downloading()) {
+            if ($useinitialsbar && !$this->is_downloading() && empty($this->get_initial_first()) && empty($this->get_initial_last())) {
                 $this->initialbars($grandtotal > $pagesize);
             }
 
