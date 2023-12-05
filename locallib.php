@@ -1761,10 +1761,15 @@ class publication {
      */
     public function get_graders($user) {
         // Get potential graders!
-        $potgraders = get_users_by_capability($this->context, 'mod/publication:receiveteachernotification', '', '', '',
-            '', '', '', false, false);
-
-        $graders = array();
+        $potgraders = get_enrolled_users($this->context,
+                    'mod/publication:receiveteachernotification',
+                    0,
+                    'u.*',
+                    null,
+                    null,
+                    null,
+                    true);
+        $graders = [];
         if (groups_get_activity_groupmode($this->coursemodule) == SEPARATEGROUPS) {
             // Separate groups are being used!
             if ($groups = groups_get_all_groups($this->course->id, $user->id)) {
