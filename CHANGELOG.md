@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+
+4.2.2 (2023-12-05)
+-------------------
+* [BUG] #7727 - "Nothing to display" shown without initials bar even though filtering by initials - pull request #75 by Tim Schroeder\
+* [BUG] #7472 - fix bug with sending notifications to teachers from course categories
+* [BUG] #7707 - fix bug when "Download all file submissions" is used by teachers - not all files are downloaded
+
 4.2.1 (2023-09-20)
 -------------------
 * [BUG] #7699 - update langstrings

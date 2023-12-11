@@ -398,6 +398,7 @@ class publication {
         list($esql, $params) = get_enrolled_sql($this->context, 'mod/publication:view', $currentgroup);
 
         $allfilespage = $ignoreallfilespage || $this->allfilespage;
+
         if ($allfilespage && (has_capability('mod/publication:approve', $this->context)
                 || has_capability('mod/publication:grantextension', $this->context))) {
             // We can skip the approval-checks for teachers!
@@ -539,7 +540,8 @@ class publication {
 
         $link = html_writer::link(new moodle_url('/mod/publication/view.php', [
                 'id' => $this->coursemodule->id,
-                'action' => 'zip'
+                'action' => 'zip',
+                'allfilespage' => $this->allfilespage,
             ]),
             get_string('downloadall', 'publication'),
             ['class' => 'btn btn-secondary mb-2 btn-sm']
@@ -1761,10 +1763,15 @@ class publication {
      */
     public function get_graders($user) {
         // Get potential graders!
-        $potgraders = get_users_by_capability($this->context, 'mod/publication:receiveteachernotification', '', '', '',
-            '', '', '', false, false);
-
-        $graders = array();
+        $potgraders = get_enrolled_users($this->context,
+                    'mod/publication:receiveteachernotification',
+                    0,
+                    'u.*',
+                    null,
+                    null,
+                    null,
+                    true);
+        $graders = [];
         if (groups_get_activity_groupmode($this->coursemodule) == SEPARATEGROUPS) {
             // Separate groups are being used!
             if ($groups = groups_get_all_groups($this->course->id, $user->id)) {
