@@ -30,12 +30,6 @@ global $CFG;
 
 if ($ADMIN->fulltree) {
 
-    $settings->add(new admin_setting_configcheckbox('publication/obtainstudentapproval',
-            get_string('obtainstudentapproval', 'publication'), get_string('configobtainstudentapproval', 'publication'), 1));
-
-    $settings->add(new admin_setting_configcheckbox('publication/obtainteacherapproval',
-            get_string('obtainteacherapproval', 'publication'), get_string('configobtainteacherapproval', 'publication'), 1));
-
     $settings->add(new admin_setting_configtext('publication/maxfiles', get_string('maxfiles', 'publication'),
             get_string('configmaxfiles', 'publication'), 5, PARAM_INT));
 

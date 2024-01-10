@@ -52,12 +52,8 @@ Admin Settings
 An administrator can adjust the default settings for the student folder instance-wide in the
 general settings page. There he can specify the following:
 
-* Require activity description
-* Obtain approval
-* Approved by default
 * Maximum number of attachments
 * Maximum attachment size
-* Hide ID-Number
 
 
 Documentation

@@ -7,6 +7,9 @@ CHANGELOG
 * [BUG] #7813 - fix missing 'Default group'
 * [BUG] #7804 - fix instance field name too short
 * [BUG] #7808 - fix deprecated user name fields call
+* [BUG] #7812 - remove unused plugin settings
+* [BUG] #7810 - fix assign submission remove has no effect on stud. folder submission
+* 
 
 4.2.2 (2023-12-05)
 -------------------
