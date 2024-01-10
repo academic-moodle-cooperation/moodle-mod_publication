@@ -57,7 +57,7 @@ class group extends base {
         if ($teacherapproval && $this->publication->get_instance()->obtainstudentapproval) {
             $pubfileid = $DB->get_field('publication_file', 'id', [
                     'publication' => $this->publication->get_instance()->id,
-                    'fileid' => $file->get_id()
+                    'fileid' => $file->get_id(),
             ]);
             list($studentapproval, $approvaldetails) = $this->publication->group_approval($pubfileid);
             if ($this->publication->is_open()

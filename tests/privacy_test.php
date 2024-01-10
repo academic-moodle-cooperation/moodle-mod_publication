@@ -127,18 +127,18 @@ class privacy_testcase extends base {
         // Publication with uploads.
         $this->pubupload = $this->create_instance([
                 'name' => 'Pub Upload 1',
-                'course' => $this->course1
+                'course' => $this->course1,
         ]);
         $this->pubupload2 = $this->create_instance([
                 'name' => 'Pub Upload 2',
-                'course' => $this->course1
+                'course' => $this->course1,
         ]);
 
         // Assign to import from.
         $this->assign = $this->create_assign($this->course1, ['submissiondrafts' => false,
-                                                              'assignsubmission_onlinetext_enabled' => true]);
+                                                              'assignsubmission_onlinetext_enabled' => true,]);
         $this->assign2 = $this->create_assign($this->course1, ['submissiondrafts' => false,
-                                                               'assignsubmission_onlinetext_enabled' => true]);
+                                                               'assignsubmission_onlinetext_enabled' => true,]);
 
         // Publication with imports.
         $this->pubimport = $this->create_instance([
@@ -153,13 +153,13 @@ class privacy_testcase extends base {
                 'name' => 'Teamassign 1',
                 'teamsubmission' => true,
                 'submissiondrafts' => false,
-                'assignsubmission_onlinetext_enabled' => true
+                'assignsubmission_onlinetext_enabled' => true,
         ]);
         $this->teamassign2 = $this->create_assign($this->course2, [
                 'name' => 'Teamassign 2',
                 'teamsubmission' => true,
                 'submissiondrafts' => false,
-                'assignsubmission_onlinetext_enabled' => true
+                'assignsubmission_onlinetext_enabled' => true,
         ]);
         $this->pubteamimport = $this->create_instance([
                 'name' => 'Teamimport 1',

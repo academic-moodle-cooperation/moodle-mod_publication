@@ -51,7 +51,7 @@ class custom_completion extends activity_custom_completion {
         if ($publication->get_mode() == PUBLICATION_MODE_FILEUPLOAD) {
             $filescount = $DB->count_records('publication_file', [
                 'publication' => $publication->get_instance()->id,
-                'userid' => $userid
+                'userid' => $userid,
             ]);
             $status = $filescount > 0;
         } else {
@@ -76,7 +76,7 @@ class custom_completion extends activity_custom_completion {
      */
     public function get_custom_rule_descriptions(): array {
         return [
-            'completionupload' => get_string('completiondetail:upload', 'publication')
+            'completionupload' => get_string('completiondetail:upload', 'publication'),
         ];
     }
 

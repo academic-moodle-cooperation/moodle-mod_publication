@@ -68,7 +68,7 @@ class observer {
         $assigncm = $DB->get_record('course_modules', [
                 'course' => $assign->get_course()->id,
                 'module' => $assignmoduleid,
-                'instance' => $assignid
+                'instance' => $assignid,
         ]);
         $assigncontext = \context_module::instance($assigncm->id);
 
@@ -82,7 +82,7 @@ class observer {
 
         $subfilerecords = $DB->get_records('assignsubmission_file', [
                 'assignment' => $assignid,
-                'submission' => $submission->id
+                'submission' => $submission->id,
         ]);
         $fs = get_file_storage();
 

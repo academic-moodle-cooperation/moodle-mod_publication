@@ -59,7 +59,7 @@ class publication_file_uploaded extends \core\event\base {
             'objectid'      => $dobj->id,
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => $dobj->userid,
-            'other'         => (Array)$dobj
+            'other'         => (Array)$dobj,
         ));
         return $event;
     }

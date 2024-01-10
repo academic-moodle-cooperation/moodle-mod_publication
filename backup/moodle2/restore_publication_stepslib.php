@@ -179,7 +179,7 @@ class restore_publication_activity_structure_step extends restore_activity_struc
                     'publication' => $pubid,
                     // We need to look for the new user ID if there is one!
                     'userid' => $this->get_mappingid('user', $file->get_itemid(), $file->get_itemid()),
-                    'filename' => $file->get_filename()
+                    'filename' => $file->get_filename(),
             ];
             $DB->set_field('publication_file', 'fileid', $file->get_id(), $contingencies);
         }

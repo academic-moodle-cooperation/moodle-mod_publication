@@ -37,7 +37,7 @@ require_course_login($course);
 $PAGE->set_pagelayout('incourse');
 
 $event = \mod_publication\event\course_module_instance_list_viewed::create([
-        'context' => context_course::instance($course->id)
+        'context' => context_course::instance($course->id),
 ]);
 $event->trigger();
 

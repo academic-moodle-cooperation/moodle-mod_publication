@@ -66,7 +66,7 @@ class backup_publication_activity_structure_step extends backup_activity_structu
                 'allowedfiletypes',
                 'obtainteacherapproval',
                 'notifyteacher',
-                'notifystudents'
+                'notifystudents',
         ]);
 
         $extduedates = new backup_nested_element('extduedates');
@@ -74,7 +74,7 @@ class backup_publication_activity_structure_step extends backup_activity_structu
         $extduedate = new backup_nested_element('extduedate', ['id'], [
                 'userid',
                 'publication',
-                'extensionduedate'
+                'extensionduedate',
         ]);
 
         $files = new backup_nested_element('files');
@@ -87,7 +87,7 @@ class backup_publication_activity_structure_step extends backup_activity_structu
                 'contenthash',
                 'type',
                 'teacherapproval',
-                'studentapproval'
+                'studentapproval',
         ]);
 
         // Define sources.

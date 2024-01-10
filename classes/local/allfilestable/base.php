@@ -176,7 +176,7 @@ class base extends \table_sql {
     protected function get_columns() {
         $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', [
                 'id' => 'selectallnone',
-                'onClick' => 'toggle_userselection()'
+                'onClick' => 'toggle_userselection()',
         ]);
 
         $columns = ['selection', 'fullname'];
@@ -456,7 +456,7 @@ FROM
                 'publication' => $this->cm->instance,
                 'userid' => $itemid,
                 'fileid' => $fileid,
-                'type' => PUBLICATION_MODE_ONLINETEXT
+                'type' => PUBLICATION_MODE_ONLINETEXT,
         ];
         if (!$DB->record_exists('publication_file', $conditions)) {
             return '';
@@ -467,13 +467,13 @@ FROM
         $url = new \moodle_url('/mod/publication/onlinepreview.php', [
                 'id' => $this->cm->id,
                 'itemid' => $itemid,
-                'itemname' => $itemname
+                'itemname' => $itemname,
         ]);
 
         $detailsattr = [
                 'class' => 'onlinetextpreview',
                 'data-itemid' => $itemid,
-                'data-itemname' => $itemname
+                'data-itemname' => $itemname,
         ];
         $symbol = \html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('preview')), $detailsattr);
 
@@ -870,7 +870,7 @@ FROM
         $templatecontext = [
             'fontawesomeicon' => $fontawesomeicon,
             'bootsrapcolor' => $bootsrapcolor,
-            'title' => $title
+            'title' => $title,
         ];
         return $OUTPUT->render_from_template('mod_publication/approval_icon_fontawesome', $templatecontext);
     }

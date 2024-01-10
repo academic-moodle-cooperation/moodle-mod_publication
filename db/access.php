@@ -34,8 +34,8 @@ $capabilities = [
                         'student' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
+                        'manager' => CAP_ALLOW,
+                ],
         ],
 
         'mod/publication:addinstance' => [
@@ -44,9 +44,9 @@ $capabilities = [
                 'contextlevel' => CONTEXT_COURSE,
                 'archetypes' => [
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
+                        'manager' => CAP_ALLOW,
                 ],
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
+                'clonepermissionsfrom' => 'moodle/course:manageactivities',
         ],
 
         'mod/publication:upload' => [
@@ -56,8 +56,8 @@ $capabilities = [
                         'student' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
+                        'manager' => CAP_ALLOW,
+                ],
         ],
 
         'mod/publication:approve' => [
@@ -66,8 +66,8 @@ $capabilities = [
                 'archetypes' => [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
+                        'manager' => CAP_ALLOW,
+                ],
         ],
 
         'mod/publication:grantextension' => [
@@ -76,8 +76,8 @@ $capabilities = [
                 'archetypes' => [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
+                        'manager' => CAP_ALLOW,
+                ],
         ],
 
         'mod/publication:receiveteachernotification' => [
@@ -85,7 +85,7 @@ $capabilities = [
             'contextlevel' => CONTEXT_MODULE,
             'archetypes' => [
                 'teacher' => CAP_ALLOW,
-                'editingteacher' => CAP_ALLOW
-            ]
+                'editingteacher' => CAP_ALLOW,
+            ],
         ],
 ];

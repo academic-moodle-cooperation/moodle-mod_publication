@@ -245,7 +245,7 @@ function publication_reset_userdata($data) {
             $status[] = [
                     'component' => $componentstr,
                     'item' => $publication->name,
-                    'error' => false
+                    'error' => false,
             ];
         }
     }

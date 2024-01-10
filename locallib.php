@@ -212,7 +212,7 @@ class publication {
                     $assigncm = $DB->get_record('course_modules', [
                             'course' => $assign->course,
                             'module' => $assignmoduleid,
-                            'instance' => $assign->id
+                            'instance' => $assign->id,
                     ]);
                 } else {
                     $assigncm = false;
@@ -270,7 +270,7 @@ class publication {
 
         $extensionduedate = $DB->get_field('publication_extduedates', 'extensionduedate', [
                 'publication' => $this->get_instance()->id,
-                'userid' => $uid
+                'userid' => $uid,
         ]);
 
         if (!$extensionduedate) {
@@ -522,7 +522,7 @@ class publication {
                 html_writer::empty_tag('input', [
                         'type' => 'hidden',
                         'name' => 'id',
-                        'value' => $this->get_coursemodule()->id
+                        'value' => $this->get_coursemodule()->id,
                 ]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'page', 'value' => $page]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]) .
@@ -583,7 +583,7 @@ class publication {
                         'type' => 'reset',
                         'name' => 'resetvisibility',
                         'value' => get_string('reset', 'publication'),
-                        'class' => 'visibilitysaver btn btn-secondary ml-1'
+                        'class' => 'visibilitysaver btn btn-secondary ml-1',
                 ]);
 
                 if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
@@ -592,14 +592,14 @@ class publication {
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary'
+                            'class' => 'visibilitysaver btn btn-primary',
                     ]);
                 } else {
                     $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveteacherapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary'
+                            'class' => 'visibilitysaver btn btn-primary',
                     ]);
                 }
             } else {
@@ -613,7 +613,7 @@ class publication {
                     'type' => 'submit',
                     'name' => 'submitgo',
                     'value' => get_string('go', 'publication'),
-                    'class' => 'btn btn-primary'
+                    'class' => 'btn btn-primary',
                  ]).html_writer::end_div().
                  html_writer::div($buttons, 'col');
 
@@ -659,7 +659,7 @@ class publication {
             10 => 10,
             20 => 20,
             50 => 50,
-            100 => 100
+            100 => 100,
         ], $attributes);
         $mform->setDefault('perpage', $perpage);
 
@@ -670,7 +670,7 @@ class publication {
                 PUBLICATION_FILTER_APPROVED => get_string('filter:' . PUBLICATION_FILTER_APPROVED, 'publication'),
                 PUBLICATION_FILTER_REJECTED => get_string('filter:' . PUBLICATION_FILTER_REJECTED, 'publication'),
                 PUBLICATION_FILTER_APPROVALREQUIRED => get_string('filter:' . PUBLICATION_FILTER_APPROVALREQUIRED, 'publication'),
-                PUBLICATION_FILTER_NOFILES => get_string('filter:' . PUBLICATION_FILTER_NOFILES, 'publication')
+                PUBLICATION_FILTER_NOFILES => get_string('filter:' . PUBLICATION_FILTER_NOFILES, 'publication'),
             ];
             $mform->addElement('select', 'filter', get_string('filter', 'publication'), $filteroptions, $attributes);
             $mform->setDefault('filter', $filter);
@@ -1282,7 +1282,7 @@ class publication {
             $assigncm = $DB->get_record('course_modules', [
                     'course' => $assign->course,
                     'module' => $assignmoduleid,
-                    'instance' => $assign->id
+                    'instance' => $assign->id,
             ]);
 
             $assigncontext = context_module::instance($assigncm->id);
@@ -1455,7 +1455,7 @@ class publication {
         if (!empty($submissionid)) {
             $records = $DB->get_records('assignsubmission_onlinetext', [
                     'assignment' => $assigncm->instance,
-                    'submission' => $submissionid
+                    'submission' => $submissionid,
             ]);
         } else {
             $records = $DB->get_records('assignsubmission_onlinetext', ['assignment' => $assigncm->instance]);
@@ -1530,7 +1530,7 @@ class publication {
             $conditions = [
                     'publication' => $publicationid,
                     'userid' => $itemid,
-                    'type' => PUBLICATION_MODE_ONLINETEXT
+                    'type' => PUBLICATION_MODE_ONLINETEXT,
             ];
             $pubfile = $DB->get_record('publication_file', $conditions, '*', IGNORE_MISSING);
 
@@ -1736,7 +1736,7 @@ class publication {
         $conditions = [
                 'publication' => $publicationid,
                 'userid' => $itemid,
-                'type' => PUBLICATION_MODE_ONLINETEXT
+                'type' => PUBLICATION_MODE_ONLINETEXT,
         ];
         if (!$pubfile = $DB->get_record('publication_file', $conditions, '*')) {
             return '';

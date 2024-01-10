@@ -113,7 +113,7 @@ class mod_publication_files_form extends moodleform {
             'timeremaining' => $timeremaining,
             'lastmodified' => userdate($table->lastmodified),
             'assign' => $publication->get_importlink(),
-            'myfilestitle' => $mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION ? get_string('mygroupfiles', 'publication') : get_string('myfiles', 'publication')
+            'myfilestitle' => $mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION ? get_string('mygroupfiles', 'publication') : get_string('myfiles', 'publication'),
         ];
         $myfilestable = $OUTPUT->render_from_template('mod_publication/myfiles', $tablecontext);
         $myfilestable = '<table class="table table-striped w-100">' . $myfilestable . '</table>';
