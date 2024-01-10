@@ -213,6 +213,7 @@ $string['visible'] = 'Published';
 $string['hidden'] = 'Not published';
 $string['status:approved'] = 'Approved';
 $string['status:approvednot'] = 'Rejected';
+$string['status:approvedrevoke'] = 'Revoked';
 $string['giveapproval'] = 'Give approval';
 $string['overdue'] = 'Deadline of editing period passed';
 $string['approval_required'] = 'Decision pending';

@@ -509,7 +509,7 @@ FROM
         if ($this->is_downloading()) {
             return '';
         } else {
-            return \html_writer::checkbox('selectedeuser[' . $values->id . ']', 'selected', false, null,
+            return \html_writer::checkbox('selecteduser[' . $values->id . ']', 'selected', false, null,
                     ['class' => 'userselection']);
         }
     }
