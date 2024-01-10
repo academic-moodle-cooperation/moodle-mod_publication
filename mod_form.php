@@ -52,7 +52,7 @@ class mod_publication_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Name.
-        $mform->addElement('text', 'name', get_string('name', 'publication'));
+        $mform->addElement('text', 'name', get_string('name', 'publication'), ['size' => '64']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {

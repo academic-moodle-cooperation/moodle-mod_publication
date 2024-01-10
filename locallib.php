@@ -363,7 +363,7 @@ class publication {
         $groups = groups_get_all_groups($this->get_instance()->course, 0, $groupingid);
         $groups = array_keys($groups);
 
-        if (empty($groupingid) && !$this->requiregroup()) {
+        if (!$this->requiregroup()) {
             $groups[] = 0;
         }
 
@@ -1062,7 +1062,7 @@ class publication {
         $filename = str_replace(' ', '_', clean_filename($this->course->shortname . '-' .
                 $this->get_instance()->name . '-' . $groupname . $this->get_instance()->id . '.zip')); // Name of new zip file.
 
-        $userfields = get_all_user_name_fields();
+        $userfields = \core_user\fields::get_name_fields();
         $userfields['id'] = 'id';
         $userfields['username'] = 'username';
         $userfields = implode(', ', $userfields);

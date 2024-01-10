@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+4.3.0 (2024-01-10)
+-------------------
+* Moodle 4.3.0 compatible version
+* [BUG] #7813 - fix missing 'Default group'
+* [BUG] #7804 - fix instance field name too short
+* [BUG] #7808 - fix deprecated user name fields call
 
 4.2.2 (2023-12-05)
 -------------------
