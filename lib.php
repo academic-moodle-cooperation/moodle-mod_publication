@@ -159,6 +159,8 @@ function publication_delete_instance($id) {
 
     $tableuniqueid = \mod_publication\local\allfilestable\base::get_table_uniqueid($id);
     $DB->delete_records('user_preferences', ['name' => $tableuniqueid]);
+    $filteruserpreference = 'mod-publication-perpage-' . $id;
+    $DB->delete_records('user_preferences', ['name' => $filteruserpreference]);
 
     $result = true;
     if (!$DB->delete_records('publication', ['id' => $publication->id])) {

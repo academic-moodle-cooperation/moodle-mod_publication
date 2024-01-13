@@ -503,11 +503,11 @@ class publication {
         if ($updatepref) {
             $perpage = optional_param('perpage', 10, PARAM_INT);
             $perpage = ($perpage < 0) ? 10 : $perpage;
-            set_user_preference('publication_perpage', $perpage);
+            set_user_preference('mod-publication-perpage-' . $this->instance->id, $perpage);
         }
 
         // Next we get perpage param from database!
-        $perpage = get_user_preferences('publication_perpage', 10);
+        $perpage = get_user_preferences('mod-publication-perpage-' . $this->instance->id, 10);
 
         $filter = optional_param('filter', PUBLICATION_FILTER_NOFILTER, PARAM_ALPHANUMEXT);
 

@@ -356,10 +356,25 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
      * @throws \coding_exception
      */
     public static function export_user_preferences(int $userid) {
+        global $DB;
         $context = \context_system::instance();
-        $value = get_user_preferences('publication_perpage', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_publication', 'publication_perpage', $value,
+
+        $sql = "SELECT name, value
+                  FROM {user_preferences}
+                 WHERE userid = :userid AND ";
+        $namelike = $DB->sql_like('name', ':name');
+        $sql .= $namelike;
+
+        $params = ['userid' => $userid, 'name' => 'mod-publication-perpage-%'];
+        $userprefs = $DB->get_records_sql($sql, $params);
+        foreach ($userprefs as $userpref) {
+            writer::with_context($context)->export_user_preference('mod_publication', $userpref->name, $userpref->value,
+                    get_string('privacy:metadata:publicationperpage', 'mod_publication'));
+        }
+        $params['name'] = \mod_publication\local\allfilestable\base::get_table_uniqueid('%');
+        $userprefs = $DB->get_records_sql($sql, $params);
+        foreach ($userprefs as $userpref) {
+            writer::with_context($context)->export_user_preference('mod_publication', $userpref->name, $userpref->value,
                     get_string('privacy:metadata:publicationperpage', 'mod_publication'));
         }
     }
