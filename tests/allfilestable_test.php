@@ -66,7 +66,7 @@ class allfilestable_testcase extends base {
         $publication = $this->create_instance([
                 'mode' => PUBLICATION_MODE_UPLOAD,
                 'obtainteacherapproval' => 0,
-                'obtainstudentapproval' => 0
+                'obtainstudentapproval' => 0,
         ]);
 
         // Exercise SUT!
@@ -92,7 +92,7 @@ class allfilestable_testcase extends base {
                 'mode' => PUBLICATION_MODE_IMPORT,
                 'importfrom' => $assign->id,
                 'obtainteacherapproval' => 0,
-                'obtainstudentapproval' => 0
+                'obtainstudentapproval' => 0,
         ]);
 
         // Exercise SUT!
@@ -118,7 +118,7 @@ class allfilestable_testcase extends base {
         $assign = $generator->create_instance($params);
         $publication = $this->create_instance([
                 'mode' => PUBLICATION_MODE_IMPORT,
-                'importfrom' => $assign->id
+                'importfrom' => $assign->id,
         ]);
 
         // Exercise SUT!

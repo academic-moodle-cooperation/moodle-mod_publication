@@ -127,7 +127,7 @@ class base extends \html_table {
 
         $dlurl = new \moodle_url('/mod/publication/view.php', [
                 'id' => $this->publication->get_coursemodule()->id,
-                'download' => $file->get_id()
+                'download' => $file->get_id(),
         ]);
         $data[] = \html_writer::link($dlurl, $file->get_filename());
 

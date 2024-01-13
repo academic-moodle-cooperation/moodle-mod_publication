@@ -1,10 +1,19 @@
 CHANGELOG
 =========
 
+4.3.0 (2024-01-10)
+-------------------
+* Moodle 4.3.0 compatible version
+* [BUG] #7813 - fix missing 'Default group'
+* [BUG] #7804 - fix instance field name too short
+* [BUG] #7808 - fix deprecated user name fields call
+* [BUG] #7812 - remove unused plugin settings
+* [BUG] #7810 - fix assign submission remove has no effect on stud. folder submission
+* [BUG] #7791 - fix table filtering not per instance
 
 4.2.2 (2023-12-05)
 -------------------
-* [BUG] #7727 - "Nothing to display" shown without initials bar even though filtering by initials - pull request #75 by Tim Schroeder\
+* [BUG] #7727 - "Nothing to display" shown without initials bar even though filtering by initials - github pull request #75 - t-schroeder
 * [BUG] #7472 - fix bug with sending notifications to teachers from course categories
 * [BUG] #7707 - fix bug when "Download all file submissions" is used by teachers - not all files are downloaded
 

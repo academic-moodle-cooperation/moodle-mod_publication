@@ -75,79 +75,25 @@ if ($savevisibility) {
     require_sesskey();
 
     $files = optional_param_array('files', [], PARAM_INT);
-
     $params = [];
 
     $params['pubid'] = $publication->get_instance()->id;
+    $publication->update_files_teacherapproval($files);
+    redirect($url);
 
-    foreach ($files as $fileid => $val) {
-        $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,filename");
-
-        $oldval = $x->teacherapproval;
-
-        if ($val != $oldval) {
-            $newstatus = ($publication->get_instance()->obtainteacherapproval && $val == 1 ||
-                          $publication->get_instance()->obtainteacherapproval && $val != 2) ? '' : 'not';
-            $logstatus = $newstatus;
-            $user = $DB->get_record('user', array('id' => $x->userid));
-            $group = false;
-
-            if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-                && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
-                $logstatus = $newstatus." (Teacher) ";
-                $group = $x->userid;
-            }
-
-            $dataforlog = new stdClass();
-            $dataforlog->publication = $publication->get_instance()->id;
-            $dataforlog->approval = $logstatus." approved";
-            $dataforlog->userid = $USER->id;
-            if ($user && !empty($user->id)) {
-                $dataforlog->reluser = $user->id;
-            } else {
-                $dataforlog->reluser = 0;
-            }
-            $dataforlog->fileid = $fileid;
-
-            try {
-                \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
-            } catch (coding_exception $e) {
-                throw new Exception("Coding exception while sending notification: " . $e->getMessage());
-            }
-
-            $DB->set_field('publication_file', 'teacherapproval', $val, ['fileid' => $fileid]);
-
-            if ($publication->get_instance()->notifystudents) {
-                $strsubmitted = get_string('approvalchange', 'publication');
-
-                if ($group) {
-                    $select = 'groupid = :id';
-                    $params = array('id' => $group);
-                    $usersingroup = $DB->get_records_select('groups_members', $select, $params, '', 'userid');
-                    foreach ($usersingroup as $u) {
-                        $user = $DB->get_record('user', array('id' => $u->userid));
-                        $publication::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $id, $publication);
-                    }
-                } else {
-                    $publication::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $id, $publication);
-                }
-            }
-        }
-    }
-
-} else if ($action == "zip") {
+} else if ($action == 'zip') {
     $publication->download_zip(true);
-} else if ($action == "zipusers") {
-    $users = optional_param_array('selectedeuser', false, PARAM_INT);
+} else if ($action == 'zipusers') {
+    $users = optional_param_array('selecteduser', false, PARAM_INT);
     if (!$users) {
         // No users selected.
-        header("Location: view.php?id=" . $id);
+        header('Location: view.php?id=' . $id);
         die();
     }
     $users = array_keys($users);
     $publication->download_zip($users);
 
-} else if ($action == "import") {
+} else if ($action == 'import') {
     require_capability('mod/publication:approve', $context);
     require_sesskey();
 
@@ -162,11 +108,11 @@ if ($savevisibility) {
     }
 
     $publication->importfiles();
-} else if ($action == "grantextension") {
+} else if ($action == 'grantextension') {
     require_capability('mod/publication:grantextension', $context);
     require_sesskey();
 
-    $users = optional_param_array('selectedeuser', [], PARAM_INT);
+    $users = optional_param_array('selecteduser', [], PARAM_INT);
     $users = array_keys($users);
 
     if (count($users) > 0) {
@@ -178,57 +124,15 @@ if ($savevisibility) {
         redirect($url);
         die();
     }
-} else if ($action == "approveusers" || $action == "rejectusers") {
+} else if ($action == 'approveusers' || $action == 'rejectusers' || $action == 'resetstudentapproval') {
     require_capability('mod/publication:approve', $context);
     require_sesskey();
 
-    $users = optional_param_array('selectedeuser', [], PARAM_INT);
-    $users = array_keys($users);
-
-    if (count($users) > 0) {
-
-        list($usersql, $params) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
-        $approval = ($action == "approveusers") ? 1 : 0;
-        $params['pubid'] = $publication->get_instance()->id;
-        $select = ' publication=:pubid AND userid ' . $usersql;
-        $DB->set_field_select('publication_file', 'teacherapproval', $approval, $select, $params);
-    }
-} else if ($action == "resetstudentapproval") {
-    require_capability('mod/publication:approve', $context);
-    require_sesskey();
-
-    $users = optional_param_array('selectedeuser', [], PARAM_INT);
-    $users = array_keys($users);
-
-    if (count($users) > 0) {
-
-        list($usersql, $params) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
-        $select = ' publication=:pubid AND userid ' . $usersql;
-        $params['pubid'] = $publication->get_instance()->id;
-
-        $DB->set_field_select('publication_file', 'studentapproval', null, $select, $params);
-
-        if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-            && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
-            $fileids = $DB->get_fieldset_select('publication_file', 'id', $select, $params);
-            if (count($fileids) == 0) {
-                $fileids = [-1];
-            }
-
-            $groups = $users;
-            $users = [];
-            foreach ($groups as $cur) {
-                $members = $publication->get_submissionmembers($cur);
-                $users = array_merge($users, array_keys($members));
-            }
-            if (count($users) > 0) { // Attention, now we have real users! Above they may be groups!
-                list($usersql, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
-                list($filesql, $fileparams) = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
-                $select = ' fileid ' . $filesql . ' AND userid ' . $usersql;
-                $params = $fileparams + $userparams;
-                $DB->set_field_select('publication_groupapproval', 'approval', null, $select, $params);
-            }
-        }
+    $userorgroupids = optional_param_array('selecteduser', [], PARAM_INT);
+    $userorgroupids = array_keys($userorgroupids);
+    if (count($userorgroupids) > 0) {
+        $publication->update_users_or_groups_teacherapproval($userorgroupids, $action);
+        redirect($url);
     }
 }
 
@@ -263,12 +167,10 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
         $dataforlog->approval = $approval == 1 ? 'approved' : 'rejected';
         $stats = null;
 
-        if (($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT)
-            && $DB->get_field('assign', 'teamsubmission', ['id' => $publication->get_instance()->importfrom])) {
+        if ($publication->get_mode() == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
             /* We have to deal with group approval! The method sets group approval for the specified user
              * and returns current cumulated group approval (and it also sets it in publication_file table)! */
             $stats = $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
-
         } else {
             $DB->set_field('publication_file', 'studentapproval', $approval, $conditions);
         }

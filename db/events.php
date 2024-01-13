@@ -33,5 +33,12 @@ $observers = [
                 'priority' => 0,
                 'internal' => true,
         ],
+        [
+                'eventname' => 'mod_assign\event\submission_removed',
+                'callback' => 'mod_publication\observer::import_assessable',
+                'includefile' => '/mod/publication/classes/observer.php',
+                'priority' => 0,
+                'internal' => true,
+        ],
 
 ];

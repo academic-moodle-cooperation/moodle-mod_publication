@@ -175,7 +175,7 @@ class group extends base {
     protected function get_columns() {
         $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', [
                 'id' => 'selectallnone',
-                'onClick' => 'toggle_userselection()'
+                'onClick' => 'toggle_userselection()',
         ]);
 
         $columns = ['selection', 'groupname', 'groupmembers', 'timemodified', 'files'];
@@ -242,7 +242,7 @@ class group extends base {
 
         $pubfileid = $DB->get_field('publication_file', 'id', [
                 'publication' => $this->publication->get_instance()->id,
-                'fileid' => $file->get_id()
+                'fileid' => $file->get_id(),
         ]);
         list(, $approvaldetails) = $this->publication->group_approval($pubfileid);
 
@@ -285,7 +285,7 @@ class group extends base {
                 'data-approved' => json_encode($approved),
                 'data-rejected' => json_encode($rejected),
                 'data-filename' => '<span style="word-breaK: break-all;">' . $file->get_filename() . '</span>',
-                'data-status' => json_encode($status)
+                'data-status' => json_encode($status),
         ];
 
         $symbol = $symbol . \html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('show_details', 'publication')),

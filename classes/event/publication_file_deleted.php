@@ -57,7 +57,7 @@ class publication_file_deleted extends \core\event\base {
             'objectid'      => $do->id,
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => $do->userid,
-            'other'         => (Array)$do
+            'other'         => (Array)$do,
         ));
         return $event;
     }
@@ -108,7 +108,7 @@ class publication_file_deleted extends \core\event\base {
             throw new \coding_exception('Context level must be CONTEXT_MODULE.');
         }
 
-        if (empty($this->data['relateduserid'])) {
+        if (!isset($this->data['relateduserid'])) {
             throw new \coding_exception('Related user has to be set!');
         }
     }

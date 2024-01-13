@@ -76,6 +76,8 @@ class publication {
 
     protected $allfilespage = false;
 
+    protected $teamsubmission = false;
+
     /**
      * Constructor
      *
@@ -107,11 +109,12 @@ class publication {
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
             $cond = ['id' => $this->instance->importfrom];
             $this->requiregroup = $DB->get_field('assign', 'preventsubmissionnotingroup', $cond);
+            $this->teamsubmission = $DB->get_field('assign', 'teamsubmission', $cond);
         }
 
         if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
             $this->mode = PUBLICATION_MODE_FILEUPLOAD;
-        } else if ($DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom])) {
+        } else if ($this->teamsubmission) {
             $this->mode = PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION;
         } else {
             $this->mode = PUBLICATION_MODE_ASSIGN_IMPORT;
@@ -209,7 +212,7 @@ class publication {
                     $assigncm = $DB->get_record('course_modules', [
                             'course' => $assign->course,
                             'module' => $assignmoduleid,
-                            'instance' => $assign->id
+                            'instance' => $assign->id,
                     ]);
                 } else {
                     $assigncm = false;
@@ -267,7 +270,7 @@ class publication {
 
         $extensionduedate = $DB->get_field('publication_extduedates', 'extensionduedate', [
                 'publication' => $this->get_instance()->id,
-                'userid' => $uid
+                'userid' => $uid,
         ]);
 
         if (!$extensionduedate) {
@@ -363,7 +366,7 @@ class publication {
         $groups = groups_get_all_groups($this->get_instance()->course, 0, $groupingid);
         $groups = array_keys($groups);
 
-        if (empty($groupingid) && !$this->requiregroup()) {
+        if (!$this->requiregroup()) {
             $groups[] = 0;
         }
 
@@ -459,12 +462,13 @@ class publication {
         if ($ignoreallfilespage) {
             $this->allfilespage = true;
         }
+        $uniqueid = \mod_publication\local\allfilestable\base::get_table_uniqueid($this->instance->id);
         if ($mode == PUBLICATION_MODE_FILEUPLOAD) {
-            $table = new \mod_publication\local\allfilestable\upload('mod-publication-allfiles', $this, $filter);
+            $table = new \mod_publication\local\allfilestable\upload($uniqueid . $this->coursemodule->id, $this, $filter);
         } else if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
-            $table = new \mod_publication\local\allfilestable\group('mod-publication-allgroupfiles', $this, $filter);
+            $table = new \mod_publication\local\allfilestable\group($uniqueid, $this, $filter);
         } else {
-            $table = new \mod_publication\local\allfilestable\import('mod-publication-allfiles', $this, $filter);
+            $table = new \mod_publication\local\allfilestable\import($uniqueid, $this, $filter);
         }
         $this->allfilespage = $oldallfilespage;
         return $table;
@@ -499,11 +503,11 @@ class publication {
         if ($updatepref) {
             $perpage = optional_param('perpage', 10, PARAM_INT);
             $perpage = ($perpage < 0) ? 10 : $perpage;
-            set_user_preference('publication_perpage', $perpage);
+            set_user_preference('mod-publication-perpage-' . $this->instance->id, $perpage);
         }
 
         // Next we get perpage param from database!
-        $perpage = get_user_preferences('publication_perpage', 10);
+        $perpage = get_user_preferences('mod-publication-perpage-' . $this->instance->id, 10);
 
         $filter = optional_param('filter', PUBLICATION_FILTER_NOFILTER, PARAM_ALPHANUMEXT);
 
@@ -519,7 +523,7 @@ class publication {
                 html_writer::empty_tag('input', [
                         'type' => 'hidden',
                         'name' => 'id',
-                        'value' => $this->get_coursemodule()->id
+                        'value' => $this->get_coursemodule()->id,
                 ]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'page', 'value' => $page]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]) .
@@ -580,7 +584,7 @@ class publication {
                         'type' => 'reset',
                         'name' => 'resetvisibility',
                         'value' => get_string('reset', 'publication'),
-                        'class' => 'visibilitysaver btn btn-secondary ml-1'
+                        'class' => 'visibilitysaver btn btn-secondary ml-1',
                 ]);
 
                 if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
@@ -589,14 +593,14 @@ class publication {
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary'
+                            'class' => 'visibilitysaver btn btn-primary',
                     ]);
                 } else {
                     $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveteacherapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary'
+                            'class' => 'visibilitysaver btn btn-primary',
                     ]);
                 }
             } else {
@@ -610,7 +614,7 @@ class publication {
                     'type' => 'submit',
                     'name' => 'submitgo',
                     'value' => get_string('go', 'publication'),
-                    'class' => 'btn btn-primary'
+                    'class' => 'btn btn-primary',
                  ]).html_writer::end_div().
                  html_writer::div($buttons, 'col');
 
@@ -656,7 +660,7 @@ class publication {
             10 => 10,
             20 => 20,
             50 => 50,
-            100 => 100
+            100 => 100,
         ], $attributes);
         $mform->setDefault('perpage', $perpage);
 
@@ -667,7 +671,7 @@ class publication {
                 PUBLICATION_FILTER_APPROVED => get_string('filter:' . PUBLICATION_FILTER_APPROVED, 'publication'),
                 PUBLICATION_FILTER_REJECTED => get_string('filter:' . PUBLICATION_FILTER_REJECTED, 'publication'),
                 PUBLICATION_FILTER_APPROVALREQUIRED => get_string('filter:' . PUBLICATION_FILTER_APPROVALREQUIRED, 'publication'),
-                PUBLICATION_FILTER_NOFILES => get_string('filter:' . PUBLICATION_FILTER_NOFILES, 'publication')
+                PUBLICATION_FILTER_NOFILES => get_string('filter:' . PUBLICATION_FILTER_NOFILES, 'publication'),
             ];
             $mform->addElement('select', 'filter', get_string('filter', 'publication'), $filteroptions, $attributes);
             $mform->setDefault('filter', $filter);
@@ -703,7 +707,7 @@ class publication {
                     $haspermission = true;
                 } else if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT) {
                     // If it's a team-submission, we have to check for the group membership!
-                    $teamsubmission = $DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom]);
+                    $teamsubmission = $this->teamsubmission;
                     if (!empty($teamsubmission)) {
                         $groupmembers = $this->get_submissionmembers($filepermissions->userid);
                         if (array_key_exists($userid, $groupmembers)) {
@@ -888,8 +892,7 @@ class publication {
     public function get_submissionmembers($groupid) {
         global $DB;
 
-        if (($this->get_instance()->mode != PUBLICATION_MODE_IMPORT)
-                || !$DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom])) {
+        if ($this->mode != PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
             throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
         }
 
@@ -925,8 +928,7 @@ class publication {
     public function group_approval($pubfileid) {
         global $DB;
 
-        if (($this->get_instance()->mode != PUBLICATION_MODE_IMPORT)
-                || !$DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom])) {
+        if ($this->mode != PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
             throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
         }
 
@@ -983,7 +985,7 @@ class publication {
                 if ($this->get_instance()->importfrom == -1) {
                     $teamsubmission = false;
                 } else {
-                    $teamsubmission = $DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom]);
+                    $teamsubmission = $this->teamsubmission;
                 }
                 if (!$teamsubmission) {
                     // Get user firstname/lastname.
@@ -1037,7 +1039,7 @@ class publication {
         if ($this->get_instance()->importfrom == -1) {
             $teamsubmission = false;
         } else {
-            $teamsubmission = $DB->get_field('assign', 'teamsubmission', ['id' => $this->get_instance()->importfrom]);
+            $teamsubmission = $this->teamsubmission;
         }
 
         $conditions = [];
@@ -1062,7 +1064,7 @@ class publication {
         $filename = str_replace(' ', '_', clean_filename($this->course->shortname . '-' .
                 $this->get_instance()->name . '-' . $groupname . $this->get_instance()->id . '.zip')); // Name of new zip file.
 
-        $userfields = get_all_user_name_fields();
+        $userfields = \core_user\fields::get_name_fields();
         $userfields['id'] = 'id';
         $userfields['username'] = 'username';
         $userfields = implode(', ', $userfields);
@@ -1180,6 +1182,95 @@ class publication {
         }
     }
 
+    public function update_users_or_groups_teacherapproval($userorgroupids, $action) {
+        global $DB;
+
+        list($usersql, $params) = $DB->get_in_or_equal($userorgroupids, SQL_PARAMS_NAMED, 'user');
+        $params['pubid'] = $this->instance->id;
+        $select = ' publication=:pubid AND userid ' . $usersql;
+        $records = $DB->get_records_select('publication_file', $select, $params);
+        $files = [];
+        $teacherapproval = $action == 'approveusers' ? '1' : ($action == 'rejectusers' ? '2' : null);
+        foreach ($records as $record) {
+            $files[$record->fileid] = $teacherapproval;
+        }
+        $this->update_files_teacherapproval($files);
+    }
+
+    /**
+     * Changes teacher approval for the specified files
+     *
+     * @param $files array of fileids and new approval status, fileid => teacher approval status
+     * @return void
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function update_files_teacherapproval($files) {
+        global $DB, $USER;
+
+        foreach ($files as $fileid => $newteacherapproval) {
+            $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,filename");
+
+            $oldteacherapproval = $x->teacherapproval;
+
+            if ($newteacherapproval != $oldteacherapproval) {
+                /*$newstatus = ($this->instance->obtainteacherapproval && $newteacherapproval == 1 ||
+                    $this->instance->obtainteacherapproval && $newteacherapproval != 2) ? '' : 'not';*/
+
+                $user = $DB->get_record('user', array('id' => $x->userid));
+                $group = false;
+                $logstatus = '';
+                if ($this->mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+                    $logstatus = '(Teacher) ';
+                    $group = $x->userid;
+                }
+                if ($newteacherapproval == 1) {
+                    $newstatus = '';
+                    $logstatus .= 'approved';
+                } else if ($newteacherapproval == 2) {
+                    $newstatus = 'not';
+                    $logstatus .= 'rejected';
+                } else {
+                    $newstatus = 'revoke';
+                    $logstatus .= 'revoked';
+                }
+
+                $dataforlog = new stdClass();
+                $dataforlog->publication = $this->instance->id;
+                $dataforlog->approval = $logstatus;
+                $dataforlog->userid = $USER->id;
+                if ($user && !empty($user->id)) {
+                    $dataforlog->reluser = $user->id;
+                } else {
+                    $dataforlog->reluser = 0;
+                }
+                $dataforlog->fileid = $fileid;
+
+                try {
+                    \mod_publication\event\publication_approval_changed::approval_changed($this->coursemodule, $dataforlog)->trigger();
+                } catch (coding_exception $e) {
+                    throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+                }
+
+                $DB->set_field('publication_file', 'teacherapproval', $newteacherapproval, ['fileid' => $fileid]);
+
+                if ($this->instance->notifystudents) {
+                    $strsubmitted = get_string('approvalchange', 'publication');
+                    $cm = $this->coursemodule;
+                    $cmid = $this->coursemodule->id;
+                    if ($group !== false) {
+                        $usersingroup = $this->get_submissionmembers($group);
+                        foreach ($usersingroup as $user) {
+                            self::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $cmid, $this);
+                        }
+                    } else {
+                        self::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $cmid, $this);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Updates files from connected assignment
      */
@@ -1192,7 +1283,7 @@ class publication {
             $assigncm = $DB->get_record('course_modules', [
                     'course' => $assign->course,
                     'module' => $assignmoduleid,
-                    'instance' => $assign->id
+                    'instance' => $assign->id,
             ]);
 
             $assigncontext = context_module::instance($assigncm->id);
@@ -1365,7 +1456,7 @@ class publication {
         if (!empty($submissionid)) {
             $records = $DB->get_records('assignsubmission_onlinetext', [
                     'assignment' => $assigncm->instance,
-                    'submission' => $submissionid
+                    'submission' => $submissionid,
             ]);
         } else {
             $records = $DB->get_records('assignsubmission_onlinetext', ['assignment' => $assigncm->instance]);
@@ -1440,7 +1531,7 @@ class publication {
             $conditions = [
                     'publication' => $publicationid,
                     'userid' => $itemid,
-                    'type' => PUBLICATION_MODE_ONLINETEXT
+                    'type' => PUBLICATION_MODE_ONLINETEXT,
             ];
             $pubfile = $DB->get_record('publication_file', $conditions, '*', IGNORE_MISSING);
 
@@ -1646,7 +1737,7 @@ class publication {
         $conditions = [
                 'publication' => $publicationid,
                 'userid' => $itemid,
-                'type' => PUBLICATION_MODE_ONLINETEXT
+                'type' => PUBLICATION_MODE_ONLINETEXT,
         ];
         if (!$pubfile = $DB->get_record('publication_file', $conditions, '*')) {
             return '';

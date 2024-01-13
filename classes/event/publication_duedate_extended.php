@@ -57,7 +57,7 @@ class publication_duedate_extended extends \core\event\base {
             'objectid'      => (int)$do['publication'],
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => null,
-            'other'         => (Array)$do
+            'other'         => (Array)$do,
         ));
         return $event;
     }

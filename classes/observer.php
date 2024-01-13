@@ -26,6 +26,7 @@ namespace mod_publication;
 
 use core\notification;
 use mod_assign\event\assessable_submitted;
+use mod_assign\event\base;
 use publication;
 use stdClass;
 
@@ -46,7 +47,7 @@ class observer {
      * @param \mod_assign\event\assessable_submitted $e Event object containing useful data
      * @return bool true if success
      */
-    public static function import_assessable(assessable_submitted $e) {
+    public static function import_assessable(base $e) {
         global $DB, $CFG, $OUTPUT;
 
         // Keep other page calls slimmed down!
@@ -67,7 +68,7 @@ class observer {
         $assigncm = $DB->get_record('course_modules', [
                 'course' => $assign->get_course()->id,
                 'module' => $assignmoduleid,
-                'instance' => $assignid
+                'instance' => $assignid,
         ]);
         $assigncontext = \context_module::instance($assigncm->id);
 
@@ -81,7 +82,7 @@ class observer {
 
         $subfilerecords = $DB->get_records('assignsubmission_file', [
                 'assignment' => $assignid,
-                'submission' => $submission->id
+                'submission' => $submission->id,
         ]);
         $fs = get_file_storage();
 

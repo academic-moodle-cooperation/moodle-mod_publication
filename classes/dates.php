@@ -58,13 +58,13 @@ class dates extends activity_dates {
         if ($instance->allowsubmissionsfromdate) {
             $dates[] = [
                 'label' => get_string('allowsubmissionsfromdate' . $textsuffix, 'publication') . ':',
-                'timestamp' => $instance->allowsubmissionsfromdate
+                'timestamp' => $instance->allowsubmissionsfromdate,
             ];
         }
         if ($instance->duedate) {
             $dates[] = [
                 'label' => get_string('duedate' . $textsuffix, 'publication') . ':',
-                'timestamp' => $instance->duedate
+                'timestamp' => $instance->duedate,
             ];
         }
 
@@ -73,7 +73,7 @@ class dates extends activity_dates {
         if ($extensionduedate) {
             $dates[] = [
                 'label' => get_string('extensionto', 'publication') . ':',
-                'timestamp' => $extensionduedate
+                'timestamp' => $extensionduedate,
             ];
         }
         return $dates;

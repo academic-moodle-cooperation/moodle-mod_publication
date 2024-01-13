@@ -157,6 +157,11 @@ function publication_delete_instance($id) {
 
     $DB->delete_records('event', ['modulename' => 'publication', 'instance' => $publication->id]);
 
+    $tableuniqueid = \mod_publication\local\allfilestable\base::get_table_uniqueid($id);
+    $DB->delete_records('user_preferences', ['name' => $tableuniqueid]);
+    $filteruserpreference = 'mod-publication-perpage-' . $id;
+    $DB->delete_records('user_preferences', ['name' => $filteruserpreference]);
+
     $result = true;
     if (!$DB->delete_records('publication', ['id' => $publication->id])) {
         $result = false;
@@ -245,7 +250,7 @@ function publication_reset_userdata($data) {
             $status[] = [
                     'component' => $componentstr,
                     'item' => $publication->name,
-                    'error' => false
+                    'error' => false,
             ];
         }
     }
@@ -270,7 +275,7 @@ function publication_extend_settings_navigation(settings_navigation $settings, n
     $keys = $navref->get_children_key_list();
     $beforekey = null;
     $i = array_search('modedit', $keys);
-    if ($i === false and array_key_exists(0, $keys)) {
+    if ($i === false && array_key_exists(0, $keys)) {
         $beforekey = $keys[0];
     } else if (array_key_exists($i + 1, $keys)) {
         $beforekey = $keys[$i + 1];
@@ -331,7 +336,7 @@ function mod_publication_pluginfile($course, $cm, context $context, $filearea, $
 
     $fullpath = "/{$context->id}/mod_publication/$filearea/$itemid/$relativepath";
     $fs = get_file_storage();
-    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) || $file->is_directory()) {
         return false;
     }
 

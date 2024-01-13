@@ -73,7 +73,6 @@ $string['emailstudentsmailhtml'] = '{$a->username} has changed the publication s
 $string['name'] = 'Student folder name';
 $string['obtainstudentapproval'] = 'Publication of file submissions';
 $string['saveapproval'] = 'Save changes';
-$string['configobtainstudentapproval'] = 'Files will only be published (made visible to all) after student\'s and teacher\'s approval.';
 $string['obtainteacherapproval'] = 'Publication of file submissions';
 $string['obtainteacherapproval_help'] = 'Decide if files will be made visible immediately upon upload or not: <br><ul><li> Yes - all files will be visible to everyone right away</li><li> No - files will be published only after the teacher approved</li></ul>';
 $string['obtainteacherapproval_yes'] = 'Approve automatically';
@@ -81,7 +80,6 @@ $string['obtainteacherapproval_no'] = 'Approval from teachers required';
 $string['obtainstudentapproval_teacher'] = 'Approval from teachers required';
 $string['obtainstudentapproval_participant'] = 'Approval from students and teachers required';
 $string['obtainstudentapproval_yes'] = 'Approval from students and teachers required';
-$string['configobtainteacherapproval'] = 'Documents of students are by default visible for all other participants.';
 $string['maxfiles'] = 'Maximum number of attachments';
 $string['configmaxfiles'] = 'Default maximum number of attachments allowed per user.';
 $string['maxbytes'] = 'Maximum attachment size';
@@ -215,6 +213,7 @@ $string['visible'] = 'Published';
 $string['hidden'] = 'Not published';
 $string['status:approved'] = 'Approved';
 $string['status:approvednot'] = 'Rejected';
+$string['status:approvedrevoke'] = 'Revoked';
 $string['giveapproval'] = 'Give approval';
 $string['overdue'] = 'Deadline of editing period passed';
 $string['approval_required'] = 'Decision pending';
@@ -299,5 +298,7 @@ $string['filter:nofiles'] = 'No file submission';
 // Deprecated since Moodle 2.9!
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
+$string['configobtainstudentapproval'] = 'Files will only be published (made visible to all) after student\'s and teacher\'s approval.';
+$string['configobtainteacherapproval'] = 'Documents of students are by default visible for all other participants.';
 
 

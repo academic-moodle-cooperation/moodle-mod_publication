@@ -52,7 +52,7 @@ class mod_publication_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Name.
-        $mform->addElement('text', 'name', get_string('name', 'publication'));
+        $mform->addElement('text', 'name', get_string('name', 'publication'), ['size' => '64']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -114,7 +114,7 @@ class mod_publication_mod_form extends moodleform_mod {
         $attributes = [];
         $options = [
             '0' => get_string('obtainstudentapproval_teacher', 'publication'),
-            '1' => get_string('obtainstudentapproval_participant', 'publication')
+            '1' => get_string('obtainstudentapproval_participant', 'publication'),
         ];
 
         $mform->addElement('select', 'obtainstudentapproval', get_string('obtainstudentapproval', 'publication'), $options, $attributes);
@@ -161,7 +161,7 @@ class mod_publication_mod_form extends moodleform_mod {
 
         $options = [
             '0' => get_string('obtainteacherapproval_no', 'publication'),
-            '1' => get_string('obtainteacherapproval_yes', 'publication')
+            '1' => get_string('obtainteacherapproval_yes', 'publication'),
         ];
 
         $mform->addElement('select', 'obtainteacherapproval',
@@ -174,7 +174,7 @@ class mod_publication_mod_form extends moodleform_mod {
             'notice_obtainapproval_import_both',
             'notice_obtainapproval_import_studentonly',
             'notice_obtainapproval_upload_teacher',
-            'notice_obtainapproval_upload_automatic'
+            'notice_obtainapproval_upload_automatic',
         ];
         foreach ($infostrings as $infostring) {
             $infohtml = html_writer::start_tag('div', ['class' => 'alert alert-info']);

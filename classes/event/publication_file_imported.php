@@ -57,7 +57,7 @@ class publication_file_imported extends \core\event\base {
             'objectid'      => (int)$do->publication,
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => $do->userid,
-            'other'         => (Array)$do
+            'other'         => (Array)$do,
         ));
         return $event;
     }

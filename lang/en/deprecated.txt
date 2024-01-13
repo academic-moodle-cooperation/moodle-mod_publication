@@ -1,2 +1,4 @@
 requiremodintro,mod_publication
 configrequiremodintro,mod_publication
+configobtainteacherapproval,mod_publication
+configobtainstudentapproval,mod_publication

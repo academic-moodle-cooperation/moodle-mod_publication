@@ -52,7 +52,7 @@ class mod_publication_external extends external_api {
         // An external_description can be: external_value, external_single_structure or an external_multiple structure!
                 [
                         'itemid' => new external_value(PARAM_INT, 'Group\'s or user\'s ID'),
-                        'cmid' => new external_value(PARAM_INT, 'Coursemodule ID')
+                        'cmid' => new external_value(PARAM_INT, 'Coursemodule ID'),
                 ]
         );
     }
@@ -72,7 +72,7 @@ class mod_publication_external extends external_api {
         $params = self::validate_parameters(self::get_onlinetextpreview_parameters(),
                 [
                         'itemid' => $itemid,
-                        'cmid' => $cmid
+                        'cmid' => $cmid,
                 ]);
         $cm = get_coursemodule_from_id('publication', $params['cmid'], 0, false, MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
