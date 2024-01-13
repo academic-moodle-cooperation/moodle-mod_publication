@@ -462,12 +462,13 @@ class publication {
         if ($ignoreallfilespage) {
             $this->allfilespage = true;
         }
+        $uniqueid = \mod_publication\local\allfilestable\base::get_table_uniqueid($this->instance->id);
         if ($mode == PUBLICATION_MODE_FILEUPLOAD) {
-            $table = new \mod_publication\local\allfilestable\upload('mod-publication-allfiles', $this, $filter);
+            $table = new \mod_publication\local\allfilestable\upload($uniqueid . $this->coursemodule->id, $this, $filter);
         } else if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
-            $table = new \mod_publication\local\allfilestable\group('mod-publication-allgroupfiles', $this, $filter);
+            $table = new \mod_publication\local\allfilestable\group($uniqueid, $this, $filter);
         } else {
-            $table = new \mod_publication\local\allfilestable\import('mod-publication-allfiles', $this, $filter);
+            $table = new \mod_publication\local\allfilestable\import($uniqueid, $this, $filter);
         }
         $this->allfilespage = $oldallfilespage;
         return $table;

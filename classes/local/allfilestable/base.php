@@ -874,4 +874,8 @@ FROM
         ];
         return $OUTPUT->render_from_template('mod_publication/approval_icon_fontawesome', $templatecontext);
     }
+
+    public static function get_table_uniqueid($instanceid) {
+        return 'mod-publication-allfiles-' . $instanceid;
+    }
 }

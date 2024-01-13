@@ -157,6 +157,9 @@ function publication_delete_instance($id) {
 
     $DB->delete_records('event', ['modulename' => 'publication', 'instance' => $publication->id]);
 
+    $tableuniqueid = \mod_publication\local\allfilestable\base::get_table_uniqueid($id);
+    $DB->delete_records('user_preferences', ['name' => $tableuniqueid]);
+
     $result = true;
     if (!$DB->delete_records('publication', ['id' => $publication->id])) {
         $result = false;

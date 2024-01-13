@@ -9,7 +9,7 @@ CHANGELOG
 * [BUG] #7808 - fix deprecated user name fields call
 * [BUG] #7812 - remove unused plugin settings
 * [BUG] #7810 - fix assign submission remove has no effect on stud. folder submission
-* 
+* [BUG] #7791 - fix table filtering not per instance
 
 4.2.2 (2023-12-05)
 -------------------
