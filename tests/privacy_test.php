@@ -25,7 +25,7 @@
 
 namespace mod_publication\local\tests;
 
-use \mod_publication\privacy\provider;
+use mod_publication\privacy\provider;
 use context_module;
 use stdClass;
 
@@ -136,9 +136,9 @@ class privacy_testcase extends base {
 
         // Assign to import from.
         $this->assign = $this->create_assign($this->course1, ['submissiondrafts' => false,
-                                                              'assignsubmission_onlinetext_enabled' => true,]);
+                                                              'assignsubmission_onlinetext_enabled' => true, ]);
         $this->assign2 = $this->create_assign($this->course1, ['submissiondrafts' => false,
-                                                               'assignsubmission_onlinetext_enabled' => true,]);
+                                                               'assignsubmission_onlinetext_enabled' => true, ]);
 
         // Publication with imports.
         $this->pubimport = $this->create_instance([
