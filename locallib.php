@@ -1405,8 +1405,8 @@ class publication {
 
                     if ($this->get_instance()->notifyteacher) {
                         $cm = get_coursemodule_from_instance('publication', $this->get_instance()->id, 0, false, MUST_EXIST);
-                        $user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST);
-                        self::send_teacher_notification_uploaded($cm, $newfile, $user);
+                        //$user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST);
+                        self::send_teacher_notification_uploaded($cm, $newfile, null);
                     }
 
                 } catch (Exception $e) {
