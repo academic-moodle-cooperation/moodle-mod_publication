@@ -1405,14 +1405,14 @@ class publication {
 
                     if ($this->get_instance()->notifyteacher) {
                         $cm = get_coursemodule_from_instance('publication', $this->get_instance()->id, 0, false, MUST_EXIST);
-                        //$user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST);
-                        self::send_teacher_notification_uploaded($cm, $newfile, null);
+                        // USER $user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST); Not needed!
+                        self::send_teacher_notification_uploaded($cm, $newfile);
                     }
 
                 } catch (Exception $e) {
                     // File could not be copied, maybe it does already exist.
                     // Should not happen.
-                    echo $OUTPUT->box($OUTPUT->notification($e->getMessage() . $e->getTraceAsString(), 'notifyproblem'), 'generalbox');
+                    echo $OUTPUT->box($OUTPUT->notification($e->getMessage(), 'notifyproblem'), 'generalbox');
                 }
             }
         }
