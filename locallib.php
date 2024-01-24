@@ -1212,8 +1212,8 @@ class publication {
             $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,filename");
 
             $oldteacherapproval = $x->teacherapproval;
-
-            if ($newteacherapproval != $oldteacherapproval) {
+            $newteacherapproval = trim($newteacherapproval);
+            if ($newteacherapproval != $oldteacherapproval && !empty($newteacherapproval)) {
                 /*$newstatus = ($this->instance->obtainteacherapproval && $newteacherapproval == 1 ||
                     $this->instance->obtainteacherapproval && $newteacherapproval != 2) ? '' : 'not';*/
 
@@ -1405,8 +1405,8 @@ class publication {
 
                     if ($this->get_instance()->notifyteacher) {
                         $cm = get_coursemodule_from_instance('publication', $this->get_instance()->id, 0, false, MUST_EXIST);
-                        $user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST);
-                        self::send_teacher_notification_uploaded($cm, $newfile, $user);
+                        // USER $user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST); Not needed!
+                        self::send_teacher_notification_uploaded($cm, $newfile);
                     }
 
                 } catch (Exception $e) {
