@@ -1212,8 +1212,8 @@ class publication {
             $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,filename");
 
             $oldteacherapproval = $x->teacherapproval;
-
-            if ($newteacherapproval != $oldteacherapproval) {
+            $newteacherapproval = trim($newteacherapproval);
+            if ($newteacherapproval != $oldteacherapproval && !empty($newteacherapproval)) {
                 /*$newstatus = ($this->instance->obtainteacherapproval && $newteacherapproval == 1 ||
                     $this->instance->obtainteacherapproval && $newteacherapproval != 2) ? '' : 'not';*/
 
@@ -1412,7 +1412,7 @@ class publication {
                 } catch (Exception $e) {
                     // File could not be copied, maybe it does already exist.
                     // Should not happen.
-                    echo $OUTPUT->box($OUTPUT->notification($e->getMessage(), 'notifyproblem'), 'generalbox');
+                    echo $OUTPUT->box($OUTPUT->notification($e->getMessage() . $e->getTraceAsString(), 'notifyproblem'), 'generalbox');
                 }
             }
         }
