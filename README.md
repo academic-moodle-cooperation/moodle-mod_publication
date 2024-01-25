@@ -1,13 +1,11 @@
-[![Build Status](https://travis-ci.org/academic-moodle-cooperation/moodle-mod_publication.svg?branch=master)](https://travis-ci.org/academic-moodle-cooperation/moodle-mod_publication)
-
-Student Folder Module
+Student Folder 
 =====================
 
 This file is part of the mod_publication plugin for Moodle - <http://moodle.org/>
 
 *Author:*    Hannes Laimer, Philipp Hager, Andreas Windbichler, Simeon Naydenov
 
-*Copyright:* 2022 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
+*Copyright:* [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
 *License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
 
@@ -15,24 +13,15 @@ This file is part of the mod_publication plugin for Moodle - <http://moodle.org/
 Description
 -----------
 
-With the Student Folder module students can upload documents which can be made visible by teachers.
-This facilitates publication of student's documents in a course and improves exchange of knowledge.
+Online texts and files can be collected and published via the Student Folder activity and thus made available to everyone in a Moodle course. Submissions can be made directly by uploading or alternatively can be taken over by teachers from an assignment activity.
 
 
-Example
+Usage
 -------
 
-The student folder has two features: on the one hand participants can upload their documents in the
-student folder which can be made visible for other students immediately after the upload or after
-the teacher's approval. On the other hand it is possible to import documents from the activity
-assignment. Here teachers can decide which documents should be visible to all participants or name
-individual students to release documents.
-
-
-Requirements
-------------
-
-The plugin is available for Moodle 2.7+.
+A possible teaching scenario could look like this: 
+* Seminar papers must be submitted as part of a course. The documents created should be uploaded by the students in the assignment activity. Teachers assess the submissions online and provide feedback. In order to make individual or all submitted documents accessible to all participants in the course, a student folder is then created by the teachers and linked to the assignment. Teachers can then decide which documents should be visible to participants. It is also possible to make the publication of documents dependent on the consent of the students who submitted them. 
+* Students present their group work as part of a seminar. The presentations and summaries created for this should be made available to all participants in the course. The teachers therefore create a student folder in which the files can be uploaded directly and published immediately. Students can then upload the documents themselves. Teachers can change the visibility of individual files at any time if necessary.
 
 
 Installation
@@ -46,22 +35,16 @@ Installation
   automatically.
 
 
-Admin Settings
+Privacy API
 --------------
 
-An administrator can adjust the default settings for the student folder instance-wide in the
-general settings page. There he can specify the following:
-
-* Maximum number of attachments
-* Maximum attachment size
+The plugin fully implements the Moodle Privacy API.
 
 
 Documentation
 -------------
 
-You can find a cheat sheet for the plugin on the [AMC
-website](https://www.academic-moodle-cooperation.org/en/module/studentfolder/) and a video tutorial
-in german only in the [AMC YouTube Channel](https://www.youtube.com/c/AMCAcademicMoodleCooperation).
+You can find a documentation for the plugin on the [AMC website](https://academic-moodle-cooperation.org/mod_publication/).
 
 
 Bug Reports / Support
