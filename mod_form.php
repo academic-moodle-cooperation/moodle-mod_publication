@@ -241,16 +241,21 @@ class mod_publication_mod_form extends moodleform_mod {
     public function add_completion_rules() {
         $mform =& $this->_form;
 
-        $mform->addElement('advcheckbox', 'completionupload', '', get_string('completionupload', 'publication'));
+        $suffix = $this->get_suffix();
+        $completionuploadlabel = 'completionupload' . $suffix;
+
+        $mform->addElement('advcheckbox', $completionuploadlabel, '', get_string('completionupload', 'publication'));
         // Enable this completion rule by default.
-        $mform->setDefault('completionupload', 1);
-        $mform->hideIf('completionupload', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
-        return array('completionupload');
+        $mform->setDefault($completionuploadlabel, 1);
+        $mform->hideIf($completionuploadlabel, 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
+        return [$completionuploadlabel];
     }
 
 
     public function completion_rule_enabled($data) {
-        if ($data['mode'] == PUBLICATION_MODE_UPLOAD && !empty($data['completionupload'])) {
+        $suffix = $this->get_suffix();
+        $completionuploadlabel = 'completionupload' . $suffix;
+        if ($data['mode'] == PUBLICATION_MODE_UPLOAD && !empty($data[$completionuploadlabel])) {
             return true;
         }
         return false;
@@ -258,8 +263,10 @@ class mod_publication_mod_form extends moodleform_mod {
 
     public function data_postprocessing($data) {
         parent::data_postprocessing($data);
+        $suffix = $this->get_suffix();
+        $completionuploadlabel = 'completionupload' . $suffix;
         if ($data->mode != PUBLICATION_MODE_UPLOAD) {
-            $data->completionupload = 0;
+            $data->{$completionuploadlabel} = 0;
         }
     }
 
