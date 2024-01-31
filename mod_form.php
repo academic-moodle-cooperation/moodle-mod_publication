@@ -265,7 +265,7 @@ class mod_publication_mod_form extends moodleform_mod {
         parent::data_postprocessing($data);
         $suffix = $this->get_suffix();
         $completionuploadlabel = 'completionupload' . $suffix;
-        if ($data->mode != PUBLICATION_MODE_UPLOAD) {
+        if (!isset($data->mode) || $data->mode != PUBLICATION_MODE_UPLOAD) {
             $data->{$completionuploadlabel} = 0;
         }
     }
