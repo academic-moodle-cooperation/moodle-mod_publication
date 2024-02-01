@@ -11,6 +11,9 @@ CHANGELOG
 * [BUG] #7810 - fix assign submission remove has no effect on stud. folder submission
 * [BUG] #7791 - fix table filtering not per instance
 * [BUG] #7827 - fix errors when setting up completion
+* [BUG] #7805 - fix bug with sending notifications if status has not been changed
+* [BUG] #7806 - fix bug with sending notifications when using the go button
+* [BUG] #7807 - fix bug with changed status using the go button
 
 4.2.2 (2023-12-05)
 -------------------
