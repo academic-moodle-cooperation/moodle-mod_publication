@@ -88,7 +88,7 @@ class privacy_testcase extends base {
      *
      * @throws \coding_exception
      */
-    protected function setUp():void {
+    protected function setUp(): void {
         parent::setUp();
 
         $this->resetAfterTest();
