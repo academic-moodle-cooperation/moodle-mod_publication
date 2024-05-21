@@ -374,7 +374,6 @@ class publication {
             $groups = array_intersect($groups, $selgroups);
         }
 
-
         foreach ($groups as $id => $groupid) {
             $members = $this->get_submissionmembers($groupid);
             if (empty($members)) {
