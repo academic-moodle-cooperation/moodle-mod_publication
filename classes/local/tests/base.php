@@ -87,7 +87,7 @@ abstract class base extends advanced_testcase {
     /**
      * Setup function - we will create a course and add an tmt instance to it.
      */
-    protected function setUp():void {
+    protected function setUp(): void {
         global $DB;
 
         $this->resetAfterTest(true);

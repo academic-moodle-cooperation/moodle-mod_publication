@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+4.4.0 (2024-05-21)
+-------------------
+* Moodle 4.4.0 compatible version
+* [FEATURE] #7931 - update icon
+* [FEATURE] #7473 - only students with access appear in files list
+
+
 4.3.0 (2024-01-10)
 -------------------
 * Moodle 4.3.0 compatible version

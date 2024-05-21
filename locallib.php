@@ -374,6 +374,13 @@ class publication {
             $groups = array_intersect($groups, $selgroups);
         }
 
+        foreach ($groups as $id => $groupid) {
+            $members = $this->get_submissionmembers($groupid);
+            if (empty($members)) {
+                unset($groups[$id]);
+            }
+        }
+
         return $groups;
     }
 
@@ -405,11 +412,11 @@ class publication {
         if ($allfilespage && (has_capability('mod/publication:approve', $this->context)
                 || has_capability('mod/publication:grantextension', $this->context))) {
             // We can skip the approval-checks for teachers!
-            $sql = 'SELECT u.id FROM {user} u ' .
+            $sql = 'SELECT u.* FROM {user} u ' .
                     'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
                     'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers;
         } else {
-            $sql = 'SELECT u.id FROM {user} u ' .
+            $sql = 'SELECT u.* FROM {user} u ' .
                     'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
                     'LEFT JOIN {publication_file} files ON (u.id = files.userid) ' .
                     'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers .
@@ -442,13 +449,19 @@ class publication {
             $sql .= 'GROUP BY u.id';
         }
 
-        $users = $DB->get_fieldset_sql($sql, $params);
+        $users = $DB->get_records_sql($sql, $params);
 
         if (empty($users)) {
             return [-1];
         }
+        $modinfo = get_fast_modinfo($this->course->id);
 
-        return $users;
+        $info = new \core_availability\info_module($modinfo->get_cm($this->coursemodule->id));
+        $filtered = $info->filter_user_list($users);
+        if (empty($filtered)) {
+            return [-1];
+        }
+        return array_keys($filtered);
     }
 
     public function get_mode() {
@@ -891,6 +904,11 @@ class publication {
      */
     public function get_submissionmembers($groupid) {
         global $DB;
+        static $availabilityinfo = null;
+        if (is_null($availabilityinfo)) {
+            $modinfo = get_fast_modinfo($this->course->id);
+            $availabilityinfo = new \core_availability\info_module($modinfo->get_cm($this->coursemodule->id));
+        }
 
         if ($this->mode != PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
             throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
@@ -915,6 +933,7 @@ class publication {
         } else {
             $groupmembers = [];
         }
+        $groupmembers = $availabilityinfo->filter_user_list($groupmembers);
 
         return $groupmembers;
     }
