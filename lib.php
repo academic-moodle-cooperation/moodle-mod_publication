@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once(__DIR__.'/locallib.php');
+
 /**
  * Adds a new publication instance
  *
