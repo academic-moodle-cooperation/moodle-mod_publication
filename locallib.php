@@ -555,6 +555,13 @@ class publication {
 
         $table = $this->get_allfilestable($filter);
 
+        ob_start();
+        $table->out($perpage, true); // Print the whole table.
+        $tableoutput = ob_get_contents();
+        ob_end_clean();
+
+        $norowsfound = $table->get_count() == 0;
+
         $link = html_writer::link(new moodle_url('/mod/publication/view.php', [
                 'id' => $this->coursemodule->id,
                 'action' => 'zip',
@@ -563,16 +570,15 @@ class publication {
             get_string('downloadall', 'publication'),
             ['class' => 'btn btn-secondary mb-2 btn-sm']
         );
-        $output .= html_writer::tag('div', $link, ['class' => 'mod-publication-download-link']);
+        if (!$norowsfound) {
+            $output .= html_writer::tag('div', $link, ['class' => 'mod-publication-download-link']);
+        }
 
         if ($perpage == 0) {
             $output .= '<style> nav.pagination ul.pagination li:only-child { display: none} </style>';
         }
 
-        ob_start();
-        $table->out($perpage, true); // Print the whole table.
-        $output .= ob_get_contents();
-        ob_end_clean();
+        $output .= $tableoutput;
 
         $options = [];
         $options['zipusers'] = get_string('zipusers', 'publication');
@@ -590,7 +596,7 @@ class publication {
             $options['grantextension'] = get_string('grantextension', 'publication');
         }
 
-        if (count($options) > 0) {
+        if (count($options) > 0 && !$norowsfound) {
             $output .= html_writer::start_div('form-row');
             if (has_capability('mod/publication:approve', $context) && $this->allfilespage) {
                 $buttons = html_writer::empty_tag('input', [
