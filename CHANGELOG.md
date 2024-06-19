@@ -6,6 +6,7 @@ CHANGELOG
 * Moodle 4.4.0 compatible version
 * [FEATURE] #7931 - update icon
 * [FEATURE] #7473 - only students with access appear in files list
+* [FEATURE] #7809 - hide action buttons when table is empty in File submissions page
 
 
 4.3.0 (2024-01-10)
