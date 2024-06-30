@@ -82,10 +82,12 @@ class group extends base {
         } else if ($this->filter == PUBLICATION_FILTER_ALLFILES) {
             $from = $grouptable . " JOIN {publication_file} files ON g.id = files.userid AND files.publication = :publication ";
         } else if ($this->filter == PUBLICATION_FILTER_APPROVED) {
-            $from = $grouptable . " JOIN {publication_file} files ON g.id = files.userid AND files.publication = :publication " .
-                "AND files.teacherapproval = 1 ";
-            if ($this->publication->get_instance()->obtainstudentapproval == 1) {
-                $from .= " AND files.studentapproval = 1 ";
+            $from = $grouptable . " JOIN {publication_file} files ON g.id = files.userid AND files.publication = :publication ";
+            if ($this->obtainteacherapproval) {
+                $from .= ' AND files.teacherapproval = 1 ';
+            }
+            if ($this->obtainstudentapproval) {
+                $from .= ' AND files.studentapproval = 1 ';
             }
         } else if ($this->filter == PUBLICATION_FILTER_REJECTED) {
             $from = $grouptable . " LEFT JOIN {publication_file} files ON g.id = files.userid AND files.publication = :publication " .
@@ -138,10 +140,10 @@ class group extends base {
         $params->id = $uniqueid;
         switch ($publication->get_instance()->groupapproval) {
             case PUBLICATION_APPROVAL_ALL;
-                $params->mode = get_string('groupapprovalmode_all', 'mod_publication');
+                $params->mode = get_string('obtaingroupapproval_all', 'mod_publication');
                 break;
             case PUBLICATION_APPROVAL_SINGLE:
-                $params->mode = get_string('groupapprovalmode_single', 'mod_publication');
+                $params->mode = get_string('obtaingroupapproval_single', 'mod_publication');
                 break;
         }
 

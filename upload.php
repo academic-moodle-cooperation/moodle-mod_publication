@@ -137,8 +137,8 @@ if ($mform->is_cancelled()) {
             $dataobject->userid = $USER->id;
             $dataobject->timecreated = $file->get_timecreated();
             $dataobject->fileid = $file->get_id();
-            $dataobject->studentapproval = 1; // Upload always means user approves.
-            $dataobject->teacherapproval = $publication->get_instance()->obtainteacherapproval == 1 ? 3 : 1;
+            $dataobject->studentapproval = 0;
+            $dataobject->teacherapproval = 0;
             $dataobject->filename = $file->get_filename();
             $dataobject->type = PUBLICATION_MODE_UPLOAD;
 

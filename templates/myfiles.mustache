@@ -7,6 +7,18 @@
         <td>{{.}}</td>
     </tr>
 {{/timeremaining}}
+{{#approvalfromdate}}
+    <tr>
+        <th>{{#str}}approvalfromdate,publication{{/str}}</th>
+        <td>{{.}}</td>
+    </tr>
+{{/approvalfromdate}}
+{{#approvaltodate}}
+    <tr>
+        <th>{{#str}}approvaltodate,publication{{/str}}</th>
+        <td>{{.}}</td>
+    </tr>
+{{/approvaltodate}}
 {{#hasmyfiles}}
     <tr>
         <th>{{#str}}lastmodified{{/str}}</th>

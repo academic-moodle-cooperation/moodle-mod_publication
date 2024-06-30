@@ -73,9 +73,9 @@ class base extends \html_table {
 
         $this->fs = get_file_storage();
 
-        $this->valid = \mod_publication\local\allfilestable\base::approval_icon('check', 'text-success', get_string('student_approved', 'publication'));
-        $this->questionmark = \mod_publication\local\allfilestable\base::approval_icon('question', 'text-warning', get_string('student_pending', 'publication'));
-        $this->invalid = \mod_publication\local\allfilestable\base::approval_icon('times', 'text-danger', get_string('student_rejected', 'publication'));
+        $this->valid = \mod_publication\local\allfilestable\base::approval_icon('check', 'text-success', false);
+        $this->questionmark = \mod_publication\local\allfilestable\base::approval_icon('question', 'text-warning', false);
+        $this->invalid = \mod_publication\local\allfilestable\base::approval_icon('times', 'text-danger', false);
     }
 
     /**
@@ -131,9 +131,121 @@ class base extends \html_table {
         ]);
         $data[] = \html_writer::link($dlurl, $file->get_filename());
 
+        $data[] = $this->get_approval_status_for_file($file);
+
         // The specific data will be added in the child-classes!
 
         return $data;
+    }
+
+    public function get_approval_status_for_file($file) {
+        global $OUTPUT;
+        $templatecontext = new \stdClass;
+        // Now add the specific data to the table!
+        $teacherapproval = $this->publication->teacher_approval($file);
+        $studentapproval = $this->publication->student_approval($file);
+
+        $obtainteacherapproval = $this->publication->get_instance()->obtainteacherapproval;
+        $obtainstudentapproval = $this->publication->get_instance()->obtainstudentapproval;
+
+        $studentapproved = false;
+        $studentdenied = false;
+        $studentpending = false;
+        $hint = '';
+        if ($obtainstudentapproval == 1) {
+            if ($studentapproval == 1) {
+                $studentapproved = true;
+                $hint = get_string('student_approved', 'publication');
+            } else if ($studentapproval == 2) {
+                $studentdenied = true;
+                $hint = get_string('student_rejected', 'publication');
+            } else {
+                if ($this->publication->is_approval_open()) {
+                    $this->changepossible = true;
+                    return \html_writer::select($this->options, 'studentapproval[' . $file->get_id() . ']', $studentapproval);
+                }
+                $studentpending = true;
+                $hint = get_string('student_pending', 'publication');
+            }
+        } else {
+            $studentapproved = true;
+            $hint = get_string('student_approved_automatically', 'publication');
+        }
+
+        $hint .= ' ';
+
+        $teacherapproved = false;
+        $teacherdenied = false;
+        $teacherpending = false;
+
+        if ($obtainteacherapproval == 1) {
+            if ($teacherapproval == 1) {
+                $teacherapproved = true;
+                $hint .= get_string('teacher_approved', 'publication');
+            } else if ($teacherapproval == 2) {
+                $teacherdenied = true;
+                $hint .= get_string('teacher_rejected', 'publication');
+            } else {
+                $teacherpending = true;
+                $hint .= get_string('teacher_pending', 'publication');
+            }
+        } else {
+            $teacherapproved = true;
+            $hint .= get_string('teacher_approved_automatically', 'publication');
+        }
+
+
+        if ($studentapproved && $teacherapproved) {
+            $templatecontext->icon = $this->valid;
+        } else if ($studentdenied || $teacherdenied) {
+            $templatecontext->icon = $this->invalid;
+        } else {
+            $templatecontext->icon = $this->questionmark;
+        }
+        $templatecontext->hint = $hint;
+        return $OUTPUT->render_from_template('mod_publication/approval_icon', $templatecontext);
+/*
+        if ($teacherapproval && $this->publication->get_instance()->obtainstudentapproval) {
+            $studentapproval = $this->publication->student_approval($file);
+            if ($this->publication->is_open() && $studentapproval == 0) {
+                $this->changepossible = true;
+                $data[] = \html_writer::select($this->options, 'studentapproval[' . $file->get_id() . ']', $studentapproval);
+                $templatecontext = false;
+            } else {
+                switch ($studentapproval) {
+                    case 2:
+                        $templatecontext->icon = $this->valid;
+                        $templatecontext->hint = get_string('student_approved', 'publication');
+                        break;
+                    case 1:
+                        $templatecontext->icon = $this->invalid;
+                        $templatecontext->hint = get_string('student_rejected', 'publication');
+                        break;
+                    default:
+                        $templatecontext->icon = $this->questionmark;
+                        $templatecontext->hint = get_string('student_pending', 'publication');
+                }
+            }
+        } else {
+            switch ($teacherapproval) {
+                case 1:
+                    $templatecontext->icon = $this->valid;
+                    $templatecontext->hint = get_string('teacher_approved', 'publication');
+                    break;
+                case 3:
+                    $templatecontext->icon = $this->questionmark;
+                    $templatecontext->hint = get_string('hidden', 'publication') . ' (' . get_string('teacher_pending', 'publication') . ')';
+                    break;
+                default:
+                    $templatecontext->icon = $this->questionmark;
+                    $templatecontext->hint = get_string('student_pending', 'publication');
+            }
+        }
+
+        if ($templatecontext) {
+            return $OUTPUT->render_from_template('mod_publication/approval_icon', $templatecontext);
+        }
+        return '';*/
     }
 
     /**

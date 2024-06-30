@@ -53,6 +53,13 @@ class upload extends base {
             $columns[] = 'visibleforstudents';
             $headers[] = get_string('visibleforstudents', 'publication');
             $helpicons[] = null;*/
+
+            if ($this->obtainstudentapproval) {
+                $columns[] = 'studentapproval';
+                $headers[] = get_string('studentapproval', 'publication');
+                $helpicons[] = new \help_icon('studentapproval', 'publication');
+            }
+
             $columns[] = 'publicationstatus';
             $headers[] = get_string('publicationstatus', 'publication');
             $helpicons[] = new \help_icon('publicationstatus', 'publication');

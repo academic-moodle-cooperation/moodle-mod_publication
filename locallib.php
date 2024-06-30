@@ -31,6 +31,7 @@ define('PUBLICATION_MODE_IMPORT', 1);
 // Used in DB to mark online-text-files!
 define('PUBLICATION_MODE_ONLINETEXT', 2);
 
+define('PUBLICATION_APPROVAL_GROUPAUTOMATIC', -1);
 define('PUBLICATION_APPROVAL_ALL', 0);
 define('PUBLICATION_APPROVAL_SINGLE', 1);
 
@@ -104,7 +105,7 @@ class publication {
 
         $this->instance = $DB->get_record("publication", ["id" => $cm->instance]);
 
-        $this->instance->obtainteacherapproval = !$this->instance->obtainteacherapproval;
+       // $this->instance->obtainteacherapproval = !$this->instance->obtainteacherapproval;
 
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
             $cond = ['id' => $this->instance->importfrom];
@@ -317,6 +318,31 @@ class publication {
         }
 
         return false;
+    }
+
+
+    public function is_approval_open() {
+        $now = time();
+
+        $from = $this->get_instance()->approvalfromdate;
+        $to = $this->get_instance()->approvaltodate;
+
+        if (($from == 0 || $from < $now) && ($to == 0 || $to > $now)) {
+            return true;
+        }
+        return false;
+    }
+
+    public function is_approval_open_string() {
+        $fromstr = '';
+        if ($this->get_instance()->approvalfromdate > 0) {
+            $fromstr = get_string('from') . ' ' . userdate($this->get_instance()->approvalfromdate);
+        }
+        $tostr = '';
+        if ($this->get_instance()->approvaltodate > 0) {
+            $tostr = get_string('until') . ' ' . userdate($this->get_instance()->approvaltodate);
+        }
+        return $fromstr . ' ' . $tostr;
     }
 
     /**
@@ -584,11 +610,12 @@ class publication {
         $options['zipusers'] = get_string('zipusers', 'publication');
 
         if (has_capability('mod/publication:approve', $context) && $table->totalfiles() > 0  && $this->allfilespage) {
-            $options['approveusers'] = get_string('approveusers', 'publication');
-            $options['rejectusers'] = get_string('rejectusers', 'publication');
+            if ($this->get_instance()->obtainteacherapproval) {
+                $options['approveusers'] = get_string('approveusers', 'publication');
+                $options['rejectusers'] = get_string('rejectusers', 'publication');
+            }
 
-            if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
-                $this->get_instance()->obtainstudentapproval) {
+            if ($this->get_instance()->obtainstudentapproval) {
                 $options['resetstudentapproval'] = get_string('resetstudentapproval', 'publication');
             }
         }
@@ -739,6 +766,13 @@ class publication {
                 }
             }
 
+            $obtainteacherapproval = $this->get_instance()->obtainteacherapproval;
+            $obtainstudentapproval = $this->get_instance()->obtainstudentapproval;
+            $teacherapproval = $filepermissions->teacherapproval;
+            $studentapproval = $filepermissions->studentapproval;
+
+            $haspermission = (!$obtainteacherapproval || $teacherapproval == 1) && (!$obtainstudentapproval || $studentapproval == 1);
+/*
             if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
                 // Mode upload.
                 if ($this->get_instance()->obtainteacherapproval) {
@@ -764,7 +798,7 @@ class publication {
                     // Student and teacher have approved.
                     $haspermission = true;
                 }
-            }
+            }*/
         }
 
         return $haspermission;
@@ -809,7 +843,6 @@ class publication {
         }
 
         // Calculate new cumulated studentapproval for caching in file table!
-
         // Get group members!
         $groupmembers = $this->get_submissionmembers($filerec->userid);
         $stats = array();
@@ -821,7 +854,7 @@ class publication {
             $params = ['fileid' => $pubfileid, 'approval' => 0] + $userparams;
             if ($DB->record_exists_select('publication_groupapproval', $select, $params)) {
                 // If anyone rejected it's rejected, no matter what!
-                $approval = 0;
+                $approval = 2; // 2 is rejected...
             } else {
                 if ($this->get_instance()->groupapproval == PUBLICATION_APPROVAL_SINGLE) {
                     // If only one has to approve, we check for that!
@@ -842,7 +875,7 @@ class publication {
                     $stats['needed'] = count($userparams);
                     if ($approving < count($userparams)) {
                         // Rejected if not every group member has approved the file!
-                        $approval = null;
+                        $approval = 0;
                     } else {
                         $approval = 1;
                     }
@@ -850,7 +883,7 @@ class publication {
             }
         } else {
             // Group without members, so no one could approve! (Should never happen, never ever!)
-            $approval = 0;
+            $approval = 2;
         }
 
         // Update approval value and return it!
@@ -876,6 +909,10 @@ class publication {
         $conditions['fileid'] = $file->get_id();
 
         $teacherapproval = $DB->get_field('publication_file', 'teacherapproval', $conditions);
+        $obtainteacherapproval = $this->get_instance()->obtainteacherapproval;
+        if (!$obtainteacherapproval) {
+            return 1;
+        }
 
         return $teacherapproval;
     }
@@ -897,7 +934,7 @@ class publication {
 
         $studentapproval = $DB->get_field('publication_file', 'studentapproval', $conditions);
 
-        $studentapproval = (!is_null($studentapproval)) ? $studentapproval + 1 : null;
+        //$studentapproval = (!is_null($studentapproval)) ? $studentapproval + 1 : null;
 
         return $studentapproval;
     }
@@ -961,19 +998,39 @@ class publication {
 
         // Get group members!
         $groupmembers = $this->get_submissionmembers($filerec->userid);
-
+        $studentapproval = 0;
+        $groupapproval = $this->get_instance()->groupapproval;
         if (!empty($groupmembers)) {
             list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
-            $sql = "SELECT u.*, ga.approval, ga.timemodified AS approvaltime
-                      FROM {user} u
-                 LEFT JOIN {publication_groupapproval} ga ON u.id = ga.userid AND ga.fileid = :fileid
-                     WHERE u.id " . $usersql;
+            $sql = "SELECT u.*, ga.approval, ga.timemodified AS approvaltime, ga.userid, ga.fileid
+                      FROM {publication_groupapproval} ga
+                 JOIN {user} u ON u.id = ga.userid
+                     WHERE  ga.fileid = :fileid AND u.id " . $usersql;
             $params = ['fileid' => $filerec->id] + $userparams;
             $groupdata = $DB->get_records_sql($sql, $params);
+            $allconfirmed = true;
+            foreach ($groupdata as $gd) {
+                if ($gd->approval === 0 || $gd->approval === '0') {
+                    $studentapproval = 2;
+                    $allconfirmed = false;
+                    break;
+                }
+                if ($groupapproval == PUBLICATION_APPROVAL_SINGLE && $gd->approval == 1) {
+                    $studentapproval = 1;
+                } else if ($groupapproval == PUBLICATION_APPROVAL_ALL) {
+                    if ($gd->approval != 1) {
+                        $allconfirmed = false;
+                    }
+                }
+            }
+            if ($groupapproval == PUBLICATION_APPROVAL_ALL && $allconfirmed) {
+                $studentapproval = 1;
+            }
         } else {
             $groupdata = [];
         }
 
+       // return [$studentapproval, $groupdata];
         return [$filerec->studentapproval, $groupdata];
     }
 
@@ -1215,9 +1272,9 @@ class publication {
         $select = ' publication=:pubid AND userid ' . $usersql;
         $records = $DB->get_records_select('publication_file', $select, $params);
         $files = [];
-        $teacherapproval = $action == 'approveusers' ? '1' : ($action == 'rejectusers' ? '2' : null);
+        //$teacherapproval = $action == 'approveusers' ? '1' : ($action == 'rejectusers' ? '2' : null);
         foreach ($records as $record) {
-            $files[$record->fileid] = $teacherapproval;
+            $files[$record->fileid] = $action;
         }
         $this->update_files_teacherapproval($files);
     }
@@ -1233,66 +1290,120 @@ class publication {
     public function update_files_teacherapproval($files) {
         global $DB, $USER;
 
-        foreach ($files as $fileid => $newteacherapproval) {
-            $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,filename");
+        foreach ($files as $fileid => $newfileaction) {
+            $x = $DB->get_record('publication_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,id,studentapproval,filename");
 
             $oldteacherapproval = $x->teacherapproval;
-            $newteacherapproval = trim($newteacherapproval);
-            if ($newteacherapproval != $oldteacherapproval && !empty($newteacherapproval)) {
+            $oldstudentapproval = $x->studentapproval;
+
+
+            $resetstudentapproval = false;
+            $teacherapprove = false;
+            $teacherreject = false;
+            $newteacherapproval = 0;
+            $newstatus = '';
+            $logstatus = '';
+
+            switch ($newfileaction) {
+                case '1':
+                case 'approveusers':
+                    if ($oldteacherapproval == 1) {
+                        continue 2;
+                    }
+                    $teacherapprove = true;
+                    $newstatus = '';
+                    $logstatus .= 'approved';
+                    $newteacherapproval = 1;
+                    break;
+                case '2':
+                case 'rejectusers':
+                    if ($oldteacherapproval == 2) {
+                        continue 2;
+                    }
+                    $teacherreject = true;
+                    $newstatus = 'not';
+                    $logstatus .= 'rejected';
+                    $newteacherapproval = 2;
+                    break;
+                case 'resetstudentapproval':
+                    if ($oldstudentapproval != 1 && $oldstudentapproval != 2 && $this->mode != PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION)  {
+                        continue 2;
+                    }
+                    $resetstudentapproval = true;
+                    $newstatus = 'revoke';
+                    $logstatus .= 'revoked';
+                    break;
+                default:
+                    continue 2;
+            }
+
+           // $newteacherapproval = trim($newteacherapproval);
+          //  if ($newteacherapproval != $oldteacherapproval && !empty($newteacherapproval)) {
                 /*$newstatus = ($this->instance->obtainteacherapproval && $newteacherapproval == 1 ||
                     $this->instance->obtainteacherapproval && $newteacherapproval != 2) ? '' : 'not';*/
 
-                $user = $DB->get_record('user', array('id' => $x->userid));
-                $group = false;
-                $logstatus = '';
-                if ($this->mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
-                    $logstatus = '(Teacher) ';
-                    $group = $x->userid;
-                }
-                if ($newteacherapproval == 1) {
-                    $newstatus = '';
-                    $logstatus .= 'approved';
-                } else if ($newteacherapproval == 2) {
-                    $newstatus = 'not';
-                    $logstatus .= 'rejected';
-                } else {
-                    $newstatus = 'revoke';
-                    $logstatus .= 'revoked';
-                }
+            $user = $DB->get_record('user', array('id' => $x->userid));
+            $group = false;
+           /* $logstatus = '';
+            if ($this->mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+                $logstatus = '(Teacher) ';
+                $group = $x->userid;
+            }
+            if ($newteacherapproval == 1) {
+                $newstatus = '';
+                $logstatus .= 'approved';
+            } else if ($newteacherapproval == 2) {
+                $newstatus = 'not';
+                $logstatus .= 'rejected';
+            } else {
+                $newstatus = 'revoke';
+                $logstatus .= 'revoked';
+            }
+*/
+            $dataforlog = new stdClass();
+            $dataforlog->publication = $this->instance->id;
+            $dataforlog->approval = $logstatus;
+            $dataforlog->userid = $USER->id;
+            if ($user && !empty($user->id)) {
+                $dataforlog->reluser = $user->id;
+            } else {
+                $dataforlog->reluser = 0;
+            }
+            $dataforlog->fileid = $fileid;
 
-                $dataforlog = new stdClass();
-                $dataforlog->publication = $this->instance->id;
-                $dataforlog->approval = $logstatus;
-                $dataforlog->userid = $USER->id;
-                if ($user && !empty($user->id)) {
-                    $dataforlog->reluser = $user->id;
-                } else {
-                    $dataforlog->reluser = 0;
-                }
-                $dataforlog->fileid = $fileid;
+            try {
+                \mod_publication\event\publication_approval_changed::approval_changed($this->coursemodule, $dataforlog)->trigger();
+            } catch (coding_exception $e) {
+                throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+            }
 
-                try {
-                    \mod_publication\event\publication_approval_changed::approval_changed($this->coursemodule, $dataforlog)->trigger();
-                } catch (coding_exception $e) {
-                    throw new Exception("Coding exception while sending notification: " . $e->getMessage());
-                }
-
+            if ($teacherapprove || $teacherreject) {
                 $DB->set_field('publication_file', 'teacherapproval', $newteacherapproval, ['fileid' => $fileid]);
-
-                if ($this->instance->notifystudents) {
-                    $strsubmitted = get_string('approvalchange', 'publication');
-                    $cm = $this->coursemodule;
-                    $cmid = $this->coursemodule->id;
-                    if ($group !== false) {
-                        $usersingroup = $this->get_submissionmembers($group);
-                        foreach ($usersingroup as $user) {
-                            self::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $cmid, $this);
-                        }
-                    } else {
-                        self::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $cmid, $this);
+            } else { // reset student approval
+                $DB->set_field('publication_file', 'studentapproval', 0, ['fileid' => $fileid]);
+                if ($this->mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+                    $groupapprovals = $DB->get_records('publication_groupapproval', ['fileid' => $x->id]);
+                    foreach ($groupapprovals as $groupapproval) {
+                        $DB->set_field('publication_groupapproval', 'approval', null, ['id' => $groupapproval->id]);
                     }
+
                 }
             }
+
+            if ($this->instance->notifystudents) {
+                $strsubmitted = get_string('approvalchange', 'publication');
+                $cm = $this->coursemodule;
+                $cmid = $this->coursemodule->id;
+                if ($group !== false) {
+                    $usersingroup = $this->get_submissionmembers($group);
+                    foreach ($usersingroup as $user) {
+                        self::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $cmid, $this);
+                    }
+                } else {
+                    self::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $cmid, $this);
+                }
+            }
+           // }
         }
     }
 

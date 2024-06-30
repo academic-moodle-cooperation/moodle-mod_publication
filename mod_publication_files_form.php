@@ -53,32 +53,59 @@ class mod_publication_files_form extends moodleform {
         $mform = $this->_form;
 
         $mode = $publication->get_mode();
+
+        $publicationinstance = $publication->get_instance();
+
+        $noticestudentstringid = '';
+        $noticeteacherid = '';
+        $noticemode = '';
+
         if ($mode == PUBLICATION_MODE_FILEUPLOAD) {
-            $headertext = get_string('myfiles', 'publication');
-            if ($publication->get_instance()->obtainteacherapproval) {
-                $notice = get_string('notice_uploadrequireapproval', 'publication');
-            } else {
-                $notice = get_string('notice_uploadnoapproval', 'publication');
-            }
-        } else if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
-            $headertext = get_string('mygroupfiles', 'publication');
-            if ($publication->get_instance()->obtainstudentapproval) {
-                if ($publication->get_instance()->groupapproval == PUBLICATION_APPROVAL_ALL) {
-                    $notice = get_string('notice_groupimportrequireallapproval', 'publication');
+            $noticemode = 'upload';
+        } else {
+            $noticemode = 'import';
+        }
+
+        if ($publicationinstance->obtainstudentapproval) {
+            if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+                if ($publicationinstance->groupapproval == PUBLICATION_APPROVAL_ALL) {
+                    $noticestudentstringid = 'all';
                 } else {
-                    $notice = get_string('notice_groupimportrequireoneapproval', 'publication');
+                    $noticestudentstringid = 'one';
                 }
+                $noticemode = 'group';
             } else {
-                $notice = get_string('notice_importnoapproval', 'publication');
+                $noticestudentstringid = 'studentrequired';
             }
         } else {
-            $headertext = get_string('myfiles', 'publication');
-            if ($publication->get_instance()->obtainstudentapproval) {
-                $notice = get_string('notice_importrequireapproval', 'publication');
-            } else {
-                $notice = get_string('notice_importnoapproval', 'publication');
-            }
+            $noticestudentstringid = 'studentnotrequired';
         }
+
+        if ($publicationinstance->obtainteacherapproval) {
+            $noticeteacherid = 'teacherrequired';
+        } else {
+            $noticeteacherid = 'teachernotrequired';
+        }
+
+        $stringid = 'notice_' . $noticemode . '_' . $noticestudentstringid . '_' . $noticeteacherid;
+
+        if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+            $headertext = get_string('mygroupfiles', 'publication');
+        } else {
+            $headertext = get_string('myfiles', 'publication');
+        }
+        $notice = get_string($stringid, 'publication');
+
+        if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+            $notice = get_string('notice_files_imported_group', 'publication') . ' ' . $notice;
+        } else if ($mode == PUBLICATION_MODE_ASSIGN_IMPORT) {
+            $notice = get_string('notice_files_imported', 'publication') . ' ' . $notice;
+        }
+
+        if ($mode != PUBLICATION_MODE_FILEUPLOAD) {
+            $notice .= '<br />' . get_string('notice_changes_possible_in_original', 'publication');
+        }
+
         $table = $publication->get_filestable();
 
         $mform->addElement('header', 'myfiles', $headertext);
@@ -107,11 +134,16 @@ class mod_publication_files_form extends moodleform {
                 $timeremaining = get_string('overdue', 'publication');
             }
         }
+
+        $approvalfromdate = $publicationinstance->approvalfromdate > 0 ? userdate($publicationinstance->approvalfromdate) : false;
+        $approvaltodate = $publicationinstance->approvaltodate > 0 ? userdate($publicationinstance->approvaltodate) : false;
         $tablecontext = [
             'myfiles' => $table->data,
             'hasmyfiles' => !empty($table->data),
             'timeremaining' => $timeremaining,
             'lastmodified' => userdate($table->lastmodified),
+            'approvalfromdate' => $approvalfromdate,
+            'approvaltodate' => $approvaltodate,
             'assign' => $publication->get_importlink(),
             'myfilestitle' => $mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION ? get_string('mygroupfiles', 'publication') : get_string('myfiles', 'publication'),
         ];

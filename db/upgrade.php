@@ -251,5 +251,29 @@ function xmldb_publication_upgrade($oldversion) {
         // Publication savepoint reached.
         upgrade_mod_savepoint(true, 2023081000, 'publication');
     }
+
+    if ($oldversion < 2024061900) {
+
+        // Define field approvalfromdate to be added to publication.
+        $table = new xmldb_table('publication');
+        $field = new xmldb_field('approvalfromdate', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'cutoffdate');
+
+        // Conditionally launch add field approvalfromdate.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        $field = new xmldb_field('approvaltodate', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'approvalfromdate');
+
+        // Conditionally launch add field approvaltodate.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2024061900, 'publication');
+    }
     return true;
 }

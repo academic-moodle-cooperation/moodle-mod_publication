@@ -42,7 +42,7 @@ class upload extends base {
      * @param \stored_file $file Stored file instance
      * @return string[] Array of table cell contents
      */
-    public function add_file(\stored_file $file) {
+    public function add_file2(\stored_file $file) {
         global $OUTPUT;
         // The common columns!
         $data = parent::add_file($file);
