@@ -33,6 +33,27 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('publication/maxfiles', get_string('maxfiles', 'publication'),
             get_string('configmaxfiles', 'publication'), 5, PARAM_INT));
 
+
+    $options = [
+        '0' => get_string('obtainapproval_automatic', 'publication'),
+        '1' => get_string('obtainapproval_required', 'publication'),
+    ];
+
+    $settings->add(new admin_setting_configselect('publication/obtainteacherapproval', get_string('obtainteacherapproval_admin', 'publication'),
+            get_string('obtainteacherapproval_admin_desc', 'publication'), 0, $options));
+
+    $settings->add(new admin_setting_configselect('publication/obtainstudentapproval', get_string('obtainstudentapproval_admin', 'publication'),
+            get_string('obtainstudentapproval_admin_desc', 'publication'), 0, $options));
+
+    $options = [
+        PUBLICATION_APPROVAL_GROUPAUTOMATIC => get_string('obtainapproval_automatic', 'publication'),
+        PUBLICATION_APPROVAL_SINGLE => get_string('obtaingroupapproval_single', 'publication'),
+        PUBLICATION_APPROVAL_ALL => get_string('obtaingroupapproval_all', 'publication'),
+    ];
+
+    $settings->add(new admin_setting_configselect('publication/obtaingroupapproval', get_string('obtaingroupapproval_admin', 'publication'),
+        get_string('obtaingroupapproval_admin_desc', 'publication'), 0, $options));
+
     if (isset($CFG->maxbytes)) {
         $settings->add(new admin_setting_configselect('publication/maxbytes', get_string('maxbytes', 'publication'),
                 get_string('configmaxbytes', 'publication'), 5242880, get_max_upload_sizes($CFG->maxbytes)));

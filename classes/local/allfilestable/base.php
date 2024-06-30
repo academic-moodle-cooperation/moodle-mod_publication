@@ -82,6 +82,8 @@ class base extends \table_sql {
     protected $filter = PUBLICATION_FILTER_NOFILTER;
     protected $allfilespage = false;
 
+    protected $obtainteacherapproval;
+    protected $obtainstudentapproval;
     /**
      * constructor
      *
@@ -97,6 +99,10 @@ class base extends \table_sql {
 
         $this->fs = get_file_storage();
         $this->publication = $publication;
+        $instance = $publication->get_instance();
+        $this->obtainteacherapproval = $instance->obtainteacherapproval;
+        $this->obtainstudentapproval = $instance->obtainstudentapproval;
+
         $this->cm = get_coursemodule_from_instance('publication', $publication->get_instance()->id, 0, false, MUST_EXIST);
         $this->context = \context_module::instance($this->cm->id);
         $this->groupmode = groups_get_activity_groupmode($this->cm);
@@ -252,8 +258,13 @@ class base extends \table_sql {
                 'JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ';
         } else if ($this->filter == PUBLICATION_FILTER_APPROVED) {
             $from = '{user} u ' .
-                'JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ' .
-                'AND files.teacherapproval = 1 ';
+                'JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ';
+            if ($this->obtainteacherapproval) {
+                $from .= ' AND files.teacherapproval = 1 ';
+            }
+            if ($this->obtainstudentapproval) {
+                $from .= ' AND files.studentapproval = 1 ';
+            }
         } else if ($this->filter == PUBLICATION_FILTER_REJECTED) {
             $from = '{user} u ' .
                 'JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ' .
@@ -382,21 +393,21 @@ FROM
         $this->resources = [];
 
         $files = $this->fs->get_area_files($contextid, 'mod_publication', $filearea, $this->itemid, 'timemodified', false);
-        $modeimport = $this->publication->get_instance()->mode == PUBLICATION_MODE_IMPORT;
-        $obtainstudentapproval = $modeimport && $this->publication->get_instance()->obtainstudentapproval;
 
         $dbfiles = $DB->get_records('publication_file', ['userid' => $itemid], '', 'fileid, teacherapproval, studentapproval');
         foreach ($files as $file) {
             if (isset($dbfiles[intval($file->get_id())])) {
                 $dbfile = $dbfiles[intval($file->get_id())];
                 if ($this->filter == PUBLICATION_FILTER_APPROVED) {
-                    if ($obtainstudentapproval) {
+                    if ($this->obtainstudentapproval) {
                         if ($dbfile->studentapproval != 1) {
                             continue;
                         }
                     }
-                    if ($dbfile->teacherapproval != 1) {
-                        continue;
+                    if ($this->obtainteacherapproval) {
+                        if ($dbfile->teacherapproval != 1) {
+                            continue;
+                        }
                     }
                 } else if ($this->filter == PUBLICATION_FILTER_REJECTED) {
                     if ($dbfile->teacherapproval != 2) {
@@ -685,10 +696,10 @@ FROM
             if (has_capability('mod/publication:approve', $this->context)
                     || $this->publication->has_filepermission($file->get_id())) {
                 switch ($this->publication->student_approval($file)) {
-                    case 2:
+                    case 1:
                         $symbol = $this->valid;
                         break;
-                    case 1:
+                    case 2:
                         $symbol = $this->invalid;
                         break;
                     default:
@@ -803,8 +814,8 @@ FROM
 
             // teacherapproval!
 
-            if ($this->publication->has_filepermission($file->get_id())
-                || has_capability('mod/publication:approve', $this->context)) {
+            if ($this->obtainteacherapproval && ($this->publication->has_filepermission($file->get_id())
+                || has_capability('mod/publication:approve', $this->context))) {
 
                 $checked = $this->publication->teacher_approval($file);
                 // Null if none found, DB-entry otherwise!

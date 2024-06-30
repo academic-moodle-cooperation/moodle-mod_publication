@@ -141,7 +141,7 @@ $submissionid = $USER->id;
 $filesform = new mod_publication_files_form(null,
     ['publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment']);
 
-if ($data = $filesform->get_data() && $publication->is_open()) {
+if ($data = $filesform->get_data() && $publication->is_approval_open()) {
     $datasubmitted = $filesform->get_submitted_data();
 
     if (isset($datasubmitted->gotoupload)) {
@@ -162,6 +162,9 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
     foreach ($studentapproval as $idx => $approval) {
         $conditions['fileid'] = $idx;
 
+        if ($approval == 0) {
+            continue;
+        }
         $approval = ($approval >= 1) ? $approval - 1 : null;
         $dataforlog = new stdClass();
         $dataforlog->approval = $approval == 1 ? 'approved' : 'rejected';
@@ -184,6 +187,7 @@ if ($data = $filesform->get_data() && $publication->is_open()) {
 
         \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
     }
+    redirect($url);
 }
 
 $filesform = new mod_publication_files_form(null,
@@ -202,18 +206,28 @@ echo $OUTPUT->header();
 $allfilesform = $publication->display_allfilesform();
 
 $publicationinstance = $publication->get_instance();
+$publicationmode = $publication->get_mode();
 $templatecontext = new stdClass;
-if ($publicationinstance->mode == PUBLICATION_MODE_UPLOAD) {
+$templatecontext->obtainteacherapproval = $publicationinstance->obtainteacherapproval == 1 ?
+    get_string('obtainteacherapproval_yes', 'publication') : get_string('obtainteacherapproval_no', 'publication');
+if ($publicationmode == PUBLICATION_MODE_FILEUPLOAD) {
     $templatecontext->mode = get_string('modeupload', 'publication');
-    $templatecontext->obtainapproval = $publicationinstance->obtainteacherapproval != 1 ?
-        get_string('obtainteacherapproval_yes', 'publication') : get_string('obtainteacherapproval_no', 'publication');
+    $templatecontext->obtainstudentapproval = $publicationinstance->obtainstudentapproval == 1 ?
+        get_string('obtainstudentapproval_yes', 'publication') : get_string('obtainstudentapproval_no', 'publication');
 } else {
     $templatecontext->mode = get_string('modeimport', 'publication');
-    $templatecontext->obtainapproval = $publicationinstance->obtainstudentapproval != 1 ?
-        get_string('obtainstudentapproval_teacher', 'publication') : get_string('obtainstudentapproval_participant', 'publication');
+    if ($publicationmode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+        if ($publicationinstance->obtainstudentapproval == 0) {
+            $templatecontext->obtainstudentapproval = get_string('obtainstudentapproval_no', 'publication');
+        } else {
+            $templatecontext->obtainstudentapproval = $publicationinstance->groupapproval == PUBLICATION_APPROVAL_ALL ?
+                get_string('obtaingroupapproval_all', 'publication') : get_string('obtaingroupapproval_single', 'publication');
+        }
+    } else {
+        $templatecontext->obtainstudentapproval = $publicationinstance->obtainstudentapproval == 1 ?
+            get_string('obtainstudentapproval_yes', 'publication') : get_string('obtainstudentapproval_no', 'publication');
+    }
 }
-$publicationinstance->mode == PUBLICATION_MODE_UPLOAD ?
-    get_string('modeupload', 'publication') : get_string('modeimport', 'publication');
 
 
 if ($publicationinstance->duedate > 0) {

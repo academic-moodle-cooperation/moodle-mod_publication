@@ -63,7 +63,7 @@ class import extends base {
         list($columns, $headers, $helpicons) = parent::get_columns();
 
         if (has_capability('mod/publication:approve', $this->context) && $this->allfilespage) {
-            if ($this->publication->get_instance()->obtainstudentapproval) {
+            if ($this->obtainstudentapproval) {
                 $columns[] = 'studentapproval';
                 $headers[] = get_string('studentapproval', 'publication');
                 $helpicons[] = new \help_icon('studentapproval', 'publication');

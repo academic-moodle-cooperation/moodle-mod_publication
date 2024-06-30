@@ -39,13 +39,132 @@ class group extends base {
     /** @var int $groupingid saves the team-assignments submission grouping id */
     protected $groupingid = 0;
 
+
+
+    public function get_approval_status_for_file($file) {
+        global $OUTPUT, $DB, $USER;
+
+        $pubfileid = $DB->get_field('publication_file', 'id', [
+            'publication' => $this->publication->get_instance()->id,
+            'fileid' => $file->get_id(),
+        ]);
+        $templatecontext = new \stdClass;
+        // Now add the specific data to the table!
+        $teacherapproval = $this->publication->teacher_approval($file);
+        list($studentapproval, $approvaldetails) = $this->publication->group_approval($pubfileid);
+
+        $obtainteacherapproval = $this->publication->get_instance()->obtainteacherapproval;
+        $obtainstudentapproval = $this->publication->get_instance()->obtainstudentapproval;
+
+        $studentapproved = false;
+        $studentdenied = false;
+        $studentpending = false;
+        $hint = '';
+
+
+
+        if ($obtainstudentapproval == 1) {
+
+            $pendingstudents = [];
+            $rejectedstudents = [];
+            $approvedstudents = [];
+
+            foreach ($approvaldetails as $cur) {
+                if ($cur->approval == null) {
+                    $pendingstudents[] = fullname($cur);
+                } else if ($cur->approval == 0) {
+                    $rejectedstudents[] = fullname($cur);
+                } else {
+                    $approvedstudents[] = fullname($cur);
+                }
+            }
+            $rejected = get_string('rejected', 'publication') . ': ' . implode(', ', $rejectedstudents) .'. ';
+            $pending = get_string('pending', 'publication') . ': ' . implode(', ', $pendingstudents) .'. ';
+            $approved = get_string('approved', 'publication') . ': ' . implode(', ', $approvedstudents) .'. ';
+
+            if ($studentapproval == 1) {
+                $studentapproved = true;
+                if ($this->publication->get_instance()->groupapproval == PUBLICATION_APPROVAL_SINGLE) {
+                    $hint = $approved;
+                } else {
+                    $hint = get_string('group_approved', 'publication');
+                }
+            } else if ($studentapproval == 2 || !empty($rejectedstudents)) {
+                $studentdenied = true;
+               // $hint = get_string('student_rejected', 'publication');
+                $hint = $rejected;
+            } else {
+                $hint = $pending;
+            }
+            $currentstudentfound = false;
+            $currentstudentpending = false;
+            foreach ($approvaldetails as $cur) {
+                if ($cur->userid == $USER->id) {
+                    $currentstudentfound = true;
+                    if ($cur->approval === null) {
+                        $currentstudentpending = true;
+                    }
+                }
+            }
+
+            if (!$currentstudentfound || $currentstudentpending) {
+                if (empty($rejectedstudents)) {
+                    if ($this->publication->is_approval_open()) {
+                        $this->changepossible = true;
+                        return \html_writer::select($this->options, 'studentapproval[' . $file->get_id() . ']', '0');
+                    }
+                }
+            }
+
+
+
+        } else {
+            $studentapproved = true;
+            $hint = get_string('student_approved_automatically', 'publication');
+        }
+
+        $hint .= ' ';
+
+        $teacherapproved = false;
+        $teacherdenied = false;
+        $teacherpending = false;
+
+        if ($obtainteacherapproval == 1) {
+            if ($teacherapproval == 1) {
+                $teacherapproved = true;
+                $hint .= get_string('teacher_approved', 'publication');
+            } else if ($teacherapproval == 2) {
+                $teacherdenied = true;
+                $hint .= get_string('teacher_rejected', 'publication');
+            } else {
+                $teacherpending = true;
+                $hint .= get_string('teacher_pending', 'publication');
+            }
+        } else {
+            $teacherapproved = true;
+            $hint .= get_string('teacher_approved_automatically', 'publication');
+        }
+
+
+        if ($studentapproved && $teacherapproved) {
+            $templatecontext->icon = $this->valid;
+        } else if ($studentdenied || $teacherdenied) {
+            $templatecontext->icon = $this->invalid;
+        } else {
+            $templatecontext->icon = $this->questionmark;
+        }
+        $templatecontext->hint = $hint;
+        return $OUTPUT->render_from_template('mod_publication/approval_icon', $templatecontext);
+    }
+
     /**
      * Add a single file to the table
      *
      * @param \stored_file $file Stored file instance
      * @return string[] Array of table cell contents
      */
-    public function add_file(\stored_file $file) {
+/*
+    public function add_file2(\stored_file $file) {
         global $USER, $DB, $OUTPUT;
 
         // The common columns!
@@ -87,19 +206,25 @@ class group extends base {
                             $pending[] = fullname($cur);
                         }
                     }
+                    $templatecontext->icon = $this->questionmark;
+                    $templatecontext->hint = get_string('student_pending', 'publication');
                     if (count($rejected) > 0) {
+                        $templatecontext->icon = $this->invalid;
                         $rejected = get_string('rejected', 'publication') . ': ' . implode(', ', $rejected);
+                        $templatecontext->hint = get_string('student_rejected', 'publication') . $rejected;
                     } else if ($this->publication->get_instance()->groupapproval == PUBLICATION_APPROVAL_ALL) {
                         if (count($pending) > 0) {
                             $rejected = get_string('pending', 'publication') . ': ' . implode(', ', $pending);
-                        } else {
+                            $templatecontext->hint .= $rejected;
+                        }
+                    } else {
                             $rejected = '';
                         }
                     } else {
                         $rejected = '';
                     }
-                    $templatecontext->icon = $this->invalid;
-                    $templatecontext->hint = get_string('student_rejected', 'publication') . '<br />' . $rejected;
+                    //$templatecontext->hint = get_string('student_rejected', 'publication')  . $rejected;
+
                 }
             }
         } else {
@@ -123,7 +248,7 @@ class group extends base {
 
         return $data;
     }
-
+*/
     /**
      * Get all files, in which the current user's groups are involved
      *
