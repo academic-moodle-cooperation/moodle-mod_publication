@@ -96,14 +96,14 @@ $string['obtaingroupapproval_all'] = 'Required from ALL members';
 $string['obtaingroupapproval_single'] = 'Required from at least ONE member';
 $string['obtaingroupapproval_title'] = 'Group approval';
 $string['obtaingroupapproval_admin'] = 'Default group approval setting';
-$string['obtaingroupapproval_admin_desc'] = 'This setting determines the default approval setting for group members.';
+$string['obtaingroupapproval_admin_desc'] = 'This setting determines the default approval setting for group members. This setting becomes relevant <strong>only</strong> when the mode is set to "Import files from an assignment activity" and the assignment has group submission.';
 
 
 
 $string['approvalfromdate'] = 'Approval from';
-$string['approvalfromdate_help'] = 'Approval status cannot be changed before this date.';
+$string['approvalfromdate_help'] = 'Approval status cannot be changed before this date. This setting is only relevant when Student or Group approval is not automatic.';
 $string['approvaltodate'] = 'Approval until';
-$string['approvaltodate_help'] = 'Approval status cannot be changed after this date.';
+$string['approvaltodate_help'] = 'Approval status cannot be changed after this date. This setting is only relevant when Student or Group approval is not automatic.';
 $string['maxfiles'] = 'Maximum number of attachments';
 $string['configmaxfiles'] = 'Default maximum number of attachments allowed per user.';
 $string['maxbytes'] = 'Maximum attachment size';
@@ -117,15 +117,13 @@ $string['availability'] = 'Editing period (upload or approval)';
 $string['submissionsettings'] = 'Submission settings';
 $string['allowsubmissionsfromdate'] = 'From';
 $string['allowsubmissionsfromdate_help'] = 'If this option is enabled, participants cannot submit their file submissions before this date. If the option is disabled, participants can start submitting right away.';
-$string['allowsubmissionsfromdateh'] = 'Editing period (upload or approval)';
-$string['allowsubmissionsfromdateh_help'] = 'In the specified period of time, participants can upload files or give or reject approval for the publication/visibility of files (depending on the mode).';
 $string['allowsubmissionsfromdatesummary'] = 'This assignment will accept submissions from <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The assignment details and submission form will be available from <strong>{$a}</strong>';
 $string['alwaysshowdescription'] = 'Always show description';
 $string['alwaysshowdescription_help'] = 'If disabled, the assignment description above will only become visible to students at the "Upload/Approval from" date.';
 
 $string['duedate'] = 'To';
-$string['duedate_help'] = 'This is when the assignment is due. Submissions will still be allowed after this date but any assignments submitted after this date are marked as late. To prevent submissions after a certain date - set the assignment cut off date.';
+$string['duedate_help'] = 'If this option is enabled, participants cannot submit their file submissions after this date. If the option is disabled, participants can submit forever.';
 $string['duedatevalidation'] = 'Due date must be after the allow submissions from date.';
 
 $string['cutoffdate'] = 'Cut-off date';

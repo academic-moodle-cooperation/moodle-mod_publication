@@ -84,6 +84,8 @@ class base extends \table_sql {
 
     protected $obtainteacherapproval;
     protected $obtainstudentapproval;
+
+    protected $totalfilescount = 0;
     /**
      * constructor
      *
@@ -259,10 +261,10 @@ class base extends \table_sql {
         } else if ($this->filter == PUBLICATION_FILTER_APPROVED) {
             $from = '{user} u ' .
                 'JOIN {publication_file} files ON u.id = files.userid AND files.publication = :publication ';
-            if ($this->obtainteacherapproval) {
+            if ($this->obtainteacherapproval == 1) {
                 $from .= ' AND files.teacherapproval = 1 ';
             }
-            if ($this->obtainstudentapproval) {
+            if ($this->obtainstudentapproval == 1) {
                 $from .= ' AND files.studentapproval = 1 ';
             }
         } else if ($this->filter == PUBLICATION_FILTER_REJECTED) {
@@ -424,6 +426,7 @@ FROM
             } else {
                 $this->files[] = $file;
             }
+            $this->totalfilescount++;
         }
 
         return [$this->itemid, $this->files, $this->resources];
@@ -438,6 +441,10 @@ FROM
         } else {
             return 0;
         }
+    }
+
+    public function get_totalfilescount() {
+        return $this->totalfilescount;
     }
 
     /**
