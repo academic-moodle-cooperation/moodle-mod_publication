@@ -103,6 +103,7 @@ class group extends base {
         $where = "g.id " . $sqlgroupids;
         $groupby = " g.id " . $having;
 
+        echo $groupby;
         $this->set_sql($fields, $from, $where, $params, $groupby);
 
         if ($this->filter != PUBLICATION_FILTER_NOFILES) {
