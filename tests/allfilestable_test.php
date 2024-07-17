@@ -149,6 +149,8 @@ class allfilestable_testcase extends base {
             'assignsubmission_file_maxsizebytes' => 1024 * 1024,
             'teamsubmission' => 1,
             'preventsubmissionnotingroup' => false,
+            'requireallteammemberssubmit' => false,
+            'groupmode' => 1
         ];
 
         $assign = $this->getDataGenerator()->create_module('assign', $params);
@@ -162,9 +164,6 @@ class allfilestable_testcase extends base {
 
         $this->setAdminUser();
         foreach ($users as $key => $user) {
-            if ($key == 'student5') {
-                continue;
-            }
             $generator->create_submission([
                 'userid' => $user->id,
                 'assignid' => $cm->id,
@@ -179,6 +178,9 @@ class allfilestable_testcase extends base {
             'importfrom' => $assign->id,
             'obtainteacherapproval' => 0,
             'obtainstudentapproval' => 0,
+            'allowsubmissionsfromdate' => 0,
+            'duedate' => 0,
+            'groupmode' => NOGROUPS,
         ]);
 
         $publication->importfiles();
