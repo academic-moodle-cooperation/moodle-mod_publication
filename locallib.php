@@ -448,30 +448,35 @@ class publication {
                     'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers .
                     'AND files.publication = ' . $this->get_instance()->id . ' ';
 
-            if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
-                // Mode upload.
-                if ($this->get_instance()->obtainteacherapproval) {
-                    // Need teacher approval.
-
-                    $where = 'files.teacherapproval = 1';
-                } else {
-                    // No need for teacher approval.
-                    // Teacher only hasnt rejected.
-                    $where = '(files.teacherapproval = 1 OR files.teacherapproval IS NULL)';
+            $where = '';
+            if ($this->get_instance()->obtainteacherapproval == 1) {
+                // Need teacher approval.
+                $where = 'files.teacherapproval = 1';
+            } else {
+                // No need for teacher approval.
+                // Teacher only hasnt rejected.
+                //$where = '(files.teacherapproval = 1 OR files.teacherapproval IS NULL)';
+            }
+            if ($this->get_instance()->obtainstudentapproval == 1) {
+                // No need to ask student and teacher has approved.
+                if (mb_strlen($where) > 0) {
+                    $where .= ' AND ';
                 }
+                $where .= 'files.studentapproval = 1';
+            } else {
+                // Student and teacher have approved.
+                //$where = 'files.teacherapproval = 1 AND files.studentapproval = 1';
+            }
+            /*if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
+                // Mode upload.
             } else {
                 // TODO group mode!
                 // Mode import.
-                if (!$this->get_instance()->obtainstudentapproval) {
-                    // No need to ask student and teacher has approved.
-                    $where = 'files.teacherapproval = 1';
-                } else {
-                    // Student and teacher have approved.
-                    $where = 'files.teacherapproval = 1 AND files.studentapproval = 1';
-                }
-            }
+            }*/
 
-            $sql .= 'AND ' . $where . ' ';
+            if (mb_strlen($where) > 0) {
+                $sql .= 'AND ' . $where . ' ';
+            }
             $sql .= 'GROUP BY u.id';
         }
 
@@ -587,6 +592,7 @@ class publication {
         ob_end_clean();
 
         $norowsfound = $table->get_count() == 0;
+        $nofilesfound = $table->get_totalfilescount() == 0;
 
         $link = html_writer::link(new moodle_url('/mod/publication/view.php', [
                 'id' => $this->coursemodule->id,
@@ -596,7 +602,7 @@ class publication {
             get_string('downloadall', 'publication'),
             ['class' => 'btn btn-secondary mb-2 btn-sm']
         );
-        if (!$norowsfound) {
+        if (!$norowsfound && !$nofilesfound) {
             $output .= html_writer::tag('div', $link, ['class' => 'mod-publication-download-link']);
         }
 
@@ -623,7 +629,7 @@ class publication {
             $options['grantextension'] = get_string('grantextension', 'publication');
         }
 
-        if (count($options) > 0 && !$norowsfound) {
+        if (count($options) > 0 && !$norowsfound && !$nofilesfound) {
             $output .= html_writer::start_div('form-row');
             if (has_capability('mod/publication:approve', $context) && $this->allfilespage) {
                 $buttons = html_writer::empty_tag('input', [
@@ -714,9 +720,15 @@ class publication {
             $filteroptions = [
                 PUBLICATION_FILTER_NOFILTER => get_string('filter:' . PUBLICATION_FILTER_NOFILTER, 'publication'),
                 PUBLICATION_FILTER_ALLFILES => get_string('filter:' . PUBLICATION_FILTER_ALLFILES, 'publication'),
-                PUBLICATION_FILTER_APPROVED => get_string('filter:' . PUBLICATION_FILTER_APPROVED, 'publication'),
-                PUBLICATION_FILTER_REJECTED => get_string('filter:' . PUBLICATION_FILTER_REJECTED, 'publication'),
-                PUBLICATION_FILTER_APPROVALREQUIRED => get_string('filter:' . PUBLICATION_FILTER_APPROVALREQUIRED, 'publication'),
+            ];
+            if ($this->get_instance()->obtainteacherapproval || $this->get_instance()->obtainstudentapproval) {
+                $filteroptions += [
+                    PUBLICATION_FILTER_APPROVED => get_string('filter:' . PUBLICATION_FILTER_APPROVED, 'publication'),
+                    PUBLICATION_FILTER_REJECTED => get_string('filter:' . PUBLICATION_FILTER_REJECTED, 'publication'),
+                    PUBLICATION_FILTER_APPROVALREQUIRED => get_string('filter:' . PUBLICATION_FILTER_APPROVALREQUIRED, 'publication'),
+                ];
+            }
+            $filteroptions += [
                 PUBLICATION_FILTER_NOFILES => get_string('filter:' . PUBLICATION_FILTER_NOFILES, 'publication'),
             ];
             $mform->addElement('select', 'filter', get_string('filter', 'publication'), $filteroptions, $attributes);
