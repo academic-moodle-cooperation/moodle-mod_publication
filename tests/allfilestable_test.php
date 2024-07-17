@@ -181,6 +181,7 @@ class allfilestable_testcase extends base {
             'obtainstudentapproval' => 1,
         ]);
 
+        $publication->importfiles();
         $publication->set_allfilespage(true);
         $allfilestable = $publication->get_allfilestable(PUBLICATION_FILTER_NOFILTER);
         ob_start();
