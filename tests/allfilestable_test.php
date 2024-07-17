@@ -177,8 +177,8 @@ class allfilestable_testcase extends base {
         $publication = $this->create_instance([
             'mode' => PUBLICATION_MODE_IMPORT,
             'importfrom' => $assign->id,
-            'obtainteacherapproval' => 1,
-            'obtainstudentapproval' => 1,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
         ]);
 
         $publication->importfiles();
