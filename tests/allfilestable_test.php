@@ -109,6 +109,7 @@ class allfilestable_testcase extends base {
      * @throws coding_exception
      */
     public function test_allfilestable_group() {
+        global $DB;
         // Setup fixture!
         /** @var \mod_assign_generator $generator */
 
@@ -172,7 +173,7 @@ class allfilestable_testcase extends base {
         }
 
 
-        $this->setUser($teacher);
+        $this->setAdminUser();
         $publication = $this->create_instance([
             'mode' => PUBLICATION_MODE_IMPORT,
             'importfrom' => $assign->id,
@@ -183,6 +184,7 @@ class allfilestable_testcase extends base {
             'groupmode' => NOGROUPS,
         ]);
 
+
         $publication->importfiles();
         $publication->set_allfilespage(true);
         $allfilestable = $publication->get_allfilestable(PUBLICATION_FILTER_NOFILTER);
@@ -190,6 +192,8 @@ class allfilestable_testcase extends base {
         $allfilestable->out(10, true); // Print the whole table.
         $tableoutput = ob_get_contents();
         ob_end_clean();
+        var_dump($DB->get_records('publication_file'));
+        echo $tableoutput;
         $norowsfound = $allfilestable->get_count() == 0;
         $nofilesfound = $allfilestable->get_totalfilescount() == 0;
         self::assertFalse($norowsfound);
