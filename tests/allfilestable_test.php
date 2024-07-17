@@ -188,6 +188,7 @@ class allfilestable_testcase extends base {
         $allfilestable->out(10, true); // Print the whole table.
         $tableoutput = ob_get_contents();
         ob_end_clean();
+        echo $tableoutput;
 
         $norowsfound = $allfilestable->get_count() == 0;
         $nofilesfound = $allfilestable->get_totalfilescount() == 0;
