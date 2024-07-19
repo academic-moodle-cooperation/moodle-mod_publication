@@ -101,7 +101,7 @@ class group extends base {
         }
 
         $where = "g.id " . $sqlgroupids;
-        $groupby = " g.id " . $having;
+        $groupby = " g.id, g.name " . $having;
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
 

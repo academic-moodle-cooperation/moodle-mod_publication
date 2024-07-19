@@ -64,9 +64,9 @@ class allfilestable_testcase extends base {
     public function test_allfilestable_upload() {
         // Setup fixture!
         $publication = $this->create_instance([
-                'mode' => PUBLICATION_MODE_UPLOAD,
-                'obtainteacherapproval' => 0,
-                'obtainstudentapproval' => 0,
+            'mode' => PUBLICATION_MODE_UPLOAD,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
         ]);
 
         // Exercise SUT!
@@ -89,10 +89,10 @@ class allfilestable_testcase extends base {
         $params['course'] = $this->course->id;
         $assign = $generator->create_instance($params);
         $publication = $this->create_instance([
-                'mode' => PUBLICATION_MODE_IMPORT,
-                'importfrom' => $assign->id,
-                'obtainteacherapproval' => 0,
-                'obtainstudentapproval' => 0,
+            'mode' => PUBLICATION_MODE_IMPORT,
+            'importfrom' => $assign->id,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
         ]);
 
         // Exercise SUT!
@@ -111,19 +111,90 @@ class allfilestable_testcase extends base {
     public function test_allfilestable_group() {
         // Setup fixture!
         /** @var \mod_assign_generator $generator */
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        // Create course and enrols.
+        $course = $this->getDataGenerator()->create_course();
+        $users = [
+            'student1' => $this->getDataGenerator()->create_and_enrol($course, 'student'),
+            'student2' => $this->getDataGenerator()->create_and_enrol($course, 'student'),
+            'student3' => $this->getDataGenerator()->create_and_enrol($course, 'student'),
+            'student4' => $this->getDataGenerator()->create_and_enrol($course, 'student'),
+            'student5' => $this->getDataGenerator()->create_and_enrol($course, 'student'),
+        ];
+        $teacher = $this->getDataGenerator()->create_and_enrol($course, 'teacher');
+        $this->course = $course;
+
+        // Generate groups.
+        $groups = [];
+        $groupmembers = [
+            'group1' => ['student1', 'student2'],
+            'group2' => ['student3', 'student4'],
+            'group3' => ['student5'],
+        ];
+        foreach ($groupmembers as $groupname => $groupusers) {
+            $group = $this->getDataGenerator()->create_group(['courseid' => $course->id, 'name' => $groupname]);
+            foreach ($groupusers as $user) {
+                groups_add_member($group, $users[$user]);
+            }
+            $groups[$groupname] = $group;
+        }
+
+
+        $params = [
+            'course' => $course,
+            'assignsubmission_file_enabled' => 1,
+            'assignsubmission_file_maxfiles' => 12,
+            'assignsubmission_file_maxsizebytes' => 1024 * 1024,
+            'teamsubmission' => 1,
+            'preventsubmissionnotingroup' => false,
+            'requireallteammemberssubmit' => false,
+            'groupmode' => 1
+        ];
+
+        $assign = $this->getDataGenerator()->create_module('assign', $params);
+        $cm = get_coursemodule_from_id('assign', $assign->cmid, 0, false, MUST_EXIST);
+        $context = \context_module::instance($cm->id);
+        $files = [
+            "mod/assign/tests/fixtures/submissionsample01.txt",
+            "mod/assign/tests/fixtures/submissionsample02.txt"
+        ];
         $generator = self::getDataGenerator()->get_plugin_generator('mod_assign');
-        $params['course'] = $this->course->id;
-        $params['teamsubmission'] = 1;
-        $params['preventsubmissionnotingroup'] = 0;
-        $assign = $generator->create_instance($params);
+
+        $this->setAdminUser();
+        foreach ($users as $key => $user) {
+            $generator->create_submission([
+                'userid' => $user->id,
+                'assignid' => $cm->id,
+                'file' => implode(',', $files),
+            ]);
+        }
+
+
+        $this->setAdminUser();
         $publication = $this->create_instance([
-                'mode' => PUBLICATION_MODE_IMPORT,
-                'importfrom' => $assign->id,
+            'mode' => PUBLICATION_MODE_IMPORT,
+            'importfrom' => $assign->id,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
+            'allowsubmissionsfromdate' => 0,
+            'duedate' => 0,
+            'groupmode' => NOGROUPS,
         ]);
 
-        // Exercise SUT!
-        $output = $publication->display_allfilesform();
-        self::assertFalse(strpos($output, "Nothing to display"));
+
+        $publication->importfiles();
+        $publication->set_allfilespage(true);
+        $allfilestable = $publication->get_allfilestable(PUBLICATION_FILTER_NOFILTER);
+        ob_start();
+        $allfilestable->out(10, true); // Print the whole table.
+        $tableoutput = ob_get_contents();
+        ob_end_clean();
+        $norowsfound = $allfilestable->get_count() == 0;
+        $nofilesfound = $allfilestable->get_totalfilescount() == 0;
+        self::assertFalse($norowsfound);
+        self::assertFalse($nofilesfound);
 
         // Teardown fixture!
         $publication = null;
