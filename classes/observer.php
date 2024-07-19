@@ -183,8 +183,8 @@ class observer {
                     \mod_publication\event\publication_file_imported::file_added($cm, $dataobject)->trigger();
 
                     $publication = new publication($cm);
-                    if ($publication->get_instance()->notifyteacher) {
-                        publication::send_teacher_notification_uploaded($cm, $newfile, null, $publication);
+                    if ($publication->get_instance()->notifyfilechange != 0) {
+                        publication::send_notification_filechange($cm, $dataobject, null, $publication);
                     }
 
                 } catch (\Exception $ex) {

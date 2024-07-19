@@ -265,6 +265,23 @@ class mod_publication_mod_form extends moodleform_mod {
 
         $mform->addElement('header', 'notifications', get_string('notifications', 'publication'));
 
+        $options = [
+            PUBLICATION_NOTIFY_NONE => get_string('notify:setting:0', 'publication'),
+            PUBLICATION_NOTIFY_TEACHER => get_string('notify:setting:1', 'publication'),
+            PUBLICATION_NOTIFY_STUDENT => get_string('notify:setting:2', 'publication'),
+            PUBLICATION_NOTIFY_ALL => get_string('notify:setting:3', 'publication'),
+        ];
+
+        $mform->addElement('select', 'notifystatuschange', get_string('notify:statuschange', 'publication'), $options);
+        $mform->addHelpButton('notifystatuschange', 'notify:statuschange', 'publication');
+        $mform->setDefault('notifystatuschange', get_config('publication', 'notifystatuschange'));
+
+        $mform->addElement('select', 'notifyfilechange', get_string('notify:filechange', 'publication'), $options);
+        $mform->addHelpButton('notifyfilechange', 'notify:filechange', 'publication');
+        $mform->setDefault('notifyfilechange', get_config('publication', 'notifyfilechange'));
+
+
+/*
         $name = get_string('notifyteacher', 'publication');
         $mform->addElement('selectyesno', 'notifyteacher', $name);
         $mform->addHelpButton('notifyteacher', 'notifyteacher', 'publication');
@@ -273,7 +290,7 @@ class mod_publication_mod_form extends moodleform_mod {
         $name = get_string('notifystudents', 'publication');
         $mform->addElement('selectyesno', 'notifystudents', $name);
         $mform->addHelpButton('notifystudents', 'notifystudents', 'publication');
-        $mform->setDefault('notifystudents', 0);
+        $mform->setDefault('notifystudents', 0);*/
         // Standard coursemodule elements.
         $this->standard_coursemodule_elements();
 

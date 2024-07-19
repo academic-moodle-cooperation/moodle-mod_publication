@@ -99,8 +99,8 @@ class base extends \html_table {
         }
 
         $this->options = [];
-        $this->options[2] = get_string('student_approve', 'publication');
-        $this->options[1] = get_string('student_reject', 'publication');
+        $this->options[1] = get_string('student_approve', 'publication');
+        $this->options[2] = get_string('student_reject', 'publication');
 
         if (empty($files) || count($files) == 0) {
             return 0;

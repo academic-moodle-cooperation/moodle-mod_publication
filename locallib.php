@@ -49,6 +49,11 @@ define('PUBLICATION_MODE_FILEUPLOAD', 'fileupload');
 define('PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION', 'teamsubmission');
 define('PUBLICATION_MODE_ASSIGN_IMPORT', 'import');
 
+define('PUBLICATION_NOTIFY_NONE', 0);
+define('PUBLICATION_NOTIFY_TEACHER', 1);
+define('PUBLICATION_NOTIFY_STUDENT', 2);
+define('PUBLICATION_NOTIFY_ALL', 3);
+
 require_once($CFG->dirroot . '/mod/publication/mod_publication_allfiles_form.php');
 
 /**
@@ -1356,11 +1361,10 @@ class publication {
 
             $user = $DB->get_record('user', array('id' => $x->userid));
             $group = false;
-           /* $logstatus = '';
             if ($this->mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
-                $logstatus = '(Teacher) ';
                 $group = $x->userid;
             }
+           /* $logstatus = '';
             if ($newteacherapproval == 1) {
                 $newstatus = '';
                 $logstatus .= 'approved';
@@ -1402,18 +1406,10 @@ class publication {
                 }
             }
 
-            if ($this->instance->notifystudents) {
-                $strsubmitted = get_string('approvalchange', 'publication');
+            if ($this->instance->notifystatuschange != 0) {
                 $cm = $this->coursemodule;
                 $cmid = $this->coursemodule->id;
-                if ($group !== false) {
-                    $usersingroup = $this->get_submissionmembers($group);
-                    foreach ($usersingroup as $user) {
-                        self::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $cmid, $this);
-                    }
-                } else {
-                    self::send_student_notification_approval_changed($cm, $user, $USER, $newstatus, $x, $cmid, $this);
-                }
+                self::send_notification_statuschange($cm, $USER, $newstatus, $x, $cmid, $this);
             }
            // }
         }
@@ -1551,10 +1547,10 @@ class publication {
                     $dataobject->typ = $importtype;
                     \mod_publication\event\publication_file_imported::file_added($assigncm, $dataobject)->trigger();
 
-                    if ($this->get_instance()->notifyteacher) {
+                    if ($this->get_instance()->notifyfilechange != 0) {
                         $cm = get_coursemodule_from_instance('publication', $this->get_instance()->id, 0, false, MUST_EXIST);
                         // USER $user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST); Not needed!
-                        self::send_teacher_notification_uploaded($cm, $newfile);
+                        self::send_notification_filechange($cm, $dataobject);
                     }
 
                 } catch (Exception $e) {
@@ -1751,8 +1747,8 @@ class publication {
 
                 $cm = get_coursemodule_from_instance('publication', $publicationid, 0, false, MUST_EXIST);
                 $publication = new publication($cm);
-                if ($publication->get_instance()->notifyteacher) {
-                    self::send_teacher_notification_uploaded($cm, $newfile);
+                if ($publication->get_instance()->notifyfilechange != 0) {
+                    self::send_notification_filechange($cm, $dataobject);
                 }
 
             }
@@ -1770,62 +1766,80 @@ class publication {
      * @param null|stdClass $publication the publication instance
      * @throws coding_exception
      */
-    public static function send_student_notification_approval_changed($cm, $user, $userfrom, $newstatus, $pubfile,
-                                                                      $pubid, $publication=null) {
-        global $CFG;
+    public static function send_notification_statuschange($cm, $userfrom, $newstatus, $pubfile,
+                                                          $pubid, $publication=null) {
+        global $CFG, $DB;
         $sm = get_string_manager();
-        $strsubmitted = $sm->get_string('approvalchange', 'publication', null, $user->lang);
 
         if (!$publication) {
             $publication = new publication($cm);
         }
 
-        $info = new stdClass();
-        $info->username = fullname($userfrom);
-        $info->publication = format_string($cm->name, true);
-        $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $pubid;
-        $info->id = $pubid;
-        $info->filename = $pubfile->filename;
-        $info->apstatus = $sm->get_string('status:approved' . $newstatus, 'mod_publication', null, $user->lang);
-        $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $user->lang));
-        $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $user->lang));
+        $notifyfilechange = $publication->get_instance()->notifyfilechange;
+        $receivers = [];
+        if ($notifyfilechange == PUBLICATION_NOTIFY_TEACHER || $notifyfilechange == PUBLICATION_NOTIFY_ALL) {
+            $receivers = $publication->get_graders($userfrom);
+        }
+        if ($notifyfilechange == PUBLICATION_NOTIFY_STUDENT || $notifyfilechange == PUBLICATION_NOTIFY_ALL) {
+            if ($publication->get_mode() == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+                $usersingroup = $publication->get_submissionmembers($pubfile->userid);
+                $receivers += $usersingroup;
+            } else {
+                $student = $DB->get_record('user', ['id' => $pubfile->userid]);
+                $receivers[$student->id] = $student;
+            }
+        }
+        if (!empty($receivers)) {
+            foreach ($receivers as $receiver) {
+                $strsubmitted = $sm->get_string('approvalchange', 'publication', null, $receiver->lang);
+                $info = new stdClass();
+                $info->username = fullname($userfrom);
+                $info->publication = format_string($cm->name, true);
+                $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $pubid;
+                $info->id = $pubid;
+                $info->filename = $pubfile->filename;
+                $info->apstatus = $sm->get_string('status:approved' . $newstatus, 'mod_publication', null, $receiver->lang);
+                $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $receiver->lang));
+                $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $receiver->lang));
 
-        $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
-        $posttext = $publication->email_students_text($info, $user->lang);
-        $posthtml = ($user->mailformat == 1) ? $publication->email_students_html($info, $user->lang) : '';
+                $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
+                $posttext = $publication->email_statuschange_text($info, $receiver->lang);
+                $posthtml = ($receiver->mailformat == 1) ? $publication->email_statuschange_html($info, $receiver->lang) : '';
 
-        $message = new \core\message\message();
-        $message->component = 'mod_publication';
-        $message->name = 'publication_updates';
-        $message->courseid = $cm->course;
-        $message->userfrom = $userfrom;
-        $message->userto = $user;
-        $message->subject = $postsubject;
-        $message->fullmessage = $posttext;
-        $message->fullmessageformat = FORMAT_HTML;
-        $message->fullmessagehtml = $posthtml;
-        $message->smallmessage = $postsubject;
-        $message->notification = 1;
-        $message->contexturl = $info->url;
-        $message->contexturlname = $info->publication;
+                $message = new \core\message\message();
+                $message->component = 'mod_publication';
+                $message->name = 'publication_updates';
+                $message->courseid = $cm->course;
+                $message->userfrom = $userfrom;
+                $message->userto = $receiver;
+                $message->subject = $postsubject;
+                $message->fullmessage = $posttext;
+                $message->fullmessageformat = FORMAT_HTML;
+                $message->fullmessagehtml = $posthtml;
+                $message->smallmessage = $postsubject;
+                $message->notification = 1;
+                $message->contexturl = $info->url;
+                $message->contexturlname = $info->publication;
 
-        try {
-            message_send($message);
-        } catch (coding_exception $e) {
-            throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+                try {
+                    message_send($message);
+                } catch (coding_exception $e) {
+                    throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+                }
+            }
         }
     }
 
     /**
      * Sends a notification to assigned grades
      * @param object $cm course module
-     * @param stored_file $file the file
+     * @param object $file the file
      * @param stdClass|null $user the user
      * @param stdClass|null $publication object the publication, if available
      * @throws coding_exception
      */
-    public static function send_teacher_notification_uploaded($cm, $file, $user=null, $publication=null) {
-        global $CFG, $USER;
+    public static function send_notification_filechange($cm, $file,  $user=null, $publication=null) {
+        global $CFG, $USER, $DB;
         $sm = get_string_manager();
         if (!$user) {
             $user = $USER;
@@ -1833,40 +1847,64 @@ class publication {
         if (!$publication) {
             $publication = new publication($cm);
         }
-        $graders = $publication->get_graders($user);
 
-        foreach ($graders as $teacher) {
-            $strsubmitted = $sm->get_string('uploaded', 'publication', null, $teacher->lang);
+        $stridentifier = $publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD ? 'filechange_upload' : 'filechange_import';
+        $assignname = null;
+        if ($publication->get_instance()->mode != PUBLICATION_MODE_UPLOAD) {
+            $assign = $DB->get_record('assign', ['id' => $publication->get_instance()->importfrom]);
+            if ($assign) {
+                $assignname = $assign->name;
+            }
+        }
 
-            $info = new stdClass();
-            $info->username = fullname($user);
-            $info->publication = format_string($publication->get_instance()->name, true);
-            $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id;
-            $info->id = $cm->id;
-            $info->filename = $file->get_filename();
-            $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $teacher->lang));
-            $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $teacher->lang));
+        $notifyfilechange = $publication->get_instance()->notifyfilechange;
+        $receivers = [];
+        if ($notifyfilechange == PUBLICATION_NOTIFY_TEACHER || $notifyfilechange == PUBLICATION_NOTIFY_ALL) {
+            $receivers = $publication->get_graders($user);
+        }
+        if ($notifyfilechange == PUBLICATION_NOTIFY_STUDENT || $notifyfilechange == PUBLICATION_NOTIFY_ALL) {
+            if ($publication->get_mode() == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+                $usersingroup = $publication->get_submissionmembers($file->userid);
+                $receivers += $usersingroup;
+            } else {
+                $student = $DB->get_record('user', ['id' => $file->userid]);
+                $receivers[$student->id] = $student;
+            }
+        }
+        if (!empty($receivers)) {
+            foreach ($receivers as $receiver) {
+                $strsubmitted = $sm->get_string('email:' . $stridentifier . ':subject', 'publication', null, $receiver->lang);
+                $info = new stdClass();
+                $info->username = fullname($user);
+                $info->publication = format_string($publication->get_instance()->name, true);
+                $info->url = $CFG->wwwroot . '/mod/publication/view.php?id=' . $cm->id;
+                $info->id = $cm->id;
+                $info->filename = $file->filename;
+                $info->assign = $assignname;
+                $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $receiver->lang));
+                $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $receiver->lang));
 
-            $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $info->publication;
-            $posttext = $publication->email_teachers_text($info, $teacher->lang);
-            $posthtml = ($teacher->mailformat == 1) ? $publication->email_teachers_html($info, $teacher->lang) : '';
+                $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $info->publication;
+                $posttext = $publication->email_filechange_text($info, $receiver->lang, $stridentifier);
+                $posthtml = ($receiver->mailformat == 1) ? $publication->email_filechange_html($info, $receiver->lang, $stridentifier) : '';
 
-            $message = new \core\message\message();
-            $message->component = 'mod_publication';
-            $message->name = 'publication_updates';
-            $message->courseid = $cm->course;
-            $message->userfrom = $user;
-            $message->userto = $teacher;
-            $message->subject = $postsubject;
-            $message->fullmessage = $posttext;
-            $message->fullmessageformat = FORMAT_HTML;
-            $message->fullmessagehtml = $posthtml;
-            $message->smallmessage = $postsubject;
-            $message->notification = 1;
-            $message->contexturl = $info->url;
-            $message->contexturlname = $info->publication;
+                $message = new \core\message\message();
+                $message->component = 'mod_publication';
+                $message->name = 'publication_updates';
+                $message->courseid = $cm->course;
+                $message->userfrom = $user;
+                $message->userto = $receiver;
+                $message->subject = $postsubject;
+                $message->fullmessage = $posttext;
+                $message->fullmessageformat = FORMAT_HTML;
+                $message->fullmessagehtml = $posthtml;
+                $message->smallmessage = $postsubject;
+                $message->notification = 1;
+                $message->contexturl = $info->url;
+                $message->contexturlname = $info->publication;
 
-            message_send($message);
+                message_send($message);
+            }
         }
     }
 
@@ -2053,12 +2091,12 @@ class publication {
      * @param object $info The info used by the 'emailteachermail' language string
      * @return string Plain-Text snippet to use in messages
      */
-    public function email_teachers_text($info, $lang) {
+    public function email_filechange_text($info, $lang, $stridentifier) {
         $sm = get_string_manager();
         $posttext  = format_string($this->course->shortname).' -> '.
             $sm->get_string('modulenameplural', 'publication', null, $lang).' -> '.
             format_string($info->publication)."\n";
-        $posttext .= $sm->get_string('emailteachermail', 'publication', $info, $lang)."\n";
+        $posttext .= $sm->get_string('email:' . $stridentifier . ':plaintext', 'publication', $info, $lang)."\n";
         return $posttext;
     }
 
@@ -2068,7 +2106,7 @@ class publication {
      * @param object $info The info used by the 'emailteachermailhtml' language string
      * @return string HTML snippet to use in messages
      */
-    public function email_teachers_html($info, $lang) {
+    public function email_filechange_html($info, $lang, $stridentifier) {
         global $CFG;
         $sm = get_string_manager();
         $posthtml  = '<p><span style="font-family: sans-serif; ">' .
@@ -2079,7 +2117,7 @@ class publication {
             '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.$info->id.'">'.
             format_string($info->publication). '</a></span></p>';
         $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
-        $posthtml .= '<p>'.$sm->get_string('emailteachermailhtml', 'publication', $info, $lang).'</p>';
+        $posthtml .= '<p>'.$sm->get_string('email:' . $stridentifier . ':plaintext', 'publication', $info, $lang).'</p>';
         $posthtml .= '</font><hr />';
         return $posthtml;
     }
@@ -2090,13 +2128,13 @@ class publication {
      * @param object $info The info used by the 'emailteachermail' language string
      * @return string Plain-Text snippet to use in messages
      */
-    public function email_students_text($info, $lang) {
+    public function email_statuschange_text($info, $lang) {
         $sm = get_string_manager();
         $posttext  = format_string($this->course->shortname).' -> '.
             $sm->get_string('modulenameplural', 'publication', null, $lang).' -> '.
             format_string($info->publication)."\n";
         $posttext .= "---------------------------------------------------------------------\n";
-        $posttext .= $sm->get_string('emailstudentsmail', 'publication', $info, $lang)."\n";
+        $posttext .= $sm->get_string('email:statuschange:plaintext', 'publication', $info, $lang)."\n";
         $posttext .= "---------------------------------------------------------------------\n";
         return $posttext;
     }
@@ -2107,7 +2145,7 @@ class publication {
      * @param object $info The info used by the 'emailstudentsmailhtml' language string
      * @return string HTML snippet to use in messages
      */
-    public function email_students_html($info, $lang) {
+    public function email_statuschange_html($info, $lang) {
         global $CFG;
         $sm = get_string_manager();
         $posthtml  = '<p><span style="font-family: sans-serif; ">' .
@@ -2118,7 +2156,7 @@ class publication {
             '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.$info->id.'">'.
             format_string($info->publication). '</a></span></p>';
         $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
-        $posthtml .= '<p>'.$sm->get_string('emailstudentsmailhtml', 'publication', $info, $lang).'</p>';
+        $posthtml .= '<p>'.$sm->get_string('email:statuschange:html', 'publication', $info, $lang).'</p>';
         $posthtml .= '</font><hr />';
         return $posthtml;
     }

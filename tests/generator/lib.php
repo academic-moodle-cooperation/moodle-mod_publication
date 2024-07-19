@@ -68,6 +68,8 @@ class mod_publication_generator extends testing_module_generator {
                 'maxbytes' => 2,
                 'allowedfiletypes' => '',
                 'obtainteacherapproval' => 1,
+                'notifyfilechange' => 0,
+                'notifystatuschange' => 0,
                 'groupmode' => SEPARATEGROUPS,
         ];
 

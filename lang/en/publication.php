@@ -52,6 +52,29 @@ $string['notifystudents'] = 'Notify students about publication changes';
 $string['notifyteacher_help'] = 'If enabled, teachers will receive a notification when students upload a file.';
 $string['notifystudents_help'] = 'If enabled, students will receive a notification when the publication status of one of their uploaded files changes.';
 
+
+$string['notify:setting:0'] = 'Do not send notifications';
+$string['notify:setting:1'] = 'Teachers only';
+$string['notify:setting:2'] = 'Students only';
+$string['notify:setting:3'] = 'Both teachers and students';
+$string['notify:statuschange'] = 'Notify students and/or teachers about any publication status changes';
+$string['notify:statuschange_help'] = ' Depends on the setting, if enabled, students and/or teachers will receive a notification when the publication status of one of the files is changed.';
+$string['notify:statuschange_admin'] = 'Default notification setting for publication status changes';
+$string['notify:filechange'] = 'Notify students and/or teachers about submitted or imported files';
+$string['notify:filechange_help'] = 'Depends on the setting, if enabled, students and/or teachers will receive a notification when students upload or change a file, or when a file is imported or updated from an assignment activity.';
+$string['notify:filechange_admin'] = 'Default notification setting for file changes - submitted or imported';
+
+$string['email:statuschange:plaintext'] = '{$a->username} has changed the publication status of \'{$a->filename}\' for \'{$a->publication}\' to {$a->apstatus} on {$a->dayupdated} at {$a->timeupdated}. It is available here: {$a->url}';
+$string['email:statuschange:html'] ='{$a->username} has changed the publication status of \'{$a->filename}\' for <i>\'{$a->publication}\'</i> to <b>{$a->apstatus}</b> on {$a->dayupdated} at {$a->timeupdated}</i>.<br /><br />It is <a href="{$a->url}">available on the web site</a>.';
+$string['email:statuschange:subject'] ='Publication status changed';
+$string['email:filechange_upload:plaintext'] ='{$a->username} has uploaded \'{$a->filename}\' for \'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}. Please check if your permission is required. It is available here: {$a->url}';
+$string['email:filechange_upload:html'] = '{$a->username} has uploaded \'{$a->filename}\' for <i>\'{$a->publication}\'</i> on {$a->dayupdated} at {$a->timeupdated}.<br />Please check if your permission is required.<br /></br>It is <a href="{$a->url}">available on the web site</a>.';
+$string['email:filechange_upload:subject'] ='File uploaded';
+$string['email:filechange_import:plaintext'] ='File \'{$a->filename}\' from Assignment \'{$a->assign}\' was imported into \'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}. Please check if your permission is required. It is available here: {$a->url}';
+$string['email:filechange_import:html'] ='File \'{$a->filename}\' from Assignment \'{$a->assign}\' was imported into <i>\'{$a->publication}\'</i> on {$a->dayupdated} at {$a->timeupdated}.<br />Please check if your permission is required.<br /></br>It is <a href="{$a->url}">available on the web site</a>.';
+$string['email:filechange_import:subject'] ='File imported';
+
+
 $string['uploaded'] = 'Uploaded';
 $string['approvalchange'] = 'Publication status changed';
 
