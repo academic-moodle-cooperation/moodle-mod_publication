@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript to align rows
+ * Javascript to align rows.
  *
  * @module    mod_publication/alignrows
  * @package
