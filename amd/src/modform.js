@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Mod form supplement
+ * Mod form supplement.
  *
  * @module    mod_publication/modform
  * @package
