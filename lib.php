@@ -61,11 +61,6 @@ function publication_add_instance($publication) {
 
     $instance->update_calendar_event();
 
-    if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT) {
-        // Fetch all files right now!
-        $instance->importfiles();
-    }
-
     return $record->id;
 }
 
