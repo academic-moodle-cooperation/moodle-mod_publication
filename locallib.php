@@ -1556,7 +1556,7 @@ class publication {
                 } catch (Exception $e) {
                     // File could not be copied, maybe it does already exist.
                     // Should not happen.
-                    echo $OUTPUT->box($OUTPUT->notification($e->getMessage(), 'notifyproblem'), 'generalbox');
+                    echo $OUTPUT->box($OUTPUT->notification($e->getMessage() . $e->getTraceAsString(), 'notifyproblem'), 'generalbox');
                 }
             }
         }
