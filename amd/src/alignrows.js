@@ -25,8 +25,8 @@
 
  /**
   * @module mod_publication/alignrows
-  */
-define(['jquery'], function($) {
+      */
+    define(['jquery'], function($) {
 
     /**
      * @constructor

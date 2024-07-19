@@ -46,7 +46,7 @@ class mod_publication_mod_form extends moodleform_mod {
      * Define this form - called by the parent constructor
      */
     public function definition() {
-        global $DB, $CFG, $COURSE;
+        global $DB, $CFG, $COURSE, $PAGE;
 
         $mform = $this->_form;
         $mform->addElement('header', 'general', get_string('general', 'form'));
@@ -122,12 +122,14 @@ class mod_publication_mod_form extends moodleform_mod {
 
         $mform->addElement('select', 'maxfiles', get_string('maxfiles', 'publication'), $maxfiles);
         $mform->setDefault('maxfiles', get_config('publication', 'maxfiles'));
+        $mform->addHelpButton('maxfiles', 'maxfiles', 'publication');
         $mform->hideIf('maxfiles', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
 
         $choices = get_max_upload_sizes($CFG->maxbytes, $COURSE->maxbytes);
         $choices[0] = get_string('courseuploadlimit', 'publication') . ' (' . display_size($COURSE->maxbytes) . ')';
         $mform->addElement('select', 'maxbytes', get_string('maxbytes', 'publication'), $choices);
         $mform->setDefault('maxbytes', get_config('publication', 'maxbytes'));
+        $mform->addHelpButton('maxbytes', 'maxbytes', 'publication');
         $mform->hideIf('maxbytes', 'mode', 'neq', PUBLICATION_MODE_UPLOAD);
 
         $mform->addElement('filetypes', 'allowedfiletypes', get_string('allowedfiletypes', 'publication'));
@@ -277,6 +279,7 @@ class mod_publication_mod_form extends moodleform_mod {
 
         // Buttons.
         $this->add_action_buttons();
+        $PAGE->requires->js_call_amd('mod_publication/modform');
     }
 
 

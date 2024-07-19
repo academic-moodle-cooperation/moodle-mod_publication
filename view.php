@@ -141,53 +141,54 @@ $submissionid = $USER->id;
 $filesform = new mod_publication_files_form(null,
     ['publication' => $publication, 'sid' => $submissionid, 'filearea' => 'attachment']);
 
-if ($data = $filesform->get_data() && $publication->is_approval_open()) {
+if ($data = $filesform->get_data()) {
     $datasubmitted = $filesform->get_submitted_data();
 
     if (isset($datasubmitted->gotoupload)) {
         redirect(new moodle_url('/mod/publication/upload.php',
             ['id' => $publication->get_instance()->id, 'cmid' => $cm->id]));
     }
+    if ($publication->is_approval_open()) {
+        $studentapproval = optional_param_array('studentapproval', [], PARAM_INT);
 
-    $studentapproval = optional_param_array('studentapproval', [], PARAM_INT);
+        $conditions = [];
+        $conditions['publication'] = $publication->get_instance()->id;
+        $conditions['userid'] = $USER->id;
 
-    $conditions = [];
-    $conditions['publication'] = $publication->get_instance()->id;
-    $conditions['userid'] = $USER->id;
+        $pubfileids = $DB->get_records_menu('publication_file', ['publication' => $publication->get_instance()->id],
+            'id ASC', 'fileid, id');
 
-    $pubfileids = $DB->get_records_menu('publication_file', ['publication' => $publication->get_instance()->id],
-        'id ASC', 'fileid, id');
+        // Update records.
+        foreach ($studentapproval as $idx => $approval) {
+            $conditions['fileid'] = $idx;
 
-    // Update records.
-    foreach ($studentapproval as $idx => $approval) {
-        $conditions['fileid'] = $idx;
+            if ($approval == 0) {
+                continue;
+            }
+            $approval = ($approval >= 1) ? $approval - 1 : null;
+            $dataforlog = new stdClass();
+            $dataforlog->approval = $approval == 1 ? 'approved' : 'rejected';
+            $stats = null;
 
-        if ($approval == 0) {
-            continue;
+            if ($publication->get_mode() == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+                /* We have to deal with group approval! The method sets group approval for the specified user
+                 * and returns current cumulated group approval (and it also sets it in publication_file table)! */
+                $stats = $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
+            } else {
+                $DB->set_field('publication_file', 'studentapproval', $approval, $conditions);
+            }
+            if (is_array($stats)) {
+                $dataforlog->approval = '(Students ' . $stats['approving'] . ' out of ' . $stats['needed'] . ') ' . $dataforlog->approval;
+            }
+            $dataforlog->publication = $conditions['publication'];
+            $dataforlog->userid = $USER->id;
+            $dataforlog->reluser = $USER->id;
+            $dataforlog->fileid = $idx;
+
+            \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
         }
-        $approval = ($approval >= 1) ? $approval - 1 : null;
-        $dataforlog = new stdClass();
-        $dataforlog->approval = $approval == 1 ? 'approved' : 'rejected';
-        $stats = null;
-
-        if ($publication->get_mode() == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
-            /* We have to deal with group approval! The method sets group approval for the specified user
-             * and returns current cumulated group approval (and it also sets it in publication_file table)! */
-            $stats = $publication->set_group_approval($approval, $pubfileids[$idx], $USER->id);
-        } else {
-            $DB->set_field('publication_file', 'studentapproval', $approval, $conditions);
-        }
-        if (is_array($stats)) {
-            $dataforlog->approval = '(Students '.$stats['approving'].' out of '.$stats['needed'].') '.$dataforlog->approval;
-        }
-        $dataforlog->publication = $conditions['publication'];
-        $dataforlog->userid = $USER->id;
-        $dataforlog->reluser = $USER->id;
-        $dataforlog->fileid = $idx;
-
-        \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
+        redirect($url);
     }
-    redirect($url);
 }
 
 $filesform = new mod_publication_files_form(null,

@@ -51,7 +51,6 @@ $url = new moodle_url('/mod/publication/upload.php', ['cmid' => $cm->id]);
 if (!empty($id)) {
     $url->param('id', $id);
 }
-
 $PAGE->set_url($url);
 
 $entry = new stdClass();
