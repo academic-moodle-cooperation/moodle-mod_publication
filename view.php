@@ -162,10 +162,9 @@ if ($data = $filesform->get_data()) {
         foreach ($studentapproval as $idx => $approval) {
             $conditions['fileid'] = $idx;
 
-            if ($approval == 0) {
+            if ($approval != 1 && $approval != 2) {
                 continue;
             }
-            $approval = ($approval >= 1) ? $approval - 1 : null;
             $dataforlog = new stdClass();
             $dataforlog->approval = $approval == 1 ? 'approved' : 'rejected';
             $stats = null;
@@ -186,6 +185,11 @@ if ($data = $filesform->get_data()) {
             $dataforlog->fileid = $idx;
 
             \mod_publication\event\publication_approval_changed::approval_changed($cm, $dataforlog)->trigger();
+            if ($publication->get_instance()->notifystatuschange != 0) {
+                $pubfile = $DB->get_record('publication_file', ['id' => $pubfileids[$idx]]);
+                $newstatus = $approval == 2 ? 'not' : ''; // Used for string identifier..
+                publication::send_notification_statuschange($cm, $USER, $newstatus, $pubfile, $cm->id, $publication);
+            }
         }
         redirect($url);
     }

@@ -54,6 +54,23 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect('publication/obtaingroupapproval', get_string('obtaingroupapproval_admin', 'publication'),
         get_string('obtaingroupapproval_admin_desc', 'publication'), 0, $options));
 
+
+
+    $options = [
+        PUBLICATION_NOTIFY_NONE => get_string('notify:setting:0', 'publication'),
+        PUBLICATION_NOTIFY_TEACHER => get_string('notify:setting:1', 'publication'),
+        PUBLICATION_NOTIFY_STUDENT => get_string('notify:setting:2', 'publication'),
+        PUBLICATION_NOTIFY_ALL => get_string('notify:setting:3', 'publication'),
+    ];
+
+
+    $settings->add(new admin_setting_configselect('publication/notifyfilechange', get_string('notify:statuschange_admin', 'publication'),
+        get_string('notify:filechange_help', 'publication'), PUBLICATION_NOTIFY_STUDENT, $options));
+
+    $settings->add(new admin_setting_configselect('publication/notifystatuschange', get_string('notify:statuschange_admin', 'publication'),
+        get_string('notify:statuschange_help', 'publication'), PUBLICATION_NOTIFY_ALL, $options));
+
+
     if (isset($CFG->maxbytes)) {
         $settings->add(new admin_setting_configselect('publication/maxbytes', get_string('maxbytes', 'publication'),
                 get_string('configmaxbytes', 'publication'), 5242880, get_max_upload_sizes($CFG->maxbytes)));

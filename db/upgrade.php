@@ -275,5 +275,29 @@ function xmldb_publication_upgrade($oldversion) {
         // Publication savepoint reached.
         upgrade_mod_savepoint(true, 2024061900, 'publication');
     }
+
+    if ($oldversion < 2024071900) {
+        $table = new xmldb_table('publication');
+
+        $field = new xmldb_field('notifyteacher', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'groupapproval');
+        // Launch rename field notifystatuschange.
+        $dbman->rename_field($table, $field, 'notifystatuschange');
+
+        $field = new xmldb_field('notifystatuschange', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '2', 'groupapproval');
+        // Launch change of default for field notifystatuschange.
+        $dbman->change_field_default($table, $field);
+
+        $field = new xmldb_field('notifystudents', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'notifystatuschange');
+        // Launch rename field notifyfilechange.
+        $dbman->rename_field($table, $field, 'notifyfilechange');
+
+        $field = new xmldb_field('notifyfilechange', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '3', 'notifystatuschange');
+        // Launch change of default for field notifyfilechange.
+        $dbman->change_field_default($table, $field);
+
+        // Publication savepoint reached.
+        upgrade_mod_savepoint(true, 2024071900, 'publication');
+    }
+
     return true;
 }
