@@ -137,6 +137,10 @@ class mod_publication_files_form extends moodleform {
 
         $approvalfromdate = $publicationinstance->approvalfromdate > 0 ? userdate($publicationinstance->approvalfromdate) : false;
         $approvaltodate = $publicationinstance->approvaltodate > 0 ? userdate($publicationinstance->approvaltodate) : false;
+        if (!$publicationinstance->obtainstudentapproval) {
+            $approvalfromdate = false;
+            $approvaltodate = false;
+        }
         $tablecontext = [
             'myfiles' => $table->data,
             'hasmyfiles' => !empty($table->data),
@@ -152,8 +156,8 @@ class mod_publication_files_form extends moodleform {
         $mform->addElement('html', $myfilestable);
 
         // Display submit buttons if necessary.
-        if (!empty($table) && $table->changepossible()) {
-            if ($publication->is_open()) {
+        if ($publicationinstance->obtainstudentapproval) {
+            if (!empty($table) && $table->changepossible()) {
                 $buttonarray = [];
 
                 $onclick = 'return confirm("' . get_string('savestudentapprovalwarning', 'publication') . '")';
@@ -168,6 +172,7 @@ class mod_publication_files_form extends moodleform {
                 $mform->addElement('static', 'approvaltimeover', '', get_string('approval_timeover', 'publication'));
             }
         }
+
 
         if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD
             && has_capability('mod/publication:upload', $publication->get_context())) {

@@ -783,7 +783,7 @@ class publication {
             $teacherapproval = $filepermissions->teacherapproval;
             $studentapproval = $filepermissions->studentapproval;
 
-            $haspermission = (!$obtainteacherapproval || $teacherapproval == 1) && (!$obtainstudentapproval || $studentapproval == 1);
+            $haspermission = $haspermission || ((!$obtainteacherapproval || $teacherapproval == 1) && (!$obtainstudentapproval || $studentapproval == 1));
 /*
             if ($this->get_instance()->mode == PUBLICATION_MODE_UPLOAD) {
                 // Mode upload.
