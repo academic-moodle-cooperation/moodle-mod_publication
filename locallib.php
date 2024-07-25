@@ -835,25 +835,28 @@ class publication {
         global $DB;
 
         // Normalize approval value!
-        if ($approval !== null) {
+        /*if ($approval !== null) {
             $approval = empty($approval) ? 0 : 1;
-        }
+        }*/
+
+
+        $approvalforgroupapproval = $approval == 1 ? 1 : 0; // $approval == 2 => $approvalforgroupapproval = 0...
 
         $record = $DB->get_record('publication_groupapproval', ['fileid' => $pubfileid, 'userid' => $userid]);
         $filerec = $DB->get_record('publication_file', ['id' => $pubfileid]);
         if (!empty($record)) {
-            if ($record->approval === $approval) {
+            if ($record->approval === $approvalforgroupapproval) {
                 // Nothing changed, return!
                 return $filerec->studentapproval;
             }
-            $record->approval = $approval;
+            $record->approval = $approvalforgroupapproval;
             $record->timemodified = time();
             $DB->update_record('publication_groupapproval', $record);
         } else {
             $record = new stdClass();
             $record->fileid = $pubfileid;
             $record->userid = $userid;
-            $record->approval = $approval;
+            $record->approval = $approvalforgroupapproval;
             $record->timecreated = time();
             $record->timemodified = $record->timecreated;
             $record->id = $DB->insert_record('publication_groupapproval', $record);
