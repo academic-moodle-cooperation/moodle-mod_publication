@@ -84,7 +84,7 @@ class observer {
         ]);
         $assigncontext = \context_module::instance($assigncm->id);
 
-        $sql = "SELECT pub.id, pub.course
+        $sql = "SELECT pub.*
                   FROM {publication} pub
                  WHERE (pub.mode = ?) AND (pub.importfrom = ?)";
         $params = [\PUBLICATION_MODE_IMPORT, $assignid];
@@ -92,6 +92,15 @@ class observer {
             return true;
         }
 
+        foreach ($publications as $pub) {
+            $cm = get_coursemodule_from_instance('publication', $pub->id);
+            if (!$cm) {
+                continue;
+            }
+            $publication = new publication($cm);
+            $publication->importfiles();
+        }
+/*
         $subfilerecords = $DB->get_records('assignsubmission_file', [
                 'assignment' => $assignid,
                 'submission' => $submission->id,
@@ -209,7 +218,7 @@ class observer {
 
             // And now the same for online texts!
             \publication::update_assign_onlinetext($assigncm, $assigncontext, $curpub->id, $context->id, $submission->id);
-        }
+        }*/
         return true;
     }
 

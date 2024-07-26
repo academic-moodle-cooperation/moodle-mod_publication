@@ -1435,12 +1435,10 @@ class publication {
 
             $assigncontext = context_module::instance($assigncm->id);
 
-            if ($assigncm && has_capability('mod/publication:addinstance', $this->context)) {
-                $this->import_assign_files($assigncm, $assigncontext);
-                $this->import_assign_onlinetexts($assigncm, $assigncontext);
+            $this->import_assign_files($assigncm, $assigncontext);
+            $this->import_assign_onlinetexts($assigncm, $assigncontext);
 
-                return true;
-            }
+            return true;
         }
 
         return false;
@@ -1599,7 +1597,10 @@ class publication {
         $assigncourse = $DB->get_record('course', ['id' => $assigncm->course]);
         $assignment = new assign($assigncontext, $assigncm, $assigncourse);
         $teamsubmission = $assignment->get_instance()->teamsubmission;
+        $cm = get_coursemodule_from_instance('publication', $publicationid, 0, false, MUST_EXIST);
+        $publication = new publication($cm);
 
+        $currentonlinetexts = [];
         if (!empty($submissionid)) {
             $records = $DB->get_records('assignsubmission_onlinetext', [
                     'assignment' => $assigncm->instance,
@@ -1607,7 +1608,9 @@ class publication {
             ]);
         } else {
             $records = $DB->get_records('assignsubmission_onlinetext', ['assignment' => $assigncm->instance]);
+            $currentonlinetexts = $DB->get_records('publication_file', ['publication' => $publicationid, 'type' => PUBLICATION_MODE_ONLINETEXT]);
         }
+        $filename = get_string('onlinetextfilename', 'assignsubmission_onlinetext');
 
         foreach ($records as $record) {
             $submission = $DB->get_record('assign_submission', ['id' => $record->submission]);
@@ -1670,7 +1673,6 @@ class publication {
             $head = '<head><meta charset="UTF-8"></head>';
             $submissioncontent = '<!DOCTYPE html><html>' . $head . '<body>' . $formattedtext . '</body></html>';
 
-            $filename = get_string('onlinetextfilename', 'assignsubmission_onlinetext');
 
             // Does the file exist... let's check it!
             $pathhash = $fs->get_pathname_hash($contextid, 'mod_publication', 'attachment', $itemid, '/', $filename);
@@ -1681,7 +1683,9 @@ class publication {
                     'type' => PUBLICATION_MODE_ONLINETEXT,
             ];
             $pubfile = $DB->get_record('publication_file', $conditions, '*', IGNORE_MISSING);
-
+            if ($pubfile && isset($currentonlinetexts[$pubfile->id])) {
+                unset($currentonlinetexts[$pubfile->id]);
+            }
             $createnew = false;
             if ($fs->file_exists_by_hash($pathhash)) {
                 $file = $fs->get_file_by_hash($pathhash);
@@ -1748,14 +1752,22 @@ class publication {
                     \mod_publication\event\publication_file_imported::file_added($assigncm, $dataobject)->trigger();
                 }
 
-                $cm = get_coursemodule_from_instance('publication', $publicationid, 0, false, MUST_EXIST);
-                $publication = new publication($cm);
                 if ($publication->get_instance()->notifyfilechange != 0) {
                     self::send_notification_filechange($cm, $dataobject);
                 }
-
             }
         }
+
+        // Clean up orphaned onlinetexts!
+        foreach ($currentonlinetexts as $pubfile) { // These online texts no longer exist!
+            $resource = $fs->get_file_by_id($pubfile->fileid);
+            if ($resource && $resource->get_itemid() == $pubfile->userid) {
+                $resource->delete();
+                \mod_publication\event\publication_file_deleted::create_from_object($assigncm, $pubfile)->trigger();
+                $DB->delete_records('publication_file', ['id' => $pubfile->id]);
+            }
+        }
+
     }
 
     /**
@@ -1895,7 +1907,7 @@ class publication {
                 $message->component = 'mod_publication';
                 $message->name = 'publication_updates';
                 $message->courseid = $cm->course;
-                $message->userfrom = $user;
+                $message->userfrom = core_user::get_noreply_user();
                 $message->userto = $receiver;
                 $message->subject = $postsubject;
                 $message->fullmessage = $posttext;
