@@ -124,6 +124,7 @@ function publication_update_instance($publication) {
     if ($instance->get_instance()->mode == PUBLICATION_MODE_IMPORT) {
         // Fetch all files right now!
         $instance->importfiles();
+        publication::send_all_pending_notifications();
     }
 
     return true;

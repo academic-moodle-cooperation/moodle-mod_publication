@@ -79,6 +79,7 @@ if ($savevisibility) {
 
     $params['pubid'] = $publication->get_instance()->id;
     $publication->update_files_teacherapproval($files);
+    publication::send_all_pending_notifications();
     redirect($url);
 
 } else if ($action == 'zip') {
@@ -108,6 +109,7 @@ if ($savevisibility) {
     }
 
     $publication->importfiles();
+    publication::send_all_pending_notifications();
 } else if ($action == 'grantextension') {
     require_capability('mod/publication:grantextension', $context);
     require_sesskey();
@@ -132,6 +134,7 @@ if ($savevisibility) {
     $userorgroupids = array_keys($userorgroupids);
     if (count($userorgroupids) > 0) {
         $publication->update_users_or_groups_teacherapproval($userorgroupids, $action);
+        publication::send_all_pending_notifications();
         redirect($url);
     }
 }
@@ -191,6 +194,7 @@ if ($data = $filesform->get_data()) {
                 publication::send_notification_statuschange($cm, $USER, $newstatus, $pubfile, $cm->id, $publication);
             }
         }
+        publication::send_all_pending_notifications();
         redirect($url);
     }
 }

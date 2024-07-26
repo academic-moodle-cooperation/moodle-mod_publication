@@ -29,8 +29,14 @@ define(['jquery'], function($) {
     const FITEM_OBTAINGROUPAPPROVAL = '#fitem_id_obtaingroupapproval';
     const SELECT_OBTAINSTUDENTAPPROVAL = '#id_obtainstudentapproval';
     const SELECT_OBTAINGROUPAPPROVAL = '#id_obtaingroupapproval';
+    const SELECT_IMPORTFROM = '#id_importfrom';
+    const RADIO_MODE = 'input[type="radio"][name="mode"]';
+    const RADIO_MODE_CHECKED = 'input[type="radio"][name="mode"]:checked';
+    const TEAMASSIGNIDS = '#teamassignids';
     const GROUP_AUTOMATIC = '-1';
     const STUDENT_AUTOMATIC = '0';
+    const MODE_IMPORT = '1';
+    const teamAssignIds = $(TEAMASSIGNIDS).data('assignids').split(',');
 
     const $approvalFromDate = $(FITEM_APPROVALFROM);
     const $approvalToDate = $(FITEM_APPROVALTO);
@@ -38,6 +44,27 @@ define(['jquery'], function($) {
     const $obtainGroupApproval = $(FITEM_OBTAINGROUPAPPROVAL);
     const $selectObtainStudentApproval = $(SELECT_OBTAINSTUDENTAPPROVAL);
     const $selectObtainGroupApproval = $(SELECT_OBTAINGROUPAPPROVAL);
+    const $selectImportFrom = $(SELECT_IMPORTFROM);
+    const $radioMode = $(RADIO_MODE);
+
+
+    const changeMode = function() {
+        const mode = $(RADIO_MODE_CHECKED).val();
+        if (mode === MODE_IMPORT) {
+            const importFrom = $selectImportFrom.val();
+            if (teamAssignIds.indexOf(importFrom) !== -1) {
+                $obtainStudentApproval.attr('hidden', 'hidden').css('display', 'none');
+                $obtainGroupApproval.removeAttr('hidden').css('display', 'flex');
+            } else {
+                $obtainStudentApproval.removeAttr('hidden').css('display', 'flex');
+                $obtainGroupApproval.attr('hidden', 'hidden').css('display', 'none');
+            }
+        } else {
+            $obtainStudentApproval.removeAttr('hidden').css('display', 'flex');
+            $obtainGroupApproval.attr('hidden', 'hidden').css('display', 'none');
+        }
+        changeObtainStudentApproval();
+    };
 
     const changeObtainStudentApproval = function() {
         let isAutomatic = false;
@@ -53,9 +80,10 @@ define(['jquery'], function($) {
             $approvalFromDate.removeAttr('hidden').css('display', 'flex');
             $approvalToDate.removeAttr('hidden').css('display', 'flex');
         }
-
     };
     $selectObtainStudentApproval.on('change', changeObtainStudentApproval);
     $selectObtainGroupApproval.on('change', changeObtainStudentApproval);
-    changeObtainStudentApproval();
+    $radioMode.on('change', changeMode);
+    $selectImportFrom.on('change', changeMode);
+    changeMode();
 });

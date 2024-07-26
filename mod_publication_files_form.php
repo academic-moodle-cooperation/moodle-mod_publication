@@ -46,7 +46,7 @@ class mod_publication_files_form extends moodleform {
      * Form definition method_exists
      */
     public function definition() {
-        global $DB, $PAGE, $OUTPUT;
+        global $DB, $PAGE, $OUTPUT, $USER;
 
         $publication = &$this->_customdata['publication'];
 
@@ -135,8 +135,10 @@ class mod_publication_files_form extends moodleform {
             }
         }
 
+        $extensionduedate = $publication->user_extensionduedate($USER->id);
         $approvalfromdate = $publicationinstance->approvalfromdate > 0 ? userdate($publicationinstance->approvalfromdate) : false;
         $approvaltodate = $publicationinstance->approvaltodate > 0 ? userdate($publicationinstance->approvaltodate) : false;
+        $extensionduedate = $extensionduedate > 0 ? userdate($extensionduedate) : false;
         if (!$publicationinstance->obtainstudentapproval) {
             $approvalfromdate = false;
             $approvaltodate = false;
@@ -148,6 +150,7 @@ class mod_publication_files_form extends moodleform {
             'lastmodified' => userdate($table->lastmodified),
             'approvalfromdate' => $approvalfromdate,
             'approvaltodate' => $approvaltodate,
+            'extensionduedate' => $extensionduedate,
             'assign' => $publication->get_importlink(),
             'myfilestitle' => $mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION ? get_string('mygroupfiles', 'publication') : get_string('myfiles', 'publication'),
         ];
