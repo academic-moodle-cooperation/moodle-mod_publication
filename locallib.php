@@ -53,6 +53,8 @@ define('PUBLICATION_NOTIFY_NONE', 0);
 define('PUBLICATION_NOTIFY_TEACHER', 1);
 define('PUBLICATION_NOTIFY_STUDENT', 2);
 define('PUBLICATION_NOTIFY_ALL', 3);
+define('PUBLICATION_NOTIFY_STATUSCHANGE', 'status');
+define('PUBLICATION_NOTIFY_FILECHANGE', 'file');
 
 require_once($CFG->dirroot . '/mod/publication/mod_publication_allfiles_form.php');
 
@@ -83,6 +85,7 @@ class publication {
     protected $allfilespage = false;
 
     protected $teamsubmission = false;
+    protected static $pendingnotifications = [];
 
     /**
      * Constructor
@@ -1823,30 +1826,39 @@ class publication {
                 $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $receiver->lang));
                 $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $receiver->lang));
 
-                $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $cm->name;
-                $posttext = $publication->email_statuschange_text($info, $receiver->lang);
-                $posthtml = ($receiver->mailformat == 1) ? $publication->email_statuschange_html($info, $receiver->lang) : '';
-
-                $message = new \core\message\message();
-                $message->component = 'mod_publication';
-                $message->name = 'publication_updates';
-                $message->courseid = $cm->course;
-                $message->userfrom = $userfrom;
-                $message->userto = $receiver;
-                $message->subject = $postsubject;
-                $message->fullmessage = $posttext;
-                $message->fullmessageformat = FORMAT_HTML;
-                $message->fullmessagehtml = $posthtml;
-                $message->smallmessage = $postsubject;
-                $message->notification = 1;
-                $message->contexturl = $info->url;
-                $message->contexturlname = $info->publication;
-
-                try {
-                    message_send($message);
-                } catch (coding_exception $e) {
-                    throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+                if (!isset(self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE])) {
+                    self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE] = [];
                 }
+                if (!isset(self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE][$cm->id])) {
+                    self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE][$cm->id] = [];
+                }
+
+                $includeheader = !isset(self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]);
+                $postsubject = $strsubmitted . ': ' . $cm->name;
+                $posttext = $publication->email_statuschange_text($info, $receiver->lang, $includeheader);
+                $posthtml = $publication->email_statuschange_html($info, $receiver->lang, $includeheader);
+
+                //TODO maybe add check here is receiver is the same as user from. Unless already checked in get_graders
+                if (!isset(self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id])) {
+                    $message = new \core\message\message();
+                    $message->component = 'mod_publication';
+                    $message->name = 'publication_updates';
+                    $message->courseid = $cm->course;
+                    $message->userfrom = core_user::get_noreply_user();
+                    $message->userto = $receiver;
+                    $message->subject = $postsubject;
+                    $message->fullmessage = '';
+                    $message->fullmessagehtml = '';
+                    $message->fullmessageformat = FORMAT_HTML;
+                    $message->smallmessage = $postsubject;
+                    $message->notification = 1;
+                    $message->contexturl = $info->url;
+                    $message->contexturlname = $info->publication;
+                    self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id] = $message;
+                }
+                self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessage .= $posttext;
+                self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
+
             }
         }
     }
@@ -1905,28 +1917,66 @@ class publication {
                 $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $receiver->lang));
                 $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $receiver->lang));
 
-                $postsubject = $strsubmitted . ': ' . $info->username . ' -> ' . $info->publication;
-                $posttext = $publication->email_filechange_text($info, $receiver->lang, $stridentifier);
-                $posthtml = ($receiver->mailformat == 1) ? $publication->email_filechange_html($info, $receiver->lang, $stridentifier) : '';
+                if (!isset(self::$pendingnotifications[PUBLICATION_NOTIFY_FILECHANGE])) {
+                    self::$pendingnotifications[PUBLICATION_NOTIFY_FILECHANGE] = [];
+                }
+                if (!isset(self::$pendingnotifications[PUBLICATION_NOTIFY_FILECHANGE][$cm->id])) {
+                    self::$pendingnotifications[PUBLICATION_NOTIFY_FILECHANGE][$cm->id] = [];
+                }
 
-                $message = new \core\message\message();
-                $message->component = 'mod_publication';
-                $message->name = 'publication_updates';
-                $message->courseid = $cm->course;
-                $message->userfrom = core_user::get_noreply_user();
-                $message->userto = $receiver;
-                $message->subject = $postsubject;
-                $message->fullmessage = $posttext;
-                $message->fullmessageformat = FORMAT_HTML;
-                $message->fullmessagehtml = $posthtml;
-                $message->smallmessage = $postsubject;
-                $message->notification = 1;
-                $message->contexturl = $info->url;
-                $message->contexturlname = $info->publication;
+                $includeheader = !isset(self::$pendingnotifications[PUBLICATION_NOTIFY_FILECHANGE][$cm->id][$receiver->id]);
+                $postsubject = $strsubmitted . ': ' . $info->publication;
+                $posttext = $publication->email_filechange_text($info, $receiver->lang, $stridentifier, $includeheader);
+                $posthtml = $publication->email_filechange_html($info, $receiver->lang, $stridentifier, $includeheader);
 
-                message_send($message);
+                //TODO maybe add check here is receiver is the same as user from. Unless already checked in get_graders
+
+                if (!isset(self::$pendingnotifications[PUBLICATION_NOTIFY_FILECHANGE][$cm->id][$receiver->id])) {
+                    $message = new \core\message\message();
+                    $message->component = 'mod_publication';
+                    $message->name = 'publication_updates';
+                    $message->courseid = $cm->course;
+                    $message->userfrom = core_user::get_noreply_user();
+                    $message->userto = $receiver;
+                    $message->subject = $postsubject;
+                    $message->fullmessage = '';
+                    $message->fullmessageformat = FORMAT_HTML;
+                    $message->fullmessagehtml = '';
+                    $message->smallmessage = $postsubject;
+                    $message->notification = 1;
+                    $message->contexturl = $info->url;
+                    $message->contexturlname = $info->publication;
+                    self::$pendingnotifications[PUBLICATION_NOTIFY_FILECHANGE][$cm->id][$receiver->id] = $message;
+                }
+                self::$pendingnotifications[PUBLICATION_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessage .= $posttext;
+                self::$pendingnotifications[PUBLICATION_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
+
+               // message_send($message);
             }
         }
+    }
+
+    public static function send_all_pending_notifications() {
+        $sm = get_string_manager();
+        foreach (self::$pendingnotifications as $type => $cms) {
+            foreach ($cms as $cmid => $users) {
+                foreach ($users as $userid => $message) {
+                    if ($type == PUBLICATION_NOTIFY_FILECHANGE) {
+                        $message->fullmessage .= PHP_EOL . strip_tags($sm->get_string('email:filechange:footer', 'publication', null, $message->userto->lang));
+                        $message->fullmessagehtml .= $sm->get_string('email:filechange:footer', 'publication', null, $message->userto->lang);
+                    } else {
+                        $message->fullmessage .= '';
+                        $message->fullmessagehtml .= '</ul>';
+                    }
+                    try {
+                        message_send($message);
+                    } catch (coding_exception $e) {
+                        throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -2112,12 +2162,17 @@ class publication {
      * @param object $info The info used by the 'emailteachermail' language string
      * @return string Plain-Text snippet to use in messages
      */
-    public function email_filechange_text($info, $lang, $stridentifier) {
+    public function email_filechange_text($info, $lang, $stridentifier, $includeheader = true) {
         $sm = get_string_manager();
-        $posttext  = format_string($this->course->shortname).' -> '.
-            $sm->get_string('modulenameplural', 'publication', null, $lang).' -> '.
-            format_string($info->publication)."\n";
-        $posttext .= $sm->get_string('email:' . $stridentifier . ':plaintext', 'publication', $info, $lang)."\n";
+        $posttext = '';
+        if ($includeheader) {
+            $posttext .= format_string($this->course->shortname) . ' -> ' .
+                $sm->get_string('modulenameplural', 'publication', null, $lang) . ' -> ' .
+                format_string($info->publication) . "\n";
+            $posttext .= strip_tags($sm->get_string('email:' . $stridentifier . ':header', 'publication', $info, $lang))."\n";
+        }
+        $posttext .= $info->filename . "\n";
+        //$posttext .= $sm->get_string('email:' . $stridentifier . ':plaintext', 'publication', $info, $lang)."\n";
         return $posttext;
     }
 
@@ -2127,19 +2182,25 @@ class publication {
      * @param object $info The info used by the 'emailteachermailhtml' language string
      * @return string HTML snippet to use in messages
      */
-    public function email_filechange_html($info, $lang, $stridentifier) {
+    public function email_filechange_html($info, $lang, $stridentifier, $includeheader = true) {
         global $CFG;
         $sm = get_string_manager();
-        $posthtml  = '<p><span style="font-family: sans-serif; ">' .
-            '<a href="'.$CFG->wwwroot.'/course/view.php?id='.$this->course->id.'">'.
-            format_string($this->course->shortname).'</a> ->'.
-            '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.
-            $info->id.'">'.$sm->get_string('modulenameplural', 'publication', null, $lang).'</a> ->'.
-            '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.$info->id.'">'.
-            format_string($info->publication). '</a></span></p>';
-        $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
-        $posthtml .= '<p>'.$sm->get_string('email:' . $stridentifier . ':plaintext', 'publication', $info, $lang).'</p>';
-        $posthtml .= '</font><hr />';
+        $posthtml = '';
+        if ($includeheader) {
+            $posthtml .= '<p><span style="font-family: sans-serif; ">' .
+                '<a href="' . $CFG->wwwroot . '/course/view.php?id=' . $this->course->id . '">' .
+                format_string($this->course->shortname) . '</a> ->' .
+                '<a href="' . $CFG->wwwroot . '/mod/publication/view.php?id=' .
+                $info->id . '">' . $sm->get_string('modulenameplural', 'publication', null, $lang) . '</a> ->' .
+                '<a href="' . $CFG->wwwroot . '/mod/publication/view.php?id=' . $info->id . '">' .
+                format_string($info->publication) . '</a></span></p>';
+            $posthtml .= ''.$sm->get_string('email:' . $stridentifier . ':header', 'publication', $info, $lang).'';
+
+        }
+        $posthtml .= '<li>' . $info->filename . '</li>';
+        /*$posthtml .= '<span style="font-family: sans-serif; ">';
+        $posthtml .= ''.$sm->get_string('email:' . $stridentifier . ':plaintext', 'publication', $info, $lang).'';
+        $posthtml .= '</span>';*/
         return $posthtml;
     }
 
@@ -2149,14 +2210,17 @@ class publication {
      * @param object $info The info used by the 'emailteachermail' language string
      * @return string Plain-Text snippet to use in messages
      */
-    public function email_statuschange_text($info, $lang) {
+    public function email_statuschange_text($info, $lang, $includeheader = true) {
         $sm = get_string_manager();
-        $posttext  = format_string($this->course->shortname).' -> '.
-            $sm->get_string('modulenameplural', 'publication', null, $lang).' -> '.
-            format_string($info->publication)."\n";
-        $posttext .= "---------------------------------------------------------------------\n";
-        $posttext .= $sm->get_string('email:statuschange:plaintext', 'publication', $info, $lang)."\n";
-        $posttext .= "---------------------------------------------------------------------\n";
+        $posttext = '';
+        if ($includeheader) {
+            $posttext .= format_string($this->course->shortname) . ' -> ' .
+                $sm->get_string('modulenameplural', 'publication', null, $lang) . ' -> ' .
+                format_string($info->publication) . "\n";
+            $posttext .= "---------------------------------------------------------------------\n";
+            $posttext .= strip_tags($sm->get_string('email:statuschange:header', 'publication', $info, $lang))."\n";
+        }
+        $posttext .= strip_tags($sm->get_string('email:statuschange:filename', 'publication', $info, $lang))."\n";
         return $posttext;
     }
 
@@ -2166,19 +2230,23 @@ class publication {
      * @param object $info The info used by the 'emailstudentsmailhtml' language string
      * @return string HTML snippet to use in messages
      */
-    public function email_statuschange_html($info, $lang) {
+    public function email_statuschange_html($info, $lang, $includeheader = true) {
         global $CFG;
         $sm = get_string_manager();
-        $posthtml  = '<p><span style="font-family: sans-serif; ">' .
-            '<a href="'.$CFG->wwwroot.'/course/view.php?id='.$this->course->id.'">'.
-            format_string($this->course->shortname).'</a> ->'.
-            '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.
-            $info->id.'">'.$sm->get_string('modulenameplural', 'publication', null, $lang).'</a> ->'.
-            '<a href="'.$CFG->wwwroot.'/mod/publication/view.php?id='.$info->id.'">'.
-            format_string($info->publication). '</a></span></p>';
-        $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
-        $posthtml .= '<p>'.$sm->get_string('email:statuschange:html', 'publication', $info, $lang).'</p>';
-        $posthtml .= '</font><hr />';
+        $posthtml = '';
+        if ($includeheader) {
+            $posthtml .= '<p><span style="font-family: sans-serif; ">' .
+                '<a href="' . $CFG->wwwroot . '/course/view.php?id=' . $this->course->id . '">' .
+                format_string($this->course->shortname) . '</a> ->' .
+                '<a href="' . $CFG->wwwroot . '/mod/publication/view.php?id=' .
+                $info->id . '">' . $sm->get_string('modulenameplural', 'publication', null, $lang) . '</a> ->' .
+                '<a href="' . $CFG->wwwroot . '/mod/publication/view.php?id=' . $info->id . '">' .
+                format_string($info->publication) . '</a></span></p>';
+            $posthtml .= ''.$sm->get_string('email:statuschange:header', 'publication', $info, $lang);
+        }
+        $posthtml .= $sm->get_string('email:statuschange:filename', 'publication', $info, $lang);
+       /* $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
+        $posthtml .= '</span>';*/
         return $posthtml;
     }
 

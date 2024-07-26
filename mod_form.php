@@ -113,6 +113,7 @@ class mod_publication_mod_form extends moodleform_mod {
         $mform->addElement($select);
         $mform->addHelpButton('importfrom', 'assignment', 'publication');
         $mform->hideIf('importfrom', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
+        $mform->addElement('html', '<span id="teamassignids" data-assignids="' . implode(',', $teamassigns) . '"></span>');
 
         // Publication mode upload specific elements.
         $maxfiles = [];
@@ -184,7 +185,7 @@ class mod_publication_mod_form extends moodleform_mod {
         $mform->addElement('select', 'obtainstudentapproval', get_string('obtainstudentapproval', 'publication'), $options, $attributes);
         $mform->setDefault('obtainstudentapproval', get_config('publication', 'obtainstudentapproval'));
         $mform->addHelpButton('obtainstudentapproval', 'obtainstudentapproval', 'publication');
-        $mform->hideIf('obtainstudentapproval', 'importfrom', 'in', $teamassigns);
+       // $mform->hideIf('obtainstudentapproval', 'importfrom', 'in', $teamassigns);
 
 
         // Group approval.
@@ -198,7 +199,7 @@ class mod_publication_mod_form extends moodleform_mod {
         $mform->addElement('select', 'obtaingroupapproval', get_string('obtaingroupapproval', 'publication'), $options, $attributes);
         $mform->setDefault('obtaingroupapproval',  get_config('publication', 'obtaingroupapproval'));
         $mform->addHelpButton('obtaingroupapproval', 'obtaingroupapproval', 'publication');
-        $mform->hideIf('obtaingroupapproval', 'importfrom', 'in', $notteamassigns);
+       // $mform->hideIf('obtaingroupapproval', 'importfrom', 'in', $notteamassigns);
 
         /*foreach ($notteamassigns as $cur) {
             $mform->hideIf('obtaingroupapproval', 'importfrom', 'eq', $cur);
@@ -272,13 +273,14 @@ class mod_publication_mod_form extends moodleform_mod {
             PUBLICATION_NOTIFY_ALL => get_string('notify:setting:3', 'publication'),
         ];
 
+        $mform->addElement('select', 'notifyfilechange', get_string('notify:filechange', 'publication'), $options);
+        $mform->addHelpButton('notifyfilechange', 'notify:filechange', 'publication');
+        $mform->setDefault('notifyfilechange', get_config('publication', 'notifyfilechange'));
+
         $mform->addElement('select', 'notifystatuschange', get_string('notify:statuschange', 'publication'), $options);
         $mform->addHelpButton('notifystatuschange', 'notify:statuschange', 'publication');
         $mform->setDefault('notifystatuschange', get_config('publication', 'notifystatuschange'));
 
-        $mform->addElement('select', 'notifyfilechange', get_string('notify:filechange', 'publication'), $options);
-        $mform->addHelpButton('notifyfilechange', 'notify:filechange', 'publication');
-        $mform->setDefault('notifyfilechange', get_config('publication', 'notifyfilechange'));
 
 
 /*

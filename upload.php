@@ -178,7 +178,7 @@ if ($mform->is_cancelled()) {
             $completion->update_state($cm, COMPLETION_COMPLETE, $USER->id);
         }
     }
-
+    publication::send_all_pending_notifications();
     redirect(new moodle_url('/mod/publication/view.php', ['id' => $cm->id]));
 }
 

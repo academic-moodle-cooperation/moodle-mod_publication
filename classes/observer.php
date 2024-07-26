@@ -50,6 +50,7 @@ class observer {
             if ($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT) {
                 $publication->importfiles();
             }
+            publication::send_all_pending_notifications();
         }
     }
 
@@ -100,6 +101,8 @@ class observer {
             $publication = new publication($cm);
             $publication->importfiles();
         }
+
+        publication::send_all_pending_notifications();
 /*
         $subfilerecords = $DB->get_records('assignsubmission_file', [
                 'assignment' => $assignid,

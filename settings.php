@@ -64,7 +64,7 @@ if ($ADMIN->fulltree) {
     ];
 
 
-    $settings->add(new admin_setting_configselect('publication/notifyfilechange', get_string('notify:statuschange_admin', 'publication'),
+    $settings->add(new admin_setting_configselect('publication/notifyfilechange', get_string('notify:filechange_admin', 'publication'),
         get_string('notify:filechange_help', 'publication'), PUBLICATION_NOTIFY_STUDENT, $options));
 
     $settings->add(new admin_setting_configselect('publication/notifystatuschange', get_string('notify:statuschange_admin', 'publication'),
