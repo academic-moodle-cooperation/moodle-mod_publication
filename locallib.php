@@ -327,11 +327,17 @@ class publication {
 
 
     public function is_approval_open() {
+        global $USER;
+
         $now = time();
 
         $from = $this->get_instance()->approvalfromdate;
         $to = $this->get_instance()->approvaltodate;
+        $extensionduedate = $this->user_extensionduedate($USER->id);
 
+        if ($to != 0 && $extensionduedate) {
+            $to = $extensionduedate;
+        }
         if (($from == 0 || $from < $now) && ($to == 0 || $to > $now)) {
             return true;
         }
