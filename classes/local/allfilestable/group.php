@@ -271,10 +271,10 @@ class group extends base {
         $status->rejected = false;
         $status->pending = false;
         switch ($this->publication->student_approval($file)) {
-            case 2:
+            case 1:
                 $status->approved = true;
                 break;
-            case 1:
+            case 2:
                 $status->rejected = true;
                 break;
             default:

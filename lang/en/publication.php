@@ -129,6 +129,7 @@ $string['approvalfromdate'] = 'Approval from';
 $string['approvalfromdate_help'] = 'Approval status cannot be changed before this date. This setting is only relevant when Student or Group approval is not automatic.';
 $string['approvaltodate'] = 'Approval until';
 $string['approvaltodate_help'] = 'Approval status cannot be changed after this date. This setting is only relevant when Student or Group approval is not automatic.';
+$string['approvaltodatevalidation'] = 'Approval until date must be after the approval from date.';
 $string['maxfiles'] = 'Maximum number of attachments';
 $string['maxfiles_help'] = 'Each student will be able to upload up to this number of files for their submission.';
 $string['configmaxfiles'] = 'Default maximum number of attachments allowed per user.';
