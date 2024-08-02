@@ -312,6 +312,8 @@ function xmldb_publication_upgrade($oldversion) {
                 $publication->obtainteacherapproval = $publication->obtainteacherapproval == 1 ? 0 : 1;
             } else {
                 $publication->obtainteacherapproval = 1;
+                $publication->approvalfromdate = $publication->allowsubmissionsfromdate;
+                $publication->approvaltodate = $publication->cutoffdate;
             }
             $DB->update_record('publication', $publication, true);
         }
