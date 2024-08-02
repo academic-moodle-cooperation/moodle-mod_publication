@@ -41,6 +41,8 @@ require_once($CFG->dirroot . '/mod/publication/locallib.php');
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_publication_mod_form extends moodleform_mod {
+    private $_teamassigns;
+    private $_notteamassigns;
 
     /**
      * Define this form - called by the parent constructor
@@ -110,6 +112,8 @@ class mod_publication_mod_form extends moodleform_mod {
             $attributes = ['data-teamsubmission' => $assigninstance->teamsubmission];
             $select->addOption($assigninstance->name, $assigninstance->id, $attributes);
         }
+        $this->_teamassigns = $teamassigns;
+        $this->_notteamassigns = $notteamassigns;
         $mform->addElement($select);
         $mform->addHelpButton('importfrom', 'assignment', 'publication');
         $mform->hideIf('importfrom', 'mode', 'neq', PUBLICATION_MODE_IMPORT);
@@ -394,6 +398,16 @@ class mod_publication_mod_form extends moodleform_mod {
         if ($data['allowsubmissionsfromdate'] && $data['cutoffdate']) {
             if ($data['allowsubmissionsfromdate'] > $data['cutoffdate']) {
                 $errors['cutoffdate'] = get_string('cutoffdatefromdatevalidation', 'publication');
+            }
+        }
+
+        if ($data['approvalfromdate'] && $data['approvaltodate']) {
+            $studentapprovalrequired = $data['obtainstudentapproval'] == 1;
+            if ($data['mode'] == PUBLICATION_MODE_IMPORT && in_array($data['importfrom'], $this->_teamassigns)) {
+                $studentapprovalrequired = $data['obtaingroupapproval'] != -1;
+            }
+            if ($studentapprovalrequired && $data['approvalfromdate'] > $data['approvaltodate']) {
+                $errors['approvaltodate'] = get_string('approvaltodatevalidation', 'publication');
             }
         }
 

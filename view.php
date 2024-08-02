@@ -217,6 +217,7 @@ $allfilesform = $publication->display_allfilesform();
 $publicationinstance = $publication->get_instance();
 $publicationmode = $publication->get_mode();
 $templatecontext = new stdClass;
+$templatecontext->obtainstudentapprovaltitle = get_string('obtainstudentapproval', 'publication');
 $templatecontext->obtainteacherapproval = $publicationinstance->obtainteacherapproval == 1 ?
     get_string('obtainteacherapproval_yes', 'publication') : get_string('obtainteacherapproval_no', 'publication');
 if ($publicationmode == PUBLICATION_MODE_FILEUPLOAD) {
@@ -226,6 +227,7 @@ if ($publicationmode == PUBLICATION_MODE_FILEUPLOAD) {
 } else {
     $templatecontext->mode = get_string('modeimport', 'publication');
     if ($publicationmode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+        $templatecontext->obtainstudentapprovaltitle = get_string('obtaingroupapproval', 'publication');
         if ($publicationinstance->obtainstudentapproval == 0) {
             $templatecontext->obtainstudentapproval = get_string('obtainstudentapproval_no', 'publication');
         } else {
