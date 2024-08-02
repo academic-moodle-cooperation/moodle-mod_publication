@@ -313,7 +313,7 @@ function xmldb_publication_upgrade($oldversion) {
             } else {
                 $publication->obtainteacherapproval = 1;
                 $publication->approvalfromdate = $publication->allowsubmissionsfromdate;
-                $publication->approvaltodate = $publication->cutoffdate;
+                $publication->approvaltodate = $publication->duedate;
             }
             $DB->update_record('publication', $publication, true);
         }
