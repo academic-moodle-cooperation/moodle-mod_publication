@@ -299,5 +299,40 @@ function xmldb_publication_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2024071900, 'publication');
     }
 
+    if ($oldversion < 2024080200) {
+        $rs = $DB->get_recordset('publication');
+        foreach ($rs as $publication) {
+            if ($publication->notifystatuschange == 1) {
+                $publication->notifystatuschange = PUBLICATION_NOTIFY_STUDENT;
+            } else {
+                $publication->notifystatuschange = 0;
+            }
+            if ($publication->mode == PUBLICATION_MODE_UPLOAD) {
+                $publication->obtainstudentapproval = 0;
+                $publication->obtainteacherapproval = $publication->obtainteacherapproval == 1 ? 0 : 1;
+            } else {
+                $publication->obtainteacherapproval = 1;
+                $publication->approvalfromdate = $publication->allowsubmissionsfromdate;
+                $publication->approvaltodate = $publication->duedate;
+            }
+            $DB->update_record('publication', $publication, true);
+        }
+        $rs->close();
+
+
+        $rs = $DB->get_recordset('publication_file');
+        foreach ($rs as $file) {
+            if ($file->studentapproval === 0) {
+                $file->studentapproval = 2;
+            } else if ($file->studentapproval > 2) {
+                $file->studentapproval = null;
+            }
+            $DB->update_record('publication_file', $file, true);
+        }
+        $rs->close();
+
+        upgrade_mod_savepoint(true, 2024080200, 'publication');
+    }
+
     return true;
 }

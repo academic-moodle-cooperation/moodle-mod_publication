@@ -7,7 +7,9 @@ CHANGELOG
 * [FEATURE] #7931 - update icon
 * [FEATURE] #7473 - only students with access appear in files list
 * [FEATURE] #7809 - hide action buttons when table is empty in File submissions page
-
+* [UPDATE] #8011 - implement new workflow
+* [FEATURE] #7775 - new messages options
+* [BUG] #7876 - fix error when using postgres database
 
 4.3.0 (2024-01-10)
 -------------------
