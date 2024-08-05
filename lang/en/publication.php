@@ -26,7 +26,7 @@
 
 $string['modulename'] = 'Student folder';
 $string['pluginname'] = 'Student folder';
-$string['modulename_help'] = 'The student folder offers the following features:<br><ul><li>Students can upload files, which will be published automatically or after teachers reviewed and approved them for publishing.</li><li>An assignment can be chosen as the basis for a student folder. A teacher can decide which files of the assignment are published (visible to all students). Teacher can additionally let students decide for themselves if their files should be visible to all.</li></ul>';
+$string['modulename_help'] = 'The student folder offers the following features:<br><ul><li>Students can upload files or import them from an assignment activity.</li><li>The files will be published (will be made visible to everyone) automatically or after students and/ or teachers approval for publishing.</li><li>Students and/or teachers will receive a notification when students upload or change a file or when a file is imported or updated from an assignment activity. Furthermore students and/ or teachers will receive a notification about any changes of the publication status.</li></ul>';
 
 $string['eventpublicationfiledeleted'] = 'Publication file delete';
 $string['eventpublicationfileuploaded'] = 'Publication file upload';
@@ -53,14 +53,14 @@ $string['notifyteacher_help'] = 'If enabled, teachers will receive a notificatio
 $string['notifystudents_help'] = 'If enabled, students will receive a notification when the publication status of one of their uploaded files changes.';
 
 
-$string['notify:setting:0'] = 'Do not send notifications';
+$string['notify:setting:0'] = 'No notifications';
 $string['notify:setting:1'] = 'Teachers only';
 $string['notify:setting:2'] = 'Students only';
 $string['notify:setting:3'] = 'Both teachers and students';
-$string['notify:statuschange'] = 'Notify students and/or teachers about any publication status changes';
+$string['notify:statuschange'] = 'Notifications about publication status changes';
 $string['notify:statuschange_help'] = ' Depends on the setting, if enabled, students and/or teachers will receive a notification when the publication status of one of the files is changed.';
 $string['notify:statuschange_admin'] = 'Default notification setting for publication status changes';
-$string['notify:filechange'] = 'Notify students and/or teachers about submitted or imported files';
+$string['notify:filechange'] = 'Notifications about submitted or imported files';
 $string['notify:filechange_help'] = 'Depends on the setting, if enabled, students and/or teachers will receive a notification when students upload or change a file, or when a file is imported or updated from an assignment activity.';
 $string['notify:filechange_admin'] = 'Default notification setting for file changes - submitted or imported';
 
@@ -74,7 +74,7 @@ $string['email:filechange_upload:header'] = '<b>{$a->username}</b> has uploaded 
 $string['email:filechange_upload:subject'] ='File(s) uploaded';
 $string['email:filechange_import:header'] = 'The following file(s) from Assignment <b>\'{$a->assign}\'</b> was/were imported into <b>\'{$a->publication}\'</b> on {$a->dayupdated} at {$a->timeupdated}:<br /><ul>';
 $string['email:filechange_import:subject'] ='File(s) imported';
-$string['email:filechange:footer'] = '</ul><br />Please check if your permission is required.';
+$string['email:filechange:footer'] = '</ul><br />Please check if your permission for publication is required.';
 
 
 $string['uploaded'] = 'Uploaded';
@@ -96,34 +96,32 @@ $string['emailstudentsmail'] = '{$a->username} has changed the publication statu
 $string['emailstudentsmailhtml'] = '{$a->username} has changed the publication status of \'{$a->filename}\' for <i>\'{$a->publication}\'</i> to <b>{$a->apstatus}</b> on {$a->dayupdated} at {$a->timeupdated}</i><br /><br /> It is <a href="{$a->url}">available on the web site</a>.';
 */
 
-$string['approvalsettings'] = 'Approval settings';
+$string['approvalsettings'] = 'Publication settings';
 $string['name'] = 'Name';
 $string['obtainstudentapproval'] = 'Student approval';
 $string['obtainstudentapproval_admin'] = 'Default student approval setting';
 $string['obtainstudentapproval_admin_desc'] = 'This setting determines the default approval setting for students.';
-$string['obtainstudentapproval_help'] = 'This option determines how the publication (visibility) of file submissions takes place: <br><ul><li><strong>Required</strong> - Students need to manually approve the file for publication</li><li><strong>Automatically</strong> - Students are not required to manually approve files for publication. In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.</li></ul>';
+$string['obtainstudentapproval_help'] = 'This option determines how the publication (visibility) of file submissions by student approval takes place: <br><ul><li><strong>Automatic</strong> - no approval from students is required. In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.</li><li><strong>Required</strong> - Students need to manually approve the file for publication</li></ul>';
 $string['saveapproval'] = 'Save changes';
 $string['obtainteacherapproval'] = 'Teacher approval';
-$string['obtainteacherapproval_help'] = 'Decide if files will be made visible immediately upon upload or not: <br><ul><li><strong>Automatically</strong> - all files will be visible with regards to student approval only</li><li><strong>Required</strong> - files will be published only after the teacher approved</li></ul>';
-$string['obtainteacherapproval_no'] = 'Approve automatically';
-$string['obtainteacherapproval_yes'] = 'Approval from teachers required';
+$string['obtainteacherapproval_help'] = 'This option determines how the publication (visibility) of file submissions by teachers approval takes place: <br><ul><li><strong>Automatic</strong> - no approval from teachers is required.</li><li><strong>Required</strong> - Teachers need to manually approve the file for publication</li></ul>';
+$string['obtainteacherapproval_no'] = 'Automatic';
+$string['obtainteacherapproval_yes'] = 'Required';
 $string['obtainteacherapproval_admin'] = 'Default teacher approval setting';
 $string['obtainteacherapproval_admin_desc'] = 'This setting determines the default approval setting for teachers.';
 //$string['obtainstudentapproval_teacher'] = 'Approval from teachers required';
 //$string['obtainstudentapproval_participant'] = 'Approval from students and teachers required';
-$string['obtainstudentapproval_no'] = 'Approve automatically';
-$string['obtainstudentapproval_yes'] = 'Approval from students required';
+$string['obtainstudentapproval_no'] = 'Automatic';
+$string['obtainstudentapproval_yes'] = 'Required';
 $string['obtainapproval_automatic'] = 'Automatic';
 $string['obtainapproval_required'] = 'Required';
 $string['obtaingroupapproval'] = 'Approval by group';
-$string['obtaingroupapproval_help'] = 'This option determines how the publication (visibility) of file submissions takes place: <br /><ul><li><strong>Required from ALL members</strong> - all group members need to approve</li><li><strong>Required from at least ONE member</strong> - at least one group member needs to approve</li><li><strong>Automatically</strong> - no approval from group members is required. In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.</li></ul>';
+$string['obtaingroupapproval_help'] = 'This option determines how the publication (visibility) of file submissions by groups takes place: <br /><ul><li><strong>Automatic</strong> - no approval from group members is required. In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.</li><li><strong>Required from at least ONE member</strong> - at least one group member needs to approve</li><li><strong>Required from ALL members</strong> - all group members need to approve</li></ul>';
 $string['obtaingroupapproval_all'] = 'Required from ALL members';
 $string['obtaingroupapproval_single'] = 'Required from at least ONE member';
 $string['obtaingroupapproval_title'] = 'Group approval';
 $string['obtaingroupapproval_admin'] = 'Default group approval setting';
 $string['obtaingroupapproval_admin_desc'] = 'This setting determines the default approval setting for group members. This setting becomes relevant <strong>only</strong> when the mode is set to "Import files from an assignment activity" and the assignment has group submission.';
-
-
 
 $string['approvalfromdate'] = 'Approval from';
 $string['approvalfromdate_help'] = 'Approval status cannot be changed before this date. This setting is only relevant when Student or Group approval is not automatic.';
@@ -222,12 +220,12 @@ $string['nothing_to_show_groups'] = 'Nothing to display - no groups available';
 $string['notice'] = '<strong>Notice: </strong>';
 
 
-$string['notice_upload_studentrequired_teacherrequired'] = 'All files you upload here will be published (will be made visible for everyone) <strong>after your and the approval of teachers.</strong> Teachers reserve the right to reject the publication of your files at any time.';
+$string['notice_upload_studentrequired_teacherrequired'] = 'All files you upload here will be published (will be made visible for everyone) <strong>after your approval and the approval of teachers.</strong> Teachers reserve the right to reject the publication of your files at any time.';
 $string['notice_upload_studentrequired_teachernotrequired'] = 'All files you upload here will be published (will be made visible for everyone) <strong>after your approval.</strong>';
 $string['notice_upload_studentnotrequired_teacherrequired'] = 'All files you upload here will be published (will be made visible for everyone) only <strong>after the approval of teachers.</strong> Teachers reserve the right to reject the publication of your files at any time.';
 $string['notice_upload_studentnotrequired_teachernotrequired'] = 'All files you upload here will be published (will be made visible to everyone) <strong>automatically.</strong>';
 
-$string['notice_import_studentrequired_teacherrequired'] = 'The files will be published (will be made visible for everyone) after <strong>your and the approval of teachers.</strong> Teachers reserve the right to reject the publication of your files at any time.';
+$string['notice_import_studentrequired_teacherrequired'] = 'The files will be published (will be made visible for everyone) after <strong>your approval and the approval of teachers.</strong> Teachers reserve the right to reject the publication of your files at any time.';
 $string['notice_import_studentrequired_teachernotrequired'] = 'The files will be published (will be made visible for everyone) after <strong>your approval.</strong>';
 $string['notice_import_studentnotrequired_teacherrequired'] = 'The files will be published (will be made visible for everyone) only <strong>after the approval of teachers.</strong> Teachers reserve the right to reject the publication of your files at any time.';
 $string['notice_import_studentnotrequired_teachernotrequired'] = 'The files will be published (will be made visible to everyone) <strong>automatically.</strong>';
