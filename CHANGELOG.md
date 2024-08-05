@@ -1,15 +1,15 @@
 CHANGELOG
 =========
 
-4.4.0 (2024-05-21)
+4.4.0 (2024-08-02)
 -------------------
 * Moodle 4.4.0 compatible version
 * [FEATURE] #7931 - update icon
-* [FEATURE] #7473 - only students with access appear in files list
+* [FEATURE] #7473 - only students with access appear in files list - github #67
 * [FEATURE] #7809 - hide action buttons when table is empty in File submissions page
-* [UPDATE] #8011 - implement new workflow
-* [FEATURE] #7775 - new messages options
-* [BUG] #7876 - fix error when using postgres database
+* [FEATURE] #7774 - implement new workflow for publication
+* [FEATURE] #7775 - implement new message options
+* [BUG] #7975 - fix error when using postgres database - github #83
 
 4.3.0 (2024-01-10)
 -------------------
