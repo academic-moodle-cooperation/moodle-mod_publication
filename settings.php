@@ -30,6 +30,8 @@ global $CFG;
 
 if ($ADMIN->fulltree) {
 
+    require_once(__DIR__ . '/locallib.php');
+
     $settings->add(new admin_setting_configcheckbox('publication/obtainstudentapproval',
             get_string('obtainstudentapproval', 'publication'), get_string('configobtainstudentapproval', 'publication'), 1));
 
