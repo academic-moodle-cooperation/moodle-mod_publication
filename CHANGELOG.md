@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.4.1 (2024-08-07)
+-------------------
+* [BUG] #8034 - fix bug with undefined constant during upgrade - github #84 - thanks to Benjamin-unige &  github pull request #85 - lucaboesch
+
 4.4.0 (2024-08-02)
 -------------------
 * Moodle 4.4.0 compatible version
