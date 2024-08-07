@@ -30,6 +30,8 @@ global $CFG;
 
 if ($ADMIN->fulltree) {
 
+    require_once(__DIR__ . '/locallib.php');
+
     $settings->add(new admin_setting_configtext('publication/maxfiles', get_string('maxfiles', 'publication'),
             get_string('configmaxfiles', 'publication'), 5, PARAM_INT));
 
