@@ -166,7 +166,7 @@ class allfilestable_testcase extends base {
         foreach ($users as $key => $user) {
             $generator->create_submission([
                 'userid' => $user->id,
-                'assignid' => $cm->id,
+                'cmid' => $cm->id,
                 'file' => implode(',', $files),
             ]);
         }
