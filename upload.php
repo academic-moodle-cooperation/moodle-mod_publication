@@ -54,6 +54,10 @@ if (!empty($id)) {
 
 $PAGE->set_url($url);
 
+if (!$publication->is_open()) {
+    redirect(new moodle_url('/mod/publication/view.php', ['id' => $cm->id]), get_string('uploadnotopen', 'mod_publication'));
+}
+
 $entry = new stdClass();
 $entry->id = $USER->id;
 
@@ -71,13 +75,13 @@ $definitionoptions = [
         'maxfiles' => $maxfiles,
         'maxbytes' => $maxbytes,
         'context' => $context,
-        'accepted_types' => $acceptedfiletypes
+        'accepted_types' => $acceptedfiletypes,
 ];
 $attachmentoptions = [
         'subdirs' => false,
         'maxfiles' => $maxfiles,
         'maxbytes' => $maxbytes,
-        'accepted_types' => $acceptedfiletypes
+        'accepted_types' => $acceptedfiletypes,
 ];
 
 $entry = file_prepare_standard_editor($entry, 'definition', $definitionoptions, $context, 'mod_publication', 'entry', $entry->id);
@@ -92,7 +96,7 @@ $mform = new mod_publication_upload_form(null, [
         'cm' => $cm,
         'publication' => $publication,
         'definitionoptions' => $definitionoptions,
-        'attachmentoptions' => $attachmentoptions
+        'attachmentoptions' => $attachmentoptions,
 ]);
 
 if ($mform->is_cancelled()) {

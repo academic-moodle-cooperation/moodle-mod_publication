@@ -58,7 +58,7 @@ class publication_approval_changed extends \core\event\base {
             'objectid'      => $do->publication,
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => $do->reluser,
-            'other'         => (Array)$do
+            'other'         => (Array)$do,
         ));
         return $event;
     }

@@ -184,7 +184,7 @@ class publication {
                     $assigncm = $DB->get_record('course_modules', [
                             'course' => $assign->course,
                             'module' => $assignmoduleid,
-                            'instance' => $assign->id
+                            'instance' => $assign->id,
                     ]);
                 } else {
                     $assigncm = false;
@@ -248,7 +248,7 @@ class publication {
 
         $extensionduedate = $DB->get_field('publication_extduedates', 'extensionduedate', [
                 'publication' => $this->get_instance()->id,
-                'userid' => $uid
+                'userid' => $uid,
         ]);
 
         if (!$extensionduedate) {
@@ -453,7 +453,7 @@ class publication {
                 html_writer::empty_tag('input', [
                         'type' => 'hidden',
                         'name' => 'id',
-                        'value' => $this->get_coursemodule()->id
+                        'value' => $this->get_coursemodule()->id,
                 ]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'page', 'value' => $page]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
@@ -481,14 +481,14 @@ class publication {
 
         $link = html_writer::link(new moodle_url('/mod/publication/view.php', [
                 'id' => $this->coursemodule->id,
-                'action' => 'zip'
+                'action' => 'zip',
         ]),
                 get_string('downloadall', 'publication'));
         echo html_writer::tag('div', $link, ['class' => 'mod-publication-download-link']);
 
         $settingsurl = new moodle_url('/course/modedit.php', [
             'update' => $this->coursemodule->id,
-            'return' => 'zip'
+            'return' => 'zip',
         ], 'id_allowedfiletypes');
         $settingslink = html_writer::link($settingsurl,  get_string('currentlynotapproved', 'publication'));
         echo html_writer::tag('div', $settingslink, ['class' => 'mod-publication-download-link d-none needsapproval-legend text-info']);
@@ -521,7 +521,7 @@ class publication {
                         'type' => 'reset',
                         'name' => 'resetvisibility',
                         'value' => get_string('reset', 'publication'),
-                        'class' => 'visibilitysaver btn btn-secondary ml-1'
+                        'class' => 'visibilitysaver btn btn-secondary ml-1',
                 ]);
 
                 if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
@@ -530,14 +530,14 @@ class publication {
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary'
+                            'class' => 'visibilitysaver btn btn-primary',
                     ]);
                 } else {
                     $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
                             'value' => get_string('saveteacherapproval', 'publication'),
-                            'class' => 'visibilitysaver btn btn-primary'
+                            'class' => 'visibilitysaver btn btn-primary',
                     ]);
                 }
             } else {
@@ -551,7 +551,7 @@ class publication {
                     'type' => 'submit',
                     'name' => 'submitgo',
                     'value' => get_string('go', 'publication'),
-                    'class' => 'btn btn-primary'
+                    'class' => 'btn btn-primary',
                  ]).html_writer::end_div().
                  html_writer::div($buttons, 'col');
 
@@ -592,7 +592,7 @@ class publication {
             10 => 10,
             20 => 20,
             50 => 50,
-            100 => 100
+            100 => 100,
         ]);
         $mform->setDefault('perpage', $perpage);
         $mform->addElement('submit', 'savepreferences', get_string('savepreferences'));
@@ -1110,7 +1110,7 @@ class publication {
             $assigncm = $DB->get_record('course_modules', [
                     'course' => $assign->course,
                     'module' => $assignmoduleid,
-                    'instance' => $assign->id
+                    'instance' => $assign->id,
             ]);
 
             $assigncontext = context_module::instance($assigncm->id);
@@ -1283,7 +1283,7 @@ class publication {
         if (!empty($submissionid)) {
             $records = $DB->get_records('assignsubmission_onlinetext', [
                     'assignment' => $assigncm->instance,
-                    'submission' => $submissionid
+                    'submission' => $submissionid,
             ]);
         } else {
             $records = $DB->get_records('assignsubmission_onlinetext', ['assignment' => $assigncm->instance]);
@@ -1358,7 +1358,7 @@ class publication {
             $conditions = [
                     'publication' => $publicationid,
                     'userid' => $itemid,
-                    'type' => PUBLICATION_MODE_ONLINETEXT
+                    'type' => PUBLICATION_MODE_ONLINETEXT,
             ];
             $pubfile = $DB->get_record('publication_file', $conditions, '*', IGNORE_MISSING);
 
@@ -1563,7 +1563,7 @@ class publication {
         $conditions = [
                 'publication' => $publicationid,
                 'userid' => $itemid,
-                'type' => PUBLICATION_MODE_ONLINETEXT
+                'type' => PUBLICATION_MODE_ONLINETEXT,
         ];
         if (!$pubfile = $DB->get_record('publication_file', $conditions, '*')) {
             return '';

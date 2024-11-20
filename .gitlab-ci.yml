@@ -62,6 +62,6 @@ variables:
 code_checker_mariadb:
   extends: .mariadb
   <<: *job_definition
-  image: amcdev/moodle-plugin-ci:7.4-n.16
+  image: quay.io/amc/moodle-plugin-ci:8.1-node.20
   variables:
     MOODLE_BRANCH: "MOODLE_401_STABLE"

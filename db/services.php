@@ -33,7 +33,7 @@ $services = [
            'restrictedusers' => 0, /* If enabled, the Moodle administrator must link some user to this service into the
                                     * administration.*/
            'enabled' => 1, // If enabled, the service can be reachable on a default installation.
-        ]
+        ],
 ];
 
 $functions = [

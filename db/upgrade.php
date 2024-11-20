@@ -55,7 +55,7 @@ function xmldb_publication_upgrade($oldversion) {
         // Remove unused settings (requiremodintro and duplicates of stdexamplecount and requiremodintro)!
         $DB->delete_records('config_plugins', [
                 'plugin' => 'publication',
-                'name' => 'requiremodintro'
+                'name' => 'requiremodintro',
         ]);
 
         upgrade_mod_savepoint(true, 2015120201, 'publication');
