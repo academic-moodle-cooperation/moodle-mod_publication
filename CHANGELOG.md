@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+4.1.2 (2024-11-20)
+-----------------
+* [BUG] #8098 - fix students can bypass date restriction
+* [BUG] #8100 - include missing locallib.php in lib.php
+
+
 4.1.1 (2023-06-27)
 -----------------
 * [HOTFIX] #7628 - force download plugin files, add missing require_sesskey() in view.php

@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once(__DIR__ . '/locallib.php');
 /**
  * Adds a new publication instance
  *
@@ -236,7 +237,7 @@ function publication_reset_userdata($data) {
             $status[] = [
                     'component' => $componentstr,
                     'item' => $publication->name,
-                    'error' => false
+                    'error' => false,
             ];
         }
     }
@@ -277,7 +278,8 @@ function mod_publication_pluginfile($course, $cm, context $context, $filearea, $
 
     $fullpath = "/{$context->id}/mod_publication/$filearea/$itemid/$relativepath";
     $fs = get_file_storage();
-    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+    $file = $fs->get_file_by_hash(sha1($fullpath));
+    if (!$file || $file->is_directory()) {
         return false;
     }
 

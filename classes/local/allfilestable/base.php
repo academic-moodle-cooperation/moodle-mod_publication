@@ -142,7 +142,7 @@ class base extends \table_sql {
 
         $this->options = [
                 1 => get_string('yes'),
-                2 => get_string('no')
+                2 => get_string('no'),
         ];
     }
 
@@ -168,7 +168,7 @@ class base extends \table_sql {
     protected function get_columns() {
         $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', [
                 'id' => 'selectallnone',
-                'onClick' => 'toggle_userselection()'
+                'onClick' => 'toggle_userselection()',
         ]);
 
         $columns = ['selection', 'picture', 'fullname'];
@@ -382,7 +382,7 @@ class base extends \table_sql {
                 'publication' => $this->cm->instance,
                 'userid' => $itemid,
                 'fileid' => $fileid,
-                'type' => PUBLICATION_MODE_ONLINETEXT
+                'type' => PUBLICATION_MODE_ONLINETEXT,
         ];
         if (!$DB->record_exists('publication_file', $conditions)) {
             return '';
@@ -393,13 +393,13 @@ class base extends \table_sql {
         $url = new \moodle_url('/mod/publication/onlinepreview.php', [
                 'id' => $this->cm->id,
                 'itemid' => $itemid,
-                'itemname' => $itemname
+                'itemname' => $itemname,
         ]);
 
         $detailsattr = [
                 'class' => 'onlinetextpreview',
                 'data-itemid' => $itemid,
-                'data-itemname' => $itemname
+                'data-itemname' => $itemname,
         ];
         $symbol = \html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('preview')), $detailsattr);
 

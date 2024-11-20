@@ -70,13 +70,13 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
                 'contenthash' => 'privacy:metadata:contenthash',
                 'type' => 'privacy:metadata:type',
                 'teacherapproval' => 'privacy:metadata:teacherapproval',
-                'studentapproval' => 'privacy:metadata:studentapproval'
+                'studentapproval' => 'privacy:metadata:studentapproval',
         ];
         $publicationgroupapproval = [
                 'fileid' => 'privacy:metadata:fileid',
                 'userid' => 'privacy:metadata:userid',
                 'approval' => 'privacy:metadata:approval',
-                'timemodified' => 'privacy:metadata:timemodified'
+                'timemodified' => 'privacy:metadata:timemodified',
         ];
 
         $collection->add_database_table('publication_extduedates', $publicationextduedates, 'privacy:metadata:extduedates');
@@ -106,7 +106,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
                 'userid' => $userid,
                 'guserid' => $userid,
                 'extuserid' => $userid,
-                'fuserid' => $userid
+                'fuserid' => $userid,
         ];
 
         $enroled = enrol_get_all_users_courses($userid);
@@ -167,7 +167,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                 'modulename' => 'publication',
                 'contextid' => $context->id,
                 'contextlevel' => CONTEXT_MODULE,
-                'upload' => PUBLICATION_MODE_UPLOAD
+                'upload' => PUBLICATION_MODE_UPLOAD,
         ];
 
         // Get all who uploaded/have files imported!
@@ -417,12 +417,12 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                       JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :userid AND f.userid = gm.groupid
                      WHERE p.id = :publication", [
                         'publication' => $pub->get_instance()->id,
-                        'userid' => $user->id
+                        'userid' => $user->id,
                 ]);
             } else {
                 $rs = $DB->get_recordset("publication_file", [
                         'publication' => $pub->get_instance()->id,
-                        'userid' => 0
+                        'userid' => 0,
                 ]);
             }
         } else {
@@ -432,7 +432,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                   JOIN {publication_file} f ON p.id = f.publication
                  WHERE p.id = :publication AND f.userid = :userid", [
                     'publication' => $pub->get_instance()->id,
-                    'userid' => $user->id
+                    'userid' => $user->id,
             ]);
         }
 
@@ -489,7 +489,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                 'filename' => $file->filename,
                 'contenthash' => $file->contenthash,
                 'teacherapproval' => transform::yesno($file->teacherapproval),
-                'studentapproval' => transform::yesno($file->studentapproval)
+                'studentapproval' => transform::yesno($file->studentapproval),
         ];
         switch ($file->type) {
             case PUBLICATION_MODE_IMPORT:
@@ -541,7 +541,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
         if (count($resources) > 0) {
             foreach ($resources as $cur) {
                 writer::with_context($context)->export_custom_file(array_merge($path, [
-                        get_string('privacy:path:resources', 'mod_publication')
+                        get_string('privacy:path:resources', 'mod_publication'),
                 ]), $cur->get_filename(), $cur->get_content());
             }
         }
@@ -566,7 +566,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                                         JOIN {publication_file} f ON ga.fileid = f.id
                                        WHERE ga.userid = :userid AND f.publication = :publication", [
                 'userid' => $user->id,
-                'publication' => $pub->get_instance()->id
+                'publication' => $pub->get_instance()->id,
         ]);
 
         foreach ($rs as $cur) {
@@ -589,7 +589,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                 'approval' => transform::yesno($approval->approval),
                 'groupid' => $approval->groupid,
                 'timecreated' => transform::datetime($approval->timecreated),
-                'timemodified' => transform::datetime($approval->timemodified)
+                'timemodified' => transform::datetime($approval->timemodified),
         ];
 
         writer::with_context($context)->export_data($path, $approvaldata);

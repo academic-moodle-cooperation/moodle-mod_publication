@@ -25,7 +25,7 @@
 
 namespace mod_publication\local\tests;
 
-use \mod_publication\privacy\provider;
+use mod_publication\privacy\provider;
 use context_module;
 use stdClass;
 
@@ -41,7 +41,7 @@ require_once($CFG->dirroot . '/mod/publication/locallib.php');
  * @author Philipp Hager <philipp.hager@tuwien.ac.at> strongly based on mod_assign's privacy unit tests!
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privacy_testcase extends base {
+class privacy_test extends base {
     /** @var stdClass */
     private $course1;
     /** @var stdClass */
@@ -88,7 +88,7 @@ class privacy_testcase extends base {
      *
      * @throws \coding_exception
      */
-    protected function setUp():void {
+    protected function setUp(): void {
         parent::setUp();
 
         $this->resetAfterTest();
@@ -127,11 +127,11 @@ class privacy_testcase extends base {
         // Publication with uploads.
         $this->pubupload = $this->create_instance([
                 'name' => 'Pub Upload 1',
-                'course' => $this->course1
+                'course' => $this->course1,
         ]);
         $this->pubupload2 = $this->create_instance([
                 'name' => 'Pub Upload 2',
-                'course' => $this->course1
+                'course' => $this->course1,
         ]);
 
         // Assign to import from.
@@ -153,13 +153,13 @@ class privacy_testcase extends base {
                 'name' => 'Teamassign 1',
                 'teamsubmission' => true,
                 'submissiondrafts' => false,
-                'assignsubmission_onlinetext_enabled' => true
+                'assignsubmission_onlinetext_enabled' => true,
         ]);
         $this->teamassign2 = $this->create_assign($this->course2, [
                 'name' => 'Teamassign 2',
                 'teamsubmission' => true,
                 'submissiondrafts' => false,
-                'assignsubmission_onlinetext_enabled' => true
+                'assignsubmission_onlinetext_enabled' => true,
         ]);
         $this->pubteamimport = $this->create_instance([
                 'name' => 'Teamimport 1',
