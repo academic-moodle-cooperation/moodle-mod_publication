@@ -79,6 +79,7 @@ $string['email:filechange:footer'] = '</ul><br />Please check if your permission
 
 $string['uploaded'] = 'Uploaded';
 $string['approvalchange'] = 'Publication status changed';
+$string['uploadnotopen'] = 'File upload is closed!';
 /*
 $string['emailteachermail'] = '---------------------------------------------------------------------\n{$a->username} has uploaded \'{$a->filename}\'
 for \'{$a->publication}\' on {$a->dayupdated} at {$a->timeupdated}.
