@@ -52,6 +52,10 @@ if (!empty($id)) {
     $url->param('id', $id);
 }
 $PAGE->set_url($url);
+if (!$publication->is_open()) {
+    redirect(new moodle_url('/mod/publication/view.php', ['id' => $cm->id]), get_string('uploadnotopen', 'mod_publication'));
+}
+
 
 $entry = new stdClass();
 $entry->id = $USER->id;

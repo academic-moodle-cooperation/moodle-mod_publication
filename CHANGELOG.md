@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+4.4.2 (2024-11-20)
+-------------------
+* [BUG] #8097 - fix students can bypass date restriction
+* [BUG] #8101 - fix sql query that fetches users to work under MSSQL
+
 4.4.1 (2024-08-07)
 -------------------
 * [BUG] #8034 - fix bug with undefined constant during upgrade - github #84 - thanks to Benjamin-unige &  github pull request #85 - lucaboesch

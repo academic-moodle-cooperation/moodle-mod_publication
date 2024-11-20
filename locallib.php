@@ -452,11 +452,11 @@ class publication {
         if ($allfilespage && (has_capability('mod/publication:approve', $this->context)
                 || has_capability('mod/publication:grantextension', $this->context))) {
             // We can skip the approval-checks for teachers!
-            $sql = 'SELECT u.* FROM {user} u ' .
+            $sql = 'SELECT u.id FROM {user} u ' .
                     'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
                     'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers;
         } else {
-            $sql = 'SELECT u.* FROM {user} u ' .
+            $sql = 'SELECT u.id FROM {user} u ' .
                     'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
                     'LEFT JOIN {publication_file} files ON (u.id = files.userid) ' .
                     'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers .
