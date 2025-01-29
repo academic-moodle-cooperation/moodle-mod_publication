@@ -81,13 +81,17 @@ class restore_publication_activity_structure_step extends restore_activity_struc
 
         if (!isset($data->cutoffdate)) {
             $data->cutoffdate = 0;
-        }
-
-        if (!empty($data->preventlatesubmissions)) {
-            $data->cutoffdate = $data->duedate;
         } else {
             $data->cutoffdate = $this->apply_date_offset($data->cutoffdate);
         }
+
+        if ($data->approvalfromdate != 0) {
+            $data->approvalfromdate = $this->apply_date_offset($data->approvalfromdate);
+        }
+        if ($data->approvaltodate != 0) {
+            $data->approvaltodate = $this->apply_date_offset($data->approvaltodate);
+        }
+
 
         // Delete importfrom after restore.
         $data->importfrom = -1;
