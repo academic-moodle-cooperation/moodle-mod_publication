@@ -2,6 +2,9 @@ cache:
   paths:
     - .composer/cache
 
+default:
+  tags:
+    - moodle
 variables:
   CI_BUILD_DIR: "$CI_PROJECT_DIR"
   COMPOSER_HOME: "$CI_PROJECT_DIR/.composer/cache"
