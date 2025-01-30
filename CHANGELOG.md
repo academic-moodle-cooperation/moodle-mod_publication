@@ -9,7 +9,7 @@ CHANGELOG
 4.4.2 (2024-11-20)
 -------------------
 * [BUG] #8097 - fix students can bypass date restriction
-* [BUG] #8101 - fix sql query that fetches users to work under MSSQL
+* [BUG] #8101 - fix sql query that fetches users to work under MSSQL - github #88
 
 4.4.1 (2024-08-07)
 -------------------
