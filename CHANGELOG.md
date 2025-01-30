@@ -3,7 +3,7 @@ CHANGELOG
 
 4.4.3 (2025-01-29)
 -------------------
-* [BUG] #8215 - fix issue with backup and restore
+* [BUG] #8215 - fix issue with backup and restore - github #95
 
 
 4.4.2 (2024-11-20)
