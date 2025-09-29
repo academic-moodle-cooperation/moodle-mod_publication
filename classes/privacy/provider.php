@@ -83,6 +83,16 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
         $collection->add_database_table('publication_file', $publicationfile, 'privacy:metadata:files');
         $collection->add_database_table('publication_groupapproval', $publicationgroupapproval, 'privacy:metadata:groupapproval');
 
+        $publicationoverrides = [
+                'userid' => 'privacy:metadata:userid',
+                'groupid' => 'privacy:metadata:groupid',
+                'allowsubmissionsfromdate' => 'privacy:metadata:allowsubmissionsfromdate',
+                'duedate' => 'privacy:metadata:duedate',
+                'approvalfromdate' => 'privacy:metadata:approvalfromdate',
+                'approvaltodate' => 'privacy:metadata:approvaltodate',
+        ];
+        $collection->add_database_table('publication_overrides', $publicationoverrides, 'privacy:metadata:overrides');
+
         $collection->add_user_preference('publication_perpage', 'privacy:metadata:publicationperpage');
 
         // Link to subplugins.
@@ -107,6 +117,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
                 'guserid' => $userid,
                 'extuserid' => $userid,
                 'fuserid' => $userid,
+                'ovruserid' => $userid,
         ];
 
         $enroled = enrol_get_all_users_courses($userid);
@@ -138,13 +149,15 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
 LEFT JOIN {publication_extduedates} ext ON p.id = ext.publication
 LEFT JOIN {publication_file} f ON p.id = f.publication
 LEFT JOIN {publication_groupapproval} ga ON f.id = ga.fileid
+LEFT JOIN {publication_overrides} po ON p.id = po.publication
 LEFT JOIN {assign} a ON p.importfrom = a.id
 LEFT JOIN {groups} g ON g.courseid = p.course
 LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
     WHERE ((p.importfrom > 0 AND a.teamsubmission > 0)
            AND ((gm.userid = :userid AND (ext.userid = gm.groupid OR f.userid = gm.groupid))
                OR (gm.userid IS NULL AND f.userid = 0 AND a.preventsubmissionnotingroup = 0 AND g.courseid $enrolsql)))
-           OR ((p.importfrom <= 0 OR a.teamsubmission = 0) AND (ext.userid = :extuserid OR f.userid = :fuserid))";
+           OR ((p.importfrom <= 0 OR a.teamsubmission = 0) AND (ext.userid = :extuserid OR f.userid = :fuserid))
+           OR (po.userid = :ovruserid OR po.groupid = gm.groupid)";
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);
 
@@ -228,6 +241,27 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                   JOIN {publication_groupapproval} ga ON p.id = ga.fileid
                  WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
         $userlist->add_from_sql('userid', $sql, $params);
+
+        // Get all users with user-specific overrides.
+        $sql = "SELECT po.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {publication} p ON p.id = cm.instance
+                  JOIN {publication_overrides} po ON po.publication = p.id
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel AND po.userid IS NOT NULL";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Get all users who belong to a group with an override.
+        $sql = "SELECT gm.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {publication} p ON p.id = cm.instance
+                  JOIN {publication_overrides} po ON po.publication = p.id
+                  JOIN {groups_members} gm ON gm.groupid = po.groupid
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel AND po.groupid IS NOT NULL";
+        $userlist->add_from_sql('userid', $sql, $params);
     }
 
     /**
@@ -262,8 +296,10 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
 
                 list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'usr');
 
-                // Delete users' files, extended due dates and groupapprovals for this publication!
+                // Delete users' files, extended due dates, overrides and groupapprovals for this publication!
                 $DB->delete_records_select('publication_extduedates', "publication = :id AND userid ".$usersql,
+                        ['id' => $id] + $userparams);
+                $DB->delete_records_select('publication_overrides', "publication = :id AND userid ".$usersql,
                         ['id' => $id] + $userparams);
                 $files = $DB->get_records_select('publication_file', "publication = :id AND userid ".$usersql,
                         ['id' => $id] + $userparams);
@@ -345,6 +381,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
             static::export_user_preferences($user->id);
             static::export_extensions($context, $publication, $user);
             static::export_files($context, $publication, $user, []);
+            static::export_overrides($context, $publication, $user);
         }
     }
 
@@ -392,6 +429,60 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
         // Overrides returns an array with data in it, but an override with actual data will have the assign ID set.
         if ($ext > 0) {
             $data = (object)[get_string('privacy:extensionduedate', 'mod_publication') => transform::datetime($ext)];
+            writer::with_context($context)->export_data([], $data);
+        }
+    }
+
+    /**
+     * Export publication overrides relevant to this user (user and group-based).
+     *
+     * @param  \context $context Context
+     * @param  \publication $pub The publication object.
+     * @param  \stdClass $user The user object.
+     * @throws \dml_exception
+     */
+    protected static function export_overrides(\context $context, \publication $pub, \stdClass $user) {
+        global $DB;
+
+        $publicationid = $pub->get_instance()->id;
+        $courseid = $pub->get_instance()->course;
+
+        // User-specific overrides.
+        $overrides = $DB->get_records('publication_overrides', [
+                'publication' => $publicationid,
+                'userid' => $user->id,
+        ]);
+
+        // Group-based overrides for any of user's groups in this course.
+        $groups = groups_get_user_groups($courseid, $user->id);
+        $groupids = [];
+        if (!empty($groups) && isset($groups[0]) && is_array($groups[0])) {
+            $groupids = $groups[0];
+        }
+        if (!empty($groupids)) {
+            list($insql, $inparams) = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED, 'grp');
+            $sql = "SELECT * FROM {publication_overrides} WHERE publication = :publication AND groupid " . $insql;
+            $recs = $DB->get_records_sql($sql, ['publication' => $publicationid] + $inparams);
+            $overrides = $overrides + $recs;
+        }
+
+        foreach ($overrides as $ovr) {
+            $data = (object)[
+                    'userid' => $ovr->userid,
+                    'groupid' => $ovr->groupid,
+            ];
+            if (!is_null($ovr->allowsubmissionsfromdate)) {
+                $data->allowsubmissionsfromdate = transform::datetime($ovr->allowsubmissionsfromdate);
+            }
+            if (!is_null($ovr->duedate)) {
+                $data->duedate = transform::datetime($ovr->duedate);
+            }
+            if (!is_null($ovr->approvalfromdate)) {
+                $data->approvalfromdate = transform::datetime($ovr->approvalfromdate);
+            }
+            if (!is_null($ovr->approvaltodate)) {
+                $data->approvaltodate = transform::datetime($ovr->approvaltodate);
+            }
             writer::with_context($context)->export_data([], $data);
         }
     }
@@ -648,6 +739,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                 }
 
                 $DB->delete_records('publication_extduedates', ['publication' => $id]);
+                $DB->delete_records('publication_overrides', ['publication' => $id]);
             }
         }
     }
@@ -737,6 +829,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
             }
 
             $DB->delete_records('publication_extduedates', ['publication' => $pub->id, 'userid' => $user->id]);
+            $DB->delete_records('publication_overrides', ['publication' => $pub->id, 'userid' => $user->id]);
         }
     }
 }
