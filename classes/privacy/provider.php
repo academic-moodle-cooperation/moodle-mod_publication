@@ -471,16 +471,16 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                     'userid' => $ovr->userid,
                     'groupid' => $ovr->groupid,
             ];
-            if (!is_null($ovr->allowsubmissionsfromdate)) {
+            if (!is_null($ovr->allowsubmissionsfromdate) && $ovr->allowsubmissionsfromdate != 0) {
                 $data->allowsubmissionsfromdate = transform::datetime($ovr->allowsubmissionsfromdate);
             }
-            if (!is_null($ovr->duedate)) {
+            if (!is_null($ovr->duedate) && $ovr->duedate != 0) {
                 $data->duedate = transform::datetime($ovr->duedate);
             }
-            if (!is_null($ovr->approvalfromdate)) {
+            if (!is_null($ovr->approvalfromdate) && $ovr->approvalfromdate != 0) {
                 $data->approvalfromdate = transform::datetime($ovr->approvalfromdate);
             }
-            if (!is_null($ovr->approvaltodate)) {
+            if (!is_null($ovr->approvaltodate) && $ovr->approvaltodate != 0) {
                 $data->approvaltodate = transform::datetime($ovr->approvaltodate);
             }
             writer::with_context($context)->export_data([], $data);

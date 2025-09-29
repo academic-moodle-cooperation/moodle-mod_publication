@@ -298,6 +298,7 @@ $string['privacy:path:resources'] = 'Resources';
 $string['privacy:type:upload'] = 'Uploaded file';
 $string['privacy:type:import'] = 'Imported file';
 $string['privacy:type:onlinetext'] = 'Imported onlinetext';
+$string['privacy:extensionduedate'] = 'Extension due date';
 $string['privacy:metadata:groupapproval'] = 'Stores information about approval or rejection of files by group members, imported from a group submission.';
 $string['privacy:metadata:publicationfileexplanation'] = 'Files and converted onlinetext-submissions for this plugin get stored via Moodle\'s file API.';
 $string['privacy:metadata:extduedates'] = 'Stores information about overridden/extended due dates for mod_publication.';
