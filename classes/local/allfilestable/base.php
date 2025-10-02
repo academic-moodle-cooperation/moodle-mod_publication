@@ -628,7 +628,7 @@ FROM
         list(, $files, ) = $this->get_files($values->id);
 
         $filetable = new \html_table();
-        $filetable->attributes = ['class' => 'filetable'];
+        $filetable->attributes = ['class' => 'filetable table-reboot'];
 
         foreach ($files as $file) {
             if (has_capability('mod/publication:approve', $this->context)
@@ -660,7 +660,7 @@ FROM
         list(, $files, ) = $this->get_files($values->id);
         global $OUTPUT;
         $filetable = new \html_table();
-        $filetable->attributes = ['class' => 'filetable'];
+        $filetable->attributes = ['class' => 'filetable table-reboot'];
 
         foreach ($files as $file) {
             if ((has_capability('mod/publication:approve', $this->context))
@@ -698,7 +698,7 @@ FROM
         list(, $files, ) = $this->get_files($values->id);
 
         $table = new \html_table();
-        $table->attributes = ['class' => 'statustable'];
+        $table->attributes = ['class' => 'statustable table-reboot'];
 
         foreach ($files as $file) {
             if (has_capability('mod/publication:approve', $this->context)
@@ -771,7 +771,7 @@ FROM
         list(, $files, ) = $this->get_files($values->id);
 
         $table = new \html_table();
-        $table->attributes = ['class' => 'statustable'];
+        $table->attributes = ['class' => 'statustable table-reboot'];
 
         foreach ($files as $file) {
             if ($this->publication->has_filepermission($file->get_id())) {
@@ -794,7 +794,7 @@ FROM
         list(, $files, ) = $this->get_files($values->id);
 
         $table = new \html_table();
-        $table->attributes = ['class' => 'statustable'];
+        $table->attributes = ['class' => 'statustable table-reboot'];
 
         foreach ($files as $file) {
             $row = [];
