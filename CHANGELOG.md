@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+4.5.4 (2025-09-29)
+-------------------
+* [BUG] #8534 - fix incorrect usage of deprecated.txt
+* [BUG] #8535 - Add missing privacy provider table coverage for table publication_overrides
+
 4.5.3 (2025-03-05)
 -------------------
 * [BUG] #8249 - further fix for AMOS to be able to manage language strings of the current version

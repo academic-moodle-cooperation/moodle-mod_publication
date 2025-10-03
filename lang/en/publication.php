@@ -298,6 +298,7 @@ $string['privacy:path:resources'] = 'Resources';
 $string['privacy:type:upload'] = 'Uploaded file';
 $string['privacy:type:import'] = 'Imported file';
 $string['privacy:type:onlinetext'] = 'Imported onlinetext';
+$string['privacy:extensionduedate'] = 'Extension due date';
 $string['privacy:metadata:groupapproval'] = 'Stores information about approval or rejection of files by group members, imported from a group submission.';
 $string['privacy:metadata:publicationfileexplanation'] = 'Files and converted onlinetext-submissions for this plugin get stored via Moodle\'s file API.';
 $string['privacy:metadata:extduedates'] = 'Stores information about overridden/extended due dates for mod_publication.';
@@ -313,6 +314,12 @@ $string['privacy:metadata:type'] = 'Marks the origin of the file (uploaded by st
 $string['privacy:metadata:contenthash'] = 'SHA1 hash of the file\'s content, used to determine if the file changed.';
 $string['privacy:metadata:filename'] = 'The file\'s name.';
 $string['privacy:metadata:extensionduedate'] = 'The due date effective for students due to the override/extension.';
+$string['privacy:metadata:groupid'] = 'Identifier of the group.';
+$string['privacy:metadata:allowsubmissionsfromdate'] = 'The date from which on students are allowed to upload files or give approval.';
+$string['privacy:metadata:duedate'] = 'The date until which students are allowed to upload files or give approval.';
+$string['privacy:metadata:approvalfromdate'] = 'The date from which on students are allowed to give approval.';
+$string['privacy:metadata:approvaltodate'] = 'The date until which students are allowed to give approval.';
+$string['privacy:metadata:overrides'] = 'Stores information about overrides for mod_publication.';
 
 // Strings for filters
 $string['filter'] = 'Filter';
