@@ -171,7 +171,7 @@ final class allfilestable_test extends base {
             ]);
         }
 
-        // assign::save_submission() ignores the status passed by create_submission and writes
+        // Function assign::save_submission() ignores the status passed by create_submission and writes
         // ASSIGN_SUBMISSION_STATUS_DRAFT because the assign instance has submissiondrafts=1 (the
         // generator's default). Promote two of the three group submissions to "submitted" directly
         // so the import filter (which only takes ASSIGN_SUBMISSION_STATUS_SUBMITTED) has work to do
