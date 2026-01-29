@@ -1792,12 +1792,12 @@ class publication {
             $publication = new publication($cm);
         }
 
-        $notifyfilechange = $publication->get_instance()->notifyfilechange;
+        $notifystatuschange = $publication->get_instance()->notifystatuschange;
         $receivers = [];
-        if ($notifyfilechange == PUBLICATION_NOTIFY_TEACHER || $notifyfilechange == PUBLICATION_NOTIFY_ALL) {
+        if ($notifystatuschange == PUBLICATION_NOTIFY_TEACHER || $notifystatuschange == PUBLICATION_NOTIFY_ALL) {
             $receivers = $publication->get_graders($userfrom);
         }
-        if ($notifyfilechange == PUBLICATION_NOTIFY_STUDENT || $notifyfilechange == PUBLICATION_NOTIFY_ALL) {
+        if ($notifystatuschange == PUBLICATION_NOTIFY_STUDENT || $notifystatuschange == PUBLICATION_NOTIFY_ALL) {
             if ($publication->get_mode() == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
                 $usersingroup = $publication->get_submissionmembers($pubfile->userid);
                 $receivers += $usersingroup;
