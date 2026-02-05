@@ -59,7 +59,7 @@ class import extends base {
      * @return array Array with column names, column headers and help icons
      */
     public function get_columns() {
-        list($columns, $headers, $helpicons) = parent::get_columns();
+        [$columns, $headers, $helpicons] = parent::get_columns();
 
         if (has_capability('mod/publication:approve', $this->context) && $this->allfilespage) {
             if ($this->obtainstudentapproval) {

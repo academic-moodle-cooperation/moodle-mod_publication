@@ -24,7 +24,7 @@
  */
 namespace mod_publication\search;
 
-use core_search\base_activity as base_activity;
+use core_search\base_activity;
 
 /**
  * Search area for mod_publication activities.

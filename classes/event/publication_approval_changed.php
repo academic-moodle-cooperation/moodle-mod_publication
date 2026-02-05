@@ -57,7 +57,7 @@ class publication_approval_changed extends \core\event\base {
             'objectid'      => $do->publication,
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => $do->reluser,
-            'other'         => (Array)$do,
+            'other'         => (array)$do,
         ]);
         return $event;
     }
@@ -68,10 +68,10 @@ class publication_approval_changed extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "Approval for file with id '".$this->data['other']['fileid']
-            ."' in publication with id '" .$this->data['other']['publication']
-            ."' has been changed to '".$this->data['other']['approval']
-            ."' by the user with id '" .$this->data['other']['userid']."'.";
+        return "Approval for file with id '" . $this->data['other']['fileid']
+            . "' in publication with id '" . $this->data['other']['publication']
+            . "' has been changed to '" . $this->data['other']['approval']
+            . "' by the user with id '" . $this->data['other']['userid'] . "'.";
     }
 
     /**

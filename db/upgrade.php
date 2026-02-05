@@ -64,7 +64,6 @@ function xmldb_publication_upgrade($oldversion) {
     // Put any upgrade step following this.
 
     if ($oldversion < 2016051200) {
-
         // Define field autoimport to be added to publication.
         $table = new xmldb_table('publication');
         $field = new xmldb_field('autoimport', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'obtainteacherapproval');
@@ -79,7 +78,6 @@ function xmldb_publication_upgrade($oldversion) {
     }
 
     if ($oldversion < 2016062201) {
-
         // Define field groupapproval to be added to publication.
         $table = new xmldb_table('publication');
         $field = new xmldb_field('groupapproval', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'autoimport');
@@ -168,7 +166,6 @@ function xmldb_publication_upgrade($oldversion) {
     }
 
     if ($oldversion < 2019052100) {
-
         // Define field notifyteacher to be added to publication.
         $table = new xmldb_table('publication');
         $field = new xmldb_field('notifyteacher', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'groupapproval');
@@ -187,7 +184,6 @@ function xmldb_publication_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020010500) {
-
         // Changing the default of field teacherapproval on table publication_file to 3.
         $table = new xmldb_table('publication_file');
         $field = new xmldb_field('teacherapproval', XMLDB_TYPE_INTEGER, '2', null, null, null, '3', 'type');
@@ -202,7 +198,6 @@ function xmldb_publication_upgrade($oldversion) {
     }
 
     if ($oldversion < 2021052500) {
-
         // Define field id to be added to publication_file.
         $table = new xmldb_table('publication_file');
         $index = new xmldb_index('publication', XMLDB_INDEX_NOTUNIQUE, ['publication']);
@@ -224,7 +219,6 @@ function xmldb_publication_upgrade($oldversion) {
     }
 
     if ($oldversion < 2021052501) {
-
         $table = new xmldb_table('publication_groupapproval');
         $DB->set_field('publication_groupapproval', 'timecreated', 0, ['timecreated' => null]);
         $DB->set_field('publication_groupapproval', 'timemodified', 0, ['timemodified' => null]);
@@ -237,11 +231,18 @@ function xmldb_publication_upgrade($oldversion) {
     }
 
     if ($oldversion < 2023081000) {
-
         // Define field completionupload to be added to publication.
         $table = new xmldb_table('publication');
-        $field = new xmldb_field('completionupload', XMLDB_TYPE_INTEGER, '2',
-            null, XMLDB_NOTNULL, null, '0', 'allowsubmissionsfromdate');
+        $field = new xmldb_field(
+            'completionupload',
+            XMLDB_TYPE_INTEGER,
+            '2',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            '0',
+            'allowsubmissionsfromdate'
+        );
 
         // Conditionally launch add field completionupload.
         if (!$dbman->field_exists($table, $field)) {
@@ -253,7 +254,6 @@ function xmldb_publication_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024061900) {
-
         // Define field approvalfromdate to be added to publication.
         $table = new xmldb_table('publication');
         $field = new xmldb_field('approvalfromdate', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'cutoffdate');
@@ -332,7 +332,6 @@ function xmldb_publication_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024100400) {
-
         // Define table publication_overrides to be created.
         $table = new xmldb_table('publication_overrides');
 

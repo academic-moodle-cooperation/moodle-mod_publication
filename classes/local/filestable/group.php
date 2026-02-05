@@ -50,10 +50,10 @@ class group extends base {
             'publication' => $this->publication->get_instance()->id,
             'fileid' => $file->get_id(),
         ]);
-        $templatecontext = new \stdClass;
+        $templatecontext = new \stdClass();
         // Now add the specific data to the table!
         $teacherapproval = $this->publication->teacher_approval($file);
-        list($studentapproval, $approvaldetails) = $this->publication->group_approval($pubfileid);
+        [$studentapproval, $approvaldetails] = $this->publication->group_approval($pubfileid);
 
         $obtainteacherapproval = $this->publication->get_instance()->obtainteacherapproval;
         $obtainstudentapproval = $this->publication->get_instance()->obtainstudentapproval;
@@ -64,7 +64,6 @@ class group extends base {
         $hint = '';
 
         if ($obtainstudentapproval == 1) {
-
             $pendingstudents = [];
             $rejectedstudents = [];
             $approvedstudents = [];
@@ -78,9 +77,9 @@ class group extends base {
                     $approvedstudents[] = fullname($cur);
                 }
             }
-            $rejected = get_string('rejected', 'publication') . ': ' . implode(', ', $rejectedstudents) .'. ';
-            $pending = get_string('pending', 'publication') . ': ' . implode(', ', $pendingstudents) .'. ';
-            $approved = get_string('approved', 'publication') . ': ' . implode(', ', $approvedstudents) .'. ';
+            $rejected = get_string('rejected', 'publication') . ': ' . implode(', ', $rejectedstudents) . '. ';
+            $pending = get_string('pending', 'publication') . ': ' . implode(', ', $pendingstudents) . '. ';
+            $approved = get_string('approved', 'publication') . ': ' . implode(', ', $approvedstudents) . '. ';
 
             if ($studentapproval == 1) {
                 $studentapproved = true;
@@ -110,7 +109,8 @@ class group extends base {
                 if (empty($rejectedstudents)) {
                     if ($this->publication->is_approval_open()) {
                         $this->changepossible = true;
-                        return \html_writer::select($this->options,
+                        return \html_writer::select(
+                            $this->options,
                             'studentapproval[' . $file->get_id() . ']',
                             '0',
                             ['' => 'choosedots'],
@@ -119,7 +119,6 @@ class group extends base {
                     }
                 }
             }
-
         } else {
             $studentapproved = true;
             $hint = get_string('student_approved_automatically', 'publication');

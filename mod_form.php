@@ -87,10 +87,22 @@ class mod_publication_mod_form extends moodleform_mod {
         }
 
         $modearray = [];
-        $modearray[] =& $mform->createElement('radio', 'mode', '', get_string('modeupload', 'publication'),
-                PUBLICATION_MODE_UPLOAD, $disabled);
-        $modearray[] =& $mform->createElement('radio', 'mode', '', get_string('modeimport', 'publication'),
-                PUBLICATION_MODE_IMPORT, $disabled);
+        $modearray[] =& $mform->createElement(
+            'radio',
+            'mode',
+            '',
+            get_string('modeupload', 'publication'),
+            PUBLICATION_MODE_UPLOAD,
+            $disabled
+        );
+        $modearray[] =& $mform->createElement(
+            'radio',
+            'mode',
+            '',
+            get_string('modeimport', 'publication'),
+            PUBLICATION_MODE_IMPORT,
+            $disabled
+        );
         $mform->addGroup($modearray, 'modegrp', get_string('mode', 'publication'), [' '], false);
         $mform->addHelpButton('modegrp', 'mode', 'publication');
         if ($filecount === 0) {
@@ -169,8 +181,13 @@ class mod_publication_mod_form extends moodleform_mod {
             '1' => get_string('obtainapproval_required', 'publication'),
         ];
 
-        $mform->addElement('select', 'obtainteacherapproval',
-            get_string('obtainteacherapproval', 'publication'), $options, $attributes);
+        $mform->addElement(
+            'select',
+            'obtainteacherapproval',
+            get_string('obtainteacherapproval', 'publication'),
+            $options,
+            $attributes
+        );
         $mform->addHelpButton('obtainteacherapproval', 'obtainteacherapproval', 'publication');
 
         // Student approval.
@@ -180,8 +197,13 @@ class mod_publication_mod_form extends moodleform_mod {
             '1' => get_string('obtainapproval_required', 'publication'),
         ];
 
-        $mform->addElement('select', 'obtainstudentapproval',
-            get_string('obtainstudentapproval', 'publication'), $options, $attributes);
+        $mform->addElement(
+            'select',
+            'obtainstudentapproval',
+            get_string('obtainstudentapproval', 'publication'),
+            $options,
+            $attributes
+        );
         $mform->addHelpButton('obtainstudentapproval', 'obtainstudentapproval', 'publication');
 
         // Group approval.
@@ -192,16 +214,29 @@ class mod_publication_mod_form extends moodleform_mod {
             PUBLICATION_APPROVAL_ALL => get_string('obtaingroupapproval_all', 'publication'),
         ];
 
-        $mform->addElement('select', 'obtaingroupapproval',
-            get_string('obtaingroupapproval', 'publication'), $options, $attributes);
+        $mform->addElement(
+            'select',
+            'obtaingroupapproval',
+            get_string('obtaingroupapproval', 'publication'),
+            $options,
+            $attributes
+        );
         $mform->addHelpButton('obtaingroupapproval', 'obtaingroupapproval', 'publication');
 
-        $mform->addElement('date_time_selector', 'approvalfromdate',
-            get_string('approvalfromdate', 'publication'), ['optional' => true]);
+        $mform->addElement(
+            'date_time_selector',
+            'approvalfromdate',
+            get_string('approvalfromdate', 'publication'),
+            ['optional' => true]
+        );
         $mform->addHelpButton('approvalfromdate', 'approvalfromdate', 'publication');
 
-        $mform->addElement('date_time_selector', 'approvaltodate',
-            get_string('approvaltodate', 'publication'), ['optional' => true]);
+        $mform->addElement(
+            'date_time_selector',
+            'approvaltodate',
+            get_string('approvaltodate', 'publication'),
+            ['optional' => true]
+        );
         $mform->addHelpButton('approvaltodate', 'approvaltodate', 'publication');
         // Approval code end.
 
@@ -209,8 +244,12 @@ class mod_publication_mod_form extends moodleform_mod {
         $mform->setType('alwaysshowdescription', PARAM_BOOL);
 
         // Apply availability restrictions.
-        $mform->addElement('select', 'availabilityrestriction', get_string('availabilityrestriction', 'publication'),
-                [get_string('no'), get_string('yes')]);
+        $mform->addElement(
+            'select',
+            'availabilityrestriction',
+            get_string('availabilityrestriction', 'publication'),
+            [get_string('no'), get_string('yes')]
+        );
         $mform->addHelpButton('availabilityrestriction', 'availabilityrestriction', 'publication');
 
         $mform->addElement('header', 'notifications', get_string('notifications', 'publication'));
@@ -300,7 +339,6 @@ class mod_publication_mod_form extends moodleform_mod {
                 }
             }
         }
-
     }
 
     /**

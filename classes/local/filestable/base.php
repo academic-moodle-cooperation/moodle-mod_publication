@@ -150,7 +150,7 @@ class base extends \html_table {
      */
     public function get_approval_status_for_file($file) {
         global $OUTPUT;
-        $templatecontext = new \stdClass;
+        $templatecontext = new \stdClass();
         // Now add the specific data to the table!
         $teacherapproval = $this->publication->teacher_approval($file);
         $studentapproval = $this->publication->student_approval($file);
@@ -172,7 +172,8 @@ class base extends \html_table {
             } else {
                 if ($this->publication->is_approval_open()) {
                     $this->changepossible = true;
-                    return \html_writer::select($this->options,
+                    return \html_writer::select(
+                        $this->options,
                         'studentapproval[' . $file->get_id() . ']',
                         $studentapproval,
                         ['' => 'choosedots'],
@@ -259,9 +260,10 @@ class base extends \html_table {
      * @return bool
      */
     public function changepossible() {
-        $result = ($this->changepossible ? true : false) && has_capability('mod/publication:upload',
-                        $this->publication->get_context());
+        $result = ($this->changepossible ? true : false) && has_capability(
+            'mod/publication:upload',
+            $this->publication->get_context()
+        );
         return $result;
     }
-
 }

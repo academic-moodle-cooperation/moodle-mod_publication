@@ -142,8 +142,10 @@ class publication {
      * @return bool
      */
     public function show_intro() {
-        if ($this->get_instance()->alwaysshowdescription ||
-                time() > $this->get_instance()->allowsubmissionsfromdate) {
+        if (
+            $this->get_instance()->alwaysshowdescription ||
+                time() > $this->get_instance()->allowsubmissionsfromdate
+        ) {
             return true;
         }
 
@@ -164,11 +166,17 @@ class publication {
             }
         } else {
             if ($this->alwaysshowdescription) {
-                $message = get_string('allowsubmissionsfromdatesummary',
-                        'publication', userdate($this->instance->allowsubmissionsfromdate));
+                $message = get_string(
+                    'allowsubmissionsfromdatesummary',
+                    'publication',
+                    userdate($this->instance->allowsubmissionsfromdate)
+                );
             } else {
-                $message = get_string('allowsubmissionsanddescriptionfromdatesummary',
-                        'publication', userdate($this->instance->allowsubmissionsfromdate));
+                $message = get_string(
+                    'allowsubmissionsanddescriptionfromdatesummary',
+                    'publication',
+                    userdate($this->instance->allowsubmissionsfromdate)
+                );
             }
             echo html_writer::div($message, '', ['id' => 'intro']);
         }
@@ -226,7 +234,7 @@ class publication {
         global $DB;
 
         if ($this->instance->mode == PUBLICATION_MODE_IMPORT) {
-            $context = new \stdClass;
+            $context = new \stdClass();
 
             if ($this->get_instance()->importfrom == -1) {
                 $context->notset = true;
@@ -267,8 +275,10 @@ class publication {
         if ($this->instance->mode == PUBLICATION_MODE_UPLOAD) {
             if (has_capability('mod/publication:upload', $this->context)) {
                 if ($this->is_open()) {
-                    $url = new moodle_url('/mod/publication/upload.php',
-                            ['id' => $this->instance->id, 'cmid' => $this->coursemodule->id]);
+                    $url = new moodle_url(
+                        '/mod/publication/upload.php',
+                        ['id' => $this->instance->id, 'cmid' => $this->coursemodule->id]
+                    );
                     $label = get_string('edit_uploads', 'publication');
                     $editbutton = $OUTPUT->single_button($url, $label);
 
@@ -355,8 +365,10 @@ class publication {
             }
         }
 
-        if (($from == 0 || $from < $now) &&
-                ($due == 0 || $due > $now)) {
+        if (
+            ($from == 0 || $from < $now) &&
+                ($due == 0 || $due > $now)
+        ) {
             return true;
         }
 
@@ -485,12 +497,14 @@ class publication {
         $currentgroup = groups_get_activity_group($this->get_coursemodule(), true);
 
         // Get all ppl that are allowed to submit assignments.
-        list($esql, $params) = get_enrolled_sql($this->context, 'mod/publication:view', $currentgroup);
+        [$esql, $params] = get_enrolled_sql($this->context, 'mod/publication:view', $currentgroup);
 
         $allfilespage = $ignoreallfilespage || $this->allfilespage;
 
-        if ($allfilespage && (has_capability('mod/publication:approve', $this->context)
-                || has_capability('mod/publication:grantextension', $this->context))) {
+        if (
+            $allfilespage && (has_capability('mod/publication:approve', $this->context)
+                || has_capability('mod/publication:grantextension', $this->context))
+        ) {
             // We can skip the approval-checks for teachers!
             $sql = 'SELECT u.id FROM {user} u ' .
                     'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
@@ -625,9 +639,11 @@ class publication {
         if (!isset($SESSION->modpublicationfilters[$this->instance->id])) {
             $SESSION->modpublicationfilters[$this->instance->id] = PUBLICATION_FILTER_NOFILTER;
         }
-        $filter = optional_param('filter',
+        $filter = optional_param(
+            'filter',
             $SESSION->modpublicationfilters[$this->instance->id],
-            PARAM_ALPHANUMEXT);
+            PARAM_ALPHANUMEXT
+        );
         $SESSION->modpublicationfilters[$this->instance->id] = $filter;
 
         $page = optional_param('page', 0, PARAM_INT);
@@ -669,7 +685,8 @@ class publication {
         $norowsfound = $table->get_count() == 0;
         $nofilesfound = $table->get_totalfilescount() == 0;
 
-        $link = html_writer::link(new moodle_url('/mod/publication/view.php', [
+        $link = html_writer::link(
+            new moodle_url('/mod/publication/view.php', [
                 'id' => $this->coursemodule->id,
                 'action' => 'zip',
                 'allfilespage' => $this->allfilespage,
@@ -714,8 +731,10 @@ class publication {
                         'class' => 'visibilitysaver btn btn-secondary ml-1',
                 ]);
 
-                if ($this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
-                        $this->get_instance()->obtainstudentapproval) {
+                if (
+                    $this->get_instance()->mode == PUBLICATION_MODE_IMPORT &&
+                        $this->get_instance()->obtainstudentapproval
+                ) {
                     $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
@@ -760,8 +779,10 @@ class publication {
         $PAGE->requires->js_call_amd('mod_publication/bulkuseractions', 'init');
 
         // Mini form for setting user preference.
-        $formaction = new moodle_url('/mod/publication/view.php',
-            ['id' => $this->coursemodule->id, 'allfilespage' => $this->allfilespage]);
+        $formaction = new moodle_url(
+            '/mod/publication/view.php',
+            ['id' => $this->coursemodule->id, 'allfilespage' => $this->allfilespage]
+        );
         $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', ['class' => 'optionspref']);
 
         $attributes = [];
@@ -903,7 +924,7 @@ class publication {
         $stats['approving'] = 0;
         $stats['needed'] = count($groupmembers);
         if (!empty($groupmembers)) {
-            list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
+            [$usersql, $userparams] = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
             $select = "fileid = :fileid AND approval = :approval AND userid " . $usersql;
             $params = ['fileid' => $pubfileid, 'approval' => 0] + $userparams;
             if ($DB->record_exists_select('publication_groupapproval', $select, $params)) {
@@ -1054,7 +1075,7 @@ class publication {
         // Get group members!
         $groupmembers = $this->get_submissionmembers($filerec->userid);
         if (!empty($groupmembers)) {
-            list($usersql, $userparams) = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
+            [$usersql, $userparams] = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
             $sql = "SELECT u.*, ga.approval, ga.timemodified AS approvaltime, ga.userid, ga.fileid
                 FROM {user} u
             LEFT JOIN {publication_groupapproval} ga
@@ -1107,18 +1128,18 @@ class publication {
                 if (!$teamsubmission) {
                     // Get user firstname/lastname.
                     $auser = $DB->get_record('user', ['id' => $itemid]);
-                    $itemname = str_replace(' ', '_', fullname($auser)).'_';
+                    $itemname = str_replace(' ', '_', fullname($auser)) . '_';
                 } else {
                     if (empty($itemid)) {
-                        $itemname = get_string('defaultteam', 'assign').'_';
+                        $itemname = get_string('defaultteam', 'assign') . '_';
                     } else {
-                        $itemname = $DB->get_field('groups', 'name', ['id' => $itemid]).'_';
+                        $itemname = $DB->get_field('groups', 'name', ['id' => $itemid]) . '_';
                     }
                 }
 
                 // Create path for new zip file.
                 // Zip files.
-                $filename = $itemname.$file->get_filename();
+                $filename = $itemname . $file->get_filename();
                 $zipname = str_replace('.html', '.zip', $filename);
                 $zipper = new zip_packer();
                 $filesforzipping = [];
@@ -1262,21 +1283,29 @@ class publication {
      * @param file_storage $fs used to get the ressource files for the online-text-file
      * @param string $itemunique user-ID of the uploading user or empty for teamsubmissions
      */
-    protected function add_onlinetext_to_zipfiles(array &$filesforzipping, stored_file $file, $itemname, $fileforzipname,
-                                                  $fs = null, $itemunique = '') {
+    protected function add_onlinetext_to_zipfiles(
+        array &$filesforzipping,
+        stored_file $file,
+        $itemname,
+        $fileforzipname,
+        $fs = null,
+        $itemunique = ''
+    ) {
 
         if (empty($fs)) {
             $fs = get_file_storage();
         }
 
         // First we get all ressources!
-        $resources = $fs->get_directory_files($this->get_context()->id,
-                'mod_publication',
-                'attachment',
-                $file->get_itemid(),
-                '/resources/',
-                true,
-                false);
+        $resources = $fs->get_directory_files(
+            $this->get_context()->id,
+            'mod_publication',
+            'attachment',
+            $file->get_itemid(),
+            '/resources/',
+            true,
+            false
+        );
         if (count($resources) > 0) {
             // If it's an online-Text with resources, we have to add altered content and all the ressources for it!
             $content = $file->get_content();
@@ -1308,7 +1337,7 @@ class publication {
     public function update_users_or_groups_teacherapproval($userorgroupids, $action) {
         global $DB;
 
-        list($usersql, $params) = $DB->get_in_or_equal($userorgroupids, SQL_PARAMS_NAMED, 'user');
+        [$usersql, $params] = $DB->get_in_or_equal($userorgroupids, SQL_PARAMS_NAMED, 'user');
         $params['pubid'] = $this->instance->id;
         $select = ' publication=:pubid AND userid ' . $usersql;
         $records = $DB->get_records_select('publication_file', $select, $params);
@@ -1368,8 +1397,10 @@ class publication {
                     $newteacherapproval = 2;
                     break;
                 case 'resetstudentapproval':
-                    if ($oldstudentapproval != 1 && $oldstudentapproval != 2
-                        && $this->mode != PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
+                    if (
+                        $oldstudentapproval != 1 && $oldstudentapproval != 2
+                        && $this->mode != PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION
+                    ) {
                         continue 2;
                     }
                     $newstatus = 'revoke';
@@ -1407,7 +1438,6 @@ class publication {
                     foreach ($groupapprovals as $groupapproval) {
                         $DB->set_field('publication_groupapproval', 'approval', null, ['id' => $groupapproval->id]);
                     }
-
                 }
             }
 
@@ -1463,13 +1493,14 @@ class publication {
         $assignment = new assign($assigncontext, $assigncm, $assigncourse);
 
         foreach ($records as $record) {
-
-            $files = $fs->get_area_files($assigncontext->id,
-                    "assignsubmission_file",
-                    "submission_files",
-                    $record->submission,
-                    "id",
-                    false);
+            $files = $fs->get_area_files(
+                $assigncontext->id,
+                "assignsubmission_file",
+                "submission_files",
+                $record->submission,
+                "id",
+                false
+            );
             $submission = $DB->get_record('assign_submission', ['id' => $record->submission]);
 
             $assignfileids = [];
@@ -1494,11 +1525,9 @@ class publication {
             $oldpubfiles = $DB->get_records('publication_file', $conditions);
 
             foreach ($oldpubfiles as $oldpubfile) {
-
                 if (in_array($oldpubfile->filesourceid, $assignfileids)) {
                     // File was in assign and is still there.
                     unset($assignfileids[$oldpubfile->filesourceid]);
-
                 } else {
                     // File has been removed from assign.
                     // Remove from publication (file and db entry).
@@ -1553,7 +1582,6 @@ class publication {
                         $cm = get_coursemodule_from_instance('publication', $this->get_instance()->id, 0, false, MUST_EXIST);
                         self::send_notification_filechange($cm, $dataobject);
                     }
-
                 } catch (Exception $e) {
                     // File could not be copied, maybe it does already exist.
                     // Should not happen.
@@ -1561,7 +1589,6 @@ class publication {
                 }
             }
         }
-
     }
 
     /**
@@ -1621,12 +1648,14 @@ class publication {
             $importtype = empty($teamsubmission) ? 'user' : 'group';
 
             // First we fetch the resource files (embedded files in text)!
-            $fsfiles = $fs->get_area_files($assigncontext->id,
-                    'assignsubmission_onlinetext',
-                    ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
-                    $submission->id,
-                    'timemodified',
-                    false);
+            $fsfiles = $fs->get_area_files(
+                $assigncontext->id,
+                'assignsubmission_onlinetext',
+                ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
+                $submission->id,
+                'timemodified',
+                false
+            );
 
             foreach ($fsfiles as $file) {
                 $filerecord = new \stdClass();
@@ -1636,8 +1665,14 @@ class publication {
                 $filerecord->itemid = $itemid;
                 $filerecord->filepath = '/resources/';
                 $filerecord->filename = $file->get_filename();
-                $pathnamehash = $fs->get_pathname_hash($filerecord->contextid, $filerecord->component, $filerecord->filearea,
-                        $filerecord->itemid, $filerecord->filepath, $filerecord->filename);
+                $pathnamehash = $fs->get_pathname_hash(
+                    $filerecord->contextid,
+                    $filerecord->component,
+                    $filerecord->filearea,
+                    $filerecord->itemid,
+                    $filerecord->filepath,
+                    $filerecord->filename
+                );
 
                 if ($fs->file_exists_by_hash($pathnamehash)) {
                     $otherfile = $fs->get_file_by_hash($pathnamehash);
@@ -1652,17 +1687,24 @@ class publication {
                 }
             }
             // Now we delete old resource-files, which are no longer present!
-            $resources = $fs->get_directory_files($contextid,
-                    'mod_publication',
-                    'attachment',
-                    $itemid,
-                    '/resources/',
-                    true,
-                    false);
+            $resources = $fs->get_directory_files(
+                $contextid,
+                'mod_publication',
+                'attachment',
+                $itemid,
+                '/resources/',
+                true,
+                false
+            );
             foreach ($resources as $resource) {
-                $pathnamehash = $fs->get_pathname_hash($assignment->get_context()->id, 'assignsubmission_onlinetext',
-                        ASSIGNSUBMISSION_ONLINETEXT_FILEAREA, $submission->id, '/',
-                        $resource->get_filename());
+                $pathnamehash = $fs->get_pathname_hash(
+                    $assignment->get_context()->id,
+                    'assignsubmission_onlinetext',
+                    ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
+                    $submission->id,
+                    '/',
+                    $resource->get_filename()
+                );
                 if (!$fs->file_exists_by_hash($pathnamehash)) {
                     $resource->delete();
                 }
@@ -1698,8 +1740,10 @@ class publication {
                         $DB->delete_records('publication_file', $conditions);
                     }
                     $file->delete();
-                } else if (($file->get_timemodified() < $submission->timemodified)
-                        && ($file->get_contenthash() != sha1($submissioncontent))) {
+                } else if (
+                    ($file->get_timemodified() < $submission->timemodified)
+                        && ($file->get_contenthash() != sha1($submissioncontent))
+                ) {
                     /* If the submission has been modified after the file,             *
                      * we check for different content-hashes to see if it was changed! */
                     $createnew = true;
@@ -1769,7 +1813,6 @@ class publication {
                 $DB->delete_records('publication_file', ['id' => $pubfile->id]);
             }
         }
-
     }
 
     /**
@@ -1782,8 +1825,14 @@ class publication {
      * @param null|stdClass $publication the publication instance
      * @throws coding_exception
      */
-    public static function send_notification_statuschange($cm, $userfrom, $newstatus, $pubfile,
-                                                          $pubid, $publication=null) {
+    public static function send_notification_statuschange(
+        $cm,
+        $userfrom,
+        $newstatus,
+        $pubfile,
+        $pubid,
+        $publication = null
+    ) {
         global $CFG, $DB;
         $sm = get_string_manager();
 
@@ -1850,7 +1899,6 @@ class publication {
                 }
                 self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessage .= $posttext;
                 self::$pendingnotifications[PUBLICATION_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
-
             }
         }
     }
@@ -1863,7 +1911,7 @@ class publication {
      * @param stdClass|null $publication object the publication, if available
      * @throws coding_exception
      */
-    public static function send_notification_filechange($cm, $file,  $user=null, $publication=null) {
+    public static function send_notification_filechange($cm, $file, $user = null, $publication = null) {
         global $CFG, $USER, $DB;
         $sm = get_string_manager();
         if (!$user) {
@@ -1998,13 +2046,15 @@ class publication {
         $content = $file->get_content();
 
         // Correct ressources filepaths for onine-view!
-        $resources = $fs->get_directory_files($contextid,
-                'mod_publication',
-                'attachment',
-                $itemid,
-                '/resources/',
-                true,
-                false);
+        $resources = $fs->get_directory_files(
+            $contextid,
+            'mod_publication',
+            'attachment',
+            $itemid,
+            '/resources/',
+            true,
+            false
+        );
         foreach ($resources as $resource) {
             // TODO watch the encoding of the file's names, in the event of core changing it, we have to change too!
             $filename = rawurlencode($resource->get_filename());
@@ -2012,8 +2062,14 @@ class publication {
             $replace = '@@PLUGINFILE@@/resources/' . $filename;
             $content = str_replace($search, $replace, $content);
         }
-        $content = file_rewrite_pluginfile_urls($content, 'pluginfile.php', $contextid, 'mod_publication', 'attachment',
-                $itemid);
+        $content = file_rewrite_pluginfile_urls(
+            $content,
+            'pluginfile.php',
+            $contextid,
+            'mod_publication',
+            'attachment',
+            $itemid
+        );
 
         // Get only the body part!
         $start = strpos($content, '<body>');
@@ -2025,7 +2081,6 @@ class publication {
         }
 
         return $content;
-
     }
 
     // Allowed file-types have been changed in Moodle 3.3 (and form element will probably change in Moodle 3.4 again)!
@@ -2104,14 +2159,16 @@ class publication {
      */
     public function get_graders($user) {
         // Get potential graders!
-        $potgraders = get_enrolled_users($this->context,
-                    'mod/publication:receiveteachernotification',
-                    0,
-                    'u.*',
-                    null,
-                    null,
-                    null,
-                    true);
+        $potgraders = get_enrolled_users(
+            $this->context,
+            'mod/publication:receiveteachernotification',
+            0,
+            'u.*',
+            null,
+            null,
+            null,
+            true
+        );
         $graders = [];
         if (groups_get_activity_groupmode($this->coursemodule) == SEPARATEGROUPS) {
             // Separate groups are being used!
@@ -2165,7 +2222,7 @@ class publication {
             $posttext .= format_string($this->course->shortname) . ' -> ' .
                 $sm->get_string('modulenameplural', 'publication', null, $lang) . ' -> ' .
                 format_string($info->publication) . "\n";
-            $posttext .= strip_tags($sm->get_string('email:' . $stridentifier . ':header', 'publication', $info, $lang))."\n";
+            $posttext .= strip_tags($sm->get_string('email:' . $stridentifier . ':header', 'publication', $info, $lang)) . "\n";
         }
         $posttext .= $info->filename . "\n";
         return $posttext;
@@ -2192,8 +2249,7 @@ class publication {
                 $info->id . '">' . $sm->get_string('modulenameplural', 'publication', null, $lang) . '</a> ->' .
                 '<a href="' . $CFG->wwwroot . '/mod/publication/view.php?id=' . $info->id . '">' .
                 format_string($info->publication) . '</a></span></p>';
-            $posthtml .= ''.$sm->get_string('email:' . $stridentifier . ':header', 'publication', $info, $lang).'';
-
+            $posthtml .= '' . $sm->get_string('email:' . $stridentifier . ':header', 'publication', $info, $lang) . '';
         }
         $posthtml .= '<li>' . $info->filename . '</li>';
         return $posthtml;
@@ -2215,9 +2271,9 @@ class publication {
                 $sm->get_string('modulenameplural', 'publication', null, $lang) . ' -> ' .
                 format_string($info->publication) . "\n";
             $posttext .= "---------------------------------------------------------------------\n";
-            $posttext .= strip_tags($sm->get_string('email:statuschange:header', 'publication', $info, $lang))."\n";
+            $posttext .= strip_tags($sm->get_string('email:statuschange:header', 'publication', $info, $lang)) . "\n";
         }
-        $posttext .= strip_tags($sm->get_string('email:statuschange:filename', 'publication', $info, $lang))."\n";
+        $posttext .= strip_tags($sm->get_string('email:statuschange:filename', 'publication', $info, $lang)) . "\n";
         return $posttext;
     }
 
@@ -2241,7 +2297,7 @@ class publication {
                 $info->id . '">' . $sm->get_string('modulenameplural', 'publication', null, $lang) . '</a> ->' .
                 '<a href="' . $CFG->wwwroot . '/mod/publication/view.php?id=' . $info->id . '">' .
                 format_string($info->publication) . '</a></span></p>';
-            $posthtml .= ''.$sm->get_string('email:statuschange:header', 'publication', $info, $lang);
+            $posthtml .= '' . $sm->get_string('email:statuschange:header', 'publication', $info, $lang);
         }
         $posthtml .= $sm->get_string('email:statuschange:filename', 'publication', $info, $lang);
         return $posthtml;
@@ -2298,7 +2354,7 @@ class publication {
      */
     public function overrides_export_for_template() {
         global $DB;
-        $context = new stdClass;
+        $context = new stdClass();
 
         $editurl = new moodle_url('/mod/publication/overrides_edit.php', ['id' => $this->coursemodule->id]);
         $deleteurl = new moodle_url('/mod/publication/overrides_delete.php', ['id' => $this->coursemodule->id]);
@@ -2390,10 +2446,12 @@ class publication {
         $overrideresult = new stdClass();
         $overrideresult->overrideid = 0;
         $overrideresult->newoverride = false;
-        if ((!isset($formdata->allowsubmissionsfromdate) || $formdata->allowsubmissionsfromdate == 0) &&
+        if (
+            (!isset($formdata->allowsubmissionsfromdate) || $formdata->allowsubmissionsfromdate == 0) &&
             (!isset($formdata->duedate) || $formdata->duedate == 0) &&
             (!isset($formdata->approvalfromdate) || $formdata->approvalfromdate == 0) &&
-            (!isset($formdata->approvaltodate) || $formdata->approvaltodate == 0)) {
+            (!isset($formdata->approvaltodate) || $formdata->approvaltodate == 0)
+        ) {
             return null;
         }
         if ($formdata->overrideid != -1) {
@@ -2501,8 +2559,10 @@ class publication {
             $groups = groups_get_all_groups($this->course->id, $USER->id);
             if (!empty($groups)) {
                 $group = reset($groups);
-                $override = $DB->get_record('publication_overrides',
-                    ['publication' => $this->instance->id, 'groupid' => $group->id]);
+                $override = $DB->get_record(
+                    'publication_overrides',
+                    ['publication' => $this->instance->id, 'groupid' => $group->id]
+                );
             }
         } else {
             $override = $DB->get_record('publication_overrides', ['publication' => $this->instance->id, 'userid' => $USER->id]);

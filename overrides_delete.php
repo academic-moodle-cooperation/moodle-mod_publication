@@ -29,7 +29,7 @@ require_once($CFG->dirroot . '/mod/publication/locallib.php');
 require_once(__DIR__ . '/overrides_form.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
-$overrideid = required_param('overrideid',  PARAM_INT);
+$overrideid = required_param('overrideid', PARAM_INT);
 $confirm = optional_param('confirm', false, PARAM_BOOL);
 
 $url = new moodle_url('/mod/publication/overrides_delete.php', ['id' => $id, 'overrideid' => $overrideid]);
@@ -93,7 +93,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('overrides', 'mod_assign'), 2);
 
 $mode = $publication->get_mode();
-$confirmstrcontext = new stdClass;
+$confirmstrcontext = new stdClass();
 if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
     $confirmstrcontext->userorgroup = get_string('group');
     $group = $DB->get_record('groups', ['id' => $override->groupid]);
@@ -102,7 +102,6 @@ if ($mode == PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION) {
     } else {
         $confirmstrcontext->fullname = 'N/A';
     }
-
 } else {
     $confirmstrcontext->userorgroup = get_string('user');
     $user = $DB->get_record('user', ['id' => $override->userid]);

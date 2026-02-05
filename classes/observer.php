@@ -48,8 +48,10 @@ class observer {
     public static function course_module_created(\core\event\base $event) {
         global $DB;
         $eventdata = $event->get_data();
-        if (isset($eventdata['other']) &&
-            isset($eventdata['other']['modulename']) && $eventdata['other']['modulename'] == 'publication') {
+        if (
+            isset($eventdata['other']) &&
+            isset($eventdata['other']['modulename']) && $eventdata['other']['modulename'] == 'publication'
+        ) {
             $cm = get_coursemodule_from_instance('publication', $eventdata['other']['instanceid'], 0, false, MUST_EXIST);
             $publication = new publication($cm);
             if ($publication->get_instance()->mode == PUBLICATION_MODE_IMPORT) {

@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/locallib.php');
+require_once(__DIR__ . '/locallib.php');
 
 /**
  * Adds a new publication instance
@@ -225,11 +225,9 @@ function publication_reset_userdata($data) {
     $status = [];
 
     if (isset($data->reset_publication_userdata)) {
-
         $publications = $DB->get_records('publication', ['course' => $data->courseid]);
 
         foreach ($publications as $publication) {
-
             $DB->delete_records('publication_extduedates', ['publication' => $publication->id]);
 
             $filerecords = $DB->get_records('publication_file', ['publication' => $publication->id]);
@@ -252,7 +250,6 @@ function publication_reset_userdata($data) {
     }
 
     return $status;
-
 }
 
 
@@ -294,9 +291,13 @@ function publication_extend_settings_navigation(settings_navigation $settings, n
     if (has_capability('mod/publication:addinstance', $settings->get_page()->cm->context)) {
         $url = new moodle_url('/mod/publication/view.php', ['id' => $settings->get_page()->cm->id, 'allfilespage' => '1']);
 
-        $node = navigation_node::create(get_string('allfiles', 'publication'),
+        $node = navigation_node::create(
+            get_string('allfiles', 'publication'),
             $url,
-            navigation_node::TYPE_SETTING, null, 'mod_publication_allfiles');
+            navigation_node::TYPE_SETTING,
+            null,
+            'mod_publication_allfiles'
+        );
         $navref->add_node($node, $beforekey);
     }
 
@@ -306,9 +307,13 @@ function publication_extend_settings_navigation(settings_navigation $settings, n
         if ($mode != PUBLICATION_MODE_ASSIGN_TEAMSUBMISSION || true) {
             $url = new moodle_url('/mod/publication/overrides.php', ['id' => $settings->get_page()->cm->id]);
 
-            $node = navigation_node::create(get_string('overrides', 'assign'),
+            $node = navigation_node::create(
+                get_string('overrides', 'assign'),
                 $url,
-                navigation_node::TYPE_SETTING, null, 'mod_publication_useroverrides');
+                navigation_node::TYPE_SETTING,
+                null,
+                'mod_publication_useroverrides'
+            );
             $navref->add_node($node, $beforekey);
         }
     }
@@ -397,8 +402,10 @@ function mod_publication_core_calendar_provide_event_action(calendar_event $even
  */
 function mod_publication_get_completion_active_rule_descriptions($cm) {
     // Values will be present in cm_info, and we assume these are up to date.
-    if (empty($cm->customdata['customcompletionrules'])
-        || $cm->completion != COMPLETION_TRACKING_AUTOMATIC) {
+    if (
+        empty($cm->customdata['customcompletionrules'])
+        || $cm->completion != COMPLETION_TRACKING_AUTOMATIC
+    ) {
         return [];
     }
 
@@ -416,4 +423,3 @@ function mod_publication_get_completion_active_rule_descriptions($cm) {
     }
     return $descriptions;
 }
-

@@ -34,7 +34,6 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_publication_activity_structure_step extends restore_activity_structure_step {
-
     /**
      * Define the structure of the restore workflow.
      *
@@ -49,17 +48,23 @@ class restore_publication_activity_structure_step extends restore_activity_struc
         // Define each element separated.
         $paths[] = new restore_path_element('publication', '/activity/publication');
         if ($userinfo) {
-            $files = new restore_path_element('publication_file',
-                    '/activity/publication/files/file');
+            $files = new restore_path_element(
+                'publication_file',
+                '/activity/publication/files/file'
+            );
             $paths[] = $files;
 
-            $extduedates = new restore_path_element('publication_extduedates',
-                    '/activity/publication/extduedates/extduedate');
+            $extduedates = new restore_path_element(
+                'publication_extduedates',
+                '/activity/publication/extduedates/extduedate'
+            );
 
             $paths[] = $extduedates;
 
-            $overrides = new restore_path_element('publication_overrides',
-                    '/activity/publication/overrides/override');
+            $overrides = new restore_path_element(
+                'publication_overrides',
+                '/activity/publication/overrides/override'
+            );
             $paths[] = $overrides;
         }
 
@@ -243,6 +248,5 @@ class restore_publication_activity_structure_step extends restore_activity_struc
             $DB->update_record('files', $record);
         }
         $rs->close();
-
     }
 }

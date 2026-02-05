@@ -57,7 +57,7 @@ class group extends base {
 
         $groups = $this->publication->get_groups($this->groupingid);
         if (count($groups) > 0) {
-            list($sqlgroupids, $groupparams) = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED, 'group');
+            [$sqlgroupids, $groupparams] = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED, 'group');
             $params = $params + $groupparams + ['publication' => $this->cm->instance];
         } else {
             $sqlgroupids = " = :group ";
@@ -147,7 +147,7 @@ class group extends base {
         $params = new \stdClass();
         $params->id = $uniqueid;
         switch ($publication->get_instance()->groupapproval) {
-            case PUBLICATION_APPROVAL_ALL;
+            case PUBLICATION_APPROVAL_ALL:
                 $params->mode = get_string('obtaingroupapproval_all', 'mod_publication');
                 break;
             case PUBLICATION_APPROVAL_SINGLE:
@@ -244,7 +244,7 @@ class group extends base {
                 'publication' => $this->publication->get_instance()->id,
                 'fileid' => $file->get_id(),
         ]);
-        list(, $approvaldetails) = $this->publication->group_approval($pubfileid);
+        [, $approvaldetails] = $this->publication->group_approval($pubfileid);
 
         $approved = [];
         $rejected = [];
@@ -256,7 +256,8 @@ class group extends base {
                 $cur->approvaltime = userdate($cur->approvaltime, get_string('strftimedatetime'));
             }
             if ($cur->approval === null) {
-                $pending[] = ['name' => fullname($cur), 'time' => '-'];;
+                $pending[] = ['name' => fullname($cur), 'time' => '-'];
+                ;
             } else if ($cur->approval == 0) {
                 $rejected[] = ['name' => fullname($cur), 'time' => $cur->approvaltime];
             } else if ($cur->approval == 1) {
@@ -288,9 +289,11 @@ class group extends base {
                 'data-status' => json_encode($status),
         ];
 
-        $symbol = $symbol . \html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('show_details', 'publication')),
-                        $detailsattr);
-
+        $symbol = $symbol . \html_writer::tag(
+            'span',
+            $OUTPUT->pix_icon('i/preview', get_string('show_details', 'publication')),
+            $detailsattr
+        );
     }
 
     /**

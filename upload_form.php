@@ -39,7 +39,6 @@ require_once($CFG->libdir . '/formslib.php'); // Putting this is as a safety as 
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_publication_upload_form extends moodleform {
-
     /**
      * Definition of file upload format
      */

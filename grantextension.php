@@ -59,12 +59,13 @@ if (!empty($id)) {
 $PAGE->set_url($url);
 
 // Create a new form object.
-$mform = new mod_publication_grantextension_form(null,
-        ['publication' => $publication, 'userids' => $userids]);
+$mform = new mod_publication_grantextension_form(
+    null,
+    ['publication' => $publication, 'userids' => $userids]
+);
 
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/mod/publication/view.php', ['id' => $cm->id]));
-
 } else if ($data = $mform->get_data()) {
     // Store updated set of files.
     $dataobject = [];

@@ -45,7 +45,7 @@ class upload extends base {
         // The common columns!
         $data = parent::add_file($file);
 
-        $templatecontext = new \stdClass;
+        $templatecontext = new \stdClass();
         // Now add the specific data to the table!
         $teacherapproval = $this->publication->teacher_approval($file);
         if ($this->publication->get_instance()->obtainteacherapproval) {

@@ -49,7 +49,7 @@ require_once($CFG->dirroot . '/mod/publication/locallib.php');
  * @copyright  2018 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, preference_provider, core_userlist_provider {
+class provider implements core_userlist_provider, metadataprovider, pluginprovider, preference_provider {
     /**
      * Provides meta data that is stored about a user with mod_publication
      *
@@ -126,7 +126,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
         } else {
             $enroled = [-1];
         }
-        list($enrolsql, $enrolparams) = $DB->get_in_or_equal($enroled, SQL_PARAMS_NAMED, 'enro');
+        [$enrolsql, $enrolparams] = $DB->get_in_or_equal($enroled, SQL_PARAMS_NAMED, 'enro');
         $params = $params + $enrolparams;
 
         /* The where clause is quite interesting here, because we have to differentiate
@@ -293,15 +293,24 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
 
                 $fs = get_file_storage();
 
-                list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'usr');
+                [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'usr');
 
                 // Delete users' files, extended due dates, overrides and groupapprovals for this publication!
-                $DB->delete_records_select('publication_extduedates', "publication = :id AND userid ".$usersql,
-                        ['id' => $id] + $userparams);
-                $DB->delete_records_select('publication_overrides', "publication = :id AND userid ".$usersql,
-                        ['id' => $id] + $userparams);
-                $files = $DB->get_records_select('publication_file', "publication = :id AND userid ".$usersql,
-                        ['id' => $id] + $userparams);
+                $DB->delete_records_select(
+                    'publication_extduedates',
+                    "publication = :id AND userid " . $usersql,
+                    ['id' => $id] + $userparams
+                );
+                $DB->delete_records_select(
+                    'publication_overrides',
+                    "publication = :id AND userid " . $usersql,
+                    ['id' => $id] + $userparams
+                );
+                $files = $DB->get_records_select(
+                    'publication_file',
+                    "publication = :id AND userid " . $usersql,
+                    ['id' => $id] + $userparams
+                );
 
                 if ($files) {
                     $fileids = array_keys($files);
@@ -309,12 +318,14 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                         $file = $fs->get_file_by_id($cur->fileid);
                         $file->delete();
                     }
-                    list($filesql, $fileparams) = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
-                    $DB->delete_records_select('publication_groupapproval', "(fileid $filesql) AND (userid ".$usersql.")",
-                            $fileparams + $userparams);
+                    [$filesql, $fileparams] = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
+                    $DB->delete_records_select(
+                        'publication_groupapproval',
+                        "(fileid $filesql) AND (userid " . $usersql . ")",
+                        $fileparams + $userparams
+                    );
                     $DB->delete_records_list('publication_file', 'id', $fileids);
                 }
-
             }
         }
     }
@@ -337,7 +348,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
             return;
         }
 
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $sql = "SELECT
                     c.id AS contextid,
@@ -404,14 +415,22 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
         $params = ['userid' => $userid, 'name' => 'mod-publication-perpage-%'];
         $userprefs = $DB->get_records_sql($sql, $params);
         foreach ($userprefs as $userpref) {
-            writer::with_context($context)->export_user_preference('mod_publication', $userpref->name, $userpref->value,
-                    get_string('privacy:metadata:publicationperpage', 'mod_publication'));
+            writer::with_context($context)->export_user_preference(
+                'mod_publication',
+                $userpref->name,
+                $userpref->value,
+                get_string('privacy:metadata:publicationperpage', 'mod_publication')
+            );
         }
         $params['name'] = \mod_publication\local\allfilestable\base::get_table_uniqueid('%');
         $userprefs = $DB->get_records_sql($sql, $params);
         foreach ($userprefs as $userpref) {
-            writer::with_context($context)->export_user_preference('mod_publication', $userpref->name, $userpref->value,
-                    get_string('privacy:metadata:publicationperpage', 'mod_publication'));
+            writer::with_context($context)->export_user_preference(
+                'mod_publication',
+                $userpref->name,
+                $userpref->value,
+                get_string('privacy:metadata:publicationperpage', 'mod_publication')
+            );
         }
     }
 
@@ -459,7 +478,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
             $groupids = $groups[0];
         }
         if (!empty($groupids)) {
-            list($insql, $inparams) = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED, 'grp');
+            [$insql, $inparams] = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED, 'grp');
             $sql = "SELECT * FROM {publication_overrides} WHERE publication = :publication AND groupid " . $insql;
             $recs = $DB->get_records_sql($sql, ['publication' => $publicationid] + $inparams);
             $overrides = $overrides + $recs;
@@ -502,8 +521,11 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
         $groupimports = false;
         $emptygroup = false;
         if (($pub->get_instance()->mode == PUBLICATION_MODE_IMPORT) && ($pub->get_instance()->importfrom > 0)) {
-            $assign = $DB->get_record('assign', ['id' => $pub->get_instance()->importfrom],
-                    'name, teamsubmission, preventsubmissionnotingroup');
+            $assign = $DB->get_record(
+                'assign',
+                ['id' => $pub->get_instance()->importfrom],
+                'name, teamsubmission, preventsubmissionnotingroup'
+            );
             $groupimports = $assign->teamsubmission;
             if ($groupimports && !$assign->preventsubmissionnotingroup) {
                 $groups = groups_get_user_groups($pub->get_instance()->course, $user->id);
@@ -636,13 +658,15 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
          * Export resources!
          * We won't use writer::with_context($context)->export_area_files() due to us only needing a subdirectory!
          */
-        $resources = $fs->get_directory_files($context->id,
-                'mod_publication',
-                'attachment',
-                $fsfile->get_itemid(),
-                '/resources/',
-                true,
-                false);
+        $resources = $fs->get_directory_files(
+            $context->id,
+            'mod_publication',
+            'attachment',
+            $fsfile->get_itemid(),
+            '/resources/',
+            true,
+            false
+        );
         if (count($resources) > 0) {
             foreach ($resources as $cur) {
                 writer::with_context($context)->export_custom_file(array_merge($path, [
@@ -762,7 +786,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
             return;
         }
 
-        list($ctxsql, $ctxparams) = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
+        [$ctxsql, $ctxparams] = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
 
         // Apparently we can't trust anything that comes via the context.
         // Go go mega query to find out it we have an assign context that matches an existing assignment.
@@ -771,7 +795,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                     JOIN {course_modules} cm ON p.id = cm.instance AND p.course = cm.course
                     JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
                     JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :contextmodule
-                    WHERE ctx.id ".$ctxsql;
+                    WHERE ctx.id " . $ctxsql;
         $params = ['modulename' => 'publication', 'contextmodule' => CONTEXT_MODULE];
 
         if (!$records = $DB->get_records_sql($sql, $params + $ctxparams)) {
@@ -819,9 +843,12 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                     }
                 }
 
-                list($filesql, $fileparams) = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
-                $DB->delete_records_select('publication_groupapproval', 'userid = :userid AND fileid '.$filesql,
-                        ['userid' => $user->id] + $fileparams);
+                [$filesql, $fileparams] = $DB->get_in_or_equal($fileids, SQL_PARAMS_NAMED, 'file');
+                $DB->delete_records_select(
+                    'publication_groupapproval',
+                    'userid = :userid AND fileid ' . $filesql,
+                    ['userid' => $user->id] + $fileparams
+                );
                 if (!$teams) {
                     $DB->delete_records_list('publication_file', 'id', $fileids);
                 }

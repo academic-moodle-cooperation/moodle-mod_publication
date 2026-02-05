@@ -56,7 +56,7 @@ class publication_file_imported extends \core\event\base {
             'objectid'      => (int)$do->publication,
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => $do->userid,
-            'other'         => (Array)$do,
+            'other'         => (array)$do,
         ]);
         return $event;
     }
@@ -67,9 +67,9 @@ class publication_file_imported extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The ".$this->data['other']['typ']." with id '".$this->data['relateduserid'].
-            "' added a file with id '".$this->data['other']['fileid'].
-            "' which was imported to publication with id '".$this->data['other']['publication']."'";
+        return "The " . $this->data['other']['typ'] . " with id '" . $this->data['relateduserid'] .
+            "' added a file with id '" . $this->data['other']['fileid'] .
+            "' which was imported to publication with id '" . $this->data['other']['publication'] . "'";
     }
 
     /**

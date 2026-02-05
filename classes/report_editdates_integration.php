@@ -33,9 +33,7 @@
  * @copyright     2019 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_publication_report_editdates_integration
-extends report_editdates_mod_date_extractor {
-
+class mod_publication_report_editdates_integration extends report_editdates_mod_date_extractor {
     /**
      * mod_publication_report_editdates_integration constructor.
      * @param object $course the course
@@ -81,8 +79,10 @@ extends report_editdates_mod_date_extractor {
      */
     public function validate_dates(cm_info $cm, array $dates) {
         $errors = [];
-        if ($dates['allowsubmissionsfromdate'] && $dates['duedate']
-                && $dates['duedate'] < $dates['allowsubmissionsfromdate']) {
+        if (
+            $dates['allowsubmissionsfromdate'] && $dates['duedate']
+                && $dates['duedate'] < $dates['allowsubmissionsfromdate']
+        ) {
             $errors['duedate'] = get_string('duedatevalidation', 'publication');
         }
 
