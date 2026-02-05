@@ -603,7 +603,7 @@ class publication {
      * @return string The HTML output for the all files form.
      */
     public function display_allfilesform() {
-        global $CFG, $DB, $PAGE;
+        global $CFG, $DB, $PAGE, $USER, $SESSION;
         $output = '';
 
         $cm = $this->coursemodule;
@@ -619,7 +619,16 @@ class publication {
         // Next we get perpage param from database!
         $perpage = get_user_preferences('mod-publication-perpage-' . $this->instance->id, 10);
 
-        $filter = optional_param('filter', PUBLICATION_FILTER_NOFILTER, PARAM_ALPHANUMEXT);
+        if (!isset($SESSION->modpublicationfilters)) {
+            $SESSION->modpublicationfilters = [];
+        }
+        if (!isset($SESSION->modpublicationfilters[$this->instance->id])) {
+            $SESSION->modpublicationfilters[$this->instance->id] = PUBLICATION_FILTER_NOFILTER;
+        }
+        $filter = optional_param('filter',
+            $SESSION->modpublicationfilters[$this->instance->id],
+            PARAM_ALPHANUMEXT);
+        $SESSION->modpublicationfilters[$this->instance->id] = $filter;
 
         $page = optional_param('page', 0, PARAM_INT);
 
