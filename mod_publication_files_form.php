@@ -178,10 +178,18 @@ class mod_publication_files_form extends moodleform {
 
                 $onclick = 'return confirm("' . get_string('savestudentapprovalwarning', 'publication') . '")';
 
-                $buttonarray[] = &$mform->createElement('submit', 'submitbutton',
-                    get_string('savechanges'), ['onClick' => $onclick]);
-                $buttonarray[] = &$mform->createElement('reset', 'resetbutton', get_string('revert'),
-                    ['class' => 'btn btn-secondary']);
+                $buttonarray[] = &$mform->createElement(
+                    'submit',
+                    'submitbutton',
+                    get_string('savechanges'),
+                    ['onClick' => $onclick]
+                );
+                $buttonarray[] = &$mform->createElement(
+                    'reset',
+                    'resetbutton',
+                    get_string('revert'),
+                    ['class' => 'btn btn-secondary']
+                );
 
                 $mform->addGroup($buttonarray, 'submitgrp', '', [' '], false);
             } else {
@@ -189,8 +197,10 @@ class mod_publication_files_form extends moodleform {
             }
         }
 
-        if ($publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD
-            && has_capability('mod/publication:upload', $publication->get_context())) {
+        if (
+            $publication->get_instance()->mode == PUBLICATION_MODE_UPLOAD
+            && has_capability('mod/publication:upload', $publication->get_context())
+        ) {
             if ($publication->is_open()) {
                 $buttonarray = [];
 

@@ -39,7 +39,6 @@ require_once($CFG->dirroot . "/mod/publication/locallib.php");
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_publication_external extends external_api {
-
     /**
      * Returns description of method parameters
      *
@@ -50,7 +49,7 @@ class mod_publication_external extends external_api {
         // The external_function_parameters constructor expects an array of external_description.
         return new external_function_parameters(
         // An external_description can be: external_value, external_single_structure or an external_multiple structure!
-                [
+            [
                         'itemid' => new external_value(PARAM_INT, 'Group\'s or user\'s ID'),
                         'cmid' => new external_value(PARAM_INT, 'Coursemodule ID'),
                 ]
@@ -69,11 +68,13 @@ class mod_publication_external extends external_api {
         global $DB;
 
         // Parameters validation!
-        $params = self::validate_parameters(self::get_onlinetextpreview_parameters(),
-                [
+        $params = self::validate_parameters(
+            self::get_onlinetextpreview_parameters(),
+            [
                         'itemid' => $itemid,
                         'cmid' => $cmid,
-                ]);
+            ]
+        );
         $cm = get_coursemodule_from_id('publication', $params['cmid'], 0, false, MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $context = context_module::instance($cm->id);

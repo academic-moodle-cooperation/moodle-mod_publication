@@ -56,7 +56,7 @@ class publication_file_deleted extends \core\event\base {
             'objectid'      => $do->id,
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => $do->userid,
-            'other'         => (Array)$do,
+            'other'         => (array)$do,
         ]);
         return $event;
     }
@@ -67,8 +67,8 @@ class publication_file_deleted extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '".$this->data['other']['userid']."' deleted a file with id '".$this->data['other']['id'].
-            "' in publication with id '".$this->data['other']['publication']."'";
+        return "The user with id '" . $this->data['other']['userid'] . "' deleted a file with id '" . $this->data['other']['id'] .
+            "' in publication with id '" . $this->data['other']['publication'] . "'";
     }
 
     /**

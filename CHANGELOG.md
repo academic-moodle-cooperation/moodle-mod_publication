@@ -2,6 +2,10 @@ CHANGELOG
 =========
 
 
+5.0.2 (2026-02-05)
+-------------------
+* [BUG] #8664 - fix resetting of filters after applying changes on All files table - github #104
+
 5.0.1 (2025-09-29)
 -------------------
 * [BUG] #8534 - fix incorrect usage of deprecated.txt

@@ -127,13 +127,21 @@ class publication_overrides_form extends moodleform {
             $mform->addElement('header', 'approvalsettings', get_string('approvalsettings', 'publication'));
             $mform->setExpanded('approvalsettings', true);
 
-            $mform->addElement('date_time_selector', 'approvalfromdate',
-                get_string('approvalfromdate', 'publication'), ['optional' => true]);
+            $mform->addElement(
+                'date_time_selector',
+                'approvalfromdate',
+                get_string('approvalfromdate', 'publication'),
+                ['optional' => true]
+            );
             $mform->addHelpButton('approvalfromdate', 'approvalfromdate', 'publication');
             $mform->setDefault('approvalfromdate', time());
 
-            $mform->addElement('date_time_selector', 'approvaltodate',
-                get_string('approvaltodate', 'publication'), ['optional' => true]);
+            $mform->addElement(
+                'date_time_selector',
+                'approvaltodate',
+                get_string('approvaltodate', 'publication'),
+                ['optional' => true]
+            );
             $mform->addHelpButton('approvaltodate', 'approvaltodate', 'publication');
             $mform->setDefault('approvaltodate', time() + 7 * 24 * 3600);
             $itemsadded = true;

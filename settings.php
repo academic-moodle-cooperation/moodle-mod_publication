@@ -31,7 +31,6 @@ global $CFG;
 $settings = new admin_settingpage('modpublication', get_string('pluginname', 'publication'));
 
 if ($ADMIN->fulltree) {
-
     require_once(__DIR__ . '/locallib.php');
 
     $name = new lang_string('maxfiles', 'publication');
@@ -74,31 +73,37 @@ if ($ADMIN->fulltree) {
 
     $name = new lang_string('notify:filechange_admin', 'publication');
     $description = new lang_string('notify:filechange_help', 'publication');
-    $setting = new admin_setting_configselect('publication/notifyfilechange',
-                                        $name,
-                                        $description,
-                                        PUBLICATION_NOTIFY_STUDENT,
-                                        $options);
+    $setting = new admin_setting_configselect(
+        'publication/notifyfilechange',
+        $name,
+        $description,
+        PUBLICATION_NOTIFY_STUDENT,
+        $options
+    );
     $settings->add($setting);
 
     $name = new lang_string('notify:statuschange_admin', 'publication');
     $description = new lang_string('notify:statuschange_help', 'publication');
-    $setting = new admin_setting_configselect('publication/notifystatuschange',
-                                        $name,
-                                        $description,
-                                        PUBLICATION_NOTIFY_ALL,
-                                        $options);
+    $setting = new admin_setting_configselect(
+        'publication/notifystatuschange',
+        $name,
+        $description,
+        PUBLICATION_NOTIFY_ALL,
+        $options
+    );
     $settings->add($setting);
 
 
     if (isset($CFG->maxbytes)) {
         $name = new lang_string('maxbytes', 'publication');
         $description = new lang_string('configmaxbytes', 'publication');
-        $setting = new admin_setting_configselect('publication/maxbytes',
-                                        $name,
-                                        $description,
-                                        5242880,
-                                        get_max_upload_sizes($CFG->maxbytes));
+        $setting = new admin_setting_configselect(
+            'publication/maxbytes',
+            $name,
+            $description,
+            5242880,
+            get_max_upload_sizes($CFG->maxbytes)
+        );
         $settings->add($setting);
     }
 
@@ -114,37 +119,45 @@ if ($ADMIN->fulltree) {
 
     $name = new lang_string('allowsubmissionsfromdate', 'publication');
     $description = new lang_string('allowsubmissionsfromdate_help', 'publication');
-    $setting = new admin_setting_configduration('publication/allowsubmissionsfromdate',
-                                                    $name,
-                                                    $description,
-                                                    0);
+    $setting = new admin_setting_configduration(
+        'publication/allowsubmissionsfromdate',
+        $name,
+        $description,
+        0
+    );
     $setting->set_enabled_flag_options(admin_setting_flag::ENABLED, true);
     $settings->add($setting);
 
     $name = new lang_string('duedate', 'publication');
     $description = new lang_string('duedate_help', 'publication');
-    $setting = new admin_setting_configduration('publication/duedate',
-                                                    $name,
-                                                    $description,
-                                                    604800);
+    $setting = new admin_setting_configduration(
+        'publication/duedate',
+        $name,
+        $description,
+        604800
+    );
     $setting->set_enabled_flag_options(admin_setting_flag::ENABLED, true);
     $settings->add($setting);
 
     $name = new lang_string('approvalfromdate', 'publication');
     $description = new lang_string('approvalfromdate_help', 'publication');
-    $setting = new admin_setting_configduration('publication/approvalfromdate',
-                                                    $name,
-                                                    $description,
-                                                    0);
+    $setting = new admin_setting_configduration(
+        'publication/approvalfromdate',
+        $name,
+        $description,
+        0
+    );
     $setting->set_enabled_flag_options(admin_setting_flag::ENABLED, true);
     $settings->add($setting);
 
     $name = new lang_string('approvaltodate', 'publication');
     $description = new lang_string('approvaltodate_help', 'publication');
-    $setting = new admin_setting_configduration('publication/approvaltodate',
-                                                    $name,
-                                                    $description,
-                                                    604800);
+    $setting = new admin_setting_configduration(
+        'publication/approvaltodate',
+        $name,
+        $description,
+        604800
+    );
     $setting->set_enabled_flag_options(admin_setting_flag::ENABLED, true);
     $settings->add($setting);
 }

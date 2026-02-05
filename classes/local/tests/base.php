@@ -124,25 +124,31 @@ abstract class base extends advanced_testcase {
 
         $teacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
         foreach ($this->teachers as $i => $teacher) {
-            self::getDataGenerator()->enrol_user($teacher->id,
-                    $this->course->id,
-                    $teacherrole->id);
+            self::getDataGenerator()->enrol_user(
+                $teacher->id,
+                $this->course->id,
+                $teacherrole->id
+            );
             groups_add_member($this->groups[$i % self::GROUP_COUNT], $teacher);
         }
 
         $editingteacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
         foreach ($this->editingteachers as $i => $editingteacher) {
-            self::getDataGenerator()->enrol_user($editingteacher->id,
-                    $this->course->id,
-                    $editingteacherrole->id);
+            self::getDataGenerator()->enrol_user(
+                $editingteacher->id,
+                $this->course->id,
+                $editingteacherrole->id
+            );
             groups_add_member($this->groups[$i % self::GROUP_COUNT], $editingteacher);
         }
 
         $studentrole = $DB->get_record('role', ['shortname' => 'student']);
         foreach ($this->students as $i => $student) {
-            self::getDataGenerator()->enrol_user($student->id,
-                    $this->course->id,
-                    $studentrole->id);
+            self::getDataGenerator()->enrol_user(
+                $student->id,
+                $this->course->id,
+                $studentrole->id
+            );
             groups_add_member($this->groups[$i % self::GROUP_COUNT], $student);
         }
 
@@ -212,4 +218,3 @@ abstract class base extends advanced_testcase {
         return $DB->insert_record('publication_file', $dataobject);
     }
 }
-

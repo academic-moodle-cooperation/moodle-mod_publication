@@ -56,7 +56,7 @@ class publication_duedate_extended extends \core\event\base {
             'objectid'      => (int)$do['publication'],
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => null,
-            'other'         => (Array)$do,
+            'other'         => (array)$do,
         ]);
         return $event;
     }
@@ -67,9 +67,9 @@ class publication_duedate_extended extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The due-date of the publication with id '".$this->data['other']['publication']."' was extended to "
-            .date_format_string($this->data['other']['extensionduedate'], "%d.%m.%Y")." by the user with id '"
-            .$this->data['other']['userid']."'";
+        return "The due-date of the publication with id '" . $this->data['other']['publication'] . "' was extended to "
+            . date_format_string($this->data['other']['extensionduedate'], "%d.%m.%Y") . " by the user with id '"
+            . $this->data['other']['userid'] . "'";
     }
 
     /**

@@ -119,7 +119,7 @@ class base extends \table_sql {
             $this->filter = $filter;
         }
 
-        list($columns, $headers, $helpicons) = $this->get_columns();
+        [$columns, $headers, $helpicons] = $this->get_columns();
         $this->define_columns($columns);
         $this->define_headers($headers);
         $this->define_help_for_headers($helpicons);
@@ -257,7 +257,7 @@ class base extends \table_sql {
 
         // Also filters out users according to set activitygroupmode & current activitygroup!
         $users = $this->publication->get_users();
-        list($sqluserids, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
+        [$sqluserids, $userparams] = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
         $params = $params + $userparams + ['publication' => $this->cm->instance];
 
         $having = '';
@@ -306,7 +306,6 @@ class base extends \table_sql {
                 $params
             );
         }
-
     }
 
     /**
@@ -341,12 +340,14 @@ class base extends \table_sql {
                 $this->countparams = $this->sql->params;
             }
             $grandtotal = $DB->count_records_sql($this->countsql, $this->countparams);
-            if ($useinitialsbar && !$this->is_downloading() &&
-                    empty($this->get_initial_first()) && empty($this->get_initial_last())) {
+            if (
+                $useinitialsbar && !$this->is_downloading() &&
+                    empty($this->get_initial_first()) && empty($this->get_initial_last())
+            ) {
                 $this->initialbars($grandtotal > $pagesize);
             }
 
-            list($wsql, $wparams) = $this->get_sql_where();
+            [$wsql, $wparams] = $this->get_sql_where();
             if ($wsql) {
                 if (strrpos($this->countsql, ') a') == (strlen($this->countsql) - 3)) {
                     $this->countsql = substr($this->countsql, 0, -3) .  ' AND ' . $wsql . ') a';
@@ -545,8 +546,13 @@ class base extends \table_sql {
         if ($this->is_downloading()) {
             return '';
         } else {
-            return \html_writer::checkbox('selecteduser[' . $values->id . ']', 'selected', false, null,
-                    ['class' => 'userselection']);
+            return \html_writer::checkbox(
+                'selecteduser[' . $values->id . ']',
+                'selected',
+                false,
+                null,
+                ['class' => 'userselection']
+            );
         }
     }
 
@@ -566,8 +572,10 @@ class base extends \table_sql {
 
         $extension = $this->publication->user_extensionduedate($values->id);
         if ($extension) {
-            if ((has_capability('mod/publication:grantextension', $this->context) ||
-                    has_capability('mod/publication:approve', $this->context)) && $this->allfilespage) {
+            if (
+                (has_capability('mod/publication:grantextension', $this->context) ||
+                    has_capability('mod/publication:approve', $this->context)) && $this->allfilespage
+            ) {
                 $extensiontxt = \html_writer::empty_tag('br') . "\n" .
                         get_string('extensionto', 'publication') . ': ' . userdate($extension);
             } else {
@@ -580,7 +588,6 @@ class base extends \table_sql {
         if ($this->is_downloading()) {
             return strip_tags(parent::col_fullname($values) . $extensiontxt);
         } else {
-
             return  $OUTPUT->user_picture($values) .  parent::col_fullname($values) . $extensiontxt;
         }
     }
@@ -642,14 +649,16 @@ class base extends \table_sql {
     public function col_timemodified($values) {
         global $OUTPUT;
 
-        list(, $files, ) = $this->get_files($values->id);
+        [, $files, ] = $this->get_files($values->id);
 
         $filetable = new \html_table();
         $filetable->attributes = ['class' => 'filetable table-reboot'];
 
         foreach ($files as $file) {
-            if (has_capability('mod/publication:approve', $this->context)
-                    || $this->publication->has_filepermission($file->get_id())) {
+            if (
+                has_capability('mod/publication:approve', $this->context)
+                    || $this->publication->has_filepermission($file->get_id())
+            ) {
                 $filerow = [];
                 $filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
 
@@ -679,14 +688,16 @@ class base extends \table_sql {
      * @return string
      */
     public function col_files($values) {
-        list(, $files, ) = $this->get_files($values->id);
+        [, $files, ] = $this->get_files($values->id);
         global $OUTPUT;
         $filetable = new \html_table();
         $filetable->attributes = ['class' => 'filetable table-reboot'];
 
         foreach ($files as $file) {
-            if ((has_capability('mod/publication:approve', $this->context))
-                || $this->publication->has_filepermission($file->get_id())) {
+            if (
+                (has_capability('mod/publication:approve', $this->context))
+                || $this->publication->has_filepermission($file->get_id())
+            ) {
                 $filerow = [];
                 $filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
 
@@ -717,14 +728,16 @@ class base extends \table_sql {
      * @return string Return user time of submission.
      */
     public function col_studentapproval($values) {
-        list(, $files, ) = $this->get_files($values->id);
+        [, $files, ] = $this->get_files($values->id);
 
         $table = new \html_table();
         $table->attributes = ['class' => 'statustable table-reboot'];
 
         foreach ($files as $file) {
-            if (has_capability('mod/publication:approve', $this->context)
-                    || $this->publication->has_filepermission($file->get_id())) {
+            if (
+                has_capability('mod/publication:approve', $this->context)
+                    || $this->publication->has_filepermission($file->get_id())
+            ) {
                 switch ($this->publication->student_approval($file)) {
                     case 1:
                         $symbol = $this->valid;
@@ -756,20 +769,22 @@ class base extends \table_sql {
      */
     public function col_teacherapproval($values) {
 
-        list(, $files, ) = $this->get_files($values->id);
+        [, $files, ] = $this->get_files($values->id);
 
         $table = new \html_table();
         $table->attributes = ['class' => 'permissionstable'];
 
         foreach ($files as $file) {
-            if ($this->publication->has_filepermission($file->get_id())
-                    || has_capability('mod/publication:approve', $this->context)) {
-
+            if (
+                $this->publication->has_filepermission($file->get_id())
+                    || has_capability('mod/publication:approve', $this->context)
+            ) {
                 $checked = $this->publication->teacher_approval($file);
                 // Null if none found, DB-entry otherwise!
                 $checked = ($checked === false || $checked === null) ? "" : $checked;
 
-                $sel = \html_writer::select($this->options,
+                $sel = \html_writer::select(
+                    $this->options,
                     'files[' . $file->get_id() . ']',
                     (string)$checked,
                     ['' => 'choosedots'],
@@ -794,7 +809,7 @@ class base extends \table_sql {
      * @return string Return user time of submission.
      */
     public function col_visibleforstudents($values) {
-        list(, $files, ) = $this->get_files($values->id);
+        [, $files, ] = $this->get_files($values->id);
 
         $table = new \html_table();
         $table->attributes = ['class' => 'statustable table-reboot'];
@@ -823,7 +838,7 @@ class base extends \table_sql {
      */
     public function col_publicationstatus($values) {
 
-        list(, $files, ) = $this->get_files($values->id);
+        [, $files, ] = $this->get_files($values->id);
 
         $table = new \html_table();
         $table->attributes = ['class' => 'statustable table-reboot'];
@@ -833,14 +848,16 @@ class base extends \table_sql {
 
             // Teacher approval!
 
-            if ($this->obtainteacherapproval && ($this->publication->has_filepermission($file->get_id())
-                || has_capability('mod/publication:approve', $this->context))) {
-
+            if (
+                $this->obtainteacherapproval && ($this->publication->has_filepermission($file->get_id())
+                || has_capability('mod/publication:approve', $this->context))
+            ) {
                 $checked = $this->publication->teacher_approval($file);
                 // Null if none found, DB-entry otherwise!
                 $checked = ($checked === false || $checked === null) ? "" : $checked;
 
-                $sel = \html_writer::select($this->options,
+                $sel = \html_writer::select(
+                    $this->options,
                     'files[' . $file->get_id() . ']',
                     (string)$checked,
                     ['' => 'choosedots'],

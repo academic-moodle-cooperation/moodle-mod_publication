@@ -40,7 +40,6 @@ require_once($CFG->dirroot . '/mod/publication/backup/moodle2/restore_publicatio
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_publication_activity_task extends restore_activity_task {
-
     /**
      * Define (add) particular settings this activity can have.
      */
@@ -79,15 +78,18 @@ class restore_publication_activity_task extends restore_activity_task {
     public static function define_decode_rules() {
         $rules = [];
 
-        $rules[] = new restore_decode_rule('PUBLICATIONVIEWBYID',
-                '/mod/publication/view.php?id=$1',
-                'course_module');
-        $rules[] = new restore_decode_rule('PUBLICATIONINDEX',
-                '/mod/publication/index.php?id=$1',
-                'course_module');
+        $rules[] = new restore_decode_rule(
+            'PUBLICATIONVIEWBYID',
+            '/mod/publication/view.php?id=$1',
+            'course_module'
+        );
+        $rules[] = new restore_decode_rule(
+            'PUBLICATIONINDEX',
+            '/mod/publication/index.php?id=$1',
+            'course_module'
+        );
 
         return $rules;
-
     }
 
     /**
@@ -125,5 +127,4 @@ class restore_publication_activity_task extends restore_activity_task {
 
         return $rules;
     }
-
 }

@@ -56,7 +56,7 @@ class publication_file_uploaded extends \core\event\base {
             'objectid'      => $dobj->id,
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => $dobj->userid,
-            'other'         => (Array)$dobj,
+            'other'         => (array)$dobj,
         ]);
         return $event;
     }
@@ -67,8 +67,8 @@ class publication_file_uploaded extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '".$this->data['other']['userid']."' uploaded a new file with id '".$this->data['other']['id'].
-            "' to publication with id '".$this->data['other']['publication']."'";
+        return "The user with id '" . $this->data['other']['userid'] . "' uploaded a new file with id '" . $this->data['other']['id'] .
+            "' to publication with id '" . $this->data['other']['publication'] . "'";
     }
 
     /**
