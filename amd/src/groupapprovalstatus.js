@@ -26,7 +26,7 @@
 /**
  * @module mod_publication/groupapprovalstatus
  */
-define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'], function($, ModalFactory, str, templates, log) {
+define(['jquery', 'core/str', 'core/templates', 'core/log', 'core/modal'], function($, str, templates, log, Modal) {
 
     /**
      * @constructor
@@ -52,8 +52,8 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'
 
         // Prepare modal object!
         if (!instance.modal) {
-            instance.modalpromise = ModalFactory.create({
-                type: ModalFactory.types.DEFAULT,
+            instance.modalpromise = Modal.create({
+                type: Modal.types.DEFAULT,
                 body: '...'
             });
         }

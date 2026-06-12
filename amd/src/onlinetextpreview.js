@@ -26,8 +26,8 @@
 /**
  * @module mod_publication/onlinetextpreview
  */
-define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'core/notification'], function($,
-        ModalFactory, str, ajax, log, notification) {
+define(['jquery', 'core/str', 'core/ajax', 'core/log', 'core/notification', 'core/modal'], function($,
+        str, ajax, log, notification, Modal) {
 
     /**
      * @constructor
@@ -52,8 +52,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'co
 
         // Prepare modal object!
         if (!instance.modal) {
-            instance.modalpromise = ModalFactory.create({
-                type: ModalFactory.types.DEFAULT,
+            instance.modalpromise = Modal.create({
                 large: true
             });
         }
