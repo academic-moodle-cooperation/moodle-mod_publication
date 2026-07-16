@@ -2,6 +2,11 @@ CHANGELOG
 =========
 
 
+
+5.0.3 (2026-07-15)
+-------------------
+* [BUG] #8763 -  add missing privacy strings
+
 5.0.2 (2026-02-05)
 -------------------
 * [BUG] #8664 - fix resetting of filters after applying changes on All files table - github #104
