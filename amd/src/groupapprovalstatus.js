@@ -59,7 +59,7 @@ define(['jquery', 'core/str', 'core/templates', 'core/log', 'core/modal'], funct
 
         str.get_string('filedetails', 'mod_publication').done(function(s) {
             log.info('Done loading strings...', 'mod_publication');
-            instance.modalpromise.then(function(modal) {
+            return instance.modalpromise.then(function(modal) {
                 log.info('Done preparing modal', 'mod_publication');
                 instance.modal = modal;
                 $('.path-mod-publication .statustable .approvaldetails').click(function(e) {
@@ -132,6 +132,7 @@ define(['jquery', 'core/str', 'core/templates', 'core/log', 'core/modal'], funct
                 });
                 // Everything is prepared, fade the symbols in!
                 $('.path-mod-publication .statustable .approvaldetails').fadeIn('slow');
+                return modal;
             });
         }).fail(function(ex) {
             log.error('Error getting strings: ' + ex, 'mod_publication');

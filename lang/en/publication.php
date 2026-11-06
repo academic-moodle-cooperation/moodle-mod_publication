@@ -142,7 +142,6 @@ $string['mode_help'] = 'Choose whether students can upload documents here or the
 $string['modeimport'] = 'Import files from an assignment activity';
 $string['modeupload'] = 'Upload files directly in the current activity';
 $string['modulename'] = 'Student folder';
-$string['modulename_summary'] = 'The studentfolder activity allows you to make documents uploaded by students visible to all students in the course. The most common use cases include file sharing, presenting good examples, or sample solutions.';
 $string['modulename_help'] = '###### Key Features
 * Students can upload files or import them from an assignment activity.
 * The files will be published (will be made visible to everyone) automatically or after students and/ or teachers approval for publishing.
@@ -150,6 +149,7 @@ $string['modulename_help'] = '###### Key Features
 ###### Applications scenarios
 * Scenario 1: Students present their group work as part of a seminar. The presentations and summaries created for this should be made available to all participants in the course. The teachers therefore create a student folder in which the files can be uploaded directly and published immediately. Students can then upload the documents themselves. Teachers can change the visibility of individual files at any time if necessary.
 * Scenario 2: Seminar papers must be submitted as part of a course. The documents created should be uploaded by the students in the assignment activity. Teachers assess the submissions online and provide feedback. In order to make individual particularly well-done assignments accessible to all course participants, the instructors will subsequently create a student folder and link it to the assignment. Teachers can then decide which documents should be visible to participants. It is also possible to make the publication of documents dependent on the consent of the students who submitted them.';
+$string['modulename_summary'] = 'The studentfolder activity allows you to make documents uploaded by students visible to all students in the course. The most common use cases include file sharing, presenting good examples, or sample solutions.';
 $string['modulename_tip'] = 'Instructors can use the student folder with or without the approval process, depending on the needs of their course.
 <p><a href="https://academic-moodle-cooperation.org/anleitungen/studierendenordner-einsetzen/?lng=en" target="_blank">Student Folder: Use the student folder</a></p>';
 $string['modulenameplural'] = 'Student folders';
